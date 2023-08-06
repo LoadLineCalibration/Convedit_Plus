@@ -9,3 +9,4 @@ Compatible with Windows 7 -- Windows 11.
 Features:
 * Portable -- only single .exe file and all configuration data stored in .ini file. No more messing with .ocx files!
 * Customizable: you can use dark mode or/and change some colors.
+* Supports scrolling with mouse wheel!
