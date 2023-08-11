@@ -14,7 +14,10 @@ uses
   HelpWindow in 'HelpWindow.pas' {frmHelp},
   frmFlagList1 in 'frmFlagList1.pas' {frmFlagList},
   frmSettings1 in 'frmSettings1.pas' {frmSettings},
-  ConvEditPlus_Const in 'ConvEditPlus_Const.pas';
+  ConvEditPlus_Const in 'ConvEditPlus_Const.pas',
+  ConvEditPlus_Util in 'ConvEditPlus_Util.pas',
+  frmFind1 in 'frmFind1.pas' {frmFind},
+  AboutBox1 in 'AboutBox1.pas' {frmAbout};
 
 {$R *.res}
 
@@ -31,6 +34,8 @@ begin
   Application.CreateForm(TfrmHelp, frmHelp);
   Application.CreateForm(TfrmFlagList, frmFlagList);
   Application.CreateForm(TfrmSettings, frmSettings);
+  Application.CreateForm(TfrmFind, frmFind);
+  Application.CreateForm(TfrmAbout, frmAbout);
   Application.HintHidePause := 10000;
   Application.Run;
 end.
