@@ -4,7 +4,8 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, MainWindow;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, MainWindow, System.UITypes,
+  Vcl.Samples.Spin, Vcl.Mask, JvBaseDlg, JvBrowseFolder;
 
 type
   TfrmSettings = class(TForm)
@@ -19,8 +20,8 @@ type
     chkExpandFlagsOnExpandAll: TCheckBox;
     chkAskConversationDelete: TCheckBox;
     chkAskDeleteEvent: TCheckBox;
-    chkHighlightspeecvhChoiceEventsNoneAudio: TCheckBox;
-    chkSelectionGradientFill: TCheckBox;
+    chkHighlightspeechChoiceEventsNoneAudio: TCheckBox;
+    chkSelectEventsGradientFill: TCheckBox;
     btnBrowseConFilePath: TButton;
     btnBrowseBakConFilePath: TButton;
     btnBrowseConAudioPath: TButton;
@@ -32,13 +33,22 @@ type
     btnOk: TButton;
     btnCancel: TButton;
     btnClearLastFiles: TButton;
-    txt2: TStaticText;
     chkFlatControlsMainWin: TCheckBox;
+    chkAutoSaveEnabled: TCheckBox;
+    seAutoSaveMinutes: TSpinEdit;
+    dlgSelectFolder: TJvBrowseForFolderDialog;
+    btnPickUserName: TButton;
+    btnResetToDefaults: TButton;
+    chkUseSelectionFrame: TCheckBox;
+    chkSelectedTextIsWhite: TCheckBox;
+    shpUserName: TShape;
 
     // new procedures
-    procedure SaveApplyChanges();
+    procedure SaveChanges();
+    procedure LoadSettings();
+    procedure ShowFirstTime();
 
-    procedure chkSelectionGradientFillClick(Sender: TObject);
+    procedure chkSelectEventsGradientFillClick(Sender: TObject);
     procedure shpHighlightColorFromMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure shpHighlightColorToMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure shpHighlightColorSingleMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,
@@ -46,6 +56,13 @@ type
     procedure FormCreate(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure btnOkClick(Sender: TObject);
+    procedure btnBrowseBakConFilePathClick(Sender: TObject);
+    procedure btnBrowseConAudioPathClick(Sender: TObject);
+    procedure btnBrowseConFilePathClick(Sender: TObject);
+    procedure btnPickUserNameClick(Sender: TObject);
+    procedure btnResetToDefaultsClick(Sender: TObject);
+    procedure btnClearLastFilesClick(Sender: TObject);
+    procedure edtUserNameChange(Sender: TObject);
   private
     { Private declarations }
   public
@@ -59,36 +76,152 @@ implementation
 
 {$R *.dfm}
 
-
-procedure TfrmSettings.SaveApplyChanges();
+procedure TfrmSettings.ShowFirstTime();
 begin
-  with frmMain do begin
+    shpUserName.Visible := True;
+    self.ShowModal();
+end;
+
+procedure TfrmSettings.LoadSettings();
+begin
+    chkSelectEventsGradientFillClick(self);
+
+    with frmMain do begin
+     edtUserName.Text := ConversationUserName;
+     edtConFilePath.Text := ConFilePath;
+     edtConFileBakPath.Text := ConFileBakPath;
+     edtAudioPath.Text := ConFileAudioPath;
+
+     chkExpandFlagsOnExpandAll.Checked := bExpandFlagsOnExpandAll;
+     chkAskConversationDelete.Checked := bAskForConvoDelete;
+     chkAskDeleteEvent.Checked := bAskForEventDelete;
+     chkHighlightspeechChoiceEventsNoneAudio.Checked := bHglEventWithNoAudio;
+     chkSelectEventsGradientFill.Checked := bHglEventsGradient;
+
+     shpHighlightColorSingle.Brush.Color := clrHighlightEvent;
+     shpHighlightColorFrom.Brush.Color := clrHighlightEventFrom;
+     shpHighlightColorTo.Brush.Color := clrHighlightEventTo;
+
+     chkFlatControlsMainWin.Checked := bFlatToolbar;
+     chkAutoSaveEnabled.Checked := bAutoSaveEnabled;
+
+     seAutoSaveMinutes.Value := AutoSaveMinutes;
+
+     chkUseSelectionFrame.Checked := bUse3DSelectionFrame;
+     chkSelectedTextIsWhite.Checked := bUseWhiteSelectedText;
+    end;
+end;
+
+procedure TfrmSettings.SaveChanges();
+begin
+   with frmMain do begin
      mainToolBar.Flat := chkFlatControlsMainWin.Checked;
      if chkFlatControlsMainWin.Checked then
         HeaderControl1.Style := hsFlat else HeaderControl1.Style := hsButtons;
-  end;
+
+     ConversationUserName := edtUserName.Text;
+     ConFilePath := edtConFilePath.Text;
+     ConFileBakPath := edtConFileBakPath.Text;
+     ConFileAudioPath := edtAudioPath.Text;
+
+     bExpandFlagsOnExpandAll := chkExpandFlagsOnExpandAll.Checked;
+     bAskForConvoDelete := chkAskConversationDelete.Checked;
+     bAskForEventDelete := chkAskDeleteEvent.Checked;
+     bHglEventWithNoAudio := chkHighlightspeechChoiceEventsNoneAudio.Checked;
+     bHglEventsGradient := chkSelectEventsGradientFill.Checked;
+
+     clrHighlightEvent := shpHighlightColorSingle.Brush.Color;
+     clrHighlightEventFrom := shpHighlightColorFrom.Brush.Color;
+     clrHighlightEventTo := shpHighlightColorTo.Brush.Color;
+
+     bFlatToolbar := chkFlatControlsMainWin.Checked;
+      mainToolBar.Flat := bFlatToolbar;
+      if bFlatToolbar = true then HeaderControl1.Style := hsFlat else HeaderControl1.Style := hsButtons;
+
+     bAutoSaveEnabled := chkAutoSaveEnabled.Checked;
+     AutoSaveMinutes := seAutoSaveMinutes.Value;
+
+     bUse3DSelectionFrame := chkUseSelectionFrame.Checked;
+     bUseWhiteSelectedText := chkSelectedTextIsWhite.Checked;
+   end;
+end;
+
+procedure TfrmSettings.btnBrowseBakConFilePathClick(Sender: TObject);
+begin
+    if dlgSelectFolder.Execute() = true then
+       edtConFileBakPath.Text := dlgSelectFolder.Directory;
+end;
+
+procedure TfrmSettings.btnBrowseConAudioPathClick(Sender: TObject);
+begin
+    if dlgSelectFolder.Execute() = true then
+       edtAudioPath.Text := dlgSelectFolder.Directory;
+end;
+
+procedure TfrmSettings.btnBrowseConFilePathClick(Sender: TObject);
+begin
+    if dlgSelectFolder.Execute() = true then
+       edtConFilePath.Text := dlgSelectFolder.Directory;
 end;
 
 procedure TfrmSettings.btnCancelClick(Sender: TObject);
 begin
+    LoadSettings();
     Close();
+end;
+
+procedure TfrmSettings.btnClearLastFilesClick(Sender: TObject);
+begin
+    frmMain.ClearRecentFiles();
 end;
 
 procedure TfrmSettings.btnOkClick(Sender: TObject);
 begin
-    SaveApplyChanges();
+    SaveChanges();
+    Close();
 end;
 
-procedure TfrmSettings.chkSelectionGradientFillClick(Sender: TObject);
+procedure TfrmSettings.btnPickUserNameClick(Sender: TObject); // Get current Windows user name
+var TempUser: PChar; i: DWord;
 begin
-    shpHighlightColorSingle.Visible := not chkSelectionGradientFill.Checked;
-    shpHighlightColorFrom.Visible := chkSelectionGradientFill.Checked;
-    shpHighlightColorTo.Visible := chkSelectionGradientFill.Checked;
+    i := 1024;
+    TempUser := StrAlloc(Succ(i));
+
+    if GetUserName(TempUser, i) = True then
+       edtUserName.Text := TempUser
+    else Exit();
+end;
+
+// Use event selection colors from original ConEdit app.
+procedure TfrmSettings.btnResetToDefaultsClick(Sender: TObject);
+begin
+    chkUseSelectionFrame.Checked := False;
+
+    chkSelectEventsGradientFill.Checked := False;
+    chkSelectEventsGradientFillClick(self);
+    chkSelectedTextIsWhite.Checked := True;
+
+    shpHighlightColorSingle.Brush.Color := RGB(0,0,128);
+
+    chkFlatControlsMainWin.Checked := False;
+end;
+
+procedure TfrmSettings.chkSelectEventsGradientFillClick(Sender: TObject);
+begin
+    shpHighlightColorSingle.Visible := not chkSelectEventsGradientFill.Checked;
+    shpHighlightColorFrom.Visible := chkSelectEventsGradientFill.Checked;
+    shpHighlightColorTo.Visible := chkSelectEventsGradientFill.Checked;
+end;
+
+procedure TfrmSettings.edtUserNameChange(Sender: TObject);
+begin
+    btnOk.Enabled := Length(Trim(edtUserName.Text)) > 1;
 end;
 
 procedure TfrmSettings.FormCreate(Sender: TObject);
 begin
-    chkSelectionGradientFillClick(self);
+    LoadSettings();
+    edtUserNameChange(self);
 end;
 
 procedure TfrmSettings.shpHighlightColorFromMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,
