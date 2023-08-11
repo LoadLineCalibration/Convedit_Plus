@@ -16,17 +16,19 @@ const CEP_SPEECH_EVENT_FONT_SIZE = 10;
 const CEP_TEST_STRING_MULTILINE = 'some text some text some text some textsome text some textsome text some textsome text some textsome text some text' +
                                   'Another text..... My conedit is augmented!' +
                                    #13#10 + '--==[ Delphi 4 Win! ]==--' +
-                                   #13#10 + 'Multiline text support!';
+                                   #13#10 + 'Implemented multiline text support!';
 
 
 // maybe temporary?
 const CEP_MAX_PLAYABLE_MISSIONS = 97;
 
+const CEP_MAX_RECENT_FILES = 7; //actually 8...
+
 ResourceString
     ET_Speech_Caption         = 'Speech';
 	ET_Choice_Caption         = 'Choice';
-	ET_SetFlag_Caption        = 'Set Flag';
-	ET_CheckFlag_Caption      = 'Check Flag';
+	ET_SetFlag_Caption        = 'Set Flags';
+	ET_CheckFlag_Caption      = 'Check Flags';
 	ET_CheckObject_Caption    = 'Check Object';
 	ET_TransferObject_Caption = 'Transfer Object';
 	ET_MoveCamera_Caption     = 'Move Camera';
