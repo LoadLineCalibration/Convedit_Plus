@@ -24,6 +24,8 @@ const CEP_MAX_PLAYABLE_MISSIONS = 97;
 
 const CEP_MAX_RECENT_FILES = 7; //actually 8...
 
+const CEP_MIN_CONVO_TREE_PANEL_WIDTH = 100; // To avoid situation when tree panel has been reduced to zero and user cannot resize it back.
+
 ResourceString
     ET_Speech_Caption         = 'Speech';
 	ET_Choice_Caption         = 'Choice';
