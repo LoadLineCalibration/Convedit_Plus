@@ -2,6 +2,8 @@ unit ConvEditPlus_Const;
 
 interface
 
+const CEP_CONXML_FILE_VERSION = 28;
+
 // Fonts and their size
 const CEP_EVENT_LIST_FONT_NAME = 'Consolas';
 const CEP_EVENT_LIST_FONT_SIZE = 10;
@@ -9,7 +11,7 @@ const CEP_EVENT_LIST_FONT_SIZE = 10;
 const CEP_EVENT_HEADER_LIST_FONT_NAME = 'Tahoma';
 const CEP_EVENT_HEADER_LIST_FONT_SIZE = 10;
 
-const CEP_SPEECH_EVENT_FONT = 'Tahoma';
+const CEP_SPEECH_EVENT_FONT = 'Verdana';
 const CEP_SPEECH_EVENT_FONT_SIZE = 10;
 
 // For testing purposes
@@ -24,7 +26,7 @@ const CEP_MAX_PLAYABLE_MISSIONS = 97;
 
 const CEP_MAX_RECENT_FILES = 7; //actually 8...
 
-const CEP_MIN_CONVO_TREE_PANEL_WIDTH = 100; // To avoid situation when tree panel has been reduced to zero and user cannot resize it back.
+const CEP_MIN_CONVO_TREE_PANEL_WIDTH = 50; // To avoid situation when tree panel has been reduced to zero and user cannot resize it back.
 
 ResourceString
     ET_Speech_Caption         = 'Speech';
@@ -46,6 +48,10 @@ ResourceString
 	ET_CheckPersona_Caption   = 'Check Persona';
 	ET_Comment_Caption        = 'Comment';
 	ET_End_Caption            = 'End';
+
+    ET_Random_TargetLabels = 'Target labels:';
+
+
 
 
 implementation
