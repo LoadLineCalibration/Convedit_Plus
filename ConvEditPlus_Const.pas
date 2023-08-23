@@ -51,6 +51,13 @@ ResourceString
 
     ET_Random_TargetLabels = 'Target labels:';
 
+    // for Table.pas
+    strActorsPawns = 'Actors/Pawns';
+    strFlags = 'Flags';
+    strSkills = 'Skills';
+    strObjects = 'Objects';
+    strAskRemoveUnused = 'Are you sure you wish to remove any unused table entries?';
+    strAskRemoveUnusedTitle = 'Remove unused entries?';
 
 
 
