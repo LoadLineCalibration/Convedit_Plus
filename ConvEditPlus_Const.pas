@@ -62,6 +62,33 @@ ResourceString
     strAddCredits = 'Add %d Credits';
     strSubtractCredits = 'Subtract %d Credits';
 
+    strChkFlgJumpToLabel = 'Jump To Label: ';
+
+    strJumpInCurrentConversation = 'Jump to Label in current Conversation: ';
+    strJumpInAnotherConversation ='Jump to Label in another Conversation: "%s". Label "%s"';
+
+    strRandomEventOptions = 'Cycle Events: %s, Only Cycle Once: %s, Random after Cycle: %s';
+
+
+    // camera related strings
+    strRandomCam = 'Random';
+    strCT_Predefined = 'Predefined:';
+    strCP_SideTight ='Side, Tight';
+    strCP_SideMid = 'Side, Mid';
+    strCP_SideAbove = 'Side, Above';
+    strCP_SideAbove45 = 'Side, Above 45 Degrees';
+    strCP_ShoulderLeft = 'Shoulders, Left';
+    strCP_ShoulderRight = 'Shoulders, Right';
+    strCP_HeadShotTight = 'Head Shot, Tight';
+    strCP_HeadShotMid ='Head Shot, Mid';
+    strCP_HeadShotLeft ='Head Shot, Left';
+    strCP_HeadShotRight = 'Head Shot, Right';
+    strCP_HeadShotSlightRight ='Head Shot, Slight Right';
+    strCP_HeadShotSlightLeft = 'Head Shot, Slight Left';
+    strCP_StraightAboveLookingDown ='Straight Above, Looking Down';
+    strCP_StraightBelowLookingUp = 'Straight Below, Looking Up';
+    strCP_BelowLookingUp ='Below, Looking Up';
+
 
 
 
