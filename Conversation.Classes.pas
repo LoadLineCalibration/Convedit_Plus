@@ -35,9 +35,9 @@ type TEventType =
 type TCameraTypes =
 (
     CT_Predefined,  // 0
-//	CT_Speakers,
-	CT_Actor,       // 1
-    CT_Random       // 2
+	CT_Speakers,    // 1
+	CT_Actor,       // 2
+    CT_Random       // 3
 );
 
 // Predefined Camera Positions
@@ -89,7 +89,7 @@ type TPersonaTypes =
 	EP_SkillPoints
 );
 
-// for use in TConversation
+// for use in TConversation and TConEventCheckFlag
 type TFlag = record
   flagIndex: Integer;
   flagName: string;
@@ -103,7 +103,6 @@ type TFlagToSet = record
   flagValue: Boolean;
   flagExpiration: Integer;
 end;
-
 
 TConBaseObject = class(TObject) // base class!
     ReservedField: string;
@@ -125,6 +124,8 @@ TConEventSpeech = class(TConEvent) // 00
     TextLine: string;
     mp3File: string;
 
+    LineBreaksCount: Integer;  // To adjust height
+
     public
     constructor Create();
 end;
@@ -137,12 +138,16 @@ end;
 
 TConEventSetFlag = class(TConEvent) // 02
     SetFlags: array of TFlagToSet;
+    ArrayLength: Integer;
 
     public
     constructor Create();
 end;
 
 TConEventCheckFlag = class(TConEvent) // 03
+    FlagsToCheck: array of TFlag;
+    GotoLabel: string;
+    ArrayLength: Integer;
 
     public
     constructor Create();
@@ -191,6 +196,10 @@ TConEventJump = class(TConEvent) // 09
 end;
 
 TConEventRandom = class(TConEvent) // 10
+    GoToLabels: array of string;
+    bCycle: Boolean;
+    bCycleOnce: Boolean;
+    bCycleRandom: Boolean;
 
     public
     constructor Create();
@@ -329,6 +338,12 @@ TConFileParameters = class (TObject)
   function conXMLDateTime(): string;
 end;
 
+// default values for flags
+const
+  DefaultFlagToSet: TFlagToSet = (flagIndex: -1; flagName: ''; flagValue: False; flagExpiration: 0);
+
+const
+  DefaultFlag: TFlag = (flagIndex: -1; flagName: ''; flagValue: False);
 
 implementation
 
