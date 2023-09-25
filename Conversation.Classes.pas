@@ -104,9 +104,36 @@ type TFlagToSet = record
   flagExpiration: Integer;
 end;
 
+
+type TChoiceItem = record
+  Index: Integer;
+  textline: string;
+  bDisplayAsSpeech: Boolean;
+  bSkillNeeded: Integer; // 0 - true, -1 false  // was Boolean before ConEditExport ver. 7
+   Skill: string; // skillName
+   SkillLevel: Integer;
+  GoToLabel: string;
+  mp3: string;
+  RequiredFlags: array of TFlag;
+end;
+
 TConBaseObject = class(TObject) // base class!
     ReservedField: string;
 end;
+
+TChoiceItemObject = class(TConBaseObject) // for editing Choice Items, use  as listview item.data
+  public
+  Index: Integer;
+  textline: string;
+  bDisplayAsSpeech: Boolean;
+  bSkillNeeded: Integer; // 0 - true, -1 false  // was Boolean before ConEditExport ver. 7
+   Skill: string; // skillName
+   SkillLevel: Integer;
+  GoToLabel: string;
+  mp3: string;
+  RequiredFlags: array of TFlag;
+end;
+
 
 TConEvent = class(TConBaseObject)
     EventLabel: string; // can't use "Label"...
@@ -131,10 +158,15 @@ TConEventSpeech = class(TConEvent) // 00
 end;
 
 TConEventChoice = class(TConEvent) // 01
+    bClearScreen: boolean;
+    Choices: array of TChoiceItem;
+    NumChoices: Integer; // for height of this item in the events list
+    NumFlagsStrings: Integer; // same
 
     public
     constructor Create();
 end;
+
 
 TConEventSetFlag = class(TConEvent) // 02
     SetFlags: array of TFlagToSet;
@@ -154,12 +186,23 @@ TConEventCheckFlag = class(TConEvent) // 03
 end;
 
 TConEventCheckObject = class(TConEvent) // 04
+    ObjectIndex: Integer;
+    ObjectValue: string;
+    GoToLabel: string;
 
     public
     constructor Create();
 end;
 
 TConEventTransferObject = class(TConEvent) // 05
+    ObjectIndex: Integer;
+    ObjectValue: string;
+    Amount: Integer;
+    ActorFromIndex: Integer;
+    ActorFromValue: string;
+    ActorToIndex: Integer;
+    ActorToValue: string;
+    GotoLabel: string;
 
     public
     constructor Create();
@@ -175,6 +218,13 @@ TConEventMoveCamera = class(TConEvent) // 06
 end;
 
 TConEventAnimation = class(TConEvent) // 07
+    ActorIndex: Integer;
+    ActorValue: string;
+
+    AnimSequence: string;
+    bAnimPlayOnce: Boolean;
+    AnimPlayForSeconds: Integer;
+    bAnimWaitToFinish: Boolean;
 
     public
     constructor Create();
@@ -344,6 +394,13 @@ const
 
 const
   DefaultFlag: TFlag = (flagIndex: -1; flagName: ''; flagValue: False);
+
+// default value for TChoiceItem
+const
+  DefaultChoiceItem: TChoiceItem = (Index: -1; textline: '';
+                                    bDisplayAsSpeech: False;
+                                    bSkillNeeded: -1; Skill: '';
+                                    SkillLevel: -1; GoToLabel: ''; mp3: '');
 
 implementation
 
