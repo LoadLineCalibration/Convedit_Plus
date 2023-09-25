@@ -21,6 +21,21 @@ const CEP_MIN_CONVO_TREE_PANEL_WIDTH = 50; { To avoid situation when tree panel 
                                              reduced to zero and user cannot resize it back.
                                              Works in both directions!}
 
+const Default_DeusEx_Skills: array[0..10] of string =
+(
+    'SkillMedicine',
+    'SkillTech',
+    'SkillLockpicking',
+    'SkillWeaponPistol',
+    'SkillEnviro',
+    'SkillWeaponRifle',
+    'SkillWeaponHeavy',
+    'SkillComputer',
+    'SkillSwimming',
+    'SkillWeaponLowTech',
+    'SkillDemolition'
+);
+
 ResourceString
     ET_Speech_Caption         = 'Speech';
 	ET_Choice_Caption         = 'Choice';
@@ -67,7 +82,17 @@ ResourceString
     strJumpInCurrentConversation = 'Jump to Label in current Conversation: ';
     strJumpInAnotherConversation ='Jump to Label in another Conversation: "%s". Label "%s"';
 
-    strRandomEventOptions = 'Cycle Events: %s, Only Cycle Once: %s, Random after Cycle: %s';
+    strRandomEventOptions = 'Cycle Events? %s,' + #13#10 + 'Only Cycle Once? %s,' + #13#10 + 'Random after Cycle? %s';
+
+    strCheckObject = 'Check For Object "%s", On Fail jump to "%s"';
+    strTransferObject = 'Transfer "%s" from "%s" to "%s" on fail jump to Label "%s"';
+
+    strChoiceWithSkills = ' • %s  [Goto: %s]  [Requires Skill: %s]  [Audio File: %s]';
+    strChoiceNoSkills = ' • %s  [Goto: %s] [Audio File: %s]';
+    strDependsOnFlag = 'Flags: ';
+
+    strLabelStartsFromDigit = 'Cannot add label since it starts from a number.';
+    strSpeechTextIsEmpty = 'Speech text cannot be empty! Please enter some text.';
 
 
     // camera related strings
@@ -88,6 +113,13 @@ ResourceString
     strCP_StraightAboveLookingDown ='Straight Above, Looking Down';
     strCP_StraightBelowLookingUp = 'Straight Below, Looking Up';
     strCP_BelowLookingUp ='Below, Looking Up';
+
+    // play/stop
+    strPlayMP3 = 'Play';
+    strStopMP3 = 'Stop';
+
+    strAddDefaultSkillsQuestion = 'This will add default skills from original Deus Ex game (SkillSwimming, SkillWeaponHeavy, etc.) into the table. ' +
+                                  'Existing items will not be lost. Do you want to proceed?';
 
 
 
