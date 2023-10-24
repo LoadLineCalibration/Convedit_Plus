@@ -4,12 +4,8 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, AddInsertEvent, ConvEditPlus_Const,
-  ConvoProperties, EditValueDialog;
-
-
-type // Перечисление режимов работы с таблицами
-  TTableMode = (tmActorsPawns, tmFlags, tmSkills, tmObjects);
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Conversation.Classes, AddInsertEvent,
+  ConvEditPlus_Const, ConvoProperties, EditValueDialog, Vcl.Menus, system.Types;
 
 type
   TfrmTableEdit = class(TForm)
@@ -23,8 +19,15 @@ type
     btnClose: TButton;
     chkClearAfterAdd: TCheckBox;
     chkDoubleClickEditItem: TCheckBox;
-    btnImport: TButton;
-    btnExport: TButton;
+    btnAddDefSkills: TButton;
+    btnAddDef_LR_Weapons: TButton;
+    btnAddDef_CR_weapons: TButton;
+    btnAddDefGrenades: TButton;
+    btnAddDefMiscItems: TButton;
+    btn_CustomClassList: TButton;
+    CustomItemsPopup: TPopupMenu;
+    one11: TMenuItem;
+    two21: TMenuItem;
     
     // new procedures/functions
     function CanDeleteItem(item: String): boolean;
@@ -47,8 +50,13 @@ type
     procedure lstTableContentsExit(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure lstTableContentsDblClick(Sender: TObject);
-    procedure btnImportClick(Sender: TObject);
-    procedure btnExportClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure btnAddDefSkillsClick(Sender: TObject);
+    procedure btnAddDefMiscItemsClick(Sender: TObject);
+    procedure btnAddDefGrenadesClick(Sender: TObject);
+    procedure btnAddDef_LR_WeaponsClick(Sender: TObject);
+    procedure btnAddDef_CR_weaponsClick(Sender: TObject);
+    procedure btn_CustomClassListClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -65,7 +73,33 @@ implementation
 
 {$R *.dfm}
 
-uses MainWindow;
+uses MainWindow, frmFlagList1;
+
+function ListBoxContainsItem(ListBox: TListBox; Items: array of string): Boolean;
+var
+    i, j: Integer;
+begin
+    Result := False;
+
+    // Check if ListBox is empty
+    if ListBox.Items.Count = 0 then
+       Exit();
+
+    for i := 0 to ListBox.Items.Count - 1 do
+    begin
+        for j := Low(Items) to High(Items) do
+        begin
+            if ListBox.Items[i] = Items[j] then
+            begin
+                Result := True;
+                Break;
+            end;
+        end;
+        if Result = True then
+           Break;
+    end;
+end;
+
 
 procedure TfrmTableEdit.UpdateFlags();
 begin
@@ -74,16 +108,76 @@ end;
 
 procedure TfrmTableEdit.ApplyTableChanges();
 begin
-  case TableMode of
-    tmActorsPawns:  frmMain.listPawnsActors.Assign(lstTableContents.Items);
-    tmFlags:        frmMain.listFlags.Assign(lstTableContents.Items);
-    tmSkills:       frmMain.listSkills.Assign(lstTableContents.Items);
-    tmObjects:      frmMain.listObjects.Assign(lstTableContents.Items);
-  end;
+    case TableMode of
+        tmActorsPawns:  frmMain.listPawnsActors.Assign(lstTableContents.Items);
+        tmFlags:        frmMain.listFlags.Assign(lstTableContents.Items);
+        tmSkills:       frmMain.listSkills.Assign(lstTableContents.Items);
+        tmObjects:      frmMain.listObjects.Assign(lstTableContents.Items);
+    end;
 end;
 
-// Добавить элемент в один из списков. Также не допустить повторов.
-procedure TfrmTableEdit.btnAddItemClick(Sender: TObject);
+
+procedure TfrmTableEdit.btnAddDefGrenadesClick(Sender: TObject);
+begin
+    if Application.MessageBox(PChar(strAddDefaultGrenadesQuestion), '', MB_OKCANCEL +
+       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then begin
+
+       for var i:= 0 to Length(Default_DeusEx_Grenades) -1 do
+           lstTableContents.items.Add(Default_DeusEx_Grenades[i]);
+
+        btnAddDefGrenades.Enabled := False;
+    end;
+end;
+
+procedure TfrmTableEdit.btnAddDefMiscItemsClick(Sender: TObject);
+begin
+    if Application.MessageBox(PChar(strAddDefaultMiscItemsQuestion), '', MB_OKCANCEL +
+       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then begin
+
+       for var i:= 0 to Length(Default_DeusEx_MiscItems) -1 do
+           lstTableContents.items.Add(Default_DeusEx_MiscItems[i]);
+
+        btnAddDefMiscItems.Enabled := False;
+    end;
+end;
+
+procedure TfrmTableEdit.btnAddDefSkillsClick(Sender: TObject);
+begin
+    if Application.MessageBox(PChar(strAddDefaultSkillsQuestion), '', MB_OKCANCEL +
+       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then begin
+
+       for var i:= 0 to Length(Default_DeusEx_Skills) -1 do
+           lstTableContents.items.Add(Default_DeusEx_Skills[i]);
+
+        btnAddDefSkills.Enabled := False;
+    end;
+end;
+
+procedure TfrmTableEdit.btnAddDef_CR_weaponsClick(Sender: TObject);
+begin
+    if Application.MessageBox(PChar(strAddDefaultCloseRangeWeapons), '', MB_OKCANCEL +
+       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then begin
+
+       for var i:= 0 to Length(Default_DeusEx_CloseRange) -1 do
+           lstTableContents.items.Add(Default_DeusEx_CloseRange[i]);
+
+        btnAddDef_CR_weapons.Enabled := False;
+    end;
+end;
+
+procedure TfrmTableEdit.btnAddDef_LR_WeaponsClick(Sender: TObject);
+begin
+    if Application.MessageBox(PChar(strAddDefaultFirearmsQuestion), '', MB_OKCANCEL +
+       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then begin
+
+       for var i:= 0 to Length(Default_DeusEx_LongRange) -1 do
+           lstTableContents.items.Add(Default_DeusEx_LongRange[i]);
+
+        btnAddDef_LR_Weapons.Enabled := False;
+    end;
+end;
+
+procedure TfrmTableEdit.btnAddItemClick(Sender: TObject); // Добавить элемент в один из списков. Также не допустить повторов.
 var itemstr: string;
 begin
     if Length(Trim(editTable.Text)) > 0 then
@@ -91,7 +185,6 @@ begin
         itemstr := Trim(editTable.Text);
         if lstTableContents.Items.IndexOf(itemstr) < 0 then
            lstTableContents.items.Add(itemstr);
-            //lstTableContents.items.Insert(0,item);
     end;
 
     if chkClearAfterAdd.Checked = True then
@@ -140,29 +233,17 @@ begin
       tmSkills:      frmEditValue.lblText.Caption := 'Skill Name:';
       tmObjects:     frmEditValue.lblText.Caption := 'Object Name:';
     end;
-    
+
     frmMain.SendStringToEditValue(lstTableContents);
 end;
 
-procedure TfrmTableEdit.btnExportClick(Sender: TObject);
+procedure TfrmTableEdit.btn_CustomClassListClick(Sender: TObject);
 begin
-  if Application.MessageBox('The Export operation allows you to save contents from current table into .txt file.' + #13#10 +
-    'Do you want to continue?',
-    'Not implemented yet', MB_YESNO + MB_ICONINFORMATION + MB_TOPMOST) = IDYES then
-    begin
-      //
-    end;
-end;
+    // Convert button coordinates to screen coordinates
+    var TempPoint:= Point(btn_CustomClassList.Left, btn_CustomClassList.Top + btn_CustomClassList.Height);
+    var FinalPoint := ClientToScreen(TempPoint);
 
-procedure TfrmTableEdit.btnImportClick(Sender: TObject);
-begin
-  if Application.MessageBox('The Import operation allows you to add contents from .txt file into the list.' + #13#10 +
-    'The file must contain one item per string. Type of data is Unreal FName, i.e. only characters from English ' +
-    'alphabet, underscore and digits. FName should not start from digit(s).' + #13#10#13#10 + 'Do you want to continue?',
-    'Not implemented yet', MB_YESNO + MB_ICONINFORMATION + MB_TOPMOST) = IDYES then
-    begin
-      //
-    end;
+    CustomItemsPopup.Popup(FinalPoint.X, FinalPoint.Y);
 end;
 
 procedure TfrmTableEdit.editTableChange(Sender: TObject);
@@ -181,6 +262,12 @@ begin
     FilterEditInput(key);
 end;
 
+
+procedure TfrmTableEdit.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+    if frmFlagList.Visible = true then
+        frmFlagList.FillFlagsList(); // Update flags list
+end;
 
 procedure TfrmTableEdit.FormCreate(Sender: TObject);
 begin
@@ -212,6 +299,22 @@ begin
 
     if (lstTableContents.ItemIndex <> -1) {or (lstTableContents.Items.Count > 0)}  then
        btnDelete.Enabled := true else btnDelete.Enabled := false;
+
+    btnAddDefSkills.Enabled := not ListBoxContainsItem(lstTableContents, Default_DeusEx_Skills);
+    btnAddDefSkills.Visible := TableMode = tmSkills;
+
+    // Objects (Weapons, food, etc.)
+    btnAddDef_LR_Weapons.Enabled := not ListBoxContainsItem(lstTableContents, Default_DeusEx_LongRange);
+    btnAddDef_LR_Weapons.Visible := TableMode = tmObjects;
+
+    btnAddDef_CR_weapons.Enabled := not ListBoxContainsItem(lstTableContents, Default_DeusEx_CloseRange);
+    btnAddDef_CR_weapons.Visible := TableMode = tmObjects;
+
+    btnAddDefGrenades.Enabled := not ListBoxContainsItem(lstTableContents, Default_DeusEx_Grenades);
+    btnAddDefGrenades.Visible := TableMode = tmObjects;
+
+    btnAddDefMiscItems.Enabled := not ListBoxContainsItem(lstTableContents, Default_DeusEx_MiscItems);
+    btnAddDefMiscItems.Visible := TableMode = tmObjects;
 end;
 
 procedure TfrmTableEdit.lstTableContentsClick(Sender: TObject);
@@ -248,8 +351,7 @@ begin
     UpdateButtonsState();
 end;
 
-
-// Пока так, в дальнейшем нужно проверять, ссылается ли данный объенкт на какое-то из событий.
+// Пока так, в дальнейшем нужно проверять, ссылается ли данный объект на какое-то из событий.
 function TfrmTableEdit.CanDeleteItem(item: String): boolean;
 begin
    if Application.MessageBox('Are you sure you want to delete this item?',
@@ -267,15 +369,16 @@ procedure TfrmTableEdit.SendTableDataBack();
 begin
     current := lstTableContents.ItemIndex;
     if current = -1 then Exit();
-    
+
     if TableItemreceiver is TListBox then
     begin
        idx:=TListBox(TableItemreceiver).ItemIndex;
        TListBox(TableItemreceiver).Items[idx] := lstTableContents.Items[current];
-    end 
+    end
     else if TableItemReceiver is TComboBox then
     begin
-        TComboBox(TableItemreceiver).Text := lstTableContents.Items[current];
+        //TComboBox(TableItemreceiver).Text := lstTableContents.Items[current];
+        TComboBox(TableItemReceiver).ItemIndex := TComboBox(TableItemReceiver).Items.IndexOf(lstTableContents.Items[current]);
     end;
 end;
 

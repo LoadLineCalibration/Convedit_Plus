@@ -3,8 +3,8 @@ object frmTableEdit: TfrmTableEdit
   Top = 0
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'Table'
-  ClientHeight = 416
-  ClientWidth = 472
+  ClientHeight = 366
+  ClientWidth = 473
   Color = 13160660
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -51,20 +51,22 @@ object frmTableEdit: TfrmTableEdit
   Position = poOwnerFormCenter
   ShowHint = True
   StyleName = 'Windows'
+  OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
-    472
-    416)
-  TextHeight = 14
+    473
+    366)
+  TextHeight = 15
   object lstTableContents: TListBox
-    Left = 8
-    Top = 75
-    Width = 349
-    Height = 333
+    Left = 7
+    Top = 72
+    Width = 350
+    Height = 223
     Anchors = [akLeft, akTop, akRight, akBottom]
-    ItemHeight = 14
+    ItemHeight = 15
     TabOrder = 0
+    StyleName = 'Windows'
     OnClick = lstTableContentsClick
     OnDblClick = lstTableContentsDblClick
     OnEnter = lstTableContentsEnter
@@ -74,15 +76,16 @@ object frmTableEdit: TfrmTableEdit
   object editTable: TEdit
     Left = 8
     Top = 11
-    Width = 349
-    Height = 22
+    Width = 350
+    Height = 23
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 1
+    StyleName = 'Windows'
     OnChange = editTableChange
     OnKeyPress = editTableKeyPress
   end
   object btnAddItem: TButton
-    Left = 362
+    Left = 363
     Top = 11
     Width = 102
     Height = 22
@@ -91,24 +94,27 @@ object frmTableEdit: TfrmTableEdit
     Default = True
     Enabled = False
     TabOrder = 2
+    StyleName = 'Windows'
     OnClick = btnAddItemClick
   end
   object Panel1: TPanel
     Left = 8
     Top = 39
-    Width = 456
-    Height = 4
+    Width = 457
+    Height = 3
     Anchors = [akLeft, akTop, akRight]
     BevelInner = bvLowered
     BevelKind = bkSoft
     BevelOuter = bvLowered
     DoubleBuffered = True
+    Enabled = False
     FullRepaint = False
     ParentDoubleBuffered = False
     TabOrder = 3
+    StyleName = 'Windows'
   end
   object btnEdit: TButton
-    Left = 363
+    Left = 364
     Top = 75
     Width = 102
     Height = 24
@@ -116,10 +122,11 @@ object frmTableEdit: TfrmTableEdit
     Caption = '&Edit'
     Enabled = False
     TabOrder = 4
+    StyleName = 'Windows'
     OnClick = btnEditClick
   end
   object btnDelete: TButton
-    Left = 363
+    Left = 364
     Top = 105
     Width = 102
     Height = 26
@@ -127,26 +134,29 @@ object frmTableEdit: TfrmTableEdit
     Caption = '&Delete'
     Enabled = False
     TabOrder = 5
+    StyleName = 'Windows'
     OnClick = btnDeleteClick
   end
   object btnDeleteUnused: TButton
-    Left = 363
+    Left = 364
     Top = 137
     Width = 102
     Height = 25
     Anchors = [akTop, akRight]
     Caption = '&Delete Unused'
     TabOrder = 6
+    StyleName = 'Windows'
     OnClick = btnDeleteUnusedClick
   end
   object btnClose: TButton
-    Left = 362
+    Left = 363
     Top = 183
     Width = 102
     Height = 25
     Anchors = [akTop, akRight]
     Caption = '&Close'
     TabOrder = 7
+    StyleName = 'Windows'
     OnClick = btnCloseClick
   end
   object chkClearAfterAdd: TCheckBox
@@ -158,6 +168,7 @@ object frmTableEdit: TfrmTableEdit
     Checked = True
     State = cbChecked
     TabOrder = 8
+    StyleName = 'Windows'
   end
   object chkDoubleClickEditItem: TCheckBox
     Left = 191
@@ -169,25 +180,89 @@ object frmTableEdit: TfrmTableEdit
     Checked = True
     State = cbChecked
     TabOrder = 9
+    StyleName = 'Windows'
   end
-  object btnImport: TButton
-    Left = 362
-    Top = 352
-    Width = 102
-    Height = 25
-    Anchors = [akTop, akRight]
-    Caption = 'Import...'
+  object btnAddDefSkills: TButton
+    Left = 300
+    Top = 304
+    Width = 120
+    Height = 24
+    Anchors = [akRight, akBottom]
+    Caption = 'Add Default skills'
     TabOrder = 10
-    OnClick = btnImportClick
+    WordWrap = True
+    OnClick = btnAddDefSkillsClick
   end
-  object btnExport: TButton
-    Left = 362
-    Top = 383
-    Width = 102
-    Height = 25
-    Anchors = [akTop, akRight]
-    Caption = 'Export...'
+  object btnAddDef_LR_Weapons: TButton
+    Left = 8
+    Top = 334
+    Width = 210
+    Height = 24
+    Anchors = [akRight, akBottom]
+    Caption = 'Add default long-range weapons'
     TabOrder = 11
-    OnClick = btnExportClick
+    WordWrap = True
+    StyleName = 'Windows'
+    OnClick = btnAddDef_LR_WeaponsClick
+  end
+  object btnAddDef_CR_weapons: TButton
+    Left = 224
+    Top = 334
+    Width = 231
+    Height = 24
+    Anchors = [akRight, akBottom]
+    Caption = 'Add default close-range weapons'
+    TabOrder = 12
+    WordWrap = True
+    StyleName = 'Windows'
+    OnClick = btnAddDef_CR_weaponsClick
+  end
+  object btnAddDefGrenades: TButton
+    Left = 160
+    Top = 304
+    Width = 134
+    Height = 24
+    Anchors = [akRight, akBottom]
+    Caption = 'Add default grenades'
+    TabOrder = 13
+    WordWrap = True
+    StyleName = 'Windows'
+    OnClick = btnAddDefGrenadesClick
+  end
+  object btnAddDefMiscItems: TButton
+    Left = 8
+    Top = 304
+    Width = 146
+    Height = 24
+    Anchors = [akRight, akBottom]
+    Caption = 'Add default misc items'
+    TabOrder = 14
+    WordWrap = True
+    StyleName = 'Windows'
+    OnClick = btnAddDefMiscItemsClick
+  end
+  object btn_CustomClassList: TButton
+    Left = 426
+    Top = 303
+    Width = 29
+    Height = 25
+    Hint = 'Click to use of custom items'
+    Anchors = [akRight, akBottom]
+    Caption = '...'
+    TabOrder = 15
+    WordWrap = True
+    StyleName = 'Windows'
+    OnClick = btn_CustomClassListClick
+  end
+  object CustomItemsPopup: TPopupMenu
+    AutoPopup = False
+    Left = 104
+    Top = 104
+    object one11: TMenuItem
+      Caption = 'one1'#9' desc'
+    end
+    object two21: TMenuItem
+      Caption = 'two2'
+    end
   end
 end
