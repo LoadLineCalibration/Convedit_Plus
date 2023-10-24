@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls, ConvEditPlus_Const;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls, Conversation.Classes, ConvEditPlus_Const;
 
 type
   TfrmFlagList = class(TForm)
@@ -95,36 +95,42 @@ begin
     with Receiver do
     begin
         for i:=lstFlags.Items.Count -1 downto 0 do
+        begin
+        if lstFlags.Selected[i] then
             begin
-            if lstFlags.Selected[i] then
-                begin
-                    if FindCaption(0, lstFlags.Items[i], False, True, true) <> nil then // don't add if already exists
-                        Continue;
-                       //     ShowMessage('found item');
+                if FindCaption(0, lstFlags.Items[i], False, True, true) <> nil then // don't add if already exists
+                    Continue;
 
-                    if Receiver.Name = 'lvCheckFlags' then begin
-                        item := Items.Add();
-                        item.Caption := lstFlags.Items[i];
-                        Item.SubItems.Add(cbbFlagValue.Text);
-                        Item.SubItems.Add(lstFlags.Items.IndexOf(lstFlags.Items[i]).ToString);
-                    end;
+                if Receiver.Name = 'lvCheckFlags' then begin
+                    item := Items.Add();
+                    item.Caption := lstFlags.Items[i];
+                    Item.SubItems.Add(cbbFlagValue.Text);
+                    Item.SubItems.Add(frmMain.FindTableIdByName(tmActorsPawns,lstFlags.Items[i]).ToString);
+                end;
 
-                    if (Receiver.Name = 'lvSetFlags') then begin
-                        item := Items.Add();
-                        item.Caption := lstFlags.Items[i];
-                        Item.SubItems.Add(cbbFlagValue.Text);
-                        item.SubItems.Add(cbbFlagExp.Text);
-                        Item.SubItems.Add(lstFlags.Items.IndexOf(lstFlags.Items[i]).ToString);
-                    end;
+                if (Receiver.Name = 'lvSetFlags') then begin
+                    item := Items.Add();
+                    item.Caption := lstFlags.Items[i];
+                    Item.SubItems.Add(cbbFlagValue.Text);
+                    item.SubItems.Add(cbbFlagExp.Text);
+                    Item.SubItems.Add(frmMain.FindTableIdByName(tmActorsPawns,lstFlags.Items[i]).ToString);
+                end;
 
-                    if (Receiver.Name = 'lvConvoDependsOnFlags') then begin
-                        item := Items.Add();
-                        item.Caption := lstFlags.Items[i];
-                        Item.SubItems.Add(cbbFlagValue.Text);
-                        Item.SubItems.Add(lstFlags.Items.IndexOf(lstFlags.Items[i]).ToString);
-                    end;
+                if (Receiver.Name = 'lvConvoDependsOnFlags') then begin
+                    item := Items.Add();
+                    item.Caption := lstFlags.Items[i];
+                    Item.SubItems.Add(cbbFlagValue.Text);
+                    Item.SubItems.Add(frmMain.FindTableIdByName(tmActorsPawns,lstFlags.Items[i]).ToString);
+                end;
+
+                if (Receiver.Name = 'lvChoiceFlagList') then begin
+                    item := Items.Add();
+                    item.Caption := lstFlags.Items[i];
+                    Item.SubItems.Add(cbbFlagValue.Text);
+                    Item.SubItems.Add(frmMain.FindTableIdByName(tmActorsPawns,lstFlags.Items[i]).ToString);
                 end;
             end;
+        end;
     end;
 end;
 
