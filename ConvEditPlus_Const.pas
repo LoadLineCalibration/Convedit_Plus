@@ -21,6 +21,8 @@ const CEP_MIN_CONVO_TREE_PANEL_WIDTH = 50; { To avoid situation when tree panel 
                                              reduced to zero and user cannot resize it back.
                                              Works in both directions!}
 
+const CEP_MAX_CHOICES = 10;
+
 const Default_DeusEx_Skills: array[0..10] of string =
 (
     'SkillMedicine',
@@ -35,6 +37,54 @@ const Default_DeusEx_Skills: array[0..10] of string =
     'SkillWeaponLowTech',
     'SkillDemolition'
 );
+
+const Default_DeusEx_LongRange: array[0..12] of string =
+(
+    'WeaponShuriken',
+    'WeaponStealthPistol',
+    'WeaponLAW',
+    'WeaponMiniCrossbow',
+    'WeaponHideAGun',
+    'WeaponAssaultShotgun',
+    'WeaponGEPGun',
+    'WeaponRifle',
+    'WeaponFlamethrower',
+    'WeaponSawedOffshotgun',
+    'WeaponPlasmaRifle',
+    'WeaponPistol',
+    'WeaponAssaultGun'
+);
+
+const Default_DeusEx_CloseRange: array[0..6] of string =
+(
+    'WeaponSword',
+    'WeaponBaton',
+    'WeaponPepperGun',
+    'WeaponNanoSword',
+    'WeaponCrowbar',
+    'WeaponProd',
+    'WeaponCombatKnife'
+);
+
+const Default_DeusEx_Grenades: array[0..3] of string =
+(
+    'WeaponEMPGrenade',
+    'WeaponGasGrenade',
+    'WeaponNanoVirusGrenade',
+    'WeaponLAM'
+);
+
+const Default_DeusEx_MiscItems: array[0..3] of string =
+(
+    'NanoKey',
+    'Sodacan',
+    'SoyFood',
+    'WineBottle'
+);
+
+const INFOLINK_PREFIX = 'DL_';
+
+
 
 ResourceString
     ET_Speech_Caption         = 'Speech';
@@ -56,7 +106,9 @@ ResourceString
 	ET_CheckPersona_Caption   = 'Check Persona';
 	ET_Comment_Caption        = 'Comment';
 	ET_End_Caption            = 'End';
-    // The ET_ strings above should not be translated (I doubt if someone will ever need that!)
+    // The strings above should not be translated (I doubt if someone will ever need that!)
+
+    // Can be translated from here and below
     ET_Random_TargetLabels = 'Target labels:';
 
     // for Table.pas
@@ -94,6 +146,13 @@ ResourceString
     strLabelStartsFromDigit = 'Cannot add label since it starts from a number.';
     strSpeechTextIsEmpty = 'Speech text cannot be empty! Please enter some text.';
 
+    strCommentTextIsEmpty = 'Comment text cannot be empty! Please enter some text.';
+
+    strAudioFileNotFound = 'Audio file NOT found: ';
+
+    strAskDeleteEventText = 'Are you sure you wish to Delete this event?';
+    strAskDeleteEventTitle = 'Delete?';
+
 
     // camera related strings
     strRandomCam = 'Random';
@@ -118,9 +177,28 @@ ResourceString
     strPlayMP3 = 'Play';
     strStopMP3 = 'Stop';
 
-    strAddDefaultSkillsQuestion = 'This will add default skills from original Deus Ex game (SkillSwimming, SkillWeaponHeavy, etc.) into the table. ' +
+    strAddDefaultSkillsQuestion = 'This will add default skills from the original Deus Ex game (SkillSwimming, SkillWeaponHeavy, etc.) into the table. ' +
                                   'Existing items will not be lost. Do you want to proceed?';
 
+    strAddDefaultFirearmsQuestion = 'This will add default long-range weapons from the original Deus Ex game (like WeaponMiniCrossbow, WeaponGepGun, etc) into the table. ' +
+                                    'Existing items will not be lost. Do you want to proceed?';
+
+    strAddDefaultCloseRangeWeapons = 'This will add default close-range combat weapons from the original Deus Ex game (like WeaponBaton, WeaponSword, etc.) into the table. ' +
+                                     'Existing items will not be lost. Do you want to proceed?';
+
+    strAddDefaultGrenadesQuestion = 'This will add default grenades from the original Deus Ex game (all four types) into the table. ' +
+                                    'Existing items will not be lost. Do you want to proceed?';
+
+    strAddDefaultMiscItemsQuestion = 'The following items will be added into the table: ' + #13#10 +
+                                     'NanoKey' + #13#10 +
+                                     'SodaCan' + #13#10 +
+                                     'SoyFood' + #13#10 +
+                                     'WineBottle' + #13#10 +
+                                     'Existing items will not be lost. Do you want to proceed?';
+
+
+    strDelChoiceTitle = 'Really delete this choice?';
+    strDelChoiceText = 'Are you sure you want to delete selected choice item?';
 
 
 
