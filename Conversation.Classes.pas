@@ -7,6 +7,14 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, ConvEditPlus_Const,
   System.Types, System.Generics.Collections;
 
+type TTableMode =
+(
+    tmActorsPawns,
+    tmFlags,
+    tmSkills,
+    tmObjects
+);
+
 type TEventType =
 (
     ET_Speech,
@@ -30,7 +38,6 @@ type TEventType =
 	ET_End
 );
 
-// I don't know... maybe some of these translated enums will be useless.
 // Camera Types
 type TCameraTypes =
 (
@@ -121,7 +128,7 @@ TConBaseObject = class(TObject) // base class!
     ReservedField: string;
 end;
 
-TChoiceItemObject = class(TConBaseObject) // for editing Choice Items, use  as listview item.data
+TChoiceItemObject = class(TConBaseObject) // for editing Choice Items, use as listview item.data
   public
   Index: Integer;
   textline: string;
@@ -316,7 +323,7 @@ TConEventEnd = class(TConEvent) // 18
     constructor Create();
 end;
 
-// Every TConversation contaion events like End, TransferObject, etc.
+// Every TConversation contains events like End, TransferObject, etc.
 TConversation = class(TConBaseObject)
     conName: string; // Conversation Name
     id: Integer;
