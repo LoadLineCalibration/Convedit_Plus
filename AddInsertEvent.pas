@@ -210,7 +210,6 @@ type
     Label24: TLabel;
     chkAutoSwapSpeaker: TCheckBox;
     // new procedures
-    procedure UpdateSelActorButtons();
     procedure UpdateControlsState();
     procedure UpdateAddRandomLabelButtonState();
     procedure RepaintCurrentEvent();
@@ -277,7 +276,6 @@ type
     procedure btnCloseClick(Sender: TObject);
     procedure btnSpeakingFromActorClick(Sender: TObject);
     procedure btnSpeakingToActorClick(Sender: TObject);
-    procedure FormResize(Sender: TObject);
     procedure rbLoopAnimClick(Sender: TObject);
     procedure rbPlayAnimOnceClick(Sender: TObject);
     procedure chkAnimTimedClick(Sender: TObject);
@@ -1544,11 +1542,6 @@ begin
     end;
 end;
 
-procedure TfrmEventInsAdd.FormResize(Sender: TObject);
-begin
-    UpdateSelActorButtons();
-end;
-
 procedure TfrmEventInsAdd.FormShow(Sender: TObject);
 begin
     btnEditChoice.Visible := not chkDblClickToPlay.Checked;
@@ -1706,15 +1699,7 @@ begin
     SetFocus();
 end;
 
-// скорректировать положение кнопок для выбора актора
-procedure TfrmEventInsAdd.UpdateSelActorButtons();
-begin
-  btnSpeakingFromActor.left := cmbSpeakingFrom.Width + cmbSpeakingFrom.Left + BTN_FIND_ACTOR_INDENT;
-  btnSpeakingToActor.left := cmbSpeakingTo.Width + cmbSpeakingTo.Left + BTN_FIND_ACTOR_INDENT;
-end;
-
-// Обновить состояние элементов управления.
-procedure TfrmEventInsAdd.UpdateControlsState();
+procedure TfrmEventInsAdd.UpdateControlsState(); // Обновить состояние элементов управления.
 begin
   mp1.Notify:= True; // set Notify to Media Player
   chAlphaBlend.Checked := AlphaBlend;

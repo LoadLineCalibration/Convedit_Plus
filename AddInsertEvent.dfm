@@ -58,7 +58,6 @@ object frmEventInsAdd: TfrmEventInsAdd
   OnCreate = FormCreate
   OnMouseWheelDown = FormMouseWheelDown
   OnMouseWheelUp = FormMouseWheelUp
-  OnResize = FormResize
   OnShow = FormShow
   DesignSize = (
     564
@@ -174,7 +173,7 @@ object frmEventInsAdd: TfrmEventInsAdd
     Top = 114
     Width = 556
     Height = 410
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Anchors = [akLeft, akTop, akRight, akBottom]
     RaggedRight = True
     Style = tsFlatButtons
@@ -310,9 +309,14 @@ object frmEventInsAdd: TfrmEventInsAdd
         object btnSpeakingFromActor: TButton
           Left = 508
           Top = 28
-          Width = 21
+          Width = 22
           Height = 22
+          Anchors = [akTop, akRight]
           Caption = '...'
+          Constraints.MaxHeight = 22
+          Constraints.MaxWidth = 22
+          Constraints.MinHeight = 22
+          Constraints.MinWidth = 22
           TabOrder = 5
           StyleElements = []
           OnClick = btnSpeakingFromActorClick
@@ -320,9 +324,14 @@ object frmEventInsAdd: TfrmEventInsAdd
         object btnSpeakingToActor: TButton
           Left = 508
           Top = 56
-          Width = 21
+          Width = 22
           Height = 22
+          Anchors = [akTop, akRight]
           Caption = '...'
+          Constraints.MaxHeight = 22
+          Constraints.MaxWidth = 22
+          Constraints.MinHeight = 22
+          Constraints.MinWidth = 22
           TabOrder = 6
           StyleElements = []
           OnClick = btnSpeakingToActorClick
