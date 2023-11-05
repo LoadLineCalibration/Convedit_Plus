@@ -153,6 +153,9 @@ ResourceString
     strAskDeleteEventText = 'Are you sure you wish to Delete this event?';
     strAskDeleteEventTitle = 'Delete?';
 
+    strAskDeleteConvoText = 'Are you sure you wish to Delete this Conversation?';
+    strAskDeleteConvoTitle = 'Delete?';
+
 
     // camera related strings
     strRandomCam = 'Random';
@@ -199,6 +202,9 @@ ResourceString
 
     strDelChoiceTitle = 'Really delete this choice?';
     strDelChoiceText = 'Are you sure you want to delete selected choice item?';
+
+    strAppTitle = 'ConvEdit Plus';
+    strNewFile = '(New File)';
 
 
 
