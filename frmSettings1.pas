@@ -4,8 +4,8 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, MainWindow, System.UITypes,
-  Vcl.Samples.Spin, Vcl.Mask, JvBaseDlg, JvBrowseFolder;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, System.UITypes,
+  Vcl.Samples.Spin;
 
 type
   TfrmSettings = class(TForm)
@@ -36,17 +36,23 @@ type
     chkFlatControlsMainWin: TCheckBox;
     chkAutoSaveEnabled: TCheckBox;
     seAutoSaveMinutes: TSpinEdit;
-    dlgSelectFolder: TJvBrowseForFolderDialog;
     btnPickUserName: TButton;
     btnResetToDefaults: TButton;
     chkUseSelectionFrame: TCheckBox;
     chkSelectedTextIsWhite: TCheckBox;
     shpUserName: TShape;
+    shpOriginalStyle: TShape;
+    shpGridColor: TShape;
+    Label4: TLabel;
+    cbbXMLConEncoding: TComboBox;
+    Label5: TLabel;
+    dlgSelectFolder: TFileOpenDialog;
+    Label6: TLabel;
 
     // new procedures
     procedure SaveChanges();
     procedure LoadSettings();
-    procedure ShowFirstTime();
+    procedure FirstTimeLaunch();
 
     procedure chkSelectEventsGradientFillClick(Sender: TObject);
     procedure shpHighlightColorFromMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -63,6 +69,10 @@ type
     procedure btnResetToDefaultsClick(Sender: TObject);
     procedure btnClearLastFilesClick(Sender: TObject);
     procedure edtUserNameChange(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
+      var Handled: Boolean);
+    procedure shpGridColorMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
   private
     { Private declarations }
   public
@@ -74,13 +84,8 @@ var
 
 implementation
 
+uses MainWindow;
 {$R *.dfm}
-
-procedure TfrmSettings.ShowFirstTime();
-begin
-    shpUserName.Visible := True;
-    self.ShowModal();
-end;
 
 procedure TfrmSettings.LoadSettings();
 begin
@@ -101,6 +106,7 @@ begin
      shpHighlightColorSingle.Brush.Color := clrHighlightEvent;
      shpHighlightColorFrom.Brush.Color := clrHighlightEventFrom;
      shpHighlightColorTo.Brush.Color := clrHighlightEventTo;
+     shpGridColor.Brush.Color := clrGrid;
 
      chkFlatControlsMainWin.Checked := bFlatToolbar;
      chkAutoSaveEnabled.Checked := bAutoSaveEnabled;
@@ -133,6 +139,7 @@ begin
      clrHighlightEvent := shpHighlightColorSingle.Brush.Color;
      clrHighlightEventFrom := shpHighlightColorFrom.Brush.Color;
      clrHighlightEventTo := shpHighlightColorTo.Brush.Color;
+     clrGrid := shpGridColor.Brush.Color;
 
      bFlatToolbar := chkFlatControlsMainWin.Checked;
       mainToolBar.Flat := bFlatToolbar;
@@ -143,25 +150,27 @@ begin
 
      bUse3DSelectionFrame := chkUseSelectionFrame.Checked;
      bUseWhiteSelectedText := chkSelectedTextIsWhite.Checked;
+
+     ConEventList.Invalidate(); // Refresh the event list
    end;
 end;
 
 procedure TfrmSettings.btnBrowseBakConFilePathClick(Sender: TObject);
 begin
     if dlgSelectFolder.Execute() = true then
-       edtConFileBakPath.Text := dlgSelectFolder.Directory;
+       edtConFileBakPath.Text := dlgSelectFolder.FileName;
 end;
 
 procedure TfrmSettings.btnBrowseConAudioPathClick(Sender: TObject);
 begin
     if dlgSelectFolder.Execute() = true then
-       edtAudioPath.Text := dlgSelectFolder.Directory;
+       edtAudioPath.Text := dlgSelectFolder.FileName;
 end;
 
 procedure TfrmSettings.btnBrowseConFilePathClick(Sender: TObject);
 begin
     if dlgSelectFolder.Execute() = true then
-       edtConFilePath.Text := dlgSelectFolder.Directory;
+       edtConFilePath.Text := dlgSelectFolder.FileName;
 end;
 
 procedure TfrmSettings.btnCancelClick(Sender: TObject);
@@ -172,7 +181,12 @@ end;
 
 procedure TfrmSettings.btnClearLastFilesClick(Sender: TObject);
 begin
-    frmMain.ClearRecentFiles();
+    if Application.MessageBox('Are you sure you want to clear list or recent files?',
+      'Clear recent files list?', MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2 +
+      MB_TOPMOST) = IDYES then
+    begin
+        frmMain.ClearRecentFiles();
+    end;
 end;
 
 procedure TfrmSettings.btnOkClick(Sender: TObject);
@@ -224,10 +238,40 @@ begin
     edtUserNameChange(self);
 end;
 
+procedure TfrmSettings.FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
+  var Handled: Boolean);
+begin
+    if ActiveControl = seAutoSaveMinutes then
+    begin
+        if WheelDelta > 0 then
+        begin
+           seAutoSaveMinutes.Value := seAutoSaveMinutes.Value + 1;
+           Handled := True;
+        end else
+        begin
+           seAutoSaveMinutes.Value := seAutoSaveMinutes.Value - 1;
+           Handled := True;
+        end;
+    end;
+end;
+
+procedure TfrmSettings.FormShow(Sender: TObject);
+begin
+    LoadSettings();
+end;
+
+procedure TfrmSettings.shpGridColorMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+    if ((Button = TMouseButton.mbLeft) and (dlgColor1.Execute() = true)) then
+    begin
+        shpGridColor.Brush.Color := dlgColor1.Color;
+    end;
+end;
+
 procedure TfrmSettings.shpHighlightColorFromMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,
   Y: Integer);
 begin
-    if (dlgColor1.Execute() = true) then
+    if ((Button = TMouseButton.mbLeft) and (dlgColor1.Execute() = true)) then
     begin
         shpHighlightColorFrom.Brush.Color := dlgColor1.Color;
     end;
@@ -236,7 +280,7 @@ end;
 procedure TfrmSettings.shpHighlightColorSingleMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,
   Y: Integer);
 begin
-    if (dlgColor1.Execute() = true) then
+    if ((Button = TMouseButton.mbLeft) and (dlgColor1.Execute() = true)) then
     begin
         shpHighlightColorSingle.Brush.Color := dlgColor1.Color;
     end;
@@ -245,10 +289,15 @@ end;
 procedure TfrmSettings.shpHighlightColorToMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,
   Y: Integer);
 begin
-    if (dlgColor1.Execute() = true) then
+    if ((Button = TMouseButton.mbLeft) and (dlgColor1.Execute() = true)) then
     begin
         shpHighlightColorTo.Brush.Color := dlgColor1.Color;
     end;
+end;
+
+procedure TfrmSettings.FirstTimeLaunch();
+begin
+  //
 end;
 
 end.
