@@ -82,6 +82,28 @@ const Default_DeusEx_MiscItems: array[0..3] of string =
     'WineBottle'
 );
 
+const Default_DeusEx_Infolink_Names: array[0..16] of string =
+(
+    'AlexJacobson',
+    'AnnaNavarre',
+    'BobPage',
+    'BobPageAug',
+    'Daedalus',
+    'GarySavage',
+    'GuntherHermann',
+    'Helios',
+    'Icarus',
+    'JaimeReyes',
+    'Jock',
+    'MorganEverett',
+    'PaulDenton',
+    'SamCarter',
+    'StantonDowd',
+    'TracerTong',
+    'WaltonSimons'
+);
+
+
 const INFOLINK_PREFIX = 'DL_';
 
 
