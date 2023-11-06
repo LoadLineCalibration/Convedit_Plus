@@ -12,7 +12,6 @@ type
     lstTableContents: TListBox;
     editTable: TEdit;
     btnAddItem: TButton;
-    Panel1: TPanel;
     btnEdit: TButton;
     btnDelete: TButton;
     btnDeleteUnused: TButton;
@@ -28,6 +27,8 @@ type
     CustomItemsPopup: TPopupMenu;
     one11: TMenuItem;
     two21: TMenuItem;
+    btnAddDefInfolinkNames: TButton;
+    StaticText2: TStaticText;
     
     // new procedures/functions
     function CanDeleteItem(item: String): boolean;
@@ -57,6 +58,7 @@ type
     procedure btnAddDef_LR_WeaponsClick(Sender: TObject);
     procedure btnAddDef_CR_weaponsClick(Sender: TObject);
     procedure btn_CustomClassListClick(Sender: TObject);
+    procedure btnAddDefInfolinkNamesClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -126,6 +128,18 @@ begin
            lstTableContents.items.Add(Default_DeusEx_Grenades[i]);
 
         btnAddDefGrenades.Enabled := False;
+    end;
+end;
+
+procedure TfrmTableEdit.btnAddDefInfolinkNamesClick(Sender: TObject);
+begin
+    if Application.MessageBox(PChar(strAddDefInfoLinkNamesQuestion), '', MB_OKCANCEL +
+       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then begin
+
+       for var i:= 0 to Length(Default_DeusEx_Infolink_Names) -1 do
+           lstTableContents.items.Add(Default_DeusEx_Infolink_Names[i]);
+
+        btnAddDefInfolinkNames.Enabled := False;
     end;
 end;
 
@@ -228,10 +242,10 @@ end;
 procedure TfrmTableEdit.btnEditClick(Sender: TObject);
 begin
     case TableMode of
-      tmActorsPawns: frmEditValue.lblText.Caption := 'Actor/Pawn:';
-      tmFlags:       frmEditValue.lblText.Caption := 'Flag Name:';
-      tmSkills:      frmEditValue.lblText.Caption := 'Skill Name:';
-      tmObjects:     frmEditValue.lblText.Caption := 'Object Name:';
+      tmActorsPawns: frmEditValue.lblText.Caption := strActorPawn;
+      tmFlags:       frmEditValue.lblText.Caption := strFlagName;
+      tmSkills:      frmEditValue.lblText.Caption := strSkillName;
+      tmObjects:     frmEditValue.lblText.Caption := strObjectName;
     end;
 
     frmMain.SendStringToEditValue(lstTableContents);
@@ -251,14 +265,8 @@ begin
     btnAddItem.Enabled := Length(Trim(editTable.Text)) > 0;
 end;
 
-
-// Тип данных FName, только англ. буквы, цифры и знак подчеркивания.
-procedure TfrmTableEdit.editTableKeyPress(Sender: TObject; var Key: Char);
+procedure TfrmTableEdit.editTableKeyPress(Sender: TObject; var Key: Char); // only FName
 begin
-//  if Key in ['A'..'Z', 'a'..'z', '0'..'9', '_', #8] then
-//  if CharInSet(Key, ['A'..'Z', 'a'..'z', '0'..'9', '_', #8]) then
-//  else
-//    Key := #0;
     FilterEditInput(key);
 end;
 
@@ -291,14 +299,15 @@ begin
     UpdateButtonsState();
 end;
 
-// блокировать/разблокировать кнопки в зависимости от...
-procedure TfrmTableEdit.UpdateButtonsState();
+procedure TfrmTableEdit.UpdateButtonsState(); // блокировать/разблокировать кнопки в зависимости от...
 begin
-    if (lstTableContents.ItemIndex <> -1) {or (lstTableContents.Items.Count > 0)} then
-       btnEdit.Enabled := true else btnEdit.Enabled := false;
+    if (lstTableContents.ItemIndex <> -1) then
+       btnEdit.Enabled := true
+    else btnEdit.Enabled := false;
 
-    if (lstTableContents.ItemIndex <> -1) {or (lstTableContents.Items.Count > 0)}  then
-       btnDelete.Enabled := true else btnDelete.Enabled := false;
+    if (lstTableContents.ItemIndex <> -1) then
+       btnDelete.Enabled := true
+    else btnDelete.Enabled := false;
 
     btnAddDefSkills.Enabled := not ListBoxContainsItem(lstTableContents, Default_DeusEx_Skills);
     btnAddDefSkills.Visible := TableMode = tmSkills;
@@ -315,6 +324,9 @@ begin
 
     btnAddDefMiscItems.Enabled := not ListBoxContainsItem(lstTableContents, Default_DeusEx_MiscItems);
     btnAddDefMiscItems.Visible := TableMode = tmObjects;
+
+    btnAddDefInfolinkNames.Enabled := not ListBoxContainsItem(lstTableContents, Default_DeusEx_Infolink_Names);
+    btnAddDefInfolinkNames.Visible := TableMode = tmActorsPawns;
 end;
 
 procedure TfrmTableEdit.lstTableContentsClick(Sender: TObject);
@@ -322,8 +334,7 @@ begin
     UpdateButtonsState();
 end;
 
-// двойной клик по списку
-procedure TfrmTableEdit.lstTableContentsDblClick(Sender: TObject);
+procedure TfrmTableEdit.lstTableContentsDblClick(Sender: TObject); //dblClick list item
 begin
     if (chkDoubleClickEditItem.Checked = true) then 
     begin
@@ -363,8 +374,7 @@ begin
         result := false;
 end;
 
-// Send data back to listbox, editbox, etc.
-procedure TfrmTableEdit.SendTableDataBack();
+procedure TfrmTableEdit.SendTableDataBack(); // Send data back to listbox, editbox, etc.
     var idx, current: Integer;
 begin
     current := lstTableContents.ItemIndex;
@@ -377,7 +387,6 @@ begin
     end
     else if TableItemReceiver is TComboBox then
     begin
-        //TComboBox(TableItemreceiver).Text := lstTableContents.Items[current];
         TComboBox(TableItemReceiver).ItemIndex := TComboBox(TableItemReceiver).Items.IndexOf(lstTableContents.Items[current]);
     end;
 end;
