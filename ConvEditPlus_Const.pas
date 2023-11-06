@@ -221,6 +221,9 @@ ResourceString
                                      'WineBottle' + #13#10 +
                                      'Existing items will not be lost. Do you want to proceed?';
 
+    strAddDefInfoLinkNamesQuestion = 'This will add default InfoLink names (like PaulDenton, BobPage, Icarus, etc.) from the original Deus Ex game into the table. ' +
+                                     'Existing items will not be lost. Do you want to proceed?';
+
 
     strDelChoiceTitle = 'Really delete this choice?';
     strDelChoiceText = 'Are you sure you want to delete selected choice item?';
@@ -228,6 +231,10 @@ ResourceString
     strAppTitle = 'ConvEdit Plus';
     strNewFile = '(New File)';
 
+    strActorPawn = 'Actor/Pawn:';
+    strFlagName = 'Flag Name:';
+    strSkillName = 'Skill Name:';
+    strObjectName = 'Object Name:';
 
 
 implementation
