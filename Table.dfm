@@ -97,22 +97,6 @@ object frmTableEdit: TfrmTableEdit
     StyleName = 'Windows'
     OnClick = btnAddItemClick
   end
-  object Panel1: TPanel
-    Left = 8
-    Top = 39
-    Width = 457
-    Height = 3
-    Anchors = [akLeft, akTop, akRight]
-    BevelInner = bvLowered
-    BevelKind = bkSoft
-    BevelOuter = bvLowered
-    DoubleBuffered = True
-    Enabled = False
-    FullRepaint = False
-    ParentDoubleBuffered = False
-    TabOrder = 3
-    StyleName = 'Windows'
-  end
   object btnEdit: TButton
     Left = 364
     Top = 75
@@ -121,7 +105,7 @@ object frmTableEdit: TfrmTableEdit
     Anchors = [akTop, akRight]
     Caption = '&Edit'
     Enabled = False
-    TabOrder = 4
+    TabOrder = 3
     StyleName = 'Windows'
     OnClick = btnEditClick
   end
@@ -133,7 +117,7 @@ object frmTableEdit: TfrmTableEdit
     Anchors = [akTop, akRight]
     Caption = '&Delete'
     Enabled = False
-    TabOrder = 5
+    TabOrder = 4
     StyleName = 'Windows'
     OnClick = btnDeleteClick
   end
@@ -144,7 +128,7 @@ object frmTableEdit: TfrmTableEdit
     Height = 25
     Anchors = [akTop, akRight]
     Caption = '&Delete Unused'
-    TabOrder = 6
+    TabOrder = 5
     StyleName = 'Windows'
     OnClick = btnDeleteUnusedClick
   end
@@ -155,7 +139,7 @@ object frmTableEdit: TfrmTableEdit
     Height = 25
     Anchors = [akTop, akRight]
     Caption = '&Close'
-    TabOrder = 7
+    TabOrder = 6
     StyleName = 'Windows'
     OnClick = btnCloseClick
   end
@@ -167,7 +151,7 @@ object frmTableEdit: TfrmTableEdit
     Caption = 'Clear input field after adding?'
     Checked = True
     State = cbChecked
-    TabOrder = 8
+    TabOrder = 7
     StyleName = 'Windows'
   end
   object chkDoubleClickEditItem: TCheckBox
@@ -179,7 +163,7 @@ object frmTableEdit: TfrmTableEdit
     Caption = 'Double Click to edit?'
     Checked = True
     State = cbChecked
-    TabOrder = 9
+    TabOrder = 8
     StyleName = 'Windows'
   end
   object btnAddDefSkills: TButton
@@ -189,7 +173,7 @@ object frmTableEdit: TfrmTableEdit
     Height = 24
     Anchors = [akRight, akBottom]
     Caption = 'Add Default skills'
-    TabOrder = 10
+    TabOrder = 9
     WordWrap = True
     OnClick = btnAddDefSkillsClick
   end
@@ -200,7 +184,7 @@ object frmTableEdit: TfrmTableEdit
     Height = 24
     Anchors = [akRight, akBottom]
     Caption = 'Add default long-range weapons'
-    TabOrder = 11
+    TabOrder = 10
     WordWrap = True
     StyleName = 'Windows'
     OnClick = btnAddDef_LR_WeaponsClick
@@ -212,7 +196,7 @@ object frmTableEdit: TfrmTableEdit
     Height = 24
     Anchors = [akRight, akBottom]
     Caption = 'Add default close-range weapons'
-    TabOrder = 12
+    TabOrder = 11
     WordWrap = True
     StyleName = 'Windows'
     OnClick = btnAddDef_CR_weaponsClick
@@ -224,7 +208,7 @@ object frmTableEdit: TfrmTableEdit
     Height = 24
     Anchors = [akRight, akBottom]
     Caption = 'Add default grenades'
-    TabOrder = 13
+    TabOrder = 12
     WordWrap = True
     StyleName = 'Windows'
     OnClick = btnAddDefGrenadesClick
@@ -236,7 +220,7 @@ object frmTableEdit: TfrmTableEdit
     Height = 24
     Anchors = [akRight, akBottom]
     Caption = 'Add default misc items'
-    TabOrder = 14
+    TabOrder = 13
     WordWrap = True
     StyleName = 'Windows'
     OnClick = btnAddDefMiscItemsClick
@@ -249,10 +233,31 @@ object frmTableEdit: TfrmTableEdit
     Hint = 'Click to use of custom items'
     Anchors = [akRight, akBottom]
     Caption = '...'
-    TabOrder = 15
+    TabOrder = 14
     WordWrap = True
     StyleName = 'Windows'
     OnClick = btn_CustomClassListClick
+  end
+  object btnAddDefInfolinkNames: TButton
+    Left = 240
+    Top = 304
+    Width = 180
+    Height = 24
+    Anchors = [akRight, akBottom]
+    Caption = 'Add default InfoLink names'
+    TabOrder = 15
+    WordWrap = True
+    OnClick = btnAddDefInfolinkNamesClick
+  end
+  object StaticText2: TStaticText
+    Left = 8
+    Top = 40
+    Width = 457
+    Height = 3
+    Anchors = [akLeft, akTop, akRight]
+    AutoSize = False
+    BorderStyle = sbsSunken
+    TabOrder = 16
   end
   object CustomItemsPopup: TPopupMenu
     AutoPopup = False
