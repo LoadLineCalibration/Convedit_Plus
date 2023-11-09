@@ -23,6 +23,8 @@ const CEP_MIN_CONVO_TREE_PANEL_WIDTH = 50; { To avoid situation when tree panel 
 
 const CEP_MAX_CHOICES = 10;
 
+const CUSTOM_CLASSES_FILE = 'CustomClasses.txt';
+
 const Default_DeusEx_Skills: array[0..10] of string =
 (
     'SkillMedicine',
@@ -235,6 +237,9 @@ ResourceString
     strFlagName = 'Flag Name:';
     strSkillName = 'Skill Name:';
     strObjectName = 'Object Name:';
+
+    strCustomClassesNotFound = 'The "%s" file does not exists! If you want to use custom classes, create it and place into ConvEdit Plus directory.' + #13#10 +
+                               'The syntax is simple: className;description in each line.';
 
 
 implementation
