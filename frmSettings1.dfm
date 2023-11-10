@@ -118,10 +118,10 @@ object frmSettings: TfrmSettings
   object Label5: TLabel
     Left = 8
     Top = 420
-    Width = 137
+    Width = 114
     Height = 22
     AutoSize = False
-    Caption = 'XML files encoding mark:'
+    Caption = 'Reorder events key:'
     Layout = tlCenter
     StyleName = 'Windows'
   end
@@ -371,18 +371,20 @@ object frmSettings: TfrmSettings
     StyleName = 'Windows'
     OnClick = chkSelectEventsGradientFillClick
   end
-  object cbbXMLConEncoding: TComboBox
-    Left = 151
-    Top = 420
-    Width = 162
-    Height = 23
+  object cbbReorderEventsModKey: TComboBox
+    Left = 128
+    Top = 419
+    Width = 69
+    Height = 22
+    Style = csOwnerDrawVariable
+    ItemIndex = 0
     TabOrder = 23
-    Text = 'windows-1251'
+    Text = 'Ctrl'
     StyleName = 'Windows'
     Items.Strings = (
-      'windows-1251'
-      'windows-1252'
-      'todo: add more items?')
+      'Ctrl'
+      'Shift'
+      'Alt')
   end
   object dlgColor1: TColorDialog
     Left = 208

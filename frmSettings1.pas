@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, System.UITypes,
-  Vcl.Samples.Spin;
+  Vcl.Samples.Spin, Conversation.Classes;
 
 type
   TfrmSettings = class(TForm)
@@ -44,7 +44,7 @@ type
     shpOriginalStyle: TShape;
     shpGridColor: TShape;
     Label4: TLabel;
-    cbbXMLConEncoding: TComboBox;
+    cbbReorderEventsModKey: TComboBox;
     Label5: TLabel;
     dlgSelectFolder: TFileOpenDialog;
     Label6: TLabel;
@@ -91,36 +91,40 @@ procedure TfrmSettings.LoadSettings();
 begin
     chkSelectEventsGradientFillClick(self);
 
-    with frmMain do begin
-     edtUserName.Text := ConversationUserName;
-     edtConFilePath.Text := ConFilePath;
-     edtConFileBakPath.Text := ConFileBakPath;
-     edtAudioPath.Text := ConFileAudioPath;
+    with frmMain do
+    begin
+        edtUserName.Text := ConversationUserName;
+        edtConFilePath.Text := ConFilePath;
+        edtConFileBakPath.Text := ConFileBakPath;
+        edtAudioPath.Text := ConFileAudioPath;
 
-     chkExpandFlagsOnExpandAll.Checked := bExpandFlagsOnExpandAll;
-     chkAskConversationDelete.Checked := bAskForConvoDelete;
-     chkAskDeleteEvent.Checked := bAskForEventDelete;
-     chkHighlightspeechChoiceEventsNoneAudio.Checked := bHglEventWithNoAudio;
-     chkSelectEventsGradientFill.Checked := bHglEventsGradient;
+        chkExpandFlagsOnExpandAll.Checked := bExpandFlagsOnExpandAll;
+        chkAskConversationDelete.Checked := bAskForConvoDelete;
+        chkAskDeleteEvent.Checked := bAskForEventDelete;
+        chkHighlightspeechChoiceEventsNoneAudio.Checked := bHglEventWithNoAudio;
+        chkSelectEventsGradientFill.Checked := bHglEventsGradient;
 
-     shpHighlightColorSingle.Brush.Color := clrHighlightEvent;
-     shpHighlightColorFrom.Brush.Color := clrHighlightEventFrom;
-     shpHighlightColorTo.Brush.Color := clrHighlightEventTo;
-     shpGridColor.Brush.Color := clrGrid;
+        shpHighlightColorSingle.Brush.Color := clrHighlightEvent;
+        shpHighlightColorFrom.Brush.Color := clrHighlightEventFrom;
+        shpHighlightColorTo.Brush.Color := clrHighlightEventTo;
+        shpGridColor.Brush.Color := clrGrid;
 
-     chkFlatControlsMainWin.Checked := bFlatToolbar;
-     chkAutoSaveEnabled.Checked := bAutoSaveEnabled;
+        chkFlatControlsMainWin.Checked := bFlatToolbar;
+        chkAutoSaveEnabled.Checked := bAutoSaveEnabled;
 
-     seAutoSaveMinutes.Value := AutoSaveMinutes;
+        seAutoSaveMinutes.Value := AutoSaveMinutes;
 
-     chkUseSelectionFrame.Checked := bUse3DSelectionFrame;
-     chkSelectedTextIsWhite.Checked := bUseWhiteSelectedText;
+        chkUseSelectionFrame.Checked := bUse3DSelectionFrame;
+        chkSelectedTextIsWhite.Checked := bUseWhiteSelectedText;
+
+        cbbReorderEventsModKey.ItemIndex := Ord(ReorderModKey);
     end;
 end;
 
 procedure TfrmSettings.SaveChanges();
 begin
-   with frmMain do begin
+   with frmMain do
+   begin
      mainToolBar.Flat := chkFlatControlsMainWin.Checked;
      if chkFlatControlsMainWin.Checked then
         HeaderControl1.Style := hsFlat else HeaderControl1.Style := hsButtons;
@@ -150,6 +154,8 @@ begin
 
      bUse3DSelectionFrame := chkUseSelectionFrame.Checked;
      bUseWhiteSelectedText := chkSelectedTextIsWhite.Checked;
+
+     ReorderModKey := TReorderEventsModKey(cbbReorderEventsModKey.ItemIndex);
 
      ConEventList.Invalidate(); // Refresh the event list
    end;
