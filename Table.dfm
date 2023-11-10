@@ -260,14 +260,12 @@ object frmTableEdit: TfrmTableEdit
     TabOrder = 16
   end
   object CustomItemsPopup: TPopupMenu
-    AutoPopup = False
+    AutoHotkeys = maManual
     Left = 104
     Top = 104
-    object one11: TMenuItem
-      Caption = 'one1'#9' desc'
-    end
-    object two21: TMenuItem
-      Caption = 'two2'
+    object CustomItem1: TMenuItem
+      Caption = 'CustomItem'
+      OnClick = CustomItem1Click
     end
   end
 end

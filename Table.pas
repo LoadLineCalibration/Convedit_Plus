@@ -25,10 +25,9 @@ type
     btnAddDefMiscItems: TButton;
     btn_CustomClassList: TButton;
     CustomItemsPopup: TPopupMenu;
-    one11: TMenuItem;
-    two21: TMenuItem;
     btnAddDefInfolinkNames: TButton;
     StaticText2: TStaticText;
+    CustomItem1: TMenuItem;
     
     // new procedures/functions
     function CanDeleteItem(item: String): boolean;
@@ -36,6 +35,7 @@ type
     procedure ApplyTableChanges();
     procedure SendTableDataBack();
     procedure UpdateFlags();
+    procedure BuildCustomMenu();
 
     procedure editTableKeyPress(Sender: TObject; var Key: Char);
     procedure btnCloseClick(Sender: TObject);
@@ -59,6 +59,7 @@ type
     procedure btnAddDef_CR_weaponsClick(Sender: TObject);
     procedure btn_CustomClassListClick(Sender: TObject);
     procedure btnAddDefInfolinkNamesClick(Sender: TObject);
+    procedure CustomItem1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -101,7 +102,6 @@ begin
            Break;
     end;
 end;
-
 
 procedure TfrmTableEdit.UpdateFlags();
 begin
@@ -279,7 +279,7 @@ end;
 
 procedure TfrmTableEdit.FormCreate(Sender: TObject);
 begin
-
+    BuildCustomMenu();
 end;
 
 // присвоить заголовок
@@ -362,8 +362,7 @@ begin
     UpdateButtonsState();
 end;
 
-// Пока так, в дальнейшем нужно проверять, ссылается ли данный объект на какое-то из событий.
-function TfrmTableEdit.CanDeleteItem(item: String): boolean;
+function TfrmTableEdit.CanDeleteItem(item: String): boolean; // Пока так, в дальнейшем нужно проверять, ссылается ли данный объект на какое-то из событий.
 begin
    if Application.MessageBox('Are you sure you want to delete this item?',
     'Really delete table item?',
@@ -372,6 +371,22 @@ begin
         result := true
    else
         result := false;
+end;
+
+procedure TfrmTableEdit.CustomItem1Click(Sender: TObject);
+var
+    UseText, TextB4Tab: string;
+begin
+    UseText := (Sender as TMenuItem).Caption;
+
+    var TabIndex := Pos(#9, UseText); // find position of Tab char
+
+    if TabIndex = 0 then
+        TextB4Tab := UseText // no Tab char, so use whole caption
+    else
+        TextB4Tab := Copy(UseText, 1, TabIndex -1);
+
+    ShowMessage(TextB4Tab);
 end;
 
 procedure TfrmTableEdit.SendTableDataBack(); // Send data back to listbox, editbox, etc.
@@ -389,6 +404,56 @@ begin
     begin
         TComboBox(TableItemReceiver).ItemIndex := TComboBox(TableItemReceiver).Items.IndexOf(lstTableContents.Items[current]);
     end;
+end;
+
+procedure TfrmTableEdit.BuildCustomMenu();
+var
+    CustomClasses: TStringList;
+begin
+    CustomItemsPopup.Items.Clear(); // удалить ранее созданные элементы меню
+
+    if not FileExists(CUSTOM_CLASSES_FILE) then
+    begin
+       ShowMessage(Format(strCustomClassesNotFound, [CUSTOM_CLASSES_FILE]));
+       Exit();
+    end;
+
+    CustomClasses := TStringList.Create();
+try
+    CustomClasses.LoadFromFile(CUSTOM_CLASSES_FILE);
+
+    for var i:= 0 to CustomClasses.Count -1 do
+    begin
+        var line := CustomClasses.Strings[i];
+
+        // skip empty lines
+        if CustomClasses.Strings[i].IsEmpty then
+            Continue;
+
+        // now split the line
+        var parts := TStringList.Create();
+
+        try
+            parts.Delimiter := ';';
+            parts.StrictDelimiter := True;
+            parts.DelimitedText := line;
+
+            var CustomMenuItem := TMenuItem.Create(CustomItemsPopup);
+                CustomMenuItem.Caption := parts[0] + #9 + parts[1];
+
+            // OnClick event handler...
+            CustomMenuItem.OnClick := CustomItem1Click;
+
+            // Add to menu
+            CustomItemsPopup.Items.Add(CustomMenuItem);
+        finally
+            parts.Free(); // free memory
+        end;
+    end;
+
+finally
+    CustomClasses.Free();
+end;
 end;
 
 end.
