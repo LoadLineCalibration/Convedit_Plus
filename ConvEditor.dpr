@@ -26,7 +26,8 @@ uses
   frmFind1 in 'frmFind1.pas' {frmFind},
   AboutBox1 in 'AboutBox1.pas' {frmAbout},
   AddInsertEvent in 'AddInsertEvent.pas' {frmEventInsAdd},
-  Conversation.Classes in 'Conversation.Classes.pas';
+  Conversation.Classes in 'Conversation.Classes.pas',
+  ConXML.Service in 'ConXML.Service.pas';
 
 {$R *.res}
 
