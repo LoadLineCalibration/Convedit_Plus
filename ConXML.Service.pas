@@ -10,11 +10,18 @@ uses
     System.SysUtils, xml.VerySimple, Conversation.Classes, MainWindow, Vcl.ComCtrls, Vcl.Dialogs;
 
 
-procedure ReadConXMLHeader(const aFile: string); // XML mode
-procedure ReadConXMLConversations(const aFile: string);
+procedure LoadConXMLHeader(const aFile: string); // XML mode
+procedure LoadConXMLConversations(const aFile: string);
+
 procedure ReadConvoInfo(conInfoNode: TXmlNode; conversation: TConversation);
 procedure ReadConvoParameters(conParamsInfoNode: TXmlNode; conversation: TConversation); // conversation flags, like OnlyOnce, Distance, etc.
 procedure ReadConvoFlags(conFlagsNode: TXmlNode; conversation: TConversation);
+
+// events...
+procedure ReadSpeech(conSpeechNode: TXmlNode; speechEvent: TConEventSpeech);
+procedure ReadChoice(conChoiceNode: TXmlNode; choiceEvent: TConEventChoice);
+procedure ReadSetFlags(conSetFlags: TXmlNode; setFlagsEvent: TConEventSetFlag);
+
 
 procedure BuildConXMLFile(aFile: string);
 
@@ -25,7 +32,7 @@ procedure BuildConBinFile(aFile: string);
 
 implementation
 
-procedure ReadConXMLHeader(const aFile: string);
+procedure LoadConXMLHeader(const aFile: string);
 var
     actorsNode, flagsNode,
     skillsNode, objectsNode,
@@ -34,8 +41,8 @@ var
 
     conXMLDocLocal: TXmlVerySimple;
 begin
-    with frmMain do begin
-
+    with frmMain do
+    begin
     ConvoTree.Items.Clear();
     ConEventList.Clear();
     ConversationsList.Clear();
@@ -139,7 +146,7 @@ try
     end;
 end;
 
-procedure ReadConXMLConversations(const aFile: string);
+procedure LoadConXMLConversations(const aFile: string);
 var
     conEventsNode, conversationsNode,
     RootNode, conParamsNode,
@@ -149,8 +156,6 @@ var
     convoNameStr, ownerNameStr: string;
     tempConvo: TConversation;
     NodeConName, NodeConOwnerName, NodeDependsOnFlags: TTreeNode;
-
-    RF: Integer;
 begin
     conXMLDocLocal:= TXmlVerySimple.Create();
     conXMLDocLocal.Encoding := 'windows-1251';
@@ -175,7 +180,50 @@ try
 
             ReadConvoInfo(conParamsNode.ChildNodes[k], tempConvo); // created, modified, owner
             ReadConvoParameters(conParamsNode.ChildNodes[k], tempConvo);
-            ReadConvoFlags(conParamsNode.ChildNodes[k], tempConvo);
+            ReadConvoFlags(conParamsNode.ChildNodes[k], tempConvo);  // read flags...
+
+            // events...
+            if UpperCase(conParamsNode.ChildNodes[k].Name) = UpperCase('Events') then
+            begin
+                conEventsNode:= conParamsNode.ChildNodes[k];
+
+                for var ET:= 0 to conEventsNode.ChildNodes.Count -1 do
+                begin
+                    tempConvo.EventsCount:= conEventsNode.ChildNodes.Count;
+                    SetLength(tempConvo.Events,tempConvo.EventsCount);
+
+                    conEventItem := conEventsNode.ChildNodes[ET];
+                    var EventTypeInt: Integer;
+                    var strEventType: string;
+                    var tempEvent: TConEvent;
+                    var msgStr: String;
+
+                    tempEvent:= nil;
+
+                    EventTypeInt:= conEventsNode.ChildNodes[ET].Attributes['EventType'].ToInteger;
+                    strEventType:= conEventsNode.ChildNodes[ET].Attributes['EventTypeName'];
+
+                    // we found the "Speech" event, so let's create and fill it
+                    if ((strEventType = 'Speech') and (EventTypeInt = 0)) then
+                    begin
+                        tempEvent:= TConEventSpeech.Create();
+                        ReadSpeech(conEventItem, TConEventSpeech(tempEvent));
+                    end;
+
+                    if ((strEventType = 'Choice') and (EventTypeInt = 1)) then
+                    begin
+                        tempEvent:= TConEventChoice.Create();
+                        ReadChoice(conEventItem, TConEventChoice(tempEvent));
+                    end;
+
+                    // "Set Flag" event
+                    if ((strEventType = 'SetFlag') and (EventTypeInt = 2)) then
+                    begin
+                        tempEvent:= TConEventSetFlag.Create();
+                        ReadSetFlags(conEventItem, TConEventSetFlag(tempEvent));
+                    end;
+                end;
+            end;
         end;
     end;
 
@@ -276,6 +324,133 @@ begin
             conversation.conDependsOnFlags[flg].flagIndex := conFlagsNode.ChildNodes[flg].Attributes['Index'].ToInteger;
             conversation.conDependsOnFlags[flg].flagName := conFlagsNode.ChildNodes[flg].Attributes['Name'];
             conversation.conDependsOnFlags[flg].flagValue := conFlagsNode.ChildNodes[flg].Attributes['Value'].ToBoolean;
+        end;
+    end;
+end;
+
+procedure ReadSpeech(conSpeechNode: TXmlNode; speechEvent: TConEventSpeech);
+begin
+    // пройти по вложенным элементам
+    for var U:= 0 to conSpeechNode.ChildNodes.Count -1 do
+    begin
+        if UpperCase(conSpeechNode.ChildNodes[U].Name) = UpperCase('Label') then
+           speechEvent.EventLabel := conSpeechNode.ChildNodes[U].NodeValue;
+
+        // actor
+        if UpperCase(conSpeechNode.ChildNodes[U].Name) = UpperCase('Actor') then
+        begin
+            speechEvent.ActorIndex := conSpeechNode.ChildNodes[U].Find('Item').Attributes['Index'].ToInteger;
+            speechEvent.ActorValue := conSpeechNode.ChildNodes[U].Find('Item').Attributes['Value'];
+        end;
+
+        // actor to
+        if UpperCase(conSpeechNode.ChildNodes[U].Name) = UpperCase('ActorTo') then
+        begin
+            speechEvent.ActorToIndex := conSpeechNode.ChildNodes[U].Find('Item').Attributes['Index'].ToInteger;
+            speechEvent.ActorToValue := conSpeechNode.ChildNodes[U].Find('Item').Attributes['Value'];
+        end;
+
+        // speech text
+        if UpperCase(conSpeechNode.ChildNodes[U].Name) = UpperCase('TextLine') then
+        begin
+           speechEvent.TextLine := conSpeechNode.ChildNodes[U].NodeValue;
+           speechEvent.LineBreaksCount := frmMain.CountLineBreaks(conSpeechNode.ChildNodes[U].NodeValue);
+        end;
+
+        if UpperCase(conSpeechNode.ChildNodes[U].Name) = UpperCase('mp3') then
+           speechEvent.mp3File := conSpeechNode.ChildNodes[U].NodeValue;
+    end;
+end;
+
+procedure ReadChoice(conChoiceNode: TXmlNode; choiceEvent: TConEventChoice);
+begin
+    for var R:= 0 to conChoiceNode.ChildNodes.Count -1 do
+    begin
+        if UpperCase(conChoiceNode.ChildNodes[R].Name) = UpperCase('Label') then
+           choiceEvent.EventLabel := conChoiceNode.ChildNodes[R].NodeValue;
+
+        if UpperCase(conChoiceNode.ChildNodes[R].Name) = UpperCase('clearScreen') then
+           choiceEvent.bClearScreen := conChoiceNode.ChildNodes[R].NodeValue.ToBoolean;
+
+        if UpperCase(conChoiceNode.ChildNodes[R].Name) = UpperCase('Choices') then begin
+            var temp_ChoiceItem:= conChoiceNode.ChildNodes[R];
+
+            choiceEvent.NumChoices := temp_ChoiceItem.ChildNodes.Count;
+
+            for var J:= 0 to temp_ChoiceItem.ChildNodes.Count -1 do begin
+
+                var ChoiceField:=temp_ChoiceItem.ChildNodes[J];
+                SetLength(choiceEvent.Choices, ChoiceField.ChildNodes.Count);
+
+                for var ci := 0 to ChoiceField.ChildNodes.Count -1 do begin
+
+                    if UpperCase(ChoiceField.ChildNodes[ci].Name) = UpperCase('Index') then
+                        choiceEvent.Choices[J].Index := ChoiceField.ChildNodes[ci].NodeValue.ToInteger;
+
+                    if UpperCase(ChoiceField.ChildNodes[ci].Name) = UpperCase('TextLine') then begin
+                        choiceEvent.Choices[J].textline := ChoiceField.ChildNodes[ci].NodeValue;
+                    end;
+
+                    if UpperCase(ChoiceField.ChildNodes[ci].Name) = UpperCase('DisplayAsSpeech') then
+                        choiceEvent.Choices[J].bDisplayAsSpeech := ChoiceField.ChildNodes[ci].NodeValue.ToBoolean;
+
+                    if UpperCase(ChoiceField.ChildNodes[ci].Name) = UpperCase('SkillNeeded') then
+                        choiceEvent.Choices[J].bSkillNeeded := ChoiceField.ChildNodes[ci].NodeValue.ToInteger;
+
+                    if UpperCase(ChoiceField.ChildNodes[ci].Name) = UpperCase('Skill') then
+                        choiceEvent.Choices[J].Skill := ChoiceField.ChildNodes[ci].NodeValue;
+
+                    if UpperCase(ChoiceField.ChildNodes[ci].Name) = UpperCase('SkillLevel') then
+                        choiceEvent.Choices[J].SkillLevel := ChoiceField.ChildNodes[ci].NodeValue.ToInteger;
+
+                    if UpperCase(ChoiceField.ChildNodes[ci].Name) = UpperCase('GoToLabel') then
+                        choiceEvent.Choices[J].GoToLabel := ChoiceField.ChildNodes[ci].NodeValue;
+
+                    if UpperCase(ChoiceField.ChildNodes[ci].Name) = UpperCase('mp3') then
+                        choiceEvent.Choices[J].mp3 := ChoiceField.ChildNodes[ci].NodeValue;
+
+                    if UpperCase(ChoiceField.ChildNodes[ci].Name) = UpperCase('Flags') then
+                    begin
+                        SetLength(choiceEvent.Choices[J].RequiredFlags, ChoiceField.ChildNodes[ci].ChildNodes.Count);
+                        Inc(choiceEvent.NumFlagsStrings, 1); // add extra 1 so choices and flags will fit into list item
+
+                        for var RF:=0 to High(choiceEvent.Choices[J].RequiredFlags) do
+                        begin
+                            choiceEvent.Choices[J].RequiredFlags[RF].flagIndex := ChoiceField.ChildNodes[ci].ChildNodes[RF].Attributes['Index'].ToInteger;
+                            choiceEvent.Choices[J].RequiredFlags[RF].flagName := ChoiceField.ChildNodes[ci].ChildNodes[RF].Attributes['Name'];
+                            choiceEvent.Choices[J].RequiredFlags[RF].flagValue := ChoiceField.ChildNodes[ci].ChildNodes[RF].Attributes['Value'].ToBoolean;
+                        end;
+                    end;
+                end;
+            end;
+        end;
+    end;
+end;
+
+procedure ReadSetFlags(conSetFlags: TXmlNode; setFlagsEvent: TConEventSetFlag);
+begin
+    for var U:= 0 to conSetFlags.ChildNodes.Count -1 do
+    begin
+        if UpperCase(conSetFlags.ChildNodes[U].Name) = UpperCase('Label') then
+           setFlagsEvent.EventLabel := conSetFlags.ChildNodes[U].NodeValue;
+
+        if UpperCase(conSetFlags.ChildNodes[U].Name) = UpperCase('Flags') then
+        begin
+            var temp_Flags:= conSetFlags.ChildNodes[U];
+            // set array length
+            setFlagsEvent.ArrayLength := temp_Flags.ChildNodes.Count;
+            SetLength(setFlagsEvent.SetFlags, temp_Flags.ChildNodes.Count);
+
+            // and fill it
+            for var SF := 0 to temp_Flags.ChildNodes.Count -1 do
+            begin
+               setFlagsEvent.SetFlags[SF].flagIndex := temp_Flags.ChildNodes[SF].Attributes['Index'].ToInteger;
+               setFlagsEvent.SetFlags[SF].flagName := temp_Flags.ChildNodes[SF].Attributes['Name'];
+               setFlagsEvent.SetFlags[SF].flagValue := temp_Flags.ChildNodes[SF].Attributes['Value'].ToBoolean;
+
+               if temp_Flags.ChildNodes[SF].HasAttribute('Obsolete') then // ѕохоже что атрибут "Obsolete" может отсутствовать, тогда пропускаем...
+                  setFlagsEvent.SetFlags[SF].flagExpiration := temp_Flags.ChildNodes[SF].Attributes['Obsolete'].ToInteger;
+            end;
         end;
     end;
 end;
