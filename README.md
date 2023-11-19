@@ -4,6 +4,7 @@ Full sources will be added when program will be in working state.
 
 An attempt to recreate ConEdit in Delphi Language (Pascal). 
 Uses FreeEsVCLComponents (https://github.com/errorcalc/FreeEsVclComponents)
+
 Built with Delphi 11
 
 Compatible with ['Windows7'..'Windows 11']
