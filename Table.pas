@@ -49,7 +49,6 @@ type
     procedure btnEditClick(Sender: TObject);
     procedure lstTableContentsEnter(Sender: TObject);
     procedure lstTableContentsExit(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure lstTableContentsDblClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btnAddDefSkillsClick(Sender: TObject);
@@ -253,6 +252,8 @@ end;
 
 procedure TfrmTableEdit.btn_CustomClassListClick(Sender: TObject);
 begin
+    BuildCustomMenu(); // Create only when button is clicked
+
     // Convert button coordinates to screen coordinates
     var TempPoint:= Point(btn_CustomClassList.Left, btn_CustomClassList.Top + btn_CustomClassList.Height);
     var FinalPoint := ClientToScreen(TempPoint);
@@ -277,13 +278,7 @@ begin
         frmFlagList.FillFlagsList(); // Update flags list
 end;
 
-procedure TfrmTableEdit.FormCreate(Sender: TObject);
-begin
-    BuildCustomMenu();
-end;
-
-// присвоить заголовок
-procedure TfrmTableEdit.FormShow(Sender: TObject);
+procedure TfrmTableEdit.FormShow(Sender: TObject); // присвоить заголовок
 begin
     case TableMode of
       tmActorsPawns: Caption := strActorsPawns;
@@ -386,7 +381,7 @@ begin
     else
         TextB4Tab := Copy(UseText, 1, TabIndex -1);
 
-    ShowMessage(TextB4Tab);
+    lstTableContents.Items.Add(TextB4Tab);
 end;
 
 procedure TfrmTableEdit.SendTableDataBack(); // Send data back to listbox, editbox, etc.
@@ -429,6 +424,15 @@ try
         // skip empty lines
         if CustomClasses.Strings[i].IsEmpty then
             Continue;
+
+        if CustomClasses.Strings[i] = '-' then begin
+            var CustomMenuSeparator := TMenuItem.Create(CustomItemsPopup);
+            CustomMenuSeparator.Caption := CustomClasses.Strings[i];
+            CustomItemsPopup.Items.Add(CustomMenuSeparator);
+            Continue;
+        end;
+
+
 
         // now split the line
         var parts := TStringList.Create();
