@@ -13,30 +13,30 @@ uses
 procedure LoadConXMLHeader(const aFile: string); // XML mode
 procedure LoadConXMLConversations(const aFile: string);
 
-procedure ReadConvoInfo(conInfoNode: TXmlNode; conversation: TConversation);
-procedure ReadConvoParameters(conParamsInfoNode: TXmlNode; conversation: TConversation); // conversation flags, like OnlyOnce, Distance, etc.
-procedure ReadConvoFlags(conFlagsNode: TXmlNode; conversation: TConversation);
+procedure ReadXMLConvoInfo(conInfoNode: TXmlNode; conversation: TConversation);
+procedure ReadXMLConvoParameters(conParamsInfoNode: TXmlNode; conversation: TConversation); // conversation flags, like OnlyOnce, Distance, etc.
+procedure ReadXMLConvoFlags(conFlagsNode: TXmlNode; conversation: TConversation);
 
 // events...
-procedure ReadSpeech(conSpeechNode: TXmlNode; speechEvent: TConEventSpeech);
-procedure ReadChoice(conChoiceNode: TXmlNode; choiceEvent: TConEventChoice);
-procedure ReadSetFlags(conSetFlags: TXmlNode; setFlagsEvent: TConEventSetFlag);
-procedure ReadCheckFlags(conCheckFlags: TXmlNode; checkFlagsEvent: TConEventCheckFlag);
-procedure ReadCheckObject(conCheckObject: TXmlNode; checkObjEvent: TConEventCheckObject);
-procedure ReadTransferObject(conTransObject: TXmlNode; transObjEvent: TConEventTransferObject);
-procedure ReadMoveCamera(conMoveCam: TXmlNode; moveCamEvent: TConEventMoveCamera);
-procedure ReadAnimation(conPlayAnim: TXmlNode; playAnimEvent: TConEventAnimation);
-procedure ReadTrade(conTrade: TXmlNode; tradeEvent: TConEventTrade);
-procedure ReadJump(conJump: TXmlNode; jumpEvent: TConEventJump);
-procedure ReadRandom(conRandom: TXmlNode; randomEvent: TConEventRandom);
-procedure ReadTrigger(conTrigger: TXmlNode; triggerEvent: TConEventTrigger);
-procedure ReadAddGoal(conAddGoal: TXmlNode; addGoalEvent: TConEventAddGoal);
-procedure ReadAddNote(conAddNote: TXmlNode; addNoteEvent: TConEventAddNote);
-procedure ReadAddSkillPoints(conAddSkillPts: TXmlNode; addSkillPtsEvent: TConEventAddSkillPoints);
-procedure ReadAddCredits(conCredits: TXmlNode; addCreditsEvent: TConEventAddCredits);
-procedure ReadCheckPersona(conCheckPersona: TXmlNode; checkPersonaEvent: TConEventCheckPersona);
-procedure ReadComment(conComment: TXmlNode; commentEvent: TConEventComment);
-procedure ReadEnd(conEnd: TXmlNode; endEvent: TConEventEnd);
+procedure ReadXMLSpeech(conSpeechNode: TXmlNode; speechEvent: TConEventSpeech);
+procedure ReadXMLChoice(conChoiceNode: TXmlNode; choiceEvent: TConEventChoice);
+procedure ReadXMLSetFlags(conSetFlags: TXmlNode; setFlagsEvent: TConEventSetFlag);
+procedure ReadXMLCheckFlags(conCheckFlags: TXmlNode; checkFlagsEvent: TConEventCheckFlag);
+procedure ReadXMLCheckObject(conCheckObject: TXmlNode; checkObjEvent: TConEventCheckObject);
+procedure ReadXMLTransferObject(conTransObject: TXmlNode; transObjEvent: TConEventTransferObject);
+procedure ReadXMLMoveCamera(conMoveCam: TXmlNode; moveCamEvent: TConEventMoveCamera);
+procedure ReadXMLAnimation(conPlayAnim: TXmlNode; playAnimEvent: TConEventAnimation);
+procedure ReadXMLTrade(conTrade: TXmlNode; tradeEvent: TConEventTrade);
+procedure ReadXMLJump(conJump: TXmlNode; jumpEvent: TConEventJump);
+procedure ReadXMLRandom(conRandom: TXmlNode; randomEvent: TConEventRandom);
+procedure ReadXMLTrigger(conTrigger: TXmlNode; triggerEvent: TConEventTrigger);
+procedure ReadXMLAddGoal(conAddGoal: TXmlNode; addGoalEvent: TConEventAddGoal);
+procedure ReadXMLAddNote(conAddNote: TXmlNode; addNoteEvent: TConEventAddNote);
+procedure ReadXMLAddSkillPoints(conAddSkillPts: TXmlNode; addSkillPtsEvent: TConEventAddSkillPoints);
+procedure ReadXMLAddCredits(conCredits: TXmlNode; addCreditsEvent: TConEventAddCredits);
+procedure ReadXMLCheckPersona(conCheckPersona: TXmlNode; checkPersonaEvent: TConEventCheckPersona);
+procedure ReadXMLComment(conComment: TXmlNode; commentEvent: TConEventComment);
+procedure ReadXMLEnd(conEnd: TXmlNode; endEvent: TConEventEnd);
 
 
 procedure BuildConXMLFile(aFile: string);
@@ -193,9 +193,9 @@ try
             if UpperCase(conParamsNode.ChildNodes[k].Name) = UpperCase('id') then
                tempConvo.id:= conParamsNode.ChildNodes[k].NodeValue.ToInteger;
 
-            ReadConvoInfo(conParamsNode.ChildNodes[k], tempConvo); // created, modified, owner
-            ReadConvoParameters(conParamsNode.ChildNodes[k], tempConvo);
-            ReadConvoFlags(conParamsNode.ChildNodes[k], tempConvo);  // read flags...
+            ReadXMLConvoInfo(conParamsNode.ChildNodes[k], tempConvo); // created, modified, owner
+            ReadXMLConvoParameters(conParamsNode.ChildNodes[k], tempConvo);
+            ReadXMLConvoFlags(conParamsNode.ChildNodes[k], tempConvo);  // read flags...
 
             // events...
             if UpperCase(conParamsNode.ChildNodes[k].Name) = UpperCase('Events') then
@@ -222,116 +222,116 @@ try
                     if ((strEventType = 'Speech') and (EventTypeInt = 0)) then
                     begin
                         tempEvent:= TConEventSpeech.Create();
-                        ReadSpeech(conEventItem, TConEventSpeech(tempEvent));
+                        ReadXMLSpeech(conEventItem, TConEventSpeech(tempEvent));
                     end;
 
                     if ((strEventType = 'Choice') and (EventTypeInt = 1)) then
                     begin
                         tempEvent:= TConEventChoice.Create();
-                        ReadChoice(conEventItem, TConEventChoice(tempEvent));
+                        ReadXMLChoice(conEventItem, TConEventChoice(tempEvent));
                     end;
 
                     // "Set Flag" event
                     if ((strEventType = 'SetFlag') and (EventTypeInt = 2)) then
                     begin
                         tempEvent:= TConEventSetFlag.Create();
-                        ReadSetFlags(conEventItem, TConEventSetFlag(tempEvent));
+                        ReadXMLSetFlags(conEventItem, TConEventSetFlag(tempEvent));
                     end;
 
                     if ((strEventType = 'CheckFlag') and (EventTypeInt = 3)) then
                     begin
                         tempEvent:= TConEventCheckFlag.Create();
-                        ReadCheckFlags(conEventItem, TConEventCheckFlag(tempEvent));
+                        ReadXMLCheckFlags(conEventItem, TConEventCheckFlag(tempEvent));
                     end;
 
                     if ((strEventType = 'CheckObject') and (EventTypeInt = 4)) then
                     begin
                         tempEvent:= TConEventCheckObject.Create();
-                        ReadCheckObject(conEventItem, TConEventCheckObject(tempEvent));
+                        ReadXMLCheckObject(conEventItem, TConEventCheckObject(tempEvent));
                     end;
 
                     if ((strEventType = 'TransferObject') and (EventTypeInt = 5)) then
                     begin
                         tempEvent:= TConEventTransferObject.Create();
-                        ReadTransferObject(conEventItem, TConEventTransferObject(tempEvent));
+                        ReadXMLTransferObject(conEventItem, TConEventTransferObject(tempEvent));
                     end;
 
                     if ((strEventType = 'MoveCamera') and (EventTypeInt = 6)) then
                     begin
                         tempEvent:= TConEventMoveCamera.Create();
-                        ReadMoveCamera(conEventItem, TConEventMoveCamera(tempEvent));
+                        ReadXMLMoveCamera(conEventItem, TConEventMoveCamera(tempEvent));
                     end;
 
                     if ((strEventType = 'Animation') and (EventTypeInt = 7)) then
                     begin
                         tempEvent:= TConEventAnimation.Create();
-                        ReadAnimation(conEventItem, TConEventAnimation(tempEvent));
+                        ReadXMLAnimation(conEventItem, TConEventAnimation(tempEvent));
                     end;
 
                     if ((strEventType = 'Trade') and (EventTypeInt = 8)) then
                     begin // Not implemented even in mods....
                         tempEvent:= TConEventTrade.Create();
-                        ReadTrade(conEventItem, TConEventTrade(tempEvent));
+                        ReadXMLTrade(conEventItem, TConEventTrade(tempEvent));
                     end;
 
                     if ((strEventType = 'Jump') and (EventTypeInt = 9)) then
                     begin
                         tempEvent:= TConEventJump.Create();
-                        ReadJump(conEventItem, TConEventJump(tempEvent));
+                        ReadXMLJump(conEventItem, TConEventJump(tempEvent));
                     end;
 
                     if ((strEventType = 'Random') and (EventTypeInt = 10)) then
                     begin
                         tempEvent:= TConEventRandom.Create();
-                        ReadRandom(conEventItem, TConEventRandom(tempEvent));
+                        ReadXMLRandom(conEventItem, TConEventRandom(tempEvent));
                     end;
 
                     if ((strEventType = 'Trigger') and (EventTypeInt = 11)) then
                     begin
                         tempEvent:= TConEventTrigger.Create();
-                        ReadTrigger(conEventItem, TConEventTrigger(tempEvent));
+                        ReadXMLTrigger(conEventItem, TConEventTrigger(tempEvent));
                     end;
 
                     if ((strEventType = 'AddGoal') and (EventTypeInt = 12)) then
                     begin
                         tempEvent:= TConEventAddGoal.Create();
-                        ReadAddGoal(conEventItem, TConEventAddGoal(tempEvent));
+                        ReadXMLAddGoal(conEventItem, TConEventAddGoal(tempEvent));
                     end;
 
                     if ((strEventType = 'AddNote') and (EventTypeInt = 13)) then
                     begin
                         tempEvent:= TConEventAddNote.Create();
-                        ReadAddNote(conEventItem, TConEventAddNote(tempEvent));
+                        ReadXMLAddNote(conEventItem, TConEventAddNote(tempEvent));
                     end;
 
                     if ((strEventType = 'AddSkillPoints') and (EventTypeInt = 14)) then
                     begin
                         tempEvent:= TConEventAddSkillPoints.Create();
-                        ReadAddSkillPoints(conEventItem, TConEventAddSkillPoints(tempEvent));
+                        ReadXMLAddSkillPoints(conEventItem, TConEventAddSkillPoints(tempEvent));
                     end;
 
                     if ((strEventType = 'AddCredits') and (EventTypeInt = 15)) then
                     begin
                         tempEvent:= TConEventAddCredits.Create();
-                        ReadAddCredits(conEventItem, TConEventAddCredits(tempEvent));
+                        ReadXMLAddCredits(conEventItem, TConEventAddCredits(tempEvent));
                     end;
 
                     if ((strEventType = 'CheckPersona') and (EventTypeInt = 16)) then
                     begin
                         tempEvent:= TConEventCheckPersona.Create();
-                        ReadCheckPersona(conEventItem, TConEventCheckPersona(tempEvent));
+                        ReadXMLCheckPersona(conEventItem, TConEventCheckPersona(tempEvent));
                     end;
 
                     if ((strEventType = 'Comment') and (EventTypeInt = 17)) then
                     begin
                         tempEvent:= TConEventComment.Create();
-                        ReadComment(conEventItem, TConEventComment(tempEvent));
+                        ReadXMLComment(conEventItem, TConEventComment(tempEvent));
                     end;
 
                     if ((strEventType = 'End') and (EventTypeInt = 18)) then // "End" event
                     begin
                         tempEvent:= TConEventEnd.Create();
-                        ReadEnd(conEventItem, TConEventEnd(tempEvent));
+                        ReadXMLEnd(conEventItem, TConEventEnd(tempEvent));
                     end;
 
                     tempConvo.Events[ET] := tempEvent;
@@ -382,11 +382,9 @@ try
 finally
     conXMLDocLocal.Free();
 end;
-
 end;
 
-
-procedure ReadConvoInfo(conInfoNode: TXmlNode; conversation: TConversation);
+procedure ReadXMLConvoInfo(conInfoNode: TXmlNode; conversation: TConversation);
 begin
     if UpperCase(conInfoNode.Name) = UpperCase('createdBy') then  // who created this conversation
     begin
@@ -425,7 +423,7 @@ begin
     end;
 end;
 
-procedure ReadConvoParameters(conParamsInfoNode: TXmlNode; conversation: TConversation); // conversation flags, like OnlyOnce, Distance, etc.
+procedure ReadXMLConvoParameters(conParamsInfoNode: TXmlNode; conversation: TConversation); // conversation flags, like OnlyOnce, Distance, etc.
 begin
     // flags (Infolink, OnlyOnce, etc.)
     if UpperCase(conParamsInfoNode.Name) = UpperCase('infolink') then
@@ -465,7 +463,7 @@ begin
         conversation.distance := conParamsInfoNode.NodeValue.ToInteger;
 end;
 
-procedure ReadConvoFlags(conFlagsNode: TXmlNode; conversation: TConversation);     // now flags...
+procedure ReadXMLConvoFlags(conFlagsNode: TXmlNode; conversation: TConversation);     // now flags...
 begin
     if UpperCase(conFlagsNode.Name) = UpperCase('Flags') then
     begin
@@ -481,7 +479,7 @@ begin
     end;
 end;
 
-procedure ReadSpeech(conSpeechNode: TXmlNode; speechEvent: TConEventSpeech);
+procedure ReadXMLSpeech(conSpeechNode: TXmlNode; speechEvent: TConEventSpeech);
 begin
     // пройти по вложенным элементам
     for var U:= 0 to conSpeechNode.ChildNodes.Count -1 do
@@ -515,7 +513,7 @@ begin
     end;
 end;
 
-procedure ReadChoice(conChoiceNode: TXmlNode; choiceEvent: TConEventChoice);
+procedure ReadXMLChoice(conChoiceNode: TXmlNode; choiceEvent: TConEventChoice);
 begin
     for var R:= 0 to conChoiceNode.ChildNodes.Count -1 do
     begin
@@ -580,7 +578,7 @@ begin
     end;
 end;
 
-procedure ReadSetFlags(conSetFlags: TXmlNode; setFlagsEvent: TConEventSetFlag);
+procedure ReadXMLSetFlags(conSetFlags: TXmlNode; setFlagsEvent: TConEventSetFlag);
 begin
     for var U:= 0 to conSetFlags.ChildNodes.Count -1 do
     begin
@@ -608,7 +606,7 @@ begin
     end;
 end;
 
-procedure ReadCheckFlags(conCheckFlags: TXmlNode; checkFlagsEvent: TConEventCheckFlag);
+procedure ReadXMLCheckFlags(conCheckFlags: TXmlNode; checkFlagsEvent: TConEventCheckFlag);
 begin
     for var U:= 0 to conCheckFlags.ChildNodes.Count -1 do
     begin
@@ -636,7 +634,7 @@ begin
     end;
 end;
 
-procedure ReadCheckObject(conCheckObject: TXmlNode; checkObjEvent: TConEventCheckObject);
+procedure ReadXMLCheckObject(conCheckObject: TXmlNode; checkObjEvent: TConEventCheckObject);
 begin
     for var U:= 0 to conCheckObject.ChildNodes.Count -1 do
     begin
@@ -653,7 +651,7 @@ begin
     end;
 end;
 
-procedure ReadTransferObject(conTransObject: TXmlNode; transObjEvent: TConEventTransferObject);
+procedure ReadXMLTransferObject(conTransObject: TXmlNode; transObjEvent: TConEventTransferObject);
 begin
     for var U:= 0 to conTransObject.ChildNodes.Count -1 do
     begin
@@ -683,7 +681,7 @@ begin
     end;
 end;
 
-procedure ReadMoveCamera(conMoveCam: TXmlNode; moveCamEvent: TConEventMoveCamera);
+procedure ReadXMLMoveCamera(conMoveCam: TXmlNode; moveCamEvent: TConEventMoveCamera);
 begin
     for var U:= 0 to conMoveCam.ChildNodes.Count -1 do
     begin
@@ -731,7 +729,7 @@ begin
     end;
 end;
 
-procedure ReadAnimation(conPlayAnim: TXmlNode; playAnimEvent: TConEventAnimation);
+procedure ReadXMLAnimation(conPlayAnim: TXmlNode; playAnimEvent: TConEventAnimation);
 begin
     for var U:= 0 to conPlayAnim.ChildNodes.Count -1 do
     begin
@@ -757,7 +755,7 @@ begin
     end;
 end;
 
-procedure ReadTrade(conTrade: TXmlNode; tradeEvent: TConEventTrade);
+procedure ReadXMLTrade(conTrade: TXmlNode; tradeEvent: TConEventTrade);
 begin
     for var U:= 0 to conTrade.ChildNodes.Count -1 do
     begin
@@ -766,7 +764,7 @@ begin
     end;
 end;
 
-procedure ReadJump(conJump: TXmlNode; jumpEvent: TConEventJump);
+procedure ReadXMLJump(conJump: TXmlNode; jumpEvent: TConEventJump);
 begin
     for var U:= 0 to conJump.ChildNodes.Count -1 do
     begin
@@ -784,7 +782,7 @@ begin
     end;
 end;
 
-procedure ReadRandom(conRandom: TXmlNode; randomEvent: TConEventRandom);
+procedure ReadXMLRandom(conRandom: TXmlNode; randomEvent: TConEventRandom);
 begin
     for var U:= 0 to conRandom.ChildNodes.Count -1 do
     begin
@@ -814,7 +812,7 @@ begin
     end;
 end;
 
-procedure ReadTrigger(conTrigger: TXmlNode; triggerEvent: TConEventTrigger);
+procedure ReadXMLTrigger(conTrigger: TXmlNode; triggerEvent: TConEventTrigger);
 begin
     for var U:= 0 to conTrigger.ChildNodes.Count -1 do
     begin
@@ -826,7 +824,7 @@ begin
     end;
 end;
 
-procedure ReadAddGoal(conAddGoal: TXmlNode; addGoalEvent: TConEventAddGoal);
+procedure ReadXMLAddGoal(conAddGoal: TXmlNode; addGoalEvent: TConEventAddGoal);
 begin
     for var U:= 0 to conAddGoal.ChildNodes.Count -1 do
     begin
@@ -847,7 +845,7 @@ begin
     end;
 end;
 
-procedure ReadAddNote(conAddNote: TXmlNode; addNoteEvent: TConEventAddNote);
+procedure ReadXMLAddNote(conAddNote: TXmlNode; addNoteEvent: TConEventAddNote);
 begin
     for var U:= 0 to conAddNote.ChildNodes.Count -1 do
     begin
@@ -859,7 +857,7 @@ begin
     end;
 end;
 
-procedure ReadAddSkillPoints(conAddSkillPts: TXmlNode; addSkillPtsEvent: TConEventAddSkillPoints);
+procedure ReadXMLAddSkillPoints(conAddSkillPts: TXmlNode; addSkillPtsEvent: TConEventAddSkillPoints);
 begin
     for var U:= 0 to conAddSkillPts.ChildNodes.Count -1 do
     begin
@@ -874,7 +872,7 @@ begin
     end;
 end;
 
-procedure ReadAddCredits(conCredits: TXmlNode; addCreditsEvent: TConEventAddCredits);
+procedure ReadXMLAddCredits(conCredits: TXmlNode; addCreditsEvent: TConEventAddCredits);
 begin
     for var U:= 0 to conCredits.ChildNodes.Count -1 do
     begin
@@ -886,7 +884,7 @@ begin
     end;
 end;
 
-procedure ReadCheckPersona(conCheckPersona: TXmlNode; checkPersonaEvent: TConEventCheckPersona);
+procedure ReadXMLCheckPersona(conCheckPersona: TXmlNode; checkPersonaEvent: TConEventCheckPersona);
 begin
     for var U:= 0 to conCheckPersona.ChildNodes.Count -1 do
     begin
@@ -921,7 +919,7 @@ begin
     end;
 end;
 
-procedure ReadComment(conComment: TXmlNode; commentEvent: TConEventComment);
+procedure ReadXMLComment(conComment: TXmlNode; commentEvent: TConEventComment);
 begin
     for var U:= 0 to conComment.ChildNodes.Count -1 do
     begin
@@ -933,7 +931,7 @@ begin
     end;
 end;
 
-procedure ReadEnd(conEnd: TXmlNode; endEvent: TConEventEnd);
+procedure ReadXMLEnd(conEnd: TXmlNode; endEvent: TConEventEnd);
 begin
     for var U:= 0 to conEnd.ChildNodes.Count -1 do
     begin
