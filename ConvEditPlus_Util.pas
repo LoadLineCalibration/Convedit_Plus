@@ -10,6 +10,7 @@ uses
 
 function StringStartsFromDigit(str: String): Boolean;
 function IsInvalidFName(const AString: string): Boolean;
+procedure FilterEditInput(var aKey: Char);
 
 implementation
 
@@ -30,6 +31,13 @@ begin
             break;
         end;
     end;
+end;
+
+procedure FilterEditInput(var aKey: Char);
+begin
+    if CharInSet(aKey, ['A'..'Z', 'a'..'z', '0'..'9', '_', #8]) then
+    else
+    aKey := #0;
 end;
 
 end.
