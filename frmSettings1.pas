@@ -156,6 +156,7 @@ begin
      bUseWhiteSelectedText := chkSelectedTextIsWhite.Checked;
 
      ReorderModKey := TReorderEventsModKey(cbbReorderEventsModKey.ItemIndex);
+     btnReorder.Hint := GetReorderButtonHint(); // Update hint
 
      ConEventList.Invalidate(); // Refresh the event list
    end;
@@ -258,6 +259,11 @@ begin
            seAutoSaveMinutes.Value := seAutoSaveMinutes.Value - 1;
            Handled := True;
         end;
+    end;
+
+    if ActiveControl = cbbReorderEventsModKey then
+    begin
+        Handled := True;
     end;
 end;
 
