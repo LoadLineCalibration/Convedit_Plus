@@ -1,3 +1,7 @@
+//
+// Contains enums, class declarations, etc.
+//
+
 unit Conversation.Classes;
 
 interface
@@ -6,6 +10,13 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, ConvEditPlus_Const,
   System.Types, System.Generics.Collections;
+
+type TReorderEventsModKey =  // hold xxx key to reorder events
+(
+    re_Ctrl,
+    re_Shift,
+    re_Alt
+);
 
 type TTableMode =
 (
@@ -125,6 +136,7 @@ type TChoiceItem = record
 end;
 
 TConBaseObject = class(TObject) // base class!
+    unknown4: Integer; // for .con files (4 bytes)
     ReservedField: string;
 end;
 
@@ -325,6 +337,7 @@ end;
 
 // Every TConversation contains events like End, TransferObject, etc.
 TConversation = class(TConBaseObject)
+    unknown0: Integer; // for .con files (4 bytes)
     conName: string; // Conversation Name
     id: Integer;
     conCreatedByName: string;  // Who created event
