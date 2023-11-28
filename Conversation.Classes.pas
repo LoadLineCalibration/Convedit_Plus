@@ -155,6 +155,8 @@ end;
 
 
 TConEvent = class(TConBaseObject)
+    unknown0: Integer; // for .con files
+    unknown1: Integer; // both 4 bytes
     EventLabel: string; // can't use "Label"...
     EventType: TEventType; // speech, choice, etc...
 end;
