@@ -108,6 +108,11 @@ const Default_DeusEx_Infolink_Names: array[0..16] of string =
 
 const INFOLINK_PREFIX = 'DL_';
 
+const conFileHeader: array[0..25] of Byte =
+(
+68, 101, 117, 115, 32, 69, 120, 32, 67, 111, 110, 118, 101, 114, 115, 97, 116, 105, 111, 110, 32, 70, 105, 108, 101, 26
+);
+
 
 
 ResourceString
@@ -240,6 +245,15 @@ ResourceString
 
     strCustomClassesNotFound = 'The "%s" file does not exists! If you want to use custom classes, create it and place into ConvEdit Plus directory.' + #13#10 +
                                'The syntax is simple: className;description in each line.';
+
+    strDefaultString = 'Default text';
+
+    btnReorderHint = 'Enable changing order of events. Hold %s key and drag one of items.';
+
+    strInvalidConFileHdr = 'Invalid .con file header! Loading aborted. Please choose valid .con file.';
+
+    strEmptyValue = '<empty>';
+
 
 
 implementation
