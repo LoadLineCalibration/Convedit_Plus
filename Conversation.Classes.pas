@@ -112,15 +112,16 @@ type TFlag = record
   flagIndex: Integer;
   flagName: string;
   flagValue: Boolean;
+  flagExpiration: Integer;
 end;
 
 // for use in TConEventSetFlag
-type TFlagToSet = record
+{type TFlagToSet = record // ToDo: get rid of this version
   flagIndex: Integer;
   flagName: string;
   flagValue: Boolean;
   flagExpiration: Integer;
-end;
+end; }
 
 
 type TChoiceItem = record
@@ -136,7 +137,6 @@ type TChoiceItem = record
 end;
 
 TConBaseObject = class(TObject) // base class!
-    unknown4: Integer; // for .con files (4 bytes)
     ReservedField: string;
 end;
 
@@ -145,7 +145,7 @@ TChoiceItemObject = class(TConBaseObject) // for editing Choice Items, use as li
   Index: Integer;
   textline: string;
   bDisplayAsSpeech: Boolean;
-  bSkillNeeded: Integer; // 0 - true, -1 false  // was Boolean before ConEditExport ver. 7
+  bSkillNeeded: Integer; // 4 bytes. if -1, then Skill is not required. Otherwise there will be skill id from table and skillName. // 0 - true, -1 false  // was Boolean before ConEditExport ver. 7
    Skill: string; // skillName
    SkillLevel: Integer;
   GoToLabel: string;
@@ -172,6 +172,10 @@ TConEventSpeech = class(TConEvent) // 00
     TextLine: string;
     mp3File: string;
 
+    bContinued: Boolean; // not used
+    bBold: Boolean;      // not used
+    SpeechFont: Integer; // not used
+
     LineBreaksCount: Integer;  // To adjust height
 
     public
@@ -179,6 +183,7 @@ TConEventSpeech = class(TConEvent) // 00
 end;
 
 TConEventChoice = class(TConEvent) // 01
+    unk0: Integer; // 4 bytes
     bClearScreen: boolean;
     Choices: array of TChoiceItem;
     NumChoices: Integer; // for height of this item in the events list
@@ -190,17 +195,19 @@ end;
 
 
 TConEventSetFlag = class(TConEvent) // 02
-    SetFlags: array of TFlagToSet;
-    ArrayLength: Integer;
+    SetFlags: array of TFlag;//ToSet;
+    //ArrayLength: Integer;
+    numFlags: Integer;
 
     public
     constructor Create();
 end;
 
 TConEventCheckFlag = class(TConEvent) // 03
+    numFlags: Integer;
     FlagsToCheck: array of TFlag;
     GotoLabel: string;
-    ArrayLength: Integer;
+    //ArrayLength: Integer;
 
     public
     constructor Create();
@@ -252,6 +259,8 @@ TConEventAnimation = class(TConEvent) // 07
 end;
 
 TConEventTrade = class(TConEvent) // 08
+    TradeActorIndex: Integer;
+    TradeActorValue: string;
 
     public
     constructor Create();
@@ -267,6 +276,7 @@ TConEventJump = class(TConEvent) // 09
 end;
 
 TConEventRandom = class(TConEvent) // 10
+    numLabels: Integer;
     GoToLabels: array of string;
     bCycle: Boolean;
     bCycleOnce: Boolean;
@@ -340,28 +350,31 @@ end;
 // Every TConversation contains events like End, TransferObject, etc.
 TConversation = class(TConBaseObject)
     unknown0: Integer; // for .con files (4 bytes)
-    conName: string; // Conversation Name
     id: Integer;
-    conCreatedByName: string;  // Who created event
-    conCreatedByDate: string;
+    conName: string; // Conversation Name
+    conDescription: string; // missing in XML version?
 
-    conModifiedByName: string;
+    conCreatedByDate: string;
+    conCreatedByName: string;  // Who created this conversation
+
     conModifiedByDate: string;
+    conModifiedByName: string;
 
     // conversation has only one owner
-    conOwnerName: string; // Name of Actor owner
     conOwnerIndex: Integer;
+    conOwnerName: string; // Name of Actor owner
 
     // How conversation is activated + options
     bInfoLink: Boolean; // True if this is a DataLink conversation
+    conNotes: string; // Did anyone ever used Notes and Description fields?
     bOnlyOnce: Boolean; // Flag to display conversation only once
-    bPCBumps: Boolean;
-    bPCFrobs: Boolean;  // Invoke by Frobbing
-    bNonInteract: Boolean; // True if non-interactive conversation
     bFirstPerson: Boolean;
+    bNonInteract: Boolean; // True if non-interactive conversation
     bRandomCamera: Boolean;
     bCanInterrupt: Boolean;
     bCannotInterrupt: Boolean;
+    bPCBumps: Boolean;
+    bPCFrobs: Boolean;  // Invoke by Frobbing
     bNPCSees: Boolean;
     bNPCEnters: Boolean;
     distance: Integer;
@@ -370,8 +383,8 @@ TConversation = class(TConBaseObject)
     conDependsOnFlags: array of TFlag;
 
     // events...
-    Events: array of TConEvent;
     EventsCount: Integer; // for testing
+    Events: array of TConEvent;
 end;
 
 
@@ -411,11 +424,11 @@ TConFileParameters = class (TObject)
 end;
 
 // default values for flags
-const
-  DefaultFlagToSet: TFlagToSet = (flagIndex: -1; flagName: ''; flagValue: False; flagExpiration: 0);
+//const
+//  DefaultFlagToSet: TFlagToSet = (flagIndex: -1; flagName: ''; flagValue: False; flagExpiration: 0);
 
 const
-  DefaultFlag: TFlag = (flagIndex: -1; flagName: ''; flagValue: False);
+  DefaultFlag: TFlag = (flagIndex: -1; flagName: ''; flagValue: False; flagExpiration: 0);
 
 // default value for TChoiceItem
 const
