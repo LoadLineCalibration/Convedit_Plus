@@ -115,14 +115,6 @@ type TFlag = record
   flagExpiration: Integer;
 end;
 
-// for use in TConEventSetFlag
-{type TFlagToSet = record // ToDo: get rid of this version
-  flagIndex: Integer;
-  flagName: string;
-  flagValue: Boolean;
-  flagExpiration: Integer;
-end; }
-
 
 type TChoiceItem = record
   Index: Integer;
@@ -193,10 +185,8 @@ TConEventChoice = class(TConEvent) // 01
     constructor Create();
 end;
 
-
 TConEventSetFlag = class(TConEvent) // 02
-    SetFlags: array of TFlag;//ToSet;
-    //ArrayLength: Integer;
+    SetFlags: array of TFlag;
     numFlags: Integer;
 
     public
@@ -424,9 +414,6 @@ TConFileParameters = class (TObject)
 end;
 
 // default values for flags
-//const
-//  DefaultFlagToSet: TFlagToSet = (flagIndex: -1; flagName: ''; flagValue: False; flagExpiration: 0);
-
 const
   DefaultFlag: TFlag = (flagIndex: -1; flagName: ''; flagValue: False; flagExpiration: 0);
 
