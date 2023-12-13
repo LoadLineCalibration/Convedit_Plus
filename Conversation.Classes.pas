@@ -116,7 +116,7 @@ type TFlag = record
 end;
 
 
-type TChoiceItem = record
+{type TChoiceItem = record
   Index: Integer;
   textline: string;
   bDisplayAsSpeech: Boolean;
@@ -126,7 +126,7 @@ type TChoiceItem = record
   GoToLabel: string;
   mp3: string;
   RequiredFlags: array of TFlag;
-end;
+end; }
 
 TConBaseObject = class(TObject) // base class!
     ReservedField: string;
@@ -177,7 +177,7 @@ end;
 TConEventChoice = class(TConEvent) // 01
     unk0: Integer; // 4 bytes
     bClearScreen: boolean;
-    Choices: array of TChoiceItem;
+    Choices: array of TChoiceItemObject; //TChoiceItem;
     NumChoices: Integer; // for height of this item in the events list
     NumFlagsStrings: Integer; // same
 
@@ -418,11 +418,12 @@ const
   DefaultFlag: TFlag = (flagIndex: -1; flagName: ''; flagValue: False; flagExpiration: 0);
 
 // default value for TChoiceItem
-const
+{const
   DefaultChoiceItem: TChoiceItem = (Index: -1; textline: '';
                                     bDisplayAsSpeech: False;
                                     bSkillNeeded: -1; Skill: '';
-                                    SkillLevel: -1; GoToLabel: ''; mp3: '');
+                                    SkillLevel: -1; GoToLabel: ''; mp3: ''); }
+
 
 implementation
 
