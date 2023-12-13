@@ -56,7 +56,7 @@ begin
     var StringSize := ConRead.ReadInteger(); // get size of data
 
     if StringSize = 0 then
-       Result := '';
+        Exit('');
 
     var StringBytes := ConRead.ReadBytes(StringSize);
     Result := TEncoding.ANSI.GetString(StringBytes); // convert to string
@@ -66,7 +66,7 @@ function GetConLongBool(conRead: TBinaryReader): Boolean;
 begin
     var tempInteger := conRead.ReadInteger(); // LongBool,4 bytes
 
-    Result := tempInteger.ToBoolean;
+    Result := tempInteger <> 0; //tempInteger.ToBoolean;
 end;
 
 procedure LoadConFile(conFile: string);
@@ -101,28 +101,20 @@ try
         conFileParameters.fpCreatedByDate := DateTimeToStr(DoubleToDateTime(CreatedOnDouble));
         AddLog('Created On Double: ' + CreatedOnDouble.ToString + ' converted to: ' + conFileParameters.fpCreatedByDate);
 
-        var CreatedBySize := ConRead.ReadInteger(); // CreatedBy
-        var CreatedByBytes := ConRead.ReadBytes(CreatedBySize);
-        conFileParameters.fpCreatedByName := TEncoding.ANSI.GetString(CreatedByBytes);
+        conFileParameters.fpCreatedByName := GetConString(ConRead); // CreatedBy
         AddLog('Created By: ' + conFileParameters.fpCreatedByName);
 
         var LastModifOnDouble := ConRead.ReadDouble(); // lastModifiedOn
         conFileParameters.fpModifiedByDate := DateTimeToStr(DoubleToDateTime(LastModifOnDouble));
         AddLog('Last modified on: ' + LastModifOnDouble.ToString + ' converted to: ' + conFileParameters.fpModifiedByDate);
 
-        var LastModifBySize := ConRead.ReadInteger(); // lastModifiedBy
-        var LastModifByBytes := ConRead.ReadBytes(LastModifBySize);
-        conFileParameters.fpModifiedByName := TEncoding.ANSI.GetString(LastModifByBytes);
+        conFileParameters.fpModifiedByName := GetConString(ConRead); // lastModifiedBy
         AddLog('Last modified by: ' + conFileParameters.fpModifiedByName);
 
-        var AudioPackageSize := ConRead.ReadInteger(); // audioPackageName
-        var AudioPackageBytes := ConRead.ReadBytes(AudioPackageSize);
-        conFileParameters.fpAudioPackage := TEncoding.ANSI.GetString(AudioPackageBytes);
+        conFileParameters.fpAudioPackage := GetConString(ConRead); // audioPackageName
         AddLog('Audio Package: ' + conFileParameters.fpAudioPackage);
 
-        var notesSize := ConRead.ReadInteger(); // notes
-        var NotesBytes := ConRead.ReadBytes(notesSize);
-        conFileParameters.fpNotes := TEncoding.ANSI.GetString(NotesBytes);
+        conFileParameters.fpNotes := GetConString(ConRead); // notes
         AddLog('Notes: ' + conFileParameters.fpNotes);
 
         var numMissionList := ConRead.ReadInteger(); // of used missions
@@ -156,10 +148,10 @@ try
                 tempConvo.unknown0 := ConRead.ReadInteger();
                 tempConvo.id := ConRead.ReadInteger();
 
-                tempConvo.conName := GetConString(ConRead); //TEncoding.ANSI.GetString(ConvoNameBytes);
+                tempConvo.conName := GetConString(ConRead);
                 AddLog(#13#10 + 'Conversation id = ' + tempConvo.id.ToString + ' name = ' + tempConvo.conName);
 
-                tempConvo.conDescription := GetConString(ConRead); //TEncoding.ANSI.GetString(convoDescBytes);
+                tempConvo.conDescription := GetConString(ConRead);
                 AddLog('Description: ' + tempConvo.conDescription);
 
 
@@ -243,6 +235,7 @@ try
                 AddLog('numFlagRefList = ' + numFlagRefList.ToString);
 
                 SetLength(tempConvo.conDependsOnFlags, numFlagRefList); // set array length
+
                 for var fr := 0 to numFlagRefList -1 do
                 begin
                     tempConvo.conDependsOnFlags[fr].flagIndex := ConRead.ReadInteger();
@@ -489,7 +482,6 @@ try
                     end;
                 end;
 
-                frmMain.ConvoTree.AlphaSort(true);
                 frmMain.ConversationsList.Add(tempConvo);
                 frmMain.ConvoTree.Items.EndUpdate();
             end;
@@ -548,6 +540,7 @@ begin
 
     for var cl := 0 to choiceEvent.NumChoices -1 do
     begin
+        choiceEvent.Choices[cl] := TChoiceItemObject.Create(); // create choice item object
         choiceEvent.Choices[cl].Index := ConRead.ReadInteger();
         frmMain.AddLog('Choice item: index = ' + choiceEvent.Choices[cl].Index.ToString);
 
