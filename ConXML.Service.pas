@@ -1,5 +1,5 @@
 //
-// ToDo: Переместить простыни из MainWindow.pas и сделать из них платочки...
+// Read and write conversations .xml file
 //
 
 unit ConXML.Service;
@@ -40,10 +40,6 @@ procedure ReadXMLEnd(conEnd: TXmlNode; endEvent: TConEventEnd);
 
 
 procedure BuildConXMLFile(aFile: string);
-
-procedure ReadConBinHeader(const aFile: string); // .Con file mode
-procedure ReadConBinData(aFile: string);
-procedure BuildConBinFile(aFile: string);
 
 
 implementation
@@ -204,8 +200,8 @@ try
 
                 for var ET:= 0 to conEventsNode.ChildNodes.Count -1 do
                 begin
-                    tempConvo.EventsCount:= conEventsNode.ChildNodes.Count;
-                    SetLength(tempConvo.Events,tempConvo.EventsCount);
+                    tempConvo.numEventList:= conEventsNode.ChildNodes.Count;
+                    SetLength(tempConvo.Events,tempConvo.numEventList);
 
                     conEventItem := conEventsNode.ChildNodes[ET];
                     var EventTypeInt: Integer;
@@ -341,6 +337,8 @@ try
 
         var NodeConName, NodeConOwnerName, NodeDependsOnFlags: TTreeNode;
 
+        frmMain.ConvoTree.Items.BeginUpdate();
+
         if frmMain.ItemExistsInTreeView(frmMain.ConvoTree, tempConvo.conOwnerName) = false then
         begin
            NodeConOwnerName:= frmMain.ConvoTree.Items.Add(nil, tempConvo.conOwnerName);
@@ -375,8 +373,9 @@ try
             end;
         end;
 
-        frmMain.ConvoTree.AlphaSort(true);
+//        frmMain.ConvoTree.AlphaSort(true);
         frmMain.ConversationsList.Add(tempConvo);
+        frmMain.ConvoTree.Items.EndUpdate();
     end;
 
 finally
@@ -482,6 +481,47 @@ end;
 procedure ReadXMLSpeech(conSpeechNode: TXmlNode; speechEvent: TConEventSpeech);
 begin
     // пройти по вложенным элементам
+//    for var U:= 0 to conSpeechNode.ChildNodes.Count -1 do
+    var currNode := conSpeechNode.ChildNodes.FirstChild;
+
+    for var U:= 0 to conSpeechNode.ChildNodes.Count -1 do
+    begin
+//        if UpperCase(conSpeechNode.ChildNodes[U].Name) = UpperCase('Label') then
+//           speechEvent.EventLabel := conSpeechNode.ChildNodes[U].NodeValue;
+        if UpperCase(currNode.Name) = UpperCase('Label') then
+           speechEvent.EventLabel := currNode.NodeValue;
+
+        // actor
+        if UpperCase(currNode.Name) = UpperCase('Actor') then
+        begin
+            speechEvent.ActorIndex := currNode.Find('Item').Attributes['Index'].ToInteger;
+            speechEvent.ActorValue := currNode.Find('Item').Attributes['Value'];
+        end;
+
+        // actor to
+        if UpperCase(currNode.Name) = UpperCase('ActorTo') then
+        begin
+            speechEvent.ActorToIndex := currNode.Find('Item').Attributes['Index'].ToInteger;
+            speechEvent.ActorToValue := currNode.Find('Item').Attributes['Value'];
+        end;
+
+        // speech text
+        if UpperCase(currNode.Name) = UpperCase('TextLine') then
+        begin
+           speechEvent.TextLine := currNode.NodeValue;
+           speechEvent.LineBreaksCount := frmMain.CountLineBreaks(currNode.NodeValue);
+        end;
+
+        if UpperCase(currNode.Name) = UpperCase('mp3') then
+           speechEvent.mp3File := currNode.NodeValue;
+
+        currNode := currNode.NextSibling;
+    end;
+end;
+
+{procedure ReadXMLSpeech(conSpeechNode: TXmlNode; speechEvent: TConEventSpeech);
+begin
+    // пройти по вложенным элементам
     for var U:= 0 to conSpeechNode.ChildNodes.Count -1 do
     begin
         if UpperCase(conSpeechNode.ChildNodes[U].Name) = UpperCase('Label') then
@@ -511,7 +551,7 @@ begin
         if UpperCase(conSpeechNode.ChildNodes[U].Name) = UpperCase('mp3') then
            speechEvent.mp3File := conSpeechNode.ChildNodes[U].NodeValue;
     end;
-end;
+end;    }
 
 procedure ReadXMLChoice(conChoiceNode: TXmlNode; choiceEvent: TConEventChoice);
 begin
@@ -532,6 +572,7 @@ begin
 
                 var ChoiceField:=temp_ChoiceItem.ChildNodes[J];
                 SetLength(choiceEvent.Choices, ChoiceField.ChildNodes.Count);
+                choiceEvent.Choices[J] := TChoiceItemObject.Create(); // Create object
 
                 for var ci := 0 to ChoiceField.ChildNodes.Count -1 do begin
 
@@ -589,7 +630,8 @@ begin
         begin
             var temp_Flags:= conSetFlags.ChildNodes[U];
             // set array length
-            setFlagsEvent.ArrayLength := temp_Flags.ChildNodes.Count;
+            //setFlagsEvent.ArrayLength := temp_Flags.ChildNodes.Count;
+            setFlagsEvent.numFlags := temp_Flags.ChildNodes.Count;
             SetLength(setFlagsEvent.SetFlags, temp_Flags.ChildNodes.Count);
 
             // and fill it
@@ -617,7 +659,8 @@ begin
         begin
            var temp_chkFlags := conCheckFlags.ChildNodes[U];
            // set array length
-           checkFlagsEvent.ArrayLength := temp_chkFlags.ChildNodes.Count;
+           //checkFlagsEvent.ArrayLength := temp_chkFlags.ChildNodes.Count;
+           checkFlagsEvent.numFlags := temp_chkFlags.ChildNodes.Count;
            SetLength(checkFlagsEvent.FlagsToCheck, temp_chkFlags.ChildNodes.Count);
 
            // and fill it
@@ -763,6 +806,7 @@ begin
            TradeEvent.EventLabel := conTrade.ChildNodes[U].NodeValue;
     end;
 end;
+
 
 procedure ReadXMLJump(conJump: TXmlNode; jumpEvent: TConEventJump);
 begin
@@ -1408,20 +1452,5 @@ finally
 end;
 end;
 
-
-procedure ReadConBinHeader(const aFile: string);
-begin
-//
-end;
-
-procedure ReadConBinData(aFile: string);
-begin
-//
-end;
-
-procedure BuildConBinFile(aFile: string);
-begin
-//
-end;
 
 end.
