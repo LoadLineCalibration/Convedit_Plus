@@ -13,6 +13,8 @@ uses
 
 procedure LoadConFile(conFile: string);
 
+procedure FillTables(ConRead: TBinaryReader);
+
 procedure FillSpeech(ConRead: TBinaryReader; speechEvent: TConEventSpeech; eventLabel: string);
 procedure FillChoice(ConRead: TBinaryReader; choiceEvent: TConEventChoice; eventLabel: string);
 procedure FillSetFlag(ConRead: TBinaryReader; setFlagEvent: TConEventSetFlag; eventLabel: string);
@@ -128,9 +130,8 @@ try
                 AddLog('Used mission #' + conFileParameters.fpMissions[NM].ToString + ' added to array');
             end;
 
-        var StatsSize := ConRead.ReadInteger(); // ignore
-        var statsBytes := ConRead.ReadBytes(StatsSize);
-        AddLog('stats skipped, size = ' + StatsSize.ToString);
+
+        FillTables(ConRead);
 
         var unknown4 := ConRead.ReadInteger(); // ignore
         AddLog('unknown4 skipped, size = ' + unknown4.ToString);
@@ -256,12 +257,13 @@ try
                 end;
 
 
-                var numEventList := ConRead.ReadInteger(); // now events...
-                AddLog('numEventList = ' + numEventList.ToString);
-                SetLength(tempConvo.Events, numEventList); // set array length
+                //var numEventList := ConRead.ReadInteger(); // now events...
+                tempConvo.numEventList := ConRead.ReadInteger(); // now events...
+                AddLog('numEventList = ' + tempConvo.numEventList.ToString);
+                SetLength(tempConvo.Events, tempConvo.numEventList); // set array length
                 AddLog('Events:');
 
-                for var NEL := 0 to numEventList -1 do
+                for var NEL := 0 to tempConvo.numEventList -1 do
                 begin
                     var tempEvent: TConEvent;
                     var Unknown0 := ConRead.ReadInteger();
@@ -492,6 +494,62 @@ finally
     ConRead.Free();
     fileStr.Free();
 end;
+end;
+
+procedure FillTables(ConRead: TBinaryReader);
+begin
+    var TablesSize := ConRead.ReadInteger(); // size of all tables?
+
+    with frmMain do
+    begin
+        // Actors...
+        conFileParameters.fpActors.Clear();
+        var numActorRecords := ConRead.ReadInteger();
+
+        for var AR := 0 to numActorRecords -1 do
+        begin
+            var ActorIdx := ConRead.ReadInteger();
+            var ActorName := GetConString(ConRead);
+
+            conFileParameters.fpActors.Insert(ActorIdx, ActorName);
+        end;
+
+        // Flags...
+        conFileParameters.fpFlags.Clear();
+        var numFlagsRecords := ConRead.ReadInteger();
+
+        for var FR := 0 to numFlagsRecords -1 do
+        begin
+            var FlagIdx := ConRead.ReadInteger();
+            var FlagName := GetConString(ConRead);
+
+            conFileParameters.fpFlags.Insert(FlagIdx, FlagName);
+        end;
+
+        // Skills...
+        conFileParameters.fpSkills.Clear();
+        var numSkillsRecords := ConRead.ReadInteger();
+
+        for var FR := 0 to numSkillsRecords -1 do
+        begin
+            var SkillIdx := ConRead.ReadInteger();
+            var SkillName := GetConString(ConRead);
+
+            conFileParameters.fpSkills.Insert(SkillIdx, SkillName);
+        end;
+
+        // Objects...
+        conFileParameters.fpObjects.Clear();
+        var numObjectsRecords := ConRead.ReadInteger();
+
+        for var FR := 0 to numObjectsRecords -1 do
+        begin
+            var ObjectIdx := ConRead.ReadInteger();
+            var ObjectName := GetConString(ConRead);
+
+            conFileParameters.fpObjects.Insert(ObjectIdx, ObjectName);
+        end;
+    end;
 end;
 
 procedure FillSpeech(ConRead: TBinaryReader; speechEvent: TConEventSpeech; eventLabel: string);
