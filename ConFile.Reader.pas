@@ -7,9 +7,9 @@ unit ConFile.Reader;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, winapi.ActiveX, ConvEditPlus_Const,
-  Conversation.Classes, system.UITypes, system.TypInfo, vcl.ComCtrls;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
+  Vcl.Dialogs, winapi.ActiveX, ConvEditPlus_Const,
+  Conversation.Classes, system.TypInfo, vcl.ComCtrls;
 
 procedure LoadConFile(conFile: string);
 
@@ -82,11 +82,11 @@ begin
 
     var headerBytes := ConRead.ReadBytes(26);
 
-{    if CompareMem(headerBytes, @conFileHeader, 26) = False then
+    if CompareMem(headerBytes, @conFileHeader, 26) = False then
     begin
         MessageDlg(strInvalidConFileHdr,  mtError, [mbOK], 0);
         Exit();
-    end;  }
+    end;
 
 try
     with frmMain do
@@ -131,7 +131,7 @@ try
             end;
 
 
-        FillTables(ConRead);
+        FillTables(ConRead); // fill tables
 
         var unknown4 := ConRead.ReadInteger(); // ignore
         AddLog('unknown4 skipped, size = ' + unknown4.ToString);
@@ -256,8 +256,6 @@ try
                            ' Expiration = ' + cfRefExpiration.ToString);
                 end;
 
-
-                //var numEventList := ConRead.ReadInteger(); // now events...
                 tempConvo.numEventList := ConRead.ReadInteger(); // now events...
                 AddLog('numEventList = ' + tempConvo.numEventList.ToString);
                 SetLength(tempConvo.Events, tempConvo.numEventList); // set array length
@@ -498,10 +496,13 @@ end;
 
 procedure FillTables(ConRead: TBinaryReader);
 begin
-    var TablesSize := ConRead.ReadInteger(); // size of all tables?
-
     with frmMain do
     begin
+        AddLog('Reading Tables, position: 0x'+ ConRead.BaseStream.Position.ToHexString(1));
+
+        conFileParameters.TablesSize := ConRead.ReadInteger(); // size of all tables
+        AddLog('Tables DataSize = ' + conFileParameters.TablesSize.ToString);
+
         // Actors...
         conFileParameters.fpActors.Clear();
         var numActorRecords := ConRead.ReadInteger();
