@@ -193,7 +193,6 @@ type
     Event_Delete: TAction;
     ShowOptions: TAction;
     FileSaveDialog: TFileSaveDialog;
-    btnBackToPrevConvo: TButton;
     Action1: TAction;
     N18: TMenuItem;
     ViewoutputTMemo1: TMenuItem;
@@ -207,6 +206,12 @@ type
     ToolButton2: TToolButton;
     ToolButton3: TToolButton;
     btnStickyWindow: TToolButton;
+    btnCloseLog: TButton;
+    ToolButton4: TToolButton;
+    btnViewLog: TToolButton;
+    N19: TMenuItem;
+    ClearForNewFile1: TMenuItem;
+    CreateTestFile1: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure Properties3Click(Sender: TObject);
@@ -220,6 +225,8 @@ type
     procedure ToggleLV_FlagValue(lstv: TListView);
 
     procedure SendStringToEditValue(control: TControl);
+
+    procedure FillEventLabels(con: TConversation; listToFill: TCustomListControl);
 
     function GetAppVersionStr(): string; //https://delphihaven.wordpress.com/2012/12/08/retrieving-the-applications-version-string/
     function HasConvoEventToPaste(): Boolean;
@@ -242,9 +249,12 @@ type
     function ItemExistsInTreeView(TreeView: TTreeView; ItemText: string): Boolean;
     function FindTreeItemByText(TreeView: TTreeView; Text: string): TTreeNode;
 
+
     procedure SetMemoFont(FontSize: Integer; FontName: string);
     procedure PickTableObject(newTableMode: TTableMode; control: TControl);
     procedure FirstTimeLaunch();
+
+    procedure ClearForNewFile();
 
     // loading and saving configuration file
     procedure LoadCfg();
@@ -362,7 +372,6 @@ type
     procedure FileSaveAsExecute(Sender: TObject);
     procedure ConvoTreeChange(Sender: TObject; Node: TTreeNode);
     procedure ConEventListMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure btnBackToPrevConvoClick(Sender: TObject);
     procedure ViewoutputTMemo1Click(Sender: TObject);
     procedure ConFileParameters1Click(Sender: TObject);
     procedure Clear1Click(Sender: TObject);
@@ -375,6 +384,8 @@ type
     procedure ConEventListDragDrop(Sender, Source: TObject; X, Y: Integer);
     procedure btnReorderClick(Sender: TObject);
     procedure btnStickyWindowClick(Sender: TObject);
+    procedure ClearForNewFile1Click(Sender: TObject);
+    procedure CreateTestFile1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -392,9 +403,9 @@ type
     listFlags: TStringList;
     listSkills: TStringList;
     listObjects: TStringList;
-    EventType: TEventType;
+//    CurrentEventType: TEventType;
 
-    // Config file
+    // Configuration file
 
     // color variables for configuration file (clrGrid is color of separators between events)
     clrHighlightEvent, clrHighlightEventFrom, clrHighlightEventTo, clrGrid: TColor;
@@ -417,8 +428,9 @@ type
     RecentFiles: array[0..CEP_MAX_RECENT_FILES] of string;
 
     ReorderModKey: TReorderEventsModKey; // Hold xxx key to reorder events
+    OpenFileFilterIndex, SaveFileFilterIndex: Integer; // save last selected file filter when opening/saving file. Also to save some of my time :D
 
-    // end of config file variables
+    // end of configuration file variables
 
     MainFormIni: TIniFile;     // ini file
 
@@ -433,7 +445,8 @@ implementation
 
 {$R *.dfm}
 
-uses frmSettings1, EditValueDialog, ConFileProperties, AboutBox1, ConvoProperties, frmFind1, AddInsertEvent, ConXml.Service;
+uses frmSettings1, EditValueDialog, ConFileProperties, AboutBox1, ConvoProperties, frmFind1, AddInsertEvent,
+     ConXml.Reader, ConXML.Writer, confile.Reader, conFile.Writer;
 
 
 function TfrmMain.GetFlagsSize(events: array of TConEvent): Integer;
@@ -445,7 +458,7 @@ begin
     for var L:= 0 to Length(events) -1 do
     begin
         if events[L] is TConEventSetFlag then begin
-           aLength := TConEventSetFlag(events[L]).ArrayLength;
+           aLength := TConEventSetFlag(events[L]).numFlags; //ArrayLength;
         end;
     end;
 
@@ -462,7 +475,7 @@ begin
     for var L:= 0 to Length(events) -1 do
     begin
         if events[L] is TConEventCheckFlag then
-           aLength := TConEventCheckFlag(events[L]).ArrayLength;
+           aLength := TConEventCheckFlag(events[L]).numFlags; //ArrayLength;
     end;
 
     dResult := 20 + (17 * aLength); // 20 for name and 17 for each flag string
@@ -721,7 +734,7 @@ end;
 
 procedure TfrmMain.AddLog(msg: string);
 begin
-    mmoOutput.Lines.Add(msg);
+//    mmoOutput.Lines.Add(msg);
 end;
 
 function TfrmMain.GetReorderButtonHint(): string;
@@ -731,7 +744,6 @@ begin
       re_Shift: Result := Format(btnReorderHint, ['Shift']);
       re_Alt: Result :=   Format(btnReorderHint, ['Alt']);
     end;
-
 end;
 
 procedure TfrmMain.LoadConXMLFile(aFileName: string);
@@ -764,10 +776,38 @@ begin
         frmSettings.ShowModal();
 end;
 
+procedure TfrmMain.ClearForNewFile();
+begin
+    for var i:= 0 to ConvoTree.Items.Count -1 do
+    begin
+        if Assigned(ConvoTree.Items[i].Data) then
+        begin
+//            AddLog('free object: ' + TConBaseObject(ConvoTree.Items[i].Data).ToString + i.ToString);
+            TConBaseObject(ConvoTree.Items[i].Data).Free();
+        end;
+    end;
+    ConvoTree.Items.Clear();
+
+
+end;
+
+procedure TfrmMain.ClearForNewFile1Click(Sender: TObject);
+begin
+    ClearForNewFile();
+end;
+
 procedure TfrmMain.OpenRecentFile(aFile: string);
 begin
 // ToDo: Add check if file has been modified, ask to save, etc.
-    LoadConXMLFile(aFile);
+    if LowerCase(ExtractFileExt(aFile)) = '.xml' then
+         LoadConXMLFile(aFile) else
+    if LowerCase(ExtractFileExt(aFile)) = '.con' then
+         LoadConFile(aFile)
+         else
+    begin
+       MessageDlg('Unknown file!',  mtWarning, [mbOK], 0);
+       Exit();
+    end;
 end;
 
 procedure TfrmMain.AddRecentFile(aFile: string);
@@ -2129,8 +2169,6 @@ begin
     ConEventList.Invalidate();
 end;
 
-
-
 procedure TfrmMain.SendStringToEditValue(control: TControl);
 begin
   if control = nil then Exit();
@@ -2142,6 +2180,17 @@ begin
 
   frmEditValue.receiver := control; // назначить имя элемента управления на переменную.
   frmEditValue.ShowModal();
+end;
+
+procedure TfrmMain.FillEventLabels(con: TConversation; listToFill: TCustomListControl);
+begin
+    listToFill.Clear();
+
+    for var LBS := 0 to con.numEventList -1 do
+    begin
+        if con.Events[LBS].EventLabel.IsEmpty = False then
+            listToFill.AddItem(con.Events[LBS].EventLabel, nil);
+    end;
 end;
 
 procedure TfrmMain.CollapseAll2Click(Sender: TObject);
@@ -2487,8 +2536,8 @@ begin
         if Application.MessageBox(PChar(strAskDeleteConvoText),PChar(strAskDeleteConvoTitle), MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2) = IDYES then
         begin
             DeleteCurrentConversation();
-        end else
-            DeleteCurrentConversation();
+        end
+        else DeleteCurrentConversation();
 end;
 
 procedure TfrmMain.DeleteCurrentEvent();
@@ -2560,6 +2609,7 @@ begin
 
     LoadCfg();
     CreateObjectLists();
+    ConvoTree.AlphaSort(true);
 end;
 
 
@@ -2572,6 +2622,11 @@ begin
     listSkills := conFileParameters.fpSkills;
     listObjects := conFileParameters.fpObjects;
     listFlags := conFileParameters.fpFlags;
+end;
+
+procedure TfrmMain.CreateTestFile1Click(Sender: TObject);
+begin
+    SaveConFile('C:\Temp\First26.con');
 end;
 
 procedure TfrmMain.FileNewExecute(Sender: TObject);
@@ -2609,15 +2664,28 @@ end;
 
 procedure TfrmMain.FileOpenExecute(Sender: TObject);
 begin
+    FileOpenDialog.FileTypeIndex := OpenFileFilterIndex; // restore filter index
+
     if FileOpenDialog.Execute() = true then
     begin
-       conXmlFile := FileOpenDialog.FileName;  // Assign filename to global variable
-       LoadConXMLFile(conXmlFile);
+        OpenFileFilterIndex := FileOpenDialog.FileTypeIndex; // save filter index
+        conXmlFile := FileOpenDialog.FileName;  // Assign filename to global variable
 
-       StatusBar.Panels[1].Text := conXmlFile; // filename in StatusBar
-       AddRecentFile(conXmlFile);  // Add to recent
+        if UpperCase(ExtractFileExt(conXmlFile)) = '.XML' then
+            LoadConXMLFile(conXmlFile)
+        else if UpperCase(ExtractFileExt(conXmlFile)) = '.CON' then
+            LoadConFile(conXmlFile)
+        else
+            begin
+                MessageBox(Handle, 'Please select .con or .xml file!', 'Invalid file', MB_OK + MB_ICONWARNING + MB_DEFBUTTON2 + MB_TOPMOST);
+                Exit();
+            end;
+
+        StatusBar.Panels[1].Text := conXmlFile; // filename in StatusBar
+        AddRecentFile(conXmlFile);  // Add to recent
     end;
 end;
+
 
 procedure TfrmMain.FilePropertiesExecute(Sender: TObject);
 begin
@@ -2954,11 +3022,6 @@ begin
     InsertEvent(AddSkillPoints2.Tag);
 end;
 
-procedure TfrmMain.btnBackToPrevConvoClick(Sender: TObject);
-begin
-//
-end;
-
 procedure TfrmMain.btnReorderClick(Sender: TObject);
 begin
     if btnReorder.Down = true then ConEventList.DragMode := TDragMode.dmAutomatic
@@ -3140,6 +3203,12 @@ end;
 procedure TfrmMain.ViewoutputTMemo1Click(Sender: TObject);
 begin
     mmoOutput.Visible := ViewoutputTMemo1.Checked;
+
+    if (Sender is TButton) or (Sender is TToolButton) then
+        ViewoutputTMemo1.Click();
+
+    btnCloseLog.Visible := mmoOutput.Visible;
+    btnViewLog.Down := mmoOutput.Visible;
 end;
 
 end.
