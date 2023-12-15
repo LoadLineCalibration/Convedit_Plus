@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.StdActns, Conversation.Classes,
   System.Actions, Vcl.ActnList, Vcl.Menus, Vcl.Samples.Spin, WinApi.ActiveX, Vcl.Buttons, Vcl.Imaging.pngimage,
-  ConvEditPlus_Util, System.ImageList, Vcl.ImgList, Vcl.MPlayer, Winapi.MMSystem;
+  ConvEditPlus_Util, System.ImageList, Vcl.ImgList, Vcl.MPlayer, Winapi.MMSystem, system.UITypes, ES.BaseControls, ES.Layouts;
 
 type
   TfrmEventInsAdd = class(TForm)
@@ -209,6 +209,27 @@ type
     editConditionValue: TSpinEdit;
     Label24: TLabel;
     chkAutoSwapSpeaker: TCheckBox;
+    chkSpeechWordWrap: TCheckBox;
+    pgcChoiceDetails: TPageControl;
+    tsGeneral: TTabSheet;
+    tsFlags: TTabSheet;
+    Skills: TTabSheet;
+    mmoChoiceText: TMemo;
+    chkDisplayChoiceAsSpeech: TCheckBox;
+    Label36: TLabel;
+    cbbChoiceJumpToLabel: TComboBox;
+    lvChoiceFlagList: TListView;
+    btnAddChoiceFlag: TButton;
+    btnDeleteChoiceFlag: TButton;
+    grpSkillGrp: TGroupBox;
+    lbl1: TLabel;
+    Label37: TLabel;
+    cmbSkill: TComboBox;
+    cmbSkillAtLevel: TComboBox;
+    btnPickSkill: TButton;
+    chkReqSkill: TCheckBox;
+    ChoiceEditPanel: TEsPanel;
+    btnSaveChoice: TBitBtn;
     // new procedures
     procedure UpdateControlsState();
     procedure UpdateAddRandomLabelButtonState();
@@ -219,7 +240,7 @@ type
 
     //https://engineertips.wordpress.com/2019/10/06/delphi-exchange-listview-items-move-listview-items/
     procedure ExchangeListViewItems(lv: TListView; const i, j: Integer);
-    procedure CopyChoiceRecToObj(source: TChoiceItem; dest: TChoiceItemObject);
+//    procedure CopyChoiceRecToObj(source: TChoiceItem; dest: TChoiceItemObject);
 
     // Make sure all events are valid, contains no illegal characters, etc.
     procedure ValidateEvents(event: TConEvent);
@@ -333,6 +354,10 @@ type
     procedure FormMouseWheelDown(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
     procedure editConditionValueChange(Sender: TObject);
     procedure FormMouseWheelUp(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
+    procedure chkSpeechWordWrapClick(Sender: TObject);
+    procedure lvChoiceListDblClick(Sender: TObject);
+    procedure lvChoiceListClick(Sender: TObject);
+    procedure chkReqSkillClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -376,6 +401,8 @@ end;
 
 procedure TfrmEventInsAdd.FillChoice(choice: TConEventChoice);
 begin
+    frmMain.FillEventLabels(frmMain.CurrentConversation, cbbChoiceJumpToLabel);
+
     cmbEventType.ItemIndex := 1;
     cmbEventTypeChange(cmbEventType);
 
@@ -384,7 +411,18 @@ begin
     lvChoiceList.Clear();
     chkClearScreen.Checked := choice.bClearScreen;
 
-    for var chi := 0 to choice.NumChoices -1 do begin
+    for var chi := 0 to choice.NumChoices -1 do
+    begin
+    var choiceItem:= lvChoiceList.Items.Add();
+        choiceItem.Data := TChoiceItemObject(choice.Choices[chi]);
+
+        choiceItem.Caption := TChoiceItemObject(choiceItem.Data).textline;
+        choiceItem.SubItems.Add(TChoiceItemObject(choiceItem.Data).GoToLabel);
+        choiceItem.SubItems.Add(TChoiceItemObject(choiceItem.Data).Index.ToString);
+    end;
+
+
+{    for var chi := 0 to choice.NumChoices -1 do begin
         var choiceItem:= lvChoiceList.Items.Add();
             choiceItem.Data := TChoiceItemObject.Create();
             TChoiceItemObject(choiceItem.Data).Index := choice.Choices[chi].Index;
@@ -401,7 +439,7 @@ begin
             choiceItem.Caption := TChoiceItemObject(choiceItem.Data).textline;
             choiceItem.SubItems.Add(TChoiceItemObject(choiceItem.Data).GoToLabel);
             choiceItem.SubItems.Add(TChoiceItemObject(choiceItem.Data).Index.ToString);
-    end;
+    end; }
 end;
 
 procedure TfrmEventInsAdd.FillSetFlags(flags: TConEventSetFlag);
@@ -712,7 +750,7 @@ begin
     lblStatus.Caption := msg;
 end;
 
-procedure TfrmEventInsAdd.CopyChoiceRecToObj(source: TChoiceItem; dest: TChoiceItemObject);
+{procedure TfrmEventInsAdd.CopyChoiceRecToObj(source: TChoiceItem; dest: TChoiceItemObject);
 begin
     SetLength(dest.RequiredFlags, Length(source.RequiredFlags)); // set length
 
@@ -720,7 +758,7 @@ begin
         dest.RequiredFlags[i] := source.RequiredFlags[i];
         frmMain.AddLog(source.RequiredFlags[i].flagName + ' copied to ' + dest.RequiredFlags[i].flagName);
     end;
-end;
+end; }
 
 function TfrmEventInsAdd.GetChoiceItemSpeech(ChoiceItem: TChoiceItemObject): string;
 begin
@@ -734,8 +772,10 @@ procedure TfrmEventInsAdd.PlayMP3Speech(const mp3file: string);
 begin
     var SpeechMP3File:= frmMain.ConFileAudioPath +  '\' + mp3file;
 
-    if FileExists(SpeechMP3File) then begin
-       if mp1.Mode = mpPlaying then begin
+    if FileExists(SpeechMP3File) then
+    begin
+       if mp1.Mode = mpPlaying then
+       begin
           mp1.Stop();
        end else begin
           mp3posUpdateTimer.Enabled := True;
@@ -745,8 +785,9 @@ begin
           mp3Pos_pb.Max := mp1.Length;
           mp1.Play();
        end;
-    end else
-    ShowMessage(strAudioFileNotFound + mp3file);
+    end
+    else
+    MessageDlg(strAudioFileNotFound + mp3file, mtError, [mbOK], 0);
 end;
 
 procedure TfrmEventInsAdd.ExchangeListViewItems(LV: TListView; const i, j: Integer);
@@ -780,6 +821,8 @@ begin
     begin
         EventWarning(True, strSpeechTextIsEmpty);
         memoSpeech.SetFocus();
+        memoSpeech.Text := strDefaultString;
+        memoSpeech.SelectAll();
         Exit();
     end;
 
@@ -806,7 +849,12 @@ end;
 
 procedure TfrmEventInsAdd.ValidateChoice(choice: TConEventChoice);
 begin
-  ShowMessage('ValidateChoice()');
+    if lvChoiceList.Items.Count < 1 then begin
+      EventWarning(True, 'Add some choices first!');
+      Exit();
+    end;
+
+
 end;
 
 procedure TfrmEventInsAdd.ValidateSetFlags(setFlags: TConEventSetFlag);
@@ -816,8 +864,10 @@ begin
        Exit();
     end;
 
-    setFlags.ArrayLength := lvSetFlags.Items.Count;
-    SetLength(setFlags.SetFlags, setFlags.ArrayLength);
+    //setFlags.ArrayLength := lvSetFlags.Items.Count;
+    setFlags.numFlags := lvSetFlags.Items.Count;
+    //SetLength(setFlags.SetFlags, setFlags.ArrayLength);
+    SetLength(setFlags.SetFlags, setFlags.numFlags);
 
     for var newsetflg := 0 to lvSetFlags.Items.Count -1 do begin
         setFlags.SetFlags[newsetflg].flagName       := lvSetFlags.Items[newsetflg].Caption; // flag name
@@ -838,8 +888,10 @@ begin
        Exit();
     end;
 
-    checkFlags.ArrayLength := lvCheckFlags.Items.Count;
-    SetLength(checkFlags.FlagsToCheck, checkFlags.ArrayLength);
+    //checkFlags.ArrayLength := lvCheckFlags.Items.Count;
+    checkFlags.numFlags := lvCheckFlags.Items.Count;
+    //SetLength(checkFlags.FlagsToCheck, checkFlags.ArrayLength);
+    SetLength(checkFlags.FlagsToCheck, checkFlags.numFlags);
 
     for var newCheckFlg:=0 to lvCheckFlags.Items.Count -1 do begin
         checkFlags.FlagsToCheck[newCheckFlg].flagName := lvCheckFlags.Items[newCheckFlg].Caption; // flag name
@@ -1401,6 +1453,26 @@ begin
     btnEditChoice.Visible := not chkDblClickToPlay.Checked;
 end;
 
+procedure TfrmEventInsAdd.chkReqSkillClick(Sender: TObject);
+begin
+    for var i := 0 to grpSkillGrp.ControlCount -1  do
+        grpSkillGrp.Controls[i].Enabled := chkReqSkill.Checked;
+end;
+
+procedure TfrmEventInsAdd.chkSpeechWordWrapClick(Sender: TObject);
+begin
+    if chkSpeechWordWrap.Checked = true then
+    begin
+        memoSpeech.WordWrap := true;
+        memoSpeech.ScrollBars := TScrollStyle.ssVertical;
+    end else
+    begin
+        memoSpeech.WordWrap := false;
+        memoSpeech.ScrollBars := TScrollStyle.ssBoth;
+    end;
+
+end;
+
 procedure TfrmEventInsAdd.cmbEventRandomLabelsChange(Sender: TObject);
 begin
     UpdateAddRandomLabelButtonState();
@@ -1426,28 +1498,28 @@ begin
     btnUpdate.Enabled := EventsPages.ActivePageIndex <> 8;
     EventWarning(False);
 
-
+{
     case cmbEventType.ItemIndex of
-    0: frmMain.EventType := ET_Speech;
-    1: frmMain.EventType := ET_Choice;
-    2: frmMain.EventType := ET_SetFlag;
-    3: frmMain.EventType := ET_CheckFlag;
-    4: frmMain.EventType := ET_CheckObject;
-    5: frmMain.EventType := ET_TransferObject;
-    6: frmMain.EventType := ET_MoveCamera;
-    7: frmMain.EventType := ET_Animation;
-    8: frmMain.EventType := ET_Trade;
-    9: frmMain.EventType := ET_Jump;
-    10: frmMain.EventType := ET_Random;
-    11: frmMain.EventType := ET_Trigger;
-    12: frmMain.EventType := ET_AddGoal;
-    13: frmMain.EventType := ET_AddNote;
-    14: frmMain.EventType := ET_AddSkillPoints;
-    15: frmMain.EventType := ET_AddCredits;
-    16: frmMain.EventType := ET_CheckPersona;
-    17: frmMain.EventType := ET_Comment;
-    18: frmMain.EventType := ET_End;
-    end;
+    0: frmMain.CurrentEventType := ET_Speech;
+    1: frmMain.CurrentEventType := ET_Choice;
+    2: frmMain.CurrentEventType := ET_SetFlag;
+    3: frmMain.CurrentEventType := ET_CheckFlag;
+    4: frmMain.CurrentEventType := ET_CheckObject;
+    5: frmMain.CurrentEventType := ET_TransferObject;
+    6: frmMain.CurrentEventType := ET_MoveCamera;
+    7: frmMain.CurrentEventType := ET_Animation;
+    8: frmMain.CurrentEventType := ET_Trade;
+    9: frmMain.CurrentEventType := ET_Jump;
+    10: frmMain.CurrentEventType := ET_Random;
+    11: frmMain.CurrentEventType := ET_Trigger;
+    12: frmMain.CurrentEventType := ET_AddGoal;
+    13: frmMain.CurrentEventType := ET_AddNote;
+    14: frmMain.CurrentEventType := ET_AddSkillPoints;
+    15: frmMain.CurrentEventType := ET_AddCredits;
+    16: frmMain.CurrentEventType := ET_CheckPersona;
+    17: frmMain.CurrentEventType := ET_Comment;
+    18: frmMain.CurrentEventType := ET_End;
+    end; }
 end;
 
 procedure TfrmEventInsAdd.Consolas10Click(Sender: TObject);
@@ -1554,7 +1626,8 @@ end;
 
 procedure TfrmEventInsAdd.lvChoiceListChange(Sender: TObject; Item: TListItem; Change: TItemChange);
 begin
-    with lvChoiceList do begin
+    with lvChoiceList do
+    begin
         if ((ItemIndex = -1) or (Items.Count < 1)) then begin
           btnEditChoice.Enabled := False;
           btnDeleteChoice.Enabled := False;
@@ -1572,6 +1645,54 @@ begin
           btnMoveUpChoice.Enabled := True;
           btnMoveDownChoice.Enabled := True;
         end;
+
+        ChoiceEditPanel.Visible := ItemIndex > -1;
+    end;
+end;
+
+procedure TfrmEventInsAdd.lvChoiceListClick(Sender: TObject);
+begin
+    if lvChoiceList.ItemIndex = -1 then Exit();
+
+        mmoChoiceText.Clear();
+        lvChoiceFlagList.Clear();
+
+        var choiceItemObj := TChoiceItemObject(lvChoiceList.Items[lvChoiceList.ItemIndex].Data);
+
+        if Assigned(choiceItemObj) then
+        begin
+            mmoChoiceText.Text := choiceItemObj.textline;
+            cbbChoiceJumpToLabel.ItemIndex := cbbChoiceJumpToLabel.Items.IndexOf(choiceItemObj.GoToLabel);
+            chkDisplayChoiceAsSpeech.Checked := choiceItemObj.bDisplayAsSpeech;
+
+            for var FL:= 0 to High(choiceItemObj.RequiredFlags) do
+            begin
+                var choiceFlagItem := lvChoiceFlagList.Items.Add();
+                choiceFlagItem.Caption := choiceItemObj.RequiredFlags[FL].flagName;
+                choiceFlagItem.SubItems.Add(BoolToStr(choiceItemObj.RequiredFlags[FL].flagValue, True));
+                choiceFlagItem.SubItems.Add(choiceItemObj.RequiredFlags[FL].flagIndex.ToString);
+            end;
+
+            cmbSkill.Clear();
+            cmbSkill.Items := frmMain.conFileParameters.fpSkills;
+            cmbSkill.ItemIndex := cmbSkill.Items.IndexOf(choiceItemObj.Skill);
+
+            cmbSkillAtLevel.ItemIndex := choiceItemObj.SkillLevel;
+
+            chkReqSkill.Checked := choiceItemObj.bSkillNeeded <> -1;
+            chkReqSkillClick(chkReqSkill);
+        end;
+end;
+
+procedure TfrmEventInsAdd.lvChoiceListDblClick(Sender: TObject);
+begin
+    if lvChoiceList.ItemIndex = -1 then Exit();
+
+    var tempChoicemp3:= GetChoiceItemSpeech(lvChoiceList.Items[lvChoiceList.ItemIndex].Data);
+
+    if (chkDblClickToPlay.Checked) and (tempChoicemp3 <> '')  then begin
+       PlayMP3Speech(tempChoicemp3);
+       Exit();
     end;
 end;
 

@@ -4,7 +4,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   AlphaBlendValue = 128
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'Event'
-  ClientHeight = 598
+  ClientHeight = 594
   ClientWidth = 564
   Color = clBtnFace
   TransparentColorValue = 13160660
@@ -61,7 +61,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   OnShow = FormShow
   DesignSize = (
     564
-    598)
+    594)
   TextHeight = 15
   object GroupBox1: TGroupBox
     Left = 8
@@ -172,8 +172,8 @@ object frmEventInsAdd: TfrmEventInsAdd
     Left = 4
     Top = 114
     Width = 556
-    Height = 410
-    ActivePage = TabSheet1
+    Height = 406
+    ActivePage = TabSheet2
     Anchors = [akLeft, akTop, akRight, akBottom]
     RaggedRight = True
     Style = tsFlatButtons
@@ -185,14 +185,14 @@ object frmEventInsAdd: TfrmEventInsAdd
         Left = 0
         Top = 0
         Width = 548
-        Height = 377
+        Height = 373
         Align = alClient
         Caption = ' Speech: '
         TabOrder = 0
         StyleElements = []
         DesignSize = (
           548
-          377)
+          373)
         object Label5: TLabel
           Left = 16
           Top = 28
@@ -227,7 +227,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object Label8: TLabel
           Left = 18
-          Top = 326
+          Top = 318
           Width = 63
           Height = 17
           Anchors = [akLeft, akRight, akBottom]
@@ -243,7 +243,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Left = 16
           Top = 106
           Width = 519
-          Height = 214
+          Height = 206
           Anchors = [akLeft, akTop, akRight, akBottom]
           Ctl3D = True
           Font.Charset = RUSSIAN_CHARSET
@@ -285,7 +285,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object edtSpeechAudioFile: TEdit
           Left = 16
-          Top = 347
+          Top = 339
           Width = 461
           Height = 23
           Anchors = [akLeft, akRight, akBottom]
@@ -296,7 +296,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object btnPlayAudioFile: TButton
           Left = 483
-          Top = 347
+          Top = 339
           Width = 52
           Height = 22
           Cursor = crHandPoint
@@ -350,6 +350,20 @@ object frmEventInsAdd: TfrmEventInsAdd
           State = cbChecked
           TabOrder = 7
         end
+        object chkSpeechWordWrap: TCheckBox
+          Left = 326
+          Top = 316
+          Width = 209
+          Height = 17
+          Cursor = crHandPoint
+          Hint = 'Check to enable/disable wordwrap and toggle horizontal scrollbar'
+          Anchors = [akRight, akBottom]
+          Caption = 'WordWrap?'
+          Checked = True
+          State = cbChecked
+          TabOrder = 8
+          OnClick = chkSpeechWordWrapClick
+        end
       end
     end
     object TabSheet2: TTabSheet
@@ -359,7 +373,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         Left = 0
         Top = 0
         Width = 548
-        Height = 377
+        Height = 373
         Align = alClient
         Caption = ' Choice: '
         Color = 13226452
@@ -369,49 +383,64 @@ object frmEventInsAdd: TfrmEventInsAdd
         StyleElements = []
         DesignSize = (
           548
-          377)
+          373)
         object btnAddChoice: TButton
-          Left = 14
-          Top = 303
-          Width = 99
+          Left = 455
+          Top = 24
+          Width = 80
           Height = 25
-          Anchors = [akRight, akBottom]
+          Anchors = [akTop, akRight]
           Caption = 'Add Choice'
+          Constraints.MaxHeight = 25
+          Constraints.MaxWidth = 80
           TabOrder = 1
           StyleElements = []
           OnClick = btnAddChoiceClick
         end
         object btnMoveDownChoice: TButton
           Left = 455
-          Top = 333
-          Width = 80
+          Top = 148
+          Width = 25
           Height = 25
-          Anchors = [akRight, akBottom]
-          Caption = 'Move down'
+          Hint = 'Move down (change order)'
+          Anchors = [akTop, akRight]
+          Caption = '6'
+          Constraints.MaxHeight = 25
+          Constraints.MaxWidth = 80
           Enabled = False
+          Font.Charset = SYMBOL_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -21
+          Font.Name = 'Marlett'
+          Font.Style = [fsBold]
+          ParentFont = False
           TabOrder = 2
-          StyleElements = []
+          StyleName = 'Windows'
           OnClick = btnMoveDownChoiceClick
         end
         object btnEditChoice: TButton
-          Left = 119
-          Top = 303
-          Width = 82
+          Left = 455
+          Top = 55
+          Width = 80
           Height = 25
-          Anchors = [akRight, akBottom]
+          Anchors = [akTop, akRight]
           Caption = 'Edit...'
+          Constraints.MaxHeight = 25
+          Constraints.MaxWidth = 80
           Enabled = False
           TabOrder = 3
           StyleElements = []
           OnClick = btnEditChoiceClick
         end
         object btnDeleteChoice: TButton
-          Left = 207
-          Top = 302
-          Width = 98
+          Left = 455
+          Top = 86
+          Width = 80
           Height = 25
-          Anchors = [akRight, akBottom]
+          Anchors = [akTop, akRight]
           Caption = 'Delete choice'
+          Constraints.MaxHeight = 25
+          Constraints.MaxWidth = 80
           Enabled = False
           TabOrder = 4
           StyleElements = []
@@ -419,22 +448,31 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object btnMoveUpChoice: TButton
           Left = 455
-          Top = 302
-          Width = 80
+          Top = 117
+          Width = 25
           Height = 25
-          Anchors = [akRight, akBottom]
-          Caption = 'Move Up'
+          Hint = 'Move up (change order)'
+          Anchors = [akTop, akRight]
+          Caption = '5'
+          Constraints.MaxHeight = 25
+          Constraints.MaxWidth = 80
           Enabled = False
+          Font.Charset = SYMBOL_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -21
+          Font.Name = 'Marlett'
+          Font.Style = [fsBold]
+          ParentFont = False
           TabOrder = 5
-          StyleElements = []
+          StyleName = 'Windows'
           OnClick = btnMoveUpChoiceClick
         end
         object chkClearScreen: TCheckBox
-          Left = 16
-          Top = 334
+          Left = 216
+          Top = 345
           Width = 241
           Height = 17
-          Anchors = [akRight, akBottom]
+          Anchors = [akLeft, akBottom]
           Caption = 'Clear Screen before displaying choices?'
           DoubleBuffered = True
           ParentDoubleBuffered = False
@@ -442,15 +480,15 @@ object frmEventInsAdd: TfrmEventInsAdd
           StyleElements = []
         end
         object lvChoiceList: TListView
-          Left = 16
-          Top = 24
-          Width = 521
-          Height = 272
+          Left = 14
+          Top = 21
+          Width = 435
+          Height = 149
           Anchors = [akLeft, akTop, akRight, akBottom]
           Columns = <
             item
               Caption = 'Choice (Text)'
-              Width = 390
+              Width = 300
             end
             item
               Caption = 'Value (Label)'
@@ -475,19 +513,20 @@ object frmEventInsAdd: TfrmEventInsAdd
           TabOrder = 0
           ViewStyle = vsReport
           OnChange = lvChoiceListChange
-          OnDblClick = btnEditChoiceClick
+          OnClick = lvChoiceListClick
+          OnDblClick = lvChoiceListDblClick
           OnEditing = lvSetFlagsEditing
         end
         object chkDblClickToPlay: TCheckBox
           Left = 16
-          Top = 357
+          Top = 345
           Width = 194
           Height = 17
           Hint = 
             'Use double click to play selected choice audio, otherwise edit t' +
             'he choice item as usually. '#13#10'Works only if audio file is present' +
             '.'
-          Anchors = [akRight, akBottom]
+          Anchors = [akLeft, akBottom]
           Caption = 'DblClick to play choice audio?'
           DoubleBuffered = True
           ParentDoubleBuffered = False
@@ -495,6 +534,298 @@ object frmEventInsAdd: TfrmEventInsAdd
           WordWrap = True
           StyleName = 'Windows'
           OnClick = chkDblClickToPlayClick
+        end
+        object ChoiceEditPanel: TEsPanel
+          Left = 14
+          Top = 176
+          Width = 521
+          Height = 163
+          Anchors = [akLeft, akRight, akBottom]
+          TabOrder = 8
+          StyleName = 'Windows'
+          FrameStyle = None
+          object pgcChoiceDetails: TPageControl
+            Left = 0
+            Top = 0
+            Width = 521
+            Height = 163
+            ActivePage = tsGeneral
+            Align = alClient
+            HotTrack = True
+            MultiLine = True
+            TabOrder = 0
+            TabWidth = 140
+            StyleName = 'Windows'
+            object tsGeneral: TTabSheet
+              Caption = 'Choice text'
+              DesignSize = (
+                513
+                133)
+              object Label36: TLabel
+                Left = 3
+                Top = 104
+                Width = 93
+                Height = 23
+                AutoSize = False
+                Caption = 'Jump to Label:'
+                Layout = tlCenter
+              end
+              object mmoChoiceText: TMemo
+                Left = 3
+                Top = 3
+                Width = 507
+                Height = 95
+                Anchors = [akLeft, akTop, akRight]
+                HideSelection = False
+                MaxLength = 256
+                PopupMenu = MemoPopup
+                ScrollBars = ssVertical
+                TabOrder = 0
+                WantReturns = False
+                StyleName = 'Windows'
+              end
+              object chkDisplayChoiceAsSpeech: TCheckBox
+                Left = 198
+                Top = 105
+                Width = 233
+                Height = 25
+                Caption = 'Display Choice as speech when Selected'
+                Checked = True
+                State = cbChecked
+                TabOrder = 1
+                WordWrap = True
+                StyleName = 'Windows'
+              end
+              object cbbChoiceJumpToLabel: TComboBox
+                Left = 87
+                Top = 104
+                Width = 105
+                Height = 22
+                Style = csOwnerDrawVariable
+                TabOrder = 2
+                StyleElements = []
+              end
+              object btnSaveChoice: TBitBtn
+                Left = 437
+                Top = 100
+                Width = 73
+                Height = 30
+                Cursor = crHandPoint
+                Hint = 
+                  'Save current choice, including text, flags, skill and other para' +
+                  'meters'
+                Anchors = [akRight, akBottom]
+                Caption = 'Save'
+                Glyph.Data = {
+                  F6060000424DF606000000000000360000002800000018000000180000000100
+                  180000000000C006000000000000000000000000000000000000FF00FFFF00FF
+                  FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00
+                  FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF
+                  00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF
+                  FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00
+                  FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF
+                  00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF
+                  FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFE9D9C0BF8C
+                  3EB98029C7C3BDC7C3BDC7C3BDC7C3BDC7C3BDC7C3BDC7C3BDC7C3BDC7C3BDC7
+                  C3BDC7C3BDC7C3BDB98029BF8D3EE9DAC2FF00FFFF00FFFF00FFFF00FFFF00FF
+                  FF00FFC68E3BD79532DB9834F1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0
+                  ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECDB9834D79633C78F3CFF00FFFF00FFFF
+                  00FFFF00FFFF00FFFF00FFD79532DB9834DB9834F1F0ECF1F0ECF1F0ECF1F0EC
+                  F1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECDB9834DB9834D796
+                  33FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFDB9834DB9834DB9834F1F0ECF1
+                  F0ECC7C3BDC7C3BDC7C3BDC7C3BDC7C3BDC7C3BDC7C3BDC7C3BDF1F0ECF1F0EC
+                  DB9834DB9834DB9834FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFDB9834DB98
+                  34DB9834F1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1
+                  F0ECF1F0ECF1F0ECDB9834DB9834DB9834FF00FFFF00FFFF00FFFF00FFFF00FF
+                  FF00FFDB9834DB9834DB9834F1F0ECF1F0ECC7C3BDC7C3BDC7C3BDC7C3BDC7C3
+                  BDC7C3BDC7C3BDC7C3BDF1F0ECF1F0ECDB9834DB9834DB9834FF00FFFF00FFFF
+                  00FFFF00FFFF00FFFF00FFDB9834DB9834DB9834EFE7D8F1F0ECF1F0ECF1F0EC
+                  F1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECEFE6D7DB9834DB9834DB98
+                  34FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFDB9834DB9834DB9834E1B269EE
+                  E7D9F1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECEFE7D8E1B169
+                  DB9834DB9834DB9834FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFDB9834DB98
+                  34DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB
+                  9834DB9834DB9834DB9834DB9834DB9834FF00FFFF00FFFF00FFFF00FFFF00FF
+                  FF00FFDB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB98
+                  34DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834FF00FFFF00FFFF
+                  00FFFF00FFFF00FFFF00FFDB9834DB9834DB9834DB9834DB9834DB9834DB9834
+                  DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB98
+                  34FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFDB9834DB9834DB9834DB9834DB
+                  9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834
+                  DB9834DB9834DB9834FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFDB9834DB98
+                  34DB9834D19131BD832AB98029B98029B98029B98029B98029B98029B98029B9
+                  8029BD822AD19131DB9834DB9834DB9834FF00FFFF00FFFF00FFFF00FFFF00FF
+                  FF00FFDB9834DB9834DB9834BD832AC9A061EBE4D6F1F0ECF1F0ECF1F0ECF1F0
+                  ECF1F0ECF1F0ECEBE4D6C9A060BD822ADB9834DB9834DB9834FF00FFFF00FFFF
+                  00FFFF00FFFF00FFFF00FFDB9834DB9834DB9834B98029EBE4D6B8B6AAA6A595
+                  A6A595B8B7A9F1F0ECF1F0ECF1F0ECF1F0ECEBE4D6B98029DB9834DB9834DB98
+                  34FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFDB9834DB9834DB9834B98029F1
+                  F0ECA6A595A6A595A6A595A6A595F1F0ECF1F0ECF1F0ECF1F0ECF1F0ECB98029
+                  DB9834DB9834EAC692FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFDDA048DB98
+                  34DB9834B98029F1F0ECA6A595A6A595A6A595A6A595F1F0ECF1F0ECF1F0ECF1
+                  F0ECF1F0ECB98029DB9834EBC998FF00FFFF00FFFF00FFFF00FFFF00FFFF00FF
+                  FF00FFF2DFC1DDA147DB9834B98029F1F0ECC7C3BDC7C3BDC7C3BDC7C3BDF1F0
+                  ECF1F0ECF1F0ECF1F0ECF1F0ECB98029EBC998FF00FFFF00FFFF00FFFF00FFFF
+                  00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF
+                  FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00
+                  FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF
+                  00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF
+                  FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00
+                  FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF
+                  00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF}
+                Margin = 0
+                TabOrder = 3
+                WordWrap = True
+                StyleName = 'Windows'
+                OnClick = btnUpdateClick
+              end
+            end
+            object tsFlags: TTabSheet
+              Caption = 'Flags'
+              ImageIndex = 1
+              DesignSize = (
+                513
+                133)
+              object lvChoiceFlagList: TListView
+                Left = 3
+                Top = 2
+                Width = 426
+                Height = 128
+                Anchors = [akLeft, akTop, akRight]
+                Columns = <
+                  item
+                    Caption = 'Flag Name'
+                    Width = 280
+                  end
+                  item
+                    Caption = 'Value'
+                    Width = 100
+                  end
+                  item
+                    Caption = 'idx'
+                    Width = 30
+                  end>
+                Font.Charset = RUSSIAN_CHARSET
+                Font.Color = clWindowText
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = []
+                FullDrag = True
+                GridLines = True
+                HideSelection = False
+                StyleName = 'Windows'
+                ReadOnly = True
+                RowSelect = True
+                ParentFont = False
+                SmallImages = ilSpecial
+                TabOrder = 0
+                ViewStyle = vsReport
+              end
+              object btnAddChoiceFlag: TButton
+                Left = 435
+                Top = 74
+                Width = 75
+                Height = 25
+                Anchors = [akRight, akBottom]
+                Cancel = True
+                Caption = 'Add Flag'
+                TabOrder = 1
+                StyleElements = []
+              end
+              object btnDeleteChoiceFlag: TButton
+                Left = 435
+                Top = 105
+                Width = 75
+                Height = 25
+                Anchors = [akRight, akBottom]
+                Cancel = True
+                Caption = 'Delete'
+                TabOrder = 2
+                StyleElements = []
+              end
+            end
+            object Skills: TTabSheet
+              Caption = 'Skills'
+              ImageIndex = 2
+              DesignSize = (
+                513
+                133)
+              object grpSkillGrp: TGroupBox
+                Left = 3
+                Top = 21
+                Width = 507
+                Height = 109
+                Anchors = [akLeft, akTop, akRight]
+                TabOrder = 0
+                StyleElements = []
+                object lbl1: TLabel
+                  Left = 16
+                  Top = 24
+                  Width = 66
+                  Height = 22
+                  Alignment = taRightJustify
+                  AutoSize = False
+                  Caption = 'Skill: '
+                  Layout = tlCenter
+                end
+                object Label37: TLabel
+                  Left = 16
+                  Top = 64
+                  Width = 66
+                  Height = 22
+                  Alignment = taRightJustify
+                  AutoSize = False
+                  Caption = 'At Level: '
+                  Layout = tlCenter
+                end
+                object cmbSkill: TComboBox
+                  Left = 88
+                  Top = 24
+                  Width = 257
+                  Height = 23
+                  Style = csDropDownList
+                  TabOrder = 0
+                  StyleElements = []
+                end
+                object cmbSkillAtLevel: TComboBox
+                  Left = 88
+                  Top = 64
+                  Width = 257
+                  Height = 23
+                  Style = csDropDownList
+                  ItemIndex = 0
+                  TabOrder = 1
+                  Text = 'Novice'
+                  StyleElements = []
+                  Items.Strings = (
+                    'Novice'
+                    'Intermedia'
+                    'Advanced '
+                    'Master')
+                end
+                object btnPickSkill: TButton
+                  Left = 351
+                  Top = 24
+                  Width = 21
+                  Height = 22
+                  Caption = '...'
+                  TabOrder = 2
+                  StyleElements = []
+                end
+              end
+              object chkReqSkill: TCheckBox
+                Left = 32
+                Top = 17
+                Width = 97
+                Height = 22
+                Anchors = [akLeft, akTop, akBottom]
+                Caption = 'Requires Skill:'
+                TabOrder = 1
+                StyleElements = []
+                OnClick = chkReqSkillClick
+              end
+            end
+          end
         end
       end
     end
@@ -505,7 +836,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         Left = 0
         Top = 0
         Width = 548
-        Height = 377
+        Height = 373
         Align = alClient
         Caption = ' Set Flags: '
         Color = 13226452
@@ -515,10 +846,10 @@ object frmEventInsAdd: TfrmEventInsAdd
         StyleElements = []
         DesignSize = (
           548
-          377)
+          373)
         object lblDblClickTip: TLabel
           Left = 332
-          Top = 335
+          Top = 327
           Width = 203
           Height = 28
           Anchors = [akRight, akBottom]
@@ -531,7 +862,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Left = 16
           Top = 24
           Width = 519
-          Height = 305
+          Height = 297
           Anchors = [akLeft, akTop, akRight, akBottom]
           Columns = <
             item
@@ -572,7 +903,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object btnAddSetFlag: TButton
           Left = 22
-          Top = 335
+          Top = 327
           Width = 111
           Height = 25
           Anchors = [akRight, akBottom]
@@ -583,7 +914,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object btnDeleteSetFlag: TButton
           Left = 139
-          Top = 335
+          Top = 327
           Width = 111
           Height = 25
           Anchors = [akRight, akBottom]
@@ -602,7 +933,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         Left = 0
         Top = 0
         Width = 548
-        Height = 377
+        Height = 373
         Align = alClient
         Caption = ' Check Flags: '
         Color = 13226452
@@ -618,10 +949,10 @@ object frmEventInsAdd: TfrmEventInsAdd
         StyleElements = []
         DesignSize = (
           548
-          377)
+          373)
         object Label9: TLabel
           Left = 113
-          Top = 352
+          Top = 344
           Width = 135
           Height = 15
           Anchors = [akRight, akBottom]
@@ -639,7 +970,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Left = 16
           Top = 24
           Width = 519
-          Height = 288
+          Height = 280
           Anchors = [akLeft, akTop, akRight, akBottom]
           Columns = <
             item
@@ -674,7 +1005,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object btnAddCheckFlag: TButton
           Left = 22
-          Top = 318
+          Top = 310
           Width = 111
           Height = 25
           Anchors = [akRight, akBottom]
@@ -691,7 +1022,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object btnDeleteCheckFlag: TButton
           Left = 139
-          Top = 318
+          Top = 310
           Width = 111
           Height = 25
           Anchors = [akRight, akBottom]
@@ -708,7 +1039,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object cmbChkFlgJumpToLabel: TComboBox
           Left = 264
-          Top = 349
+          Top = 341
           Width = 271
           Height = 23
           Style = csDropDownList
@@ -732,7 +1063,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         Left = 0
         Top = 0
         Width = 548
-        Height = 377
+        Height = 373
         Align = alClient
         Caption = ' Check Object: '
         Color = 13226452
@@ -742,7 +1073,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         StyleElements = []
         DesignSize = (
           548
-          377)
+          373)
         object Label10: TLabel
           Left = 24
           Top = 76
@@ -813,7 +1144,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         Left = 0
         Top = 0
         Width = 548
-        Height = 377
+        Height = 373
         Align = alClient
         Caption = ' Transfer Object: '
         Color = 13226452
@@ -823,7 +1154,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         StyleElements = []
         DesignSize = (
           548
-          377)
+          373)
         object Label12: TLabel
           Left = 16
           Top = 28
@@ -990,7 +1321,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         Left = 0
         Top = 0
         Width = 548
-        Height = 377
+        Height = 373
         Align = alClient
         Caption = ' Move Camera: '
         Color = 13226452
@@ -1000,7 +1331,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         StyleElements = []
         DesignSize = (
           548
-          377)
+          373)
         object Label17: TLabel
           Left = 48
           Top = 308
@@ -1117,7 +1448,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         Left = 0
         Top = 0
         Width = 548
-        Height = 377
+        Height = 373
         Align = alClient
         Caption = ' Play Animation (Implemented in TNM?): '
         Color = 13226452
@@ -1127,7 +1458,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         StyleElements = []
         DesignSize = (
           548
-          377)
+          373)
         object Label18: TLabel
           Left = 32
           Top = 44
@@ -1295,7 +1626,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         Left = 0
         Top = 0
         Width = 548
-        Height = 377
+        Height = 373
         Align = alClient
         Caption = ' Buy/Sell/Trade: '
         Color = 13226452
@@ -1307,7 +1638,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Left = 2
           Top = 17
           Width = 544
-          Height = 358
+          Height = 354
           Align = alClient
           Alignment = taCenter
           AutoSize = False
@@ -1327,7 +1658,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         Left = 0
         Top = 0
         Width = 548
-        Height = 377
+        Height = 373
         Align = alClient
         Caption = ' Jump: '
         Color = 13226452
@@ -1337,7 +1668,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         StyleElements = []
         DesignSize = (
           548
-          377)
+          373)
         object Label22: TLabel
           Left = 32
           Top = 108
@@ -1398,7 +1729,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         Left = 0
         Top = 0
         Width = 548
-        Height = 377
+        Height = 373
         Align = alClient
         Caption = ' Jump to Random Label: '
         Color = 13226452
@@ -1408,7 +1739,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         StyleElements = []
         DesignSize = (
           548
-          377)
+          373)
         object lblTargets: TLabel
           Left = 37
           Top = 32
@@ -1419,7 +1750,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object Label25: TLabel
           Left = 38
-          Top = 320
+          Top = 312
           Width = 36
           Height = 15
           Anchors = [akRight, akBottom]
@@ -1429,7 +1760,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object btnAddRandomLabel: TButton
           Left = 426
-          Top = 340
+          Top = 332
           Width = 111
           Height = 25
           Anchors = [akRight, akBottom]
@@ -1463,7 +1794,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object chkCycleEvents: TCheckBox
           Left = 38
-          Top = 295
+          Top = 287
           Width = 97
           Height = 17
           Anchors = [akRight, akBottom]
@@ -1474,7 +1805,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object chkCycleOnce: TCheckBox
           Left = 158
-          Top = 295
+          Top = 287
           Width = 145
           Height = 17
           Anchors = [akRight, akBottom]
@@ -1485,7 +1816,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object chkRandomAfterCycle: TCheckBox
           Left = 289
-          Top = 295
+          Top = 287
           Width = 131
           Height = 17
           Anchors = [akRight, akBottom]
@@ -1498,7 +1829,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Left = 38
           Top = 48
           Width = 382
-          Height = 241
+          Height = 233
           Style = lbOwnerDrawFixed
           Anchors = [akLeft, akTop, akRight, akBottom]
           ExtendedSelect = False
@@ -1508,7 +1839,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object cmbEventRandomLabels: TComboBox
           Left = 38
-          Top = 340
+          Top = 332
           Width = 382
           Height = 23
           AutoCloseUp = True
@@ -1528,7 +1859,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object Panel1: TPanel
           Left = 78
-          Top = 327
+          Top = 319
           Width = 459
           Height = 3
           Anchors = [akRight, akBottom]
@@ -1550,7 +1881,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         Left = 0
         Top = 0
         Width = 548
-        Height = 377
+        Height = 373
         Align = alClient
         Caption = ' Trigger: '
         Color = 13226452
@@ -1586,7 +1917,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         Left = 0
         Top = 0
         Width = 548
-        Height = 377
+        Height = 373
         Align = alClient
         Caption = ' Add/Complete Goal: '
         Color = 13226452
@@ -1679,7 +2010,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         Left = 0
         Top = 0
         Width = 548
-        Height = 377
+        Height = 373
         Align = alClient
         Caption = ' Add Note: '
         Color = 13226452
@@ -1689,7 +2020,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         StyleElements = []
         DesignSize = (
           548
-          377)
+          373)
         object Label27: TLabel
           Left = 16
           Top = 29
@@ -1704,7 +2035,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Left = 16
           Top = 48
           Width = 519
-          Height = 312
+          Height = 304
           Anchors = [akLeft, akTop, akRight, akBottom]
           Ctl3D = True
           Font.Charset = RUSSIAN_CHARSET
@@ -1729,14 +2060,14 @@ object frmEventInsAdd: TfrmEventInsAdd
         Left = 0
         Top = 0
         Width = 548
-        Height = 377
+        Height = 373
         Align = alClient
         Caption = ' Add Skill Points: '
         TabOrder = 0
         StyleElements = []
         DesignSize = (
           548
-          377)
+          373)
         object Label28: TLabel
           Left = 16
           Top = 93
@@ -1761,7 +2092,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Left = 16
           Top = 114
           Width = 519
-          Height = 246
+          Height = 238
           Anchors = [akLeft, akTop, akRight, akBottom]
           Ctl3D = True
           Font.Charset = RUSSIAN_CHARSET
@@ -1800,14 +2131,14 @@ object frmEventInsAdd: TfrmEventInsAdd
         Left = 0
         Top = 0
         Width = 548
-        Height = 377
+        Height = 373
         Align = alClient
         Caption = ' Add Credits: '
         TabOrder = 0
         StyleElements = []
         DesignSize = (
           548
-          377)
+          373)
         object Label30: TLabel
           Left = 16
           Top = 35
@@ -1850,7 +2181,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         Left = 0
         Top = 0
         Width = 548
-        Height = 377
+        Height = 373
         Align = alClient
         Caption = ' Check Persona: '
         Color = 13226452
@@ -1989,7 +2320,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         Left = 0
         Top = 0
         Width = 548
-        Height = 377
+        Height = 373
         Align = alClient
         Caption = ' Comment: '
         Color = 13226452
@@ -1999,7 +2330,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         StyleElements = []
         DesignSize = (
           548
-          377)
+          373)
         object Label35: TLabel
           Left = 16
           Top = 29
@@ -2014,7 +2345,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Left = 16
           Top = 48
           Width = 519
-          Height = 312
+          Height = 304
           Anchors = [akLeft, akTop, akRight, akBottom]
           Ctl3D = True
           Font.Charset = RUSSIAN_CHARSET
@@ -2039,7 +2370,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         Left = 0
         Top = 0
         Width = 548
-        Height = 377
+        Height = 373
         Align = alClient
         Caption = ' End: '
         Color = 13226452
@@ -2051,7 +2382,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Left = 2
           Top = 17
           Width = 544
-          Height = 358
+          Height = 354
           Align = alClient
           Alignment = taCenter
           AutoSize = False
@@ -2068,7 +2399,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   end
   object btnClose: TButton
     Left = 445
-    Top = 565
+    Top = 561
     Width = 111
     Height = 25
     Anchors = [akRight, akBottom]
@@ -2079,7 +2410,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   end
   object btnPrevEvent: TButton
     Left = 128
-    Top = 534
+    Top = 530
     Width = 97
     Height = 25
     Anchors = [akRight, akBottom]
@@ -2090,7 +2421,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   end
   object btnNextEvent: TButton
     Left = 128
-    Top = 565
+    Top = 561
     Width = 97
     Height = 25
     Anchors = [akRight, akBottom]
@@ -2101,7 +2432,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   end
   object btnAddEvent: TButton
     Left = 8
-    Top = 534
+    Top = 530
     Width = 97
     Height = 25
     Anchors = [akRight, akBottom]
@@ -2112,7 +2443,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   end
   object btnInsertEvent: TButton
     Left = 8
-    Top = 565
+    Top = 561
     Width = 97
     Height = 25
     Anchors = [akRight, akBottom]
@@ -2122,7 +2453,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   end
   object chAlphaBlend: TCheckBox
     Left = 296
-    Top = 565
+    Top = 561
     Width = 105
     Height = 25
     Cursor = crHandPoint
@@ -2135,7 +2466,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   end
   object btnUpdate: TBitBtn
     Left = 445
-    Top = 530
+    Top = 526
     Width = 111
     Height = 29
     Cursor = crHandPoint
@@ -2150,7 +2481,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   end
   object btnHelp: TBitBtn
     Left = 248
-    Top = 565
+    Top = 561
     Width = 25
     Height = 25
     Cursor = crHelp
@@ -2169,8 +2500,8 @@ object frmEventInsAdd: TfrmEventInsAdd
     OnClick = btnHelpClick
   end
   object mp1: TMediaPlayer
-    Left = 192
-    Top = 477
+    Left = 216
+    Top = 224
     Width = 57
     Height = 30
     VisibleButtons = [btPlay, btPause]
@@ -2182,7 +2513,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   end
   object mp3VolumeControl: TTrackBar
     Left = 248
-    Top = 539
+    Top = 535
     Width = 153
     Height = 23
     Cursor = crSizeWE
@@ -2222,8 +2553,8 @@ object frmEventInsAdd: TfrmEventInsAdd
   end
   object MemoPopup: TPopupMenu
     OnPopup = MemoPopupPopup
-    Left = 272
-    Top = 344
+    Left = 280
+    Top = 232
     object Cut1: TMenuItem
       Action = EditCut1
     end
@@ -2278,8 +2609,8 @@ object frmEventInsAdd: TfrmEventInsAdd
     end
   end
   object ActionList1: TActionList
-    Left = 80
-    Top = 240
+    Left = 72
+    Top = 248
     object EditCut1: TEditCut
       Category = 'Edit'
       Caption = 'Cu&t'
@@ -2328,14 +2659,14 @@ object frmEventInsAdd: TfrmEventInsAdd
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = []
-    Left = 512
-    Top = 264
+    Left = 88
+    Top = 208
   end
   object ilSpecial: TImageList
     Height = 20
     Width = 20
     Left = 146
-    Top = 434
+    Top = 186
     Bitmap = {
       494C010101002000040014001400FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000500000001400000001002000000000000019
@@ -2555,7 +2886,7 @@ object frmEventInsAdd: TfrmEventInsAdd
     Enabled = False
     Interval = 35
     OnTimer = mp3posUpdateTimerTimer
-    Left = 168
-    Top = 246
+    Left = 184
+    Top = 230
   end
 end
