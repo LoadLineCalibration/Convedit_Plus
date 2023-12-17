@@ -734,7 +734,7 @@ end;
 
 procedure TfrmMain.AddLog(msg: string);
 begin
-//    mmoOutput.Lines.Add(msg);
+    mmoOutput.Lines.Add(msg);
 end;
 
 function TfrmMain.GetReorderButtonHint(): string;
@@ -1082,7 +1082,8 @@ begin
         for var E:= 0 to EventChoice.NumChoices -1 do begin
 
             Inc(tempRect.Top, 17);
-            if EventChoice.Choices[E].bSkillNeeded = 0 then begin // skill required = true
+            if EventChoice.Choices[E].bSkillNeeded <> -1 then
+            begin // bSkillNedded <>  -1, i.e. true
                 if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clNavy;
 
                 DrawText(handle, Format(strChoiceWithSkills, [EventChoice.Choices[E].textline,
@@ -1091,15 +1092,17 @@ begin
                                                               EventChoice.Choices[E].mp3]),
                                                               -1, TempRect, DT_END_ELLIPSIS);
 
-                if Length(EventChoice.Choices[E].RequiredFlags) > 0 then begin
+                if Length(EventChoice.Choices[E].RequiredFlags) > 0 then
+                begin
 
                     Font.Name := CEP_EVENT_LIST_FONT_NAME;
                     Font.Size := CEP_EVENT_LIST_FONT_SIZE;
                     if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clYellow else Font.Color := clBlue;
 
+                        FlagsStr := '';
                     for var F := 0 to Length(EventChoice.Choices[E].RequiredFlags) -1 do begin
-                        FlagsStr :=  FlagsStr + '[' + EventChoice.Choices[E].RequiredFlags[F].flagName + '='
-                                           + BoolToStr(EventChoice.Choices[E].RequiredFlags[F].flagValue, True) + '] ';
+                        FlagsStr := FlagsStr + '[' + EventChoice.Choices[E].RequiredFlags[F].flagName + '='
+                                         + BoolToStr(EventChoice.Choices[E].RequiredFlags[F].flagValue, True) + '] ';
                     end;
 
                     Inc(tempRect.Top, 17);
@@ -1108,7 +1111,8 @@ begin
                     Font.Name := CEP_SPEECH_EVENT_FONT;
                     Font.Size := CEP_SPEECH_EVENT_FONT_SIZE;
                 end;
-            end else begin
+            end else
+            begin // bSkillNeeded = 0 or greater
                 if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clNavy;
 
                 DrawText(handle, Format(strChoiceNoSkills, [EventChoice.Choices[E].textline,
@@ -1122,9 +1126,11 @@ begin
                     Font.Size := CEP_EVENT_LIST_FONT_SIZE;
                     if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clYellow else Font.Color := clBlue;
 
-                    for var F := 0 to Length(EventChoice.Choices[E].RequiredFlags) -1 do begin
+                        FlagsStr := '';
+                    for var F := 0 to Length(EventChoice.Choices[E].RequiredFlags) -1 do
+                    begin
                         FlagsStr :=  FlagsStr + '[' + EventChoice.Choices[E].RequiredFlags[F].flagName + '='
-                                           + BoolToStr(EventChoice.Choices[E].RequiredFlags[F].flagValue, True) + '] ';
+                                          + BoolToStr(EventChoice.Choices[E].RequiredFlags[F].flagValue, True) + '] ';
                     end;
 
                     Inc(tempRect.Top, 17);
@@ -2284,6 +2290,13 @@ var
     labelStr: string;
     tempRect: TRect;
 begin
+//    if ConEventList.Items.Count < 1 then
+//        Exit();
+
+//    if Assigned(ConEventList.Items.Objects[Index]) = false then
+//        Exit();
+
+
     with (Control as TListBox).Canvas do
     begin
         Font.Size := CEP_EVENT_LIST_FONT_SIZE;
@@ -2459,7 +2472,8 @@ procedure TfrmMain.ConvoTreeChange(Sender: TObject; Node: TTreeNode);
 begin
     ConEventList.Enabled := Node.Level <> 2;
 
-    if Node.Level >= 1 then
+    //if Node.Level >= 1 then
+    if Node.Level = 1 then
        CurrentConversation := TConversation(Node.Data)
     else
     begin
@@ -2517,7 +2531,7 @@ end;
 
 procedure TfrmMain.ConvoTreeEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
 begin
-    AllowEdit := Node.Level = 1;  // only allow editing level 1 (conversation name)
+    AllowEdit := False; //Node.Level = 1;  // only allow editing level 1 (conversation name)
 end;
 
 procedure TfrmMain.End1Click(Sender: TObject);

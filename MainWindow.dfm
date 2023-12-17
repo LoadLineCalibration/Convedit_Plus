@@ -93,6 +93,8 @@ object frmMain: TfrmMain
       StyleName = 'Windows'
       OnChange = ConvoTreeChange
       OnEditing = ConvoTreeEditing
+      ExplicitLeft = 4
+      ExplicitTop = -1
     end
   end
   object pnlToolBar: TPanel
@@ -375,6 +377,8 @@ object frmMain: TfrmMain
       OnDrawItem = ConEventListDrawItem
       OnMeasureItem = ConEventListMeasureItem
       OnMouseDown = ConEventListMouseDown
+      ExplicitLeft = 1
+      ExplicitTop = 16
     end
     object HeaderControl1: THeaderControl
       Left = 2
