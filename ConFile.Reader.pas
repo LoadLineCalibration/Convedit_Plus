@@ -8,8 +8,8 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
-  Vcl.Dialogs, winapi.ActiveX, ConvEditPlus_Const,
-  Conversation.Classes, system.TypInfo, vcl.ComCtrls;
+  Vcl.Dialogs, winapi.ActiveX, ConvEditPlus_Const, Conversation.Classes, system.TypInfo,
+  vcl.ComCtrls;
 
 procedure LoadConFile(conFile: string);
 
@@ -81,12 +81,12 @@ begin
     ConRead := TBinaryReader.Create(fileStr, TEncoding.ANSI, False);
 
     var headerBytes := ConRead.ReadBytes(26);
-
+{
     if CompareMem(headerBytes, @conFileHeader, 26) = False then
     begin
         MessageDlg(strInvalidConFileHdr,  mtError, [mbOK], 0);
         Exit();
-    end;
+    end; }
 
 try
     with frmMain do
@@ -593,6 +593,7 @@ begin
     frmMain.AddLog('choice bClearScreen = ' + BoolToStr(choiceEvent.bClearScreen, True));
 
     choiceEvent.NumChoices := ConRead.ReadInteger();
+    choiceEvent.NumFlagsStrings := choiceEvent.NumChoices; // for event item height
     frmMain.AddLog('choice NumChoices = ' + choiceEvent.NumChoices.ToString);
 
     SetLength(choiceEvent.Choices, choiceEvent.NumChoices);
