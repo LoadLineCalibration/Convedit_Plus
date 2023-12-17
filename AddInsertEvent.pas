@@ -94,7 +94,6 @@ type
     btnInsertEvent: TButton;
     btnAddChoice: TButton;
     btnMoveDownChoice: TButton;
-    btnEditChoice: TButton;
     btnDeleteChoice: TButton;
     btnMoveUpChoice: TButton;
     chkClearScreen: TCheckBox;
@@ -203,7 +202,6 @@ type
     ilSpecial: TImageList;
     mp1: TMediaPlayer;
     mp3posUpdateTimer: TTimer;
-    chkDblClickToPlay: TCheckBox;
     mp3VolumeControl: TTrackBar;
     mp3Pos_pb: TProgressBar;
     editConditionValue: TSpinEdit;
@@ -224,12 +222,13 @@ type
     grpSkillGrp: TGroupBox;
     lbl1: TLabel;
     Label37: TLabel;
-    cmbSkill: TComboBox;
-    cmbSkillAtLevel: TComboBox;
+    cmbChoiceItemSkill: TComboBox;
+    cmbChoiceItemSkillAtLevel: TComboBox;
     btnPickSkill: TButton;
     chkReqSkill: TCheckBox;
     ChoiceEditPanel: TEsPanel;
-    btnSaveChoice: TBitBtn;
+    btnSaveChoiceItem: TBitBtn;
+    StaticText1: TStaticText;
     // new procedures
     procedure UpdateControlsState();
     procedure UpdateAddRandomLabelButtonState();
@@ -333,7 +332,6 @@ type
     procedure btnAddCheckFlagClick(Sender: TObject);
     procedure btnDeleteChoiceClick(Sender: TObject);
     procedure lvChoiceListChange(Sender: TObject; Item: TListItem; Change: TItemChange);
-    procedure btnEditChoiceClick(Sender: TObject);
     procedure lvSetFlagsChange(Sender: TObject; Item: TListItem; Change: TItemChange);
     procedure btnMoveUpChoiceClick(Sender: TObject);
     procedure btnMoveDownChoiceClick(Sender: TObject);
@@ -348,8 +346,6 @@ type
     procedure mp3VolumeControlChange(Sender: TObject);
     procedure lvSetFlagsDblClick(Sender: TObject);
     procedure lvCheckFlagsDblClick(Sender: TObject);
-    procedure chkDblClickToPlayClick(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure btnAddEventClick(Sender: TObject);
     procedure FormMouseWheelDown(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
     procedure editConditionValueChange(Sender: TObject);
@@ -358,6 +354,9 @@ type
     procedure lvChoiceListDblClick(Sender: TObject);
     procedure lvChoiceListClick(Sender: TObject);
     procedure chkReqSkillClick(Sender: TObject);
+    procedure btnSaveChoiceItemClick(Sender: TObject);
+    procedure btnAddChoiceFlagClick(Sender: TObject);
+    procedure lvChoiceFlagListDblClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -750,16 +749,6 @@ begin
     lblStatus.Caption := msg;
 end;
 
-{procedure TfrmEventInsAdd.CopyChoiceRecToObj(source: TChoiceItem; dest: TChoiceItemObject);
-begin
-    SetLength(dest.RequiredFlags, Length(source.RequiredFlags)); // set length
-
-    for var i:= 0 to High(source.RequiredFlags) do begin
-        dest.RequiredFlags[i] := source.RequiredFlags[i];
-        frmMain.AddLog(source.RequiredFlags[i].flagName + ' copied to ' + dest.RequiredFlags[i].flagName);
-    end;
-end; }
-
 function TfrmEventInsAdd.GetChoiceItemSpeech(ChoiceItem: TChoiceItemObject): string;
 begin
     if (ChoiceItem.mp3 <> '') and (ChoiceItem.bDisplayAsSpeech = true) then // Only play audio if bDisplayAsSpeech = true and has required audio file
@@ -854,7 +843,17 @@ begin
       Exit();
     end;
 
+    SetLength(choice.Choices, lvChoiceList.Items.Count);
+    for var ch := 0 to lvChoiceList.Items.Count -1 do
+    begin
+        choice.Choices[ch] := TChoiceItemObject(lvChoiceList.Items[ch].data);
+        choice.NumChoices := Length(choice.Choices);
+        choice.NumFlagsStrings := choice.NumChoices;
+    end;
 
+    frmMain.ConEventList.Items.ValueFromIndex[frmMain.ConEventList.ItemIndex] := frmMain.GetNumChoiceLines([choice]).ToString;
+
+    RepaintCurrentEvent();
 end;
 
 procedure TfrmEventInsAdd.ValidateSetFlags(setFlags: TConEventSetFlag);
@@ -1219,6 +1218,11 @@ begin
     frmEditChoice.ShowModal();
 end;
 
+procedure TfrmEventInsAdd.btnAddChoiceFlagClick(Sender: TObject);
+begin
+    frmFlagList.ShowModalCheckFlags(lvChoiceFlagList);
+end;
+
 procedure TfrmEventInsAdd.btnAddEventClick(Sender: TObject);
 begin
     if (chkAutoSwapSpeaker.Checked = true) and (cmbEventType.ItemIndex = Ord(ET_Speech)) then
@@ -1270,20 +1274,6 @@ procedure TfrmEventInsAdd.btnEditCameraSpecialPosClick(Sender: TObject);
 begin
     Application.MessageBox('This feature is not implemented (and probably not implemented in game code?)', 'Not implemented',
     MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
-end;
-
-procedure TfrmEventInsAdd.btnEditChoiceClick(Sender: TObject);
-begin
-    if lvChoiceList.ItemIndex = -1 then Exit();
-
-    var tempChoicemp3:= GetChoiceItemSpeech(lvChoiceList.Items[lvChoiceList.ItemIndex].Data);
-
-    if (chkDblClickToPlay.Checked) and (tempChoicemp3 <> '')  then begin
-       PlayMP3Speech(tempChoicemp3);
-       Exit();
-    end;
-
-    frmEditChoice.ShowModalAndLoadChoice(lvChoiceList);
 end;
 
 procedure TfrmEventInsAdd.btnFindObjectClick(Sender: TObject);
@@ -1392,6 +1382,43 @@ begin
        lstRandomLabels.Items.Delete(lstRandomLabels.ItemIndex);
 end;
 
+procedure TfrmEventInsAdd.btnSaveChoiceItemClick(Sender: TObject);
+begin
+    var ChoiceItemData := lvChoiceList.Items[lvChoiceList.ItemIndex].Data;
+    if Assigned(ChoiceItemData) then
+    begin
+        // Update stored object
+        TChoiceItemObject(ChoiceItemData).textline := mmoChoiceText.Text;
+        TChoiceItemObject(ChoiceItemData).GoToLabel := cbbChoiceJumpToLabel.Items[cbbChoiceJumpToLabel.ItemIndex];
+        TChoiceItemObject(ChoiceItemData).bDisplayAsSpeech := chkDisplayChoiceAsSpeech.Checked;
+
+        // and displayed text
+        lvChoiceList.Items[lvChoiceList.ItemIndex].Caption := TChoiceItemObject(ChoiceItemData).textline; // Text
+        lvChoiceList.Items[lvChoiceList.ItemIndex].SubItems[0] := TChoiceItemObject(ChoiceItemData).GoToLabel; // Jump to label
+
+
+        SetLength(TChoiceItemObject(ChoiceItemData).RequiredFlags, lvChoiceFlagList.Items.Count); // set array length
+        for var chFLG := 0 to lvChoiceFlagList.Items.Count -1 do // write flags from ListView
+        begin
+            TChoiceItemObject(ChoiceItemData).RequiredFlags[chFLG].flagName := lvChoiceFlagList.Items[chFLG].Caption;
+            TChoiceItemObject(ChoiceItemData).RequiredFlags[chFLG].flagValue := lvChoiceFlagList.Items[chFLG].SubItems[0].ToBoolean;
+            TChoiceItemObject(ChoiceItemData).RequiredFlags[chFLG].flagIndex := lvChoiceFlagList.Items[chFLG].SubItems[1].ToInteger;
+            TChoiceItemObject(ChoiceItemData).RequiredFlags[chFLG].flagExpiration := 0; // just in case...
+        end;
+
+        if chkReqSkill.Checked = False then
+        begin
+            TChoiceItemObject(ChoiceItemData).bSkillNeeded := -1;
+        end
+        else if chkReqSkill.Checked = True then
+        begin
+            TChoiceItemObject(ChoiceItemData).bSkillNeeded := cmbChoiceItemSkill.ItemIndex;
+            TChoiceItemObject(ChoiceItemData).Skill := cmbChoiceItemSkill.Items[cmbChoiceItemSkill.ItemIndex];
+            TChoiceItemObject(ChoiceItemData).SkillLevel := cmbChoiceItemSkillAtLevel.ItemIndex;
+        end;
+    end;
+end;
+
 procedure TfrmEventInsAdd.btnSpeakingFromActorClick(Sender: TObject);
 begin
     frmMain.PickTableObject(tmActorsPawns, cmbSpeakingFrom);
@@ -1448,15 +1475,15 @@ begin
     end;
 end;
 
-procedure TfrmEventInsAdd.chkDblClickToPlayClick(Sender: TObject);
-begin
-    btnEditChoice.Visible := not chkDblClickToPlay.Checked;
-end;
-
 procedure TfrmEventInsAdd.chkReqSkillClick(Sender: TObject);
 begin
     for var i := 0 to grpSkillGrp.ControlCount -1  do
         grpSkillGrp.Controls[i].Enabled := chkReqSkill.Checked;
+
+    if  (cmbChoiceItemSkill.Items.Count > 0) and (chkReqSkill.Checked = true) then
+    begin
+        cmbChoiceItemSkill.ItemIndex := 0;
+    end;
 end;
 
 procedure TfrmEventInsAdd.chkSpeechWordWrapClick(Sender: TObject);
@@ -1614,14 +1641,14 @@ begin
     end;
 end;
 
-procedure TfrmEventInsAdd.FormShow(Sender: TObject);
-begin
-    btnEditChoice.Visible := not chkDblClickToPlay.Checked;
-end;
-
 procedure TfrmEventInsAdd.lvCheckFlagsDblClick(Sender: TObject);
 begin
     frmMain.ToggleLV_FlagValue(lvCheckFlags);
+end;
+
+procedure TfrmEventInsAdd.lvChoiceFlagListDblClick(Sender: TObject);
+begin
+    frmMain.ToggleLV_FlagValue(lvChoiceFlagList);
 end;
 
 procedure TfrmEventInsAdd.lvChoiceListChange(Sender: TObject; Item: TListItem; Change: TItemChange);
@@ -1629,11 +1656,9 @@ begin
     with lvChoiceList do
     begin
         if ((ItemIndex = -1) or (Items.Count < 1)) then begin
-          btnEditChoice.Enabled := False;
           btnDeleteChoice.Enabled := False;
         end
         else begin
-          btnEditChoice.Enabled := true;
           btnDeleteChoice.Enabled := true;
         end;
 
@@ -1673,11 +1698,11 @@ begin
                 choiceFlagItem.SubItems.Add(choiceItemObj.RequiredFlags[FL].flagIndex.ToString);
             end;
 
-            cmbSkill.Clear();
-            cmbSkill.Items := frmMain.conFileParameters.fpSkills;
-            cmbSkill.ItemIndex := cmbSkill.Items.IndexOf(choiceItemObj.Skill);
+            cmbChoiceItemSkill.Clear();
+            cmbChoiceItemSkill.Items := frmMain.conFileParameters.fpSkills;
+            cmbChoiceItemSkill.ItemIndex := cmbChoiceItemSkill.Items.IndexOf(choiceItemObj.Skill);
 
-            cmbSkillAtLevel.ItemIndex := choiceItemObj.SkillLevel;
+            cmbChoiceItemSkillAtLevel.ItemIndex := choiceItemObj.SkillLevel;
 
             chkReqSkill.Checked := choiceItemObj.bSkillNeeded <> -1;
             chkReqSkillClick(chkReqSkill);
@@ -1690,7 +1715,8 @@ begin
 
     var tempChoicemp3:= GetChoiceItemSpeech(lvChoiceList.Items[lvChoiceList.ItemIndex].Data);
 
-    if (chkDblClickToPlay.Checked) and (tempChoicemp3 <> '')  then begin
+    if tempChoicemp3 <> '' then
+    begin
        PlayMP3Speech(tempChoicemp3);
        Exit();
     end;

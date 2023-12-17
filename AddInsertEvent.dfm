@@ -58,7 +58,6 @@ object frmEventInsAdd: TfrmEventInsAdd
   OnCreate = FormCreate
   OnMouseWheelDown = FormMouseWheelDown
   OnMouseWheelUp = FormMouseWheelUp
-  OnShow = FormShow
   DesignSize = (
     564
     594)
@@ -376,11 +375,12 @@ object frmEventInsAdd: TfrmEventInsAdd
         Height = 373
         Align = alClient
         Caption = ' Choice: '
-        Color = 13226452
+        Color = clBtnFace
         ParentBackground = False
         ParentColor = False
         TabOrder = 0
         StyleElements = []
+        ExplicitTop = 4
         DesignSize = (
           548
           373)
@@ -399,7 +399,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object btnMoveDownChoice: TButton
           Left = 455
-          Top = 148
+          Top = 117
           Width = 25
           Height = 25
           Hint = 'Move down (change order)'
@@ -418,23 +418,9 @@ object frmEventInsAdd: TfrmEventInsAdd
           StyleName = 'Windows'
           OnClick = btnMoveDownChoiceClick
         end
-        object btnEditChoice: TButton
-          Left = 455
-          Top = 55
-          Width = 80
-          Height = 25
-          Anchors = [akTop, akRight]
-          Caption = 'Edit...'
-          Constraints.MaxHeight = 25
-          Constraints.MaxWidth = 80
-          Enabled = False
-          TabOrder = 3
-          StyleElements = []
-          OnClick = btnEditChoiceClick
-        end
         object btnDeleteChoice: TButton
           Left = 455
-          Top = 86
+          Top = 55
           Width = 80
           Height = 25
           Anchors = [akTop, akRight]
@@ -442,13 +428,13 @@ object frmEventInsAdd: TfrmEventInsAdd
           Constraints.MaxHeight = 25
           Constraints.MaxWidth = 80
           Enabled = False
-          TabOrder = 4
+          TabOrder = 3
           StyleElements = []
           OnClick = btnDeleteChoiceClick
         end
         object btnMoveUpChoice: TButton
           Left = 455
-          Top = 117
+          Top = 86
           Width = 25
           Height = 25
           Hint = 'Move up (change order)'
@@ -463,27 +449,27 @@ object frmEventInsAdd: TfrmEventInsAdd
           Font.Name = 'Marlett'
           Font.Style = [fsBold]
           ParentFont = False
-          TabOrder = 5
+          TabOrder = 4
           StyleName = 'Windows'
           OnClick = btnMoveUpChoiceClick
         end
         object chkClearScreen: TCheckBox
-          Left = 216
-          Top = 345
+          Left = 14
+          Top = 349
           Width = 241
           Height = 17
           Anchors = [akLeft, akBottom]
           Caption = 'Clear Screen before displaying choices?'
           DoubleBuffered = True
           ParentDoubleBuffered = False
-          TabOrder = 6
+          TabOrder = 5
           StyleElements = []
         end
         object lvChoiceList: TListView
           Left = 14
           Top = 21
           Width = 435
-          Height = 149
+          Height = 132
           Anchors = [akLeft, akTop, akRight, akBottom]
           Columns = <
             item
@@ -498,6 +484,7 @@ object frmEventInsAdd: TfrmEventInsAdd
               Caption = 'idx'
               Width = 30
             end>
+          DoubleBuffered = True
           Font.Charset = RUSSIAN_CHARSET
           Font.Color = clWindowText
           Font.Height = -13
@@ -508,6 +495,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           HideSelection = False
           StyleName = 'Windows'
           RowSelect = True
+          ParentDoubleBuffered = False
           ParentFont = False
           SmallImages = ilSpecial
           TabOrder = 0
@@ -517,50 +505,46 @@ object frmEventInsAdd: TfrmEventInsAdd
           OnDblClick = lvChoiceListDblClick
           OnEditing = lvSetFlagsEditing
         end
-        object chkDblClickToPlay: TCheckBox
-          Left = 16
-          Top = 345
-          Width = 194
-          Height = 17
-          Hint = 
-            'Use double click to play selected choice audio, otherwise edit t' +
-            'he choice item as usually. '#13#10'Works only if audio file is present' +
-            '.'
-          Anchors = [akLeft, akBottom]
-          Caption = 'DblClick to play choice audio?'
-          DoubleBuffered = True
-          ParentDoubleBuffered = False
-          TabOrder = 7
-          WordWrap = True
-          StyleName = 'Windows'
-          OnClick = chkDblClickToPlayClick
-        end
         object ChoiceEditPanel: TEsPanel
           Left = 14
           Top = 176
           Width = 521
-          Height = 163
+          Height = 167
           Anchors = [akLeft, akRight, akBottom]
-          TabOrder = 8
+          BorderWidth = 1
+          Color = clSilver
+          DoubleBuffered = True
+          ParentBackground = False
+          ParentColor = False
+          TabOrder = 6
           StyleName = 'Windows'
-          FrameStyle = None
+          FrameStyle = Flat
+          FrameColor = clMaroon
+          FrameWidth = 2
+          DesignSize = (
+            521
+            167)
           object pgcChoiceDetails: TPageControl
-            Left = 0
-            Top = 0
-            Width = 521
-            Height = 163
-            ActivePage = tsGeneral
+            Left = 3
+            Top = 3
+            Width = 515
+            Height = 161
+            ActivePage = Skills
             Align = alClient
             HotTrack = True
-            MultiLine = True
+            Style = tsButtons
             TabOrder = 0
-            TabWidth = 140
+            TabWidth = 130
             StyleName = 'Windows'
+            ExplicitLeft = 2
+            ExplicitTop = 2
+            ExplicitWidth = 517
+            ExplicitHeight = 159
             object tsGeneral: TTabSheet
               Caption = 'Choice text'
               DesignSize = (
-                513
-                133)
+                507
+                128)
               object Label36: TLabel
                 Left = 3
                 Top = 104
@@ -573,16 +557,19 @@ object frmEventInsAdd: TfrmEventInsAdd
               object mmoChoiceText: TMemo
                 Left = 3
                 Top = 3
-                Width = 507
+                Width = 501
                 Height = 95
                 Anchors = [akLeft, akTop, akRight]
+                DoubleBuffered = True
                 HideSelection = False
                 MaxLength = 256
+                ParentDoubleBuffered = False
                 PopupMenu = MemoPopup
                 ScrollBars = ssVertical
                 TabOrder = 0
                 WantReturns = False
                 StyleName = 'Windows'
+                ExplicitWidth = 503
               end
               object chkDisplayChoiceAsSpeech: TCheckBox
                 Left = 198
@@ -605,91 +592,17 @@ object frmEventInsAdd: TfrmEventInsAdd
                 TabOrder = 2
                 StyleElements = []
               end
-              object btnSaveChoice: TBitBtn
-                Left = 437
-                Top = 100
-                Width = 73
-                Height = 30
-                Cursor = crHandPoint
-                Hint = 
-                  'Save current choice, including text, flags, skill and other para' +
-                  'meters'
-                Anchors = [akRight, akBottom]
-                Caption = 'Save'
-                Glyph.Data = {
-                  F6060000424DF606000000000000360000002800000018000000180000000100
-                  180000000000C006000000000000000000000000000000000000FF00FFFF00FF
-                  FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00
-                  FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF
-                  00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF
-                  FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00
-                  FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF
-                  00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF
-                  FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFE9D9C0BF8C
-                  3EB98029C7C3BDC7C3BDC7C3BDC7C3BDC7C3BDC7C3BDC7C3BDC7C3BDC7C3BDC7
-                  C3BDC7C3BDC7C3BDB98029BF8D3EE9DAC2FF00FFFF00FFFF00FFFF00FFFF00FF
-                  FF00FFC68E3BD79532DB9834F1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0
-                  ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECDB9834D79633C78F3CFF00FFFF00FFFF
-                  00FFFF00FFFF00FFFF00FFD79532DB9834DB9834F1F0ECF1F0ECF1F0ECF1F0EC
-                  F1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECDB9834DB9834D796
-                  33FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFDB9834DB9834DB9834F1F0ECF1
-                  F0ECC7C3BDC7C3BDC7C3BDC7C3BDC7C3BDC7C3BDC7C3BDC7C3BDF1F0ECF1F0EC
-                  DB9834DB9834DB9834FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFDB9834DB98
-                  34DB9834F1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1
-                  F0ECF1F0ECF1F0ECDB9834DB9834DB9834FF00FFFF00FFFF00FFFF00FFFF00FF
-                  FF00FFDB9834DB9834DB9834F1F0ECF1F0ECC7C3BDC7C3BDC7C3BDC7C3BDC7C3
-                  BDC7C3BDC7C3BDC7C3BDF1F0ECF1F0ECDB9834DB9834DB9834FF00FFFF00FFFF
-                  00FFFF00FFFF00FFFF00FFDB9834DB9834DB9834EFE7D8F1F0ECF1F0ECF1F0EC
-                  F1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECEFE6D7DB9834DB9834DB98
-                  34FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFDB9834DB9834DB9834E1B269EE
-                  E7D9F1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECF1F0ECEFE7D8E1B169
-                  DB9834DB9834DB9834FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFDB9834DB98
-                  34DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB
-                  9834DB9834DB9834DB9834DB9834DB9834FF00FFFF00FFFF00FFFF00FFFF00FF
-                  FF00FFDB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB98
-                  34DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834FF00FFFF00FFFF
-                  00FFFF00FFFF00FFFF00FFDB9834DB9834DB9834DB9834DB9834DB9834DB9834
-                  DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB98
-                  34FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFDB9834DB9834DB9834DB9834DB
-                  9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834DB9834
-                  DB9834DB9834DB9834FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFDB9834DB98
-                  34DB9834D19131BD832AB98029B98029B98029B98029B98029B98029B98029B9
-                  8029BD822AD19131DB9834DB9834DB9834FF00FFFF00FFFF00FFFF00FFFF00FF
-                  FF00FFDB9834DB9834DB9834BD832AC9A061EBE4D6F1F0ECF1F0ECF1F0ECF1F0
-                  ECF1F0ECF1F0ECEBE4D6C9A060BD822ADB9834DB9834DB9834FF00FFFF00FFFF
-                  00FFFF00FFFF00FFFF00FFDB9834DB9834DB9834B98029EBE4D6B8B6AAA6A595
-                  A6A595B8B7A9F1F0ECF1F0ECF1F0ECF1F0ECEBE4D6B98029DB9834DB9834DB98
-                  34FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFDB9834DB9834DB9834B98029F1
-                  F0ECA6A595A6A595A6A595A6A595F1F0ECF1F0ECF1F0ECF1F0ECF1F0ECB98029
-                  DB9834DB9834EAC692FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFDDA048DB98
-                  34DB9834B98029F1F0ECA6A595A6A595A6A595A6A595F1F0ECF1F0ECF1F0ECF1
-                  F0ECF1F0ECB98029DB9834EBC998FF00FFFF00FFFF00FFFF00FFFF00FFFF00FF
-                  FF00FFF2DFC1DDA147DB9834B98029F1F0ECC7C3BDC7C3BDC7C3BDC7C3BDF1F0
-                  ECF1F0ECF1F0ECF1F0ECF1F0ECB98029EBC998FF00FFFF00FFFF00FFFF00FFFF
-                  00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF
-                  FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00
-                  FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF
-                  00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF
-                  FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00
-                  FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF
-                  00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF}
-                Margin = 0
-                TabOrder = 3
-                WordWrap = True
-                StyleName = 'Windows'
-                OnClick = btnUpdateClick
-              end
             end
             object tsFlags: TTabSheet
               Caption = 'Flags'
               ImageIndex = 1
               DesignSize = (
-                513
-                133)
+                507
+                128)
               object lvChoiceFlagList: TListView
                 Left = 3
                 Top = 2
-                Width = 426
+                Width = 420
                 Height = 128
                 Anchors = [akLeft, akTop, akRight]
                 Columns = <
@@ -705,6 +618,7 @@ object frmEventInsAdd: TfrmEventInsAdd
                     Caption = 'idx'
                     Width = 30
                   end>
+                DoubleBuffered = True
                 Font.Charset = RUSSIAN_CHARSET
                 Font.Color = clWindowText
                 Font.Height = -13
@@ -716,14 +630,17 @@ object frmEventInsAdd: TfrmEventInsAdd
                 StyleName = 'Windows'
                 ReadOnly = True
                 RowSelect = True
+                ParentDoubleBuffered = False
                 ParentFont = False
                 SmallImages = ilSpecial
                 TabOrder = 0
                 ViewStyle = vsReport
+                OnDblClick = lvChoiceFlagListDblClick
+                ExplicitWidth = 422
               end
               object btnAddChoiceFlag: TButton
-                Left = 435
-                Top = 74
+                Left = 429
+                Top = 69
                 Width = 75
                 Height = 25
                 Anchors = [akRight, akBottom]
@@ -731,10 +648,13 @@ object frmEventInsAdd: TfrmEventInsAdd
                 Caption = 'Add Flag'
                 TabOrder = 1
                 StyleElements = []
+                OnClick = btnAddChoiceFlagClick
+                ExplicitLeft = 431
+                ExplicitTop = 67
               end
               object btnDeleteChoiceFlag: TButton
-                Left = 435
-                Top = 105
+                Left = 429
+                Top = 100
                 Width = 75
                 Height = 25
                 Anchors = [akRight, akBottom]
@@ -742,22 +662,25 @@ object frmEventInsAdd: TfrmEventInsAdd
                 Caption = 'Delete'
                 TabOrder = 2
                 StyleElements = []
+                ExplicitLeft = 431
+                ExplicitTop = 98
               end
             end
             object Skills: TTabSheet
               Caption = 'Skills'
               ImageIndex = 2
               DesignSize = (
-                513
-                133)
+                507
+                128)
               object grpSkillGrp: TGroupBox
                 Left = 3
-                Top = 21
-                Width = 507
+                Top = 14
+                Width = 501
                 Height = 109
                 Anchors = [akLeft, akTop, akRight]
                 TabOrder = 0
                 StyleElements = []
+                ExplicitWidth = 503
                 object lbl1: TLabel
                   Left = 16
                   Top = 24
@@ -778,7 +701,7 @@ object frmEventInsAdd: TfrmEventInsAdd
                   Caption = 'At Level: '
                   Layout = tlCenter
                 end
-                object cmbSkill: TComboBox
+                object cmbChoiceItemSkill: TComboBox
                   Left = 88
                   Top = 24
                   Width = 257
@@ -787,7 +710,7 @@ object frmEventInsAdd: TfrmEventInsAdd
                   TabOrder = 0
                   StyleElements = []
                 end
-                object cmbSkillAtLevel: TComboBox
+                object cmbChoiceItemSkillAtLevel: TComboBox
                   Left = 88
                   Top = 64
                   Width = 257
@@ -817,15 +740,58 @@ object frmEventInsAdd: TfrmEventInsAdd
                 Left = 32
                 Top = 17
                 Width = 97
-                Height = 22
+                Height = 17
                 Anchors = [akLeft, akTop, akBottom]
                 Caption = 'Requires Skill:'
                 TabOrder = 1
                 StyleElements = []
                 OnClick = chkReqSkillClick
+                ExplicitHeight = 15
               end
             end
           end
+          object btnSaveChoiceItem: TBitBtn
+            Left = 433
+            Top = 3
+            Width = 80
+            Height = 25
+            Cursor = crHandPoint
+            Hint = 
+              'Save current choice item, including text, flags, skill and other' +
+              ' parameters'
+            Anchors = [akRight, akBottom]
+            Caption = 'Save Item'
+            Default = True
+            Font.Charset = RUSSIAN_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Segoe UI'
+            Font.Style = []
+            Layout = blGlyphTop
+            Margin = 0
+            ParentFont = False
+            TabOrder = 1
+            WordWrap = True
+            StyleName = 'Windows'
+            OnClick = btnSaveChoiceItemClick
+          end
+        end
+        object StaticText1: TStaticText
+          Left = 14
+          Top = 154
+          Width = 521
+          Height = 19
+          Anchors = [akLeft, akRight, akBottom]
+          AutoSize = False
+          BevelKind = bkFlat
+          Caption = 'Click on choice to edit. DblClick to play choice audio (if any).'
+          Font.Charset = RUSSIAN_CHARSET
+          Font.Color = clBlue
+          Font.Height = -12
+          Font.Name = 'Verdana'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 7
         end
       end
     end
