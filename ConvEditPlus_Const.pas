@@ -254,6 +254,9 @@ ResourceString
 
     strEmptyValue = '<empty>';
 
+    strMax10ChoiceItems = 'DeusEx hardcoded to use max 10 choice items per ConEventChoice. Cannot add any more, sorry!';
+    strDefaultChoiceText = 'This is default choice text. Modify it, add jump label and other parameters. Then click "Save Item" button and then "Update".';
+
 
 
 implementation
