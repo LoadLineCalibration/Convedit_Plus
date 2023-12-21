@@ -52,7 +52,6 @@ object frmTableEdit: TfrmTableEdit
   ShowHint = True
   StyleName = 'Windows'
   OnClose = FormClose
-  OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
     473

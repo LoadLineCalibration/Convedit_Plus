@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Conversation.Classes, AddInsertEvent,
-  ConvEditPlus_Const, ConvoProperties, EditValueDialog, Vcl.Menus, system.Types;
+  ConvEditPlus_Const, ConvoProperties, EditValueDialog, Vcl.Menus, system.Types, convEditPlus.Enums;
 
 type
   TfrmTableEdit = class(TForm)
@@ -34,7 +34,6 @@ type
     procedure UpdateButtonsState();
     procedure ApplyTableChanges();
     procedure SendTableDataBack();
-    procedure UpdateFlags();
     procedure BuildCustomMenu();
 
     procedure editTableKeyPress(Sender: TObject; var Key: Char);
@@ -75,7 +74,7 @@ implementation
 
 {$R *.dfm}
 
-uses MainWindow, frmFlagList1;
+uses MainWindow, frmFlagList1, ConvEditPlus_Util;
 
 function ListBoxContainsItem(ListBox: TListBox; Items: array of string): Boolean;
 var
@@ -102,18 +101,44 @@ begin
     end;
 end;
 
-procedure TfrmTableEdit.UpdateFlags();
-begin
-    //
-end;
-
 procedure TfrmTableEdit.ApplyTableChanges();
 begin
     case TableMode of
-        tmActorsPawns:  frmMain.listPawnsActors.Assign(lstTableContents.Items);
-        tmFlags:        frmMain.listFlags.Assign(lstTableContents.Items);
-        tmSkills:       frmMain.listSkills.Assign(lstTableContents.Items);
-        tmObjects:      frmMain.listObjects.Assign(lstTableContents.Items);
+        tmActorsPawns:  begin
+                            frmMain.listPawnsActors.Assign(lstTableContents.Items);
+
+                            if frmConvoProperties.Visible = True then
+                                frmConvoProperties.cmbConvoOwner.Items.Assign(lstTableContents.Items);
+
+                            if frmEventInsAdd.Visible = True then
+                            begin
+                                frmEventInsAdd.cmbSpeakingFrom.Items.Assign(lstTableContents.Items);
+                                frmEventInsAdd.cmbSpeakingTo.Items.Assign(lstTableContents.Items);
+
+                                frmEventInsAdd.cmbTransferObjectTo.Items.Assign(lstTableContents.Items);
+                                frmEventInsAdd.cmbTransferObjectFrom.Items.Assign(lstTableContents.Items);
+
+                                frmEventInsAdd.cmbPawnToAnimate.Items.Assign(lstTableContents.Items);
+                            end;
+                        end;
+
+        tmFlags:        begin
+                            frmMain.listFlags.Assign(lstTableContents.Items);
+                        end;
+
+        tmSkills:       begin
+                            frmMain.listSkills.Assign(lstTableContents.Items);
+                        end;
+
+        tmObjects:      begin
+                            frmMain.listObjects.Assign(lstTableContents.Items);
+
+                            if frmEventInsAdd.Visible = True then
+                            begin
+                                frmEventInsAdd.cmbObjectToCheck.Items.Assign(lstTableContents.Items);
+                                frmEventInsAdd.cmbObjectToTransfer.Items.Assign(lstTableContents.Items);
+                            end;
+                        end;
     end;
 end;
 
@@ -220,6 +245,7 @@ begin
         begin
            LastSelIndex := lstTableContents.ItemIndex;
            lstTableContents.Items.Delete(lstTableContents.ItemIndex);
+
            if LastSelIndex < lstTableContents.Count then
                lstTableContents.ItemIndex := LastSelIndex
                else
@@ -233,9 +259,9 @@ procedure TfrmTableEdit.btnDeleteUnusedClick(Sender: TObject);
 begin
 if Application.MessageBox(PChar(strAskRemoveUnused),PChar(strAskRemoveUnusedTitle),
    MB_YESNO + MB_ICONWARNING + MB_DEFBUTTON2 + MB_TOPMOST) = IDYES then
-  begin
-    //
-  end;
+    begin
+        MessageDlg('Not implemented yet...',  mtWarning, [mbOK], 0);
+    end;
 end;
 
 procedure TfrmTableEdit.btnEditClick(Sender: TObject);
@@ -255,7 +281,7 @@ begin
     BuildCustomMenu(); // Create only when button is clicked
 
     // Convert button coordinates to screen coordinates
-    var TempPoint:= Point(btn_CustomClassList.Left, btn_CustomClassList.Top + btn_CustomClassList.Height);
+    var TempPoint  := Point(btn_CustomClassList.Left, btn_CustomClassList.Top + btn_CustomClassList.Height);
     var FinalPoint := ClientToScreen(TempPoint);
 
     CustomItemsPopup.Popup(FinalPoint.X, FinalPoint.Y);
@@ -270,7 +296,6 @@ procedure TfrmTableEdit.editTableKeyPress(Sender: TObject; var Key: Char); // on
 begin
     FilterEditInput(key);
 end;
-
 
 procedure TfrmTableEdit.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -407,15 +432,20 @@ var
 begin
     CustomItemsPopup.Items.Clear(); // удалить ранее созданные элементы меню
 
-    if not FileExists(CUSTOM_CLASSES_FILE) then
-    begin
-       ShowMessage(Format(strCustomClassesNotFound, [CUSTOM_CLASSES_FILE]));
-       Exit();
-    end;
+//    if not FileExists(CUSTOM_CLASSES_FILE) then
+//    begin
+//       ShowMessage(Format(strCustomClassesNotFound, [CUSTOM_CLASSES_FILE]));
+//       Exit();
+//    end;
 
     CustomClasses := TStringList.Create();
 try
-    CustomClasses.LoadFromFile(CUSTOM_CLASSES_FILE);
+    case TableMode of
+        tmActorsPawns: CustomClasses.LoadFromFile(CUSTOM_CLASSES_ACTORS);
+        tmFlags:       CustomClasses.LoadFromFile(CUSTOM_CLASSES_FLAGS);
+        tmSkills:      CustomClasses.LoadFromFile(CUSTOM_CLASSES_SKILLS);
+        tmObjects:     CustomClasses.LoadFromFile(CUSTOM_CLASSES_OBJECTS);
+    end;
 
     for var i:= 0 to CustomClasses.Count -1 do
     begin
@@ -427,12 +457,11 @@ try
 
         if CustomClasses.Strings[i] = '-' then begin
             var CustomMenuSeparator := TMenuItem.Create(CustomItemsPopup);
+
             CustomMenuSeparator.Caption := CustomClasses.Strings[i];
             CustomItemsPopup.Items.Add(CustomMenuSeparator);
             Continue;
         end;
-
-
 
         // now split the line
         var parts := TStringList.Create();
