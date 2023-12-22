@@ -23,7 +23,11 @@ const CEP_MIN_CONVO_TREE_PANEL_WIDTH = 50; { To avoid situation when tree panel 
 
 const CEP_MAX_CHOICES = 10;
 
-const CUSTOM_CLASSES_FILE = 'CustomClasses.txt';
+const CUSTOM_CLASSES_SKILLS = 'Skills_Custom.txt';
+const CUSTOM_CLASSES_OBJECTS = 'Objects_Custom.txt';
+const CUSTOM_CLASSES_ACTORS = 'ActorsPawns_Custom.txt';
+const CUSTOM_CLASSES_FLAGS = 'Flags_Custom.txt';
+
 
 const Default_DeusEx_Skills: array[0..10] of string =
 (
@@ -256,6 +260,15 @@ ResourceString
 
     strMax10ChoiceItems = 'DeusEx hardcoded to use max 10 choice items per ConEventChoice. Cannot add any more, sorry!';
     strDefaultChoiceText = 'This is default choice text. Modify it, add jump label and other parameters. Then click "Save Item" button and then "Update".';
+
+    strUnknownFile = 'Unknown file!';
+
+    strClearRecentQuestion = 'Are you sure you want to clear list or recent files?';
+    strClearRecentTitle = 'Clear recent files list?';
+
+    strConversationAlreadyExists = 'Conversation with such name already exists!';
+
+    strCannotDeleteTableItem = 'This item cannot be removed because it is referenced in at least one conversation. You must first remove the references.';
 
 
 
