@@ -28,13 +28,16 @@ type
     btnAddDefInfolinkNames: TButton;
     StaticText2: TStaticText;
     CustomItem1: TMenuItem;
-    
-    // new procedures/functions
-    function CanDeleteItem(item: String): boolean;
+
+    // new procedures
     procedure UpdateButtonsState();
     procedure ApplyTableChanges();
     procedure SendTableDataBack();
     procedure BuildCustomMenu();
+
+    // new functions
+    function CanDeleteItem(item: String): Boolean;
+    function CheckFlagUsed(flagName: String): Boolean; // Ah oh
 
     procedure editTableKeyPress(Sender: TObject; var Key: Char);
     procedure btnCloseClick(Sender: TObject);
@@ -76,6 +79,75 @@ implementation
 
 uses MainWindow, frmFlagList1, ConvEditPlus_Util;
 
+
+function TfrmTableEdit.CheckFlagUsed(flagName: String): Boolean; // return True if flag has been found in conversation or events
+begin
+    var convList:= frmMain.ConversationsList;
+
+    for var i:= 0 to convList.Count -1 do
+    begin
+        for var k := 0 to High(convList.Items[i].conDependsOnFlags) do // check conDependsOnFlags first
+        begin
+            if LowerCase(convList.Items[i].conDependsOnFlags[k].flagName) = LowerCase(flagName) then
+            begin
+                Exit(True);
+            end;
+        end;
+
+        for var e:= 0 to High(convList.Items[i].Events) do
+        begin
+            if convList.Items[i].Events[e] is TConEventChoice then // Check Choices
+            begin
+                var tempChoice := TConEventChoice(convList.Items[i].Events[e]);
+
+                for var chi := 0 to High(tempChoice.Choices) do
+                begin
+                    for var crk := 0 to High(tempChoice.Choices[chi].RequiredFlags) do
+                    begin
+                        if LowerCase(tempChoice.Choices[chi].RequiredFlags[crk].flagName) = LowerCase(flagName) then
+                        begin
+                            frmMain.addLog('Found flag "' + flagName + '" in choice: "' + tempChoice.Choices[chi].textline + '" ' + tempChoice.Choices[chi].RequiredFlags[crk].flagName);
+                            Exit(True);
+                            //MessageDlg(strCannotDeleteTableItem, mtWarning, [mbOK], 0);
+                            //Exit(False);
+                        end;
+                    end;
+                end;
+            end;
+
+            if convList.Items[i].Events[e] is TConEventSetFlag then // Nothing? Check SetFlag events
+            begin
+                var tempSetFlag := TConEventSetFlag(convList.Items[i].Events[e]);
+
+                for var crk := 0 to High(tempSetFlag.SetFlags) do
+                begin
+                    if LowerCase(tempSetFlag.SetFlags[crk].flagName) = LowerCase(flagName) then
+                    begin
+                        frmMain.AddLog(TimeToStr(Now()) +  ': checking TConEventSetFlag events: ' + tempSetFlag.SetFlags[crk].flagName);
+                        frmMain.AddLog('Found flag ' + flagName + ' in TConEventSetFlag');
+                        Exit(True);
+                    end;
+                end;
+            end;
+
+            if convList.Items[i].Events[e] is TConEventCheckFlag then
+            begin
+                var tempCheckFlag := TConEventCheckFlag(convList.Items[i].Events[e]);
+
+                for var crk := 0 to High(tempCheckFlag.FlagsToCheck) do
+                begin
+                    if LowerCase(tempCheckFlag.FlagsToCheck[crk].flagName) = LowerCase(flagName) then
+                    begin
+                        frmMain.AddLog(TimeToStr(Now()) +  ': checking TConEventCheckFlag events: ' + tempCheckFlag.FlagsToCheck[crk].flagName);
+                        frmMain.AddLog('Found flag ' + flagName + ' in TConEventCheckFlag');
+                        Exit(True);
+                    end;
+                end;
+            end;
+        end;
+    end;
+end;
+
 function ListBoxContainsItem(ListBox: TListBox; Items: array of string): Boolean;
 var
     i, j: Integer;
@@ -104,41 +176,45 @@ end;
 procedure TfrmTableEdit.ApplyTableChanges();
 begin
     case TableMode of
-        tmActorsPawns:  begin
-                            frmMain.listPawnsActors.Assign(lstTableContents.Items);
+        tmActorsPawns:
+        begin
+            frmMain.listPawnsActors.Assign(lstTableContents.Items);
 
-                            if frmConvoProperties.Visible = True then
-                                frmConvoProperties.cmbConvoOwner.Items.Assign(lstTableContents.Items);
+            if frmConvoProperties.Visible = True then
+                frmConvoProperties.cmbConvoOwner.Items.Assign(lstTableContents.Items);
 
-                            if frmEventInsAdd.Visible = True then
-                            begin
-                                frmEventInsAdd.cmbSpeakingFrom.Items.Assign(lstTableContents.Items);
-                                frmEventInsAdd.cmbSpeakingTo.Items.Assign(lstTableContents.Items);
+            if frmEventInsAdd.Visible = True then
+            begin
+                frmEventInsAdd.cmbSpeakingFrom.Items.Assign(lstTableContents.Items);
+                frmEventInsAdd.cmbSpeakingTo.Items.Assign(lstTableContents.Items);
 
-                                frmEventInsAdd.cmbTransferObjectTo.Items.Assign(lstTableContents.Items);
-                                frmEventInsAdd.cmbTransferObjectFrom.Items.Assign(lstTableContents.Items);
+                frmEventInsAdd.cmbTransferObjectTo.Items.Assign(lstTableContents.Items);
+                frmEventInsAdd.cmbTransferObjectFrom.Items.Assign(lstTableContents.Items);
 
-                                frmEventInsAdd.cmbPawnToAnimate.Items.Assign(lstTableContents.Items);
-                            end;
-                        end;
+                frmEventInsAdd.cmbPawnToAnimate.Items.Assign(lstTableContents.Items);
+            end;
+        end;
 
-        tmFlags:        begin
-                            frmMain.listFlags.Assign(lstTableContents.Items);
-                        end;
+        tmFlags:
+        begin
+            frmMain.listFlags.Assign(lstTableContents.Items);
+        end;
 
-        tmSkills:       begin
-                            frmMain.listSkills.Assign(lstTableContents.Items);
-                        end;
+        tmSkills:
+        begin
+            frmMain.listSkills.Assign(lstTableContents.Items);
+        end;
 
-        tmObjects:      begin
-                            frmMain.listObjects.Assign(lstTableContents.Items);
+        tmObjects:
+        begin
+            frmMain.listObjects.Assign(lstTableContents.Items);
 
-                            if frmEventInsAdd.Visible = True then
-                            begin
-                                frmEventInsAdd.cmbObjectToCheck.Items.Assign(lstTableContents.Items);
-                                frmEventInsAdd.cmbObjectToTransfer.Items.Assign(lstTableContents.Items);
-                            end;
-                        end;
+            if frmEventInsAdd.Visible = True then
+            begin
+                frmEventInsAdd.cmbObjectToCheck.Items.Assign(lstTableContents.Items);
+                frmEventInsAdd.cmbObjectToTransfer.Items.Assign(lstTableContents.Items);
+            end;
+        end;
     end;
 end;
 
@@ -243,13 +319,16 @@ begin
     if (lstTableContents.ItemIndex <> -1) and (CanDeleteItem(lstTableContents.Items[lstTableContents.ItemIndex])) = true
         then
         begin
-           LastSelIndex := lstTableContents.ItemIndex;
-           lstTableContents.Items.Delete(lstTableContents.ItemIndex);
+            if MessageDlg('Are you sure you want to delete this table item?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+            begin
+                LastSelIndex := lstTableContents.ItemIndex;
+                lstTableContents.Items.Delete(lstTableContents.ItemIndex);
 
-           if LastSelIndex < lstTableContents.Count then
-               lstTableContents.ItemIndex := LastSelIndex
-               else
-           lstTableContents.ItemIndex := lstTableContents.Count -1;
+                if LastSelIndex < lstTableContents.Count then
+                    lstTableContents.ItemIndex := LastSelIndex
+                    else
+                lstTableContents.ItemIndex := lstTableContents.Count -1;
+            end;
         end;
 
     UpdateButtonsState();
@@ -382,15 +461,28 @@ begin
     UpdateButtonsState();
 end;
 
-function TfrmTableEdit.CanDeleteItem(item: String): boolean; // Пока так, в дальнейшем нужно проверять, ссылается ли данный объект на какое-то из событий.
+function TfrmTableEdit.CanDeleteItem(item: String): boolean;
 begin
-   if Application.MessageBox('Are you sure you want to delete this item?',
-    'Really delete table item?',
-     MB_YESNO + MB_ICONWARNING + MB_DEFBUTTON2 + MB_TOPMOST) = IDYES
-   then
-        result := true
-   else
-        result := false;
+
+        case TableMode of
+            tmActorsPawns:;
+
+
+            tmFlags:
+            begin
+                if CheckFlagUsed(item) = True then
+                begin
+                    MessageDlg(strCannotDeleteTableItem, mtWarning, [mbOK], 0);
+                    Exit(False);
+                end
+                    else Exit(True);
+            end;
+
+            tmSkills:;
+            tmObjects:;
+        end;
+
+    Result := False;
 end;
 
 procedure TfrmTableEdit.CustomItem1Click(Sender: TObject);
