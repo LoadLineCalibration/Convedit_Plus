@@ -248,7 +248,8 @@ ResourceString
     strObjectName = 'Object Name:';
 
     strCustomClassesNotFound = 'The "%s" file does not exists! If you want to use custom classes, create it and place into ConvEdit Plus directory.' + #13#10 +
-                               'The syntax is simple: className;description in each line.';
+                               'The syntax is simple: className;description in each line.' + #13#10 +
+                               'Use - for separator (as usually in Delphi IDE).';
 
     strDefaultString = 'Default text';
 
@@ -268,7 +269,7 @@ ResourceString
 
     strConversationAlreadyExists = 'Conversation with such name already exists!';
 
-    strCannotDeleteTableItem = 'This item cannot be removed because it is referenced in at least one conversation. You must first remove the references.';
+    strCannotDeleteTableItem = 'This item cannot be removed because it is referenced in at least one conversation.' + #13#10 + ' You must first remove the references.';
 
 
 
