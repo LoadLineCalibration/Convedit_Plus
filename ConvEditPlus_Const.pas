@@ -269,7 +269,7 @@ ResourceString
 
     strConversationAlreadyExists = 'Conversation with such name already exists!';
 
-    strCannotDeleteTableItem = 'This item cannot be removed because it is referenced in at least one conversation.' + #13#10 + ' You must first remove the references.';
+    strCannotDeleteTableItem = 'This item cannot be removed because it is referenced in at least one conversation.' + #13#10 + 'You must first remove the references.';
 
 
 
