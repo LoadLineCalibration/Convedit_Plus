@@ -144,15 +144,40 @@ ResourceString
     // Can be translated from here and below
     ET_Random_TargetLabels = 'Target labels:';
 
-    // for Table.pas
+    // for Table.pas/dfm
     strActorsPawns = 'Actors/Pawns';
     strFlags = 'Flags';
     strSkills = 'Skills';
     strObjects = 'Objects';
     strAskRemoveUnused = 'Are you sure you wish to remove any unused table entries?';
     strAskRemoveUnusedTitle = 'Remove unused entries?';
+    strAskDeleteTableItem = 'Are you sure you want to delete this table item?';
+    strCannotDeleteTableItem = 'This item cannot be removed because it is referenced in at least one conversation.' + #13#10 + 'You must first remove the references.';
 
-    // for events list
+    strAddDefaultSkillsQuestion = 'This will add default skills from the original Deus Ex game (SkillSwimming, SkillWeaponHeavy, etc.) into the table. ' +
+                                  'Existing items will not be lost. Do you want to proceed?';
+
+    strAddDefaultFirearmsQuestion = 'This will add default long-range weapons from the original Deus Ex game (like WeaponMiniCrossbow, WeaponGepGun, etc) into the table. ' +
+                                    'Existing items will not be lost. Do you want to proceed?';
+
+    strAddDefaultCloseRangeWeapons = 'This will add default close-range combat weapons from the original Deus Ex game (like WeaponBaton, WeaponSword, etc.) into the table. ' +
+                                     'Existing items will not be lost. Do you want to proceed?';
+
+    strAddDefaultGrenadesQuestion = 'This will add default grenades from the original Deus Ex game (all four types) into the table. ' +
+                                    'Existing items will not be lost. Do you want to proceed?';
+
+    strAddDefaultMiscItemsQuestion = 'The following items will be added into the table: ' + #13#10 +
+                                     'NanoKey' + #13#10 +
+                                     'SodaCan' + #13#10 +
+                                     'SoyFood' + #13#10 +
+                                     'WineBottle' + #13#10 +
+                                     'Existing items will not be lost. Do you want to proceed?';
+
+    strAddDefInfoLinkNamesQuestion = 'This will add default InfoLink names (like PaulDenton, BobPage, Icarus, etc.) from the original Deus Ex game into the table. ' +
+                                     'Existing items will not be lost. Do you want to proceed?';
+
+
+    // for events list (MainWindow.pas)
     strPrimaryGoal = '(Primary Goal)';
     strGoalCompleted = '(Goal Completed)';
     strGoalName = 'Goal Name: ';
@@ -213,27 +238,6 @@ ResourceString
     strPlayMP3 = 'Play';
     strStopMP3 = 'Stop';
 
-    strAddDefaultSkillsQuestion = 'This will add default skills from the original Deus Ex game (SkillSwimming, SkillWeaponHeavy, etc.) into the table. ' +
-                                  'Existing items will not be lost. Do you want to proceed?';
-
-    strAddDefaultFirearmsQuestion = 'This will add default long-range weapons from the original Deus Ex game (like WeaponMiniCrossbow, WeaponGepGun, etc) into the table. ' +
-                                    'Existing items will not be lost. Do you want to proceed?';
-
-    strAddDefaultCloseRangeWeapons = 'This will add default close-range combat weapons from the original Deus Ex game (like WeaponBaton, WeaponSword, etc.) into the table. ' +
-                                     'Existing items will not be lost. Do you want to proceed?';
-
-    strAddDefaultGrenadesQuestion = 'This will add default grenades from the original Deus Ex game (all four types) into the table. ' +
-                                    'Existing items will not be lost. Do you want to proceed?';
-
-    strAddDefaultMiscItemsQuestion = 'The following items will be added into the table: ' + #13#10 +
-                                     'NanoKey' + #13#10 +
-                                     'SodaCan' + #13#10 +
-                                     'SoyFood' + #13#10 +
-                                     'WineBottle' + #13#10 +
-                                     'Existing items will not be lost. Do you want to proceed?';
-
-    strAddDefInfoLinkNamesQuestion = 'This will add default InfoLink names (like PaulDenton, BobPage, Icarus, etc.) from the original Deus Ex game into the table. ' +
-                                     'Existing items will not be lost. Do you want to proceed?';
 
 
     strDelChoiceTitle = 'Really delete this choice?';
@@ -269,7 +273,7 @@ ResourceString
 
     strConversationAlreadyExists = 'Conversation with such name already exists!';
 
-    strCannotDeleteTableItem = 'This item cannot be removed because it is referenced in at least one conversation.' + #13#10 + 'You must first remove the references.';
+
 
 
 
