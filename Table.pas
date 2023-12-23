@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Conversation.Classes, AddInsertEvent,
-  ConvEditPlus_Const, ConvoProperties, EditValueDialog, Vcl.Menus, system.Types, convEditPlus.Enums;
+  ConvEditPlus_Const, ConvoProperties, EditValueDialog, Vcl.Menus, system.Types, convEditPlus.Enums,
+  system.UITypes;
 
 type
   TfrmTableEdit = class(TForm)
@@ -37,7 +38,10 @@ type
 
     // new functions
     function CanDeleteItem(item: String): Boolean;
-    function CheckFlagUsed(flagName: String): Boolean; // Ah oh
+    function CheckFlagIsUsed(flagName: String): Boolean; // Ah oh
+    function CheckActorIsUsed(actorName: string): Boolean;
+    function CheckSkillIsUsed(skillName: string): Boolean;
+    function CheckObjectIsUsed(objName: string): Boolean;
 
     procedure editTableKeyPress(Sender: TObject; var Key: Char);
     procedure btnCloseClick(Sender: TObject);
@@ -80,7 +84,7 @@ implementation
 uses MainWindow, frmFlagList1, ConvEditPlus_Util;
 
 
-function TfrmTableEdit.CheckFlagUsed(flagName: String): Boolean; // return True if flag has been found in conversation or events
+function TfrmTableEdit.CheckFlagIsUsed(flagName: String): Boolean; // return True if flag has been found in conversations or/and events
 begin
     var convList:= frmMain.ConversationsList;
 
@@ -146,6 +150,122 @@ begin
             end;
         end;
     end;
+
+    Result := False;
+end;
+
+function TfrmTableEdit.CheckActorIsUsed(actorName: string): Boolean;
+begin
+    var convList:= frmMain.ConversationsList;
+
+    for var i:= 0 to convList.Count -1 do
+    begin
+        if LowerCase(convList.Items[i].conOwnerName) = LowerCase(actorName) then
+        begin
+            Exit(True);
+        end;
+
+        for var e:= 0 to High(convList.Items[i].Events) do
+        begin
+            if convList.Items[i].Events[e] is TConEventSpeech then
+            begin
+                var tempSpeech := TConEventSpeech(convList.Items[i].Events[e]);
+
+                if LowerCase(tempSpeech.ActorValue) = LowerCase(actorName) then
+                    Exit(True);
+
+                if LowerCase(tempSpeech.ActorToValue) = LowerCase(actorName) then
+                    Exit(True);
+            end;
+
+            if convList.Items[i].Events[e] is TConEventTransferObject then
+            begin
+                var tempTransObj := TConEventTransferObject(convList.Items[i].Events[e]);
+
+                if LowerCase(tempTransObj.ActorFromValue) = LowerCase(actorName) then
+                    Exit(True);
+
+                if LowerCase(tempTransObj.ActorToValue) = LowerCase(actorName) then
+                    Exit(True);
+            end;
+
+            if convList.Items[i].Events[e] is TConEventAnimation then
+            begin
+                var tempAnim := TConEventAnimation(convList.Items[i].Events[e]);
+
+                if LowerCase(tempAnim.ActorValue) = LowerCase(actorName) then
+                    Exit(True);
+            end;
+
+            if convList.Items[i].Events[e] is TConEventTrade then
+            begin
+                var tempTrade := TConEventTrade(convList.Items[i].Events[e]);
+
+                if LowerCase(tempTrade.TradeActorValue) = LowerCase(actorName) then
+                    Exit(True);
+            end;
+        end;
+    end;
+
+    Result := False;
+end;
+
+function TfrmTableEdit.CheckSkillIsUsed(skillName: string): Boolean; // used only in TConEventChoice.TChoiceItemObject
+begin
+    var convList:= frmMain.ConversationsList;
+
+    for var i:= 0 to convList.Count -1 do
+    begin
+        for var e:= 0 to High(convList.Items[i].Events) do
+        begin
+            if convList.Items[i].Events[e] is TConEventChoice then // Check Choices
+            begin
+                var tempChoice := TConEventChoice(convList.Items[i].Events[e]);
+
+                for var chi := 0 to High(tempChoice.Choices) do
+                begin
+                    if (tempChoice.Choices[chi].bSkillNeeded <> -1) and (LowerCase(tempChoice.Choices[chi].Skill) = LowerCase(skillName)) then
+                    Exit(True);
+                end;
+            end;
+        end;
+    end;
+
+    Result := False;
+end;
+
+function TfrmTableEdit.CheckObjectIsUsed(objName: string): Boolean;
+begin
+    var convList:= frmMain.ConversationsList;
+
+    for var i:= 0 to convList.Count -1 do
+    begin
+        if LowerCase(convList.Items[i].conOwnerName) = LowerCase(objName) then
+        begin
+            Exit(True);
+        end;
+
+        for var e:= 0 to High(convList.Items[i].Events) do
+        begin
+            if convList.Items[i].Events[e] is TConEventCheckObject then
+            begin
+                var tempCheckObj := TConEventCheckObject(convList.Items[i].Events[e]);
+
+                if LowerCase(tempCheckObj.ObjectValue) = LowerCase(objName) then
+                    Exit(True);
+            end;
+
+            if convList.Items[i].Events[e] is TConEventTransferObject then
+            begin
+                var tempTransObj := TConEventTransferObject(convList.Items[i].Events[e]);
+
+                if LowerCase(tempTransObj.ObjectValue) = LowerCase(objName) then
+                    Exit(True);
+            end;
+        end;
+    end;
+
+    Result := False;
 end;
 
 function ListBoxContainsItem(ListBox: TListBox; Items: array of string): Boolean;
@@ -314,12 +434,12 @@ begin
 end;
 
 procedure TfrmTableEdit.btnDeleteClick(Sender: TObject);
-    var LastSelIndex: Integer;
 begin
-    if (lstTableContents.ItemIndex <> -1) and (CanDeleteItem(lstTableContents.Items[lstTableContents.ItemIndex])) = true
-        then
+    var LastSelIndex: Integer;
+
+        if (lstTableContents.ItemIndex <> -1) and (CanDeleteItem(lstTableContents.Items[lstTableContents.ItemIndex])) = true then
         begin
-            if MessageDlg('Are you sure you want to delete this table item?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+            if MessageDlg(strAskDeleteTableItem, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
             begin
                 LastSelIndex := lstTableContents.ItemIndex;
                 lstTableContents.Items.Delete(lstTableContents.ItemIndex);
@@ -336,8 +456,7 @@ end;
 
 procedure TfrmTableEdit.btnDeleteUnusedClick(Sender: TObject);
 begin
-if Application.MessageBox(PChar(strAskRemoveUnused),PChar(strAskRemoveUnusedTitle),
-   MB_YESNO + MB_ICONWARNING + MB_DEFBUTTON2 + MB_TOPMOST) = IDYES then
+    if MessageDlg(strAskRemoveUnused, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
     begin
         MessageDlg('Not implemented yet...',  mtWarning, [mbOK], 0);
     end;
@@ -463,24 +582,47 @@ end;
 
 function TfrmTableEdit.CanDeleteItem(item: String): boolean;
 begin
-
-        case TableMode of
-            tmActorsPawns:;
-
-
-            tmFlags:
+    case TableMode of
+        tmActorsPawns:
+        begin
+            if CheckActorIsUsed(item) = True then
             begin
-                if CheckFlagUsed(item) = True then
-                begin
-                    MessageDlg(strCannotDeleteTableItem, mtWarning, [mbOK], 0);
-                    Exit(False);
-                end
-                    else Exit(True);
-            end;
-
-            tmSkills:;
-            tmObjects:;
+                MessageDlg(strCannotDeleteTableItem, mtWarning, [mbOK], 0);
+                Exit(False);
+            end else
+                Exit(True);
         end;
+
+        tmFlags:
+        begin
+            if CheckFlagIsUsed(item) = True then
+            begin
+                MessageDlg(strCannotDeleteTableItem, mtWarning, [mbOK], 0);
+                Exit(False);
+            end
+                else Exit(True);
+        end;
+
+        tmSkills:
+        begin
+            if CheckSkillIsUsed(item) = True then
+            begin
+                MessageDlg(strCannotDeleteTableItem, mtWarning, [mbOK], 0);
+                Exit(False);
+            end
+                else Exit(True);
+        end;
+
+        tmObjects:
+        begin
+            if CheckObjectIsUsed(item) = True then
+            begin
+                MessageDlg(strCannotDeleteTableItem, mtWarning, [mbOK], 0);
+                Exit(False);
+            end
+                else Exit(True);
+        end;
+    end;
 
     Result := False;
 end;
