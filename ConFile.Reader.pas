@@ -8,7 +8,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
-  Vcl.Dialogs, winapi.ActiveX, ConvEditPlus_Const, Conversation.Classes, system.TypInfo,
+  Vcl.Dialogs, winapi.ActiveX, ConvEditPlus.Consts, Conversation.Classes, system.TypInfo,
   vcl.ComCtrls;
 
 procedure LoadConFile(conFile: string);
@@ -660,6 +660,7 @@ begin
 
     var numFlags := ConRead.ReadInteger();
 
+    setFlagEvent.numFlags := numFlags;
     SetLength(setFlagEvent.SetFlags, numFlags);
 
     for var SF := 0 to numFlags -1 do
@@ -677,6 +678,7 @@ begin
 
     var numFlags := ConRead.ReadInteger();
 
+    checkFlagEvent.numFlags := numFlags;
     SetLength(checkFlagEvent.FlagsToCheck, numFlags);
 
     for var CF := 0 to numFlags -1 do
