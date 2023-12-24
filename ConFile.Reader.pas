@@ -792,6 +792,10 @@ begin
 
     eventAddGoal.GoalName := GetConString(ConRead); // goalNameString
     eventAddGoal.bComplete := GetConLongBool(ConRead);
+
+    if eventAddGoal.bComplete then // Если цель выполнена, то дальше данных уже нет, выходим
+        Exit();
+
     eventAddGoal.GoalText := GetConString(ConRead);
     eventAddGoal.bPrimaryGoal := GetConLongBool(ConRead);
 end;
