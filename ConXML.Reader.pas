@@ -584,7 +584,13 @@ begin
                         choiceEvent.Choices[J].bDisplayAsSpeech := ChoiceField.ChildNodes[ci].NodeValue.ToBoolean;
 
                     if UpperCase(ChoiceField.ChildNodes[ci].Name) = UpperCase('SkillNeeded') then
-                        choiceEvent.Choices[J].bSkillNeeded := ChoiceField.ChildNodes[ci].NodeValue.ToInteger;
+                    begin
+                        //choiceEvent.Choices[J].bSkillNeeded := ChoiceField.ChildNodes[ci].NodeValue.ToInteger;
+                        if (LowerCase(ChoiceField.ChildNodes[ci].NodeValue) = LowerCase('true')) or // Fix for XML files created before ConEditExport v7
+                           (LowerCase(ChoiceField.ChildNodes[ci].NodeValue) = LowerCase('false')) then
+                            choiceEvent.Choices[J].bSkillNeeded := -1 else
+                            choiceEvent.Choices[J].bSkillNeeded := ChoiceField.ChildNodes[ci].NodeValue.ToInteger;
+                    end;
 
                     if UpperCase(ChoiceField.ChildNodes[ci].Name) = UpperCase('Skill') then
                         choiceEvent.Choices[J].Skill := ChoiceField.ChildNodes[ci].NodeValue;
