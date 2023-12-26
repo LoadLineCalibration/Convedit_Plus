@@ -18,4 +18,4 @@ Features:
 * Supports scrolling with mouse wheel!
 
 Screenshot:
-![изображение](https://github.com/LoadLineCalibration/Convedit_Plus/assets/44388228/fd7891b6-36a2-4f55-90a7-1c9b300f56ca)
+![изображение](https://github.com/LoadLineCalibration/Convedit_Plus/assets/44388228/2fb0298c-7a40-46b2-b66e-dda34b58aec0)
