@@ -8,23 +8,9 @@ interface
 
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, ConvEditPlus_Const,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, ConvEditPlus.Consts,
   System.Types, System.Generics.Collections;
 
-type TReorderEventsModKey =  // hold xxx key to reorder events
-(
-    re_Ctrl,
-    re_Shift,
-    re_Alt
-);
-
-type TTableMode =
-(
-    tmActorsPawns,
-    tmFlags,
-    tmSkills,
-    tmObjects
-);
 
 type TEventType =
 (
@@ -115,21 +101,8 @@ type TFlag = record
   flagExpiration: Integer;
 end;
 
-
-{type TChoiceItem = record
-  Index: Integer;
-  textline: string;
-  bDisplayAsSpeech: Boolean;
-  bSkillNeeded: Integer; // 0 - true, -1 false  // was Boolean before ConEditExport ver. 7
-   Skill: string; // skillName
-   SkillLevel: Integer;
-  GoToLabel: string;
-  mp3: string;
-  RequiredFlags: array of TFlag;
-end; }
-
 TConBaseObject = class(TObject) // base class!
-    ReservedField: string;
+destructor Destroy(); override;
 end;
 
 TChoiceItemObject = class(TConBaseObject) // for editing Choice Items, use as listview item.data
@@ -197,7 +170,6 @@ TConEventCheckFlag = class(TConEvent) // 03
     numFlags: Integer;
     FlagsToCheck: array of TFlag;
     GotoLabel: string;
-    //ArrayLength: Integer;
 
     public
     constructor Create();
@@ -373,17 +345,8 @@ TConversation = class(TConBaseObject)
     conDependsOnFlags: array of TFlag;
 
     // events...
-    EventsCount: Integer; // for testing
+    numEventList: Integer; // 4 bytes
     Events: array of TConEvent;
-end;
-
-
-// For use in missions lists.
-TMissionNumObj = class (TObject)
-    missionNum: Integer;
-    {public declarations}
-    public
-    constructor Create(num: Integer);
 end;
 
 // Contains base information about conversation file.
@@ -400,6 +363,7 @@ TConFileParameters = class (TObject)
 
   var fpMissions: array of Integer;
 
+  tablesSize: Integer; // for .con files
   var fpActors: TStringList;
   var fpFlags: TStringList; //TStringList contains strings and automatically adds indexes, this is exactly what I need!
   var fpSkills: TStringList;
@@ -417,15 +381,14 @@ end;
 const
   DefaultFlag: TFlag = (flagIndex: -1; flagName: ''; flagValue: False; flagExpiration: 0);
 
-// default value for TChoiceItem
-{const
-  DefaultChoiceItem: TChoiceItem = (Index: -1; textline: '';
-                                    bDisplayAsSpeech: False;
-                                    bSkillNeeded: -1; Skill: '';
-                                    SkillLevel: -1; GoToLabel: ''; mp3: ''); }
-
 
 implementation
+
+destructor TConBaseObject.Destroy();
+begin
+    inherited;
+end;
+
 
 constructor TConEventSpeech.Create(); // 00
 begin
@@ -520,12 +483,6 @@ end;
 constructor TConEventEnd.Create(); // 18
 begin
     EventType:= ET_End;
-end;
-
-
-constructor TMissionNumObj.Create(num: Integer);
-begin
-    missionNum := num;
 end;
 
 constructor TConFileParameters.Create(); // create required lists here. Also fill some fields.
