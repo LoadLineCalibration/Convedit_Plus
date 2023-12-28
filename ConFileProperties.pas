@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Samples.Spin, Vcl.ComCtrls, Vcl.ExtCtrls,
-  Conversation.Classes, vcl.GraphUtil;
+  Conversation.Classes, vcl.GraphUtil, system.Types;
 
 type
   TfrmConvoFileProperties = class(TForm)
@@ -105,6 +105,9 @@ procedure TfrmConvoFileProperties.lstAllMissionsDrawItem(Control: TWinControl; I
 begin
     var ItemText, ItemText2: String;
     var EqualsPos: Byte;
+    var tempRect := Rect;
+
+    tempRect.Left := Rect.Left + 4;
 
     ItemText := (Control as TListBox).Items[Index];
     EqualsPos := Pos('=', ItemText);
@@ -117,12 +120,12 @@ begin
             Brush.Style := bsClear;
             GradientFillCanvas((Control as TListBox).Canvas, clPurple, clBlack, Rect, gdHorizontal);
             Font.Color := clWhite;
-            DrawText(Handle, ItemText2, -1, Rect, DT_LEFT);
+            DrawText(Handle, ItemText2, -1, tempRect, DT_LEFT);
         end else
         begin
             FillRect(Rect);
             Font.Color := clBlack;
-            DrawText(Handle, ItemText2, -1, Rect, DT_LEFT);
+            DrawText(Handle, ItemText2, -1, tempRect, DT_LEFT);
         end;
     end;
 end;
