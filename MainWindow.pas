@@ -4,10 +4,11 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.ExtCtrls, Vcl.StdCtrls, ConvEditPlus_Const,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.ExtCtrls, Vcl.StdCtrls, ConvEditPlus.Consts,
   Vcl.ComCtrls, System.Types, Vcl.Buttons, Vcl.ToolWin, System.IniFiles, System.IOUtils, Conversation.Classes,
   System.ImageList, Vcl.ImgList, Table, Vcl.GraphUtil, ES.BaseControls, ES.Layouts, System.Actions, Vcl.ActnList,
-  System.Generics.Collections, System.TypInfo, xml.VerySimple, System.StrUtils, Vcl.MPlayer;
+  System.Generics.Collections, System.TypInfo, xml.VerySimple, System.StrUtils, Vcl.MPlayer, ConvEditPlus.Enums,
+  system.UITypes;
 
 
 type
@@ -16,9 +17,9 @@ type
     PopupTree: TPopupMenu;
     MenuMain: TMainMenu;
     File1: TMenuItem;
-    Conversation1: TMenuItem;
-    Events1: TMenuItem;
-    Tables1: TMenuItem;
+    ConversationMenu: TMenuItem;
+    EventsMenu: TMenuItem;
+    TablesMenu: TMenuItem;
     View1: TMenuItem;
     mnuHelp: TMenuItem;
     Open1: TMenuItem;
@@ -28,7 +29,7 @@ type
     Save1: TMenuItem;
     SaveAs1: TMenuItem;
     N2: TMenuItem;
-    Generateaudiofilenames1: TMenuItem;
+    GenAudioNames: TMenuItem;
     ConvoProperties: TMenuItem;
     mniRecent: TMenuItem;
     N3: TMenuItem;
@@ -161,9 +162,8 @@ type
     RecentFile6: TMenuItem;
     RecentFile7: TMenuItem;
     Placeholder1: TMenuItem;
-    Exporttoconfile1: TMenuItem;
     N17: TMenuItem;
-    EsPanel1: TEsPanel;
+    pnlEventList: TEsPanel;
     ToolButton1: TToolButton;
     tbSettings: TToolButton;
     ActionList1: TActionList;
@@ -212,9 +212,10 @@ type
     N19: TMenuItem;
     ClearForNewFile1: TMenuItem;
     CreateTestFile1: TMenuItem;
+    btnGenAudio: TToolButton;
+    ToolButton6: TToolButton;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
-    procedure Properties3Click(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
     procedure PopupConvoEventListPopup(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
@@ -239,6 +240,7 @@ type
     function GetRandomEventItemHeight(events: array of TConEvent): Integer;
     function GetNumChoiceLines(events: array of TConEvent): Integer;
 
+    function FindConversationObjByString(conName: string): TConversation; // Find conversation by name return as TObject
     function FindConversationObjById(idToLookFor: Integer): TConversation; // Returns object
     function FindConversationById(id: Integer): string; // Find conversation by id and return it's name as string;
 
@@ -249,12 +251,16 @@ type
     function ItemExistsInTreeView(TreeView: TTreeView; ItemText: string): Boolean;
     function FindTreeItemByText(TreeView: TTreeView; Text: string): TTreeNode;
 
+    function CountSpeakerEntries(con: TConversation; conOwner: string): Integer;
 
     procedure SetMemoFont(FontSize: Integer; FontName: string);
     procedure PickTableObject(newTableMode: TTableMode; control: TControl);
     procedure FirstTimeLaunch();
 
+    procedure CreateConFile(bCreatingNew: Boolean);
     procedure ClearForNewFile();
+
+    procedure GenerateAudioFileNames();
 
     // loading and saving configuration file
     procedure LoadCfg();
@@ -264,8 +270,6 @@ type
     procedure ClearRecentFiles();
     procedure OpenRecentFile(aFile: string);
 
-    procedure CloseXMLfile(); // save our conXML file
-
     procedure LoadConXMLFile(aFileName: string);
 
     procedure AddLog(msg: string);
@@ -273,6 +277,8 @@ type
     procedure DeleteCurrentConversation();
 
     procedure CreateObjectLists();
+
+    procedure ToggleMenusPanels(bVisible: Boolean);
 
     // to draw special items...
     procedure DrawET_Speech(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
@@ -359,14 +365,12 @@ type
     procedure ConEventListClick(Sender: TObject);
     procedure tbSearchClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure Close1Click(Sender: TObject);
     procedure mnuShowAudioFiles1Click(Sender: TObject);
     procedure mnuExpandedEventList1Click(Sender: TObject);
     procedure RecentFile0Click(Sender: TObject);
     procedure ConEventListDblClick(Sender: TObject);
     procedure Splitter1CanResize(Sender: TObject; var NewSize: Integer; var Accept: Boolean);
     procedure ShowOptionsExecute(Sender: TObject);
-    procedure FileNewExecute(Sender: TObject);
     procedure FilePropertiesExecute(Sender: TObject);
     procedure FileOpenExecute(Sender: TObject);
     procedure FileSaveAsExecute(Sender: TObject);
@@ -386,6 +390,13 @@ type
     procedure btnStickyWindowClick(Sender: TObject);
     procedure ClearForNewFile1Click(Sender: TObject);
     procedure CreateTestFile1Click(Sender: TObject);
+    procedure Close1Click(Sender: TObject);
+    procedure Conversation_PropertiesExecute(Sender: TObject);
+    procedure ConvoTreeEdited(Sender: TObject; Node: TTreeNode; var S: string);
+    procedure FileGenerateAudioNamesExecute(Sender: TObject);
+    procedure FileCloseExecute(Sender: TObject);
+    procedure FileNewExecute(Sender: TObject);
+    procedure FileSaveExecute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -395,7 +406,6 @@ type
 
     ConversationsList: TObjectList<TConversation>; // To store conversations and their events
     CurrentConversation: TConversation; // Conversation currently selected in ConvoTree
-    GoBackConversation: TConversation; // for "Go back" button
     CurrentEvent: TConEvent; // Current (selected) event in event list
 
     // sets of strings to store Tables
@@ -403,7 +413,7 @@ type
     listFlags: TStringList;
     listSkills: TStringList;
     listObjects: TStringList;
-//    CurrentEventType: TEventType;
+
 
     // Configuration file
 
@@ -434,7 +444,9 @@ type
 
     MainFormIni: TIniFile;     // ini file
 
-    conXmlFile: string; // global variable, so I can use it anywhere...
+    currentConFile: string; // global variable, so I can use it anywhere...
+
+    bFileModified: Boolean; // set to True when file has been modified
   end;
 
 var
@@ -598,6 +610,31 @@ begin
     end;
 end;
 
+function TfrmMain.CountSpeakerEntries(con: TConversation; conOwner: string): Integer;
+begin
+    var counter: Integer := 0;
+    var tempSpeech: TConEventSpeech;
+
+    for var i:= 0 to High(con.Events) do
+    begin
+        if (con.Events[i] is TConEventSpeech) then
+            tempSpeech := TConEventSpeech(con.Events[i]);
+
+        if Assigned(tempSpeech) then
+        begin
+
+        if UpperCase(tempSpeech.ActorValue) = UpperCase(conOwner) then
+            Inc(counter);
+        end;
+
+//        AddLog('Conversation:' + con.conName + );
+    end;
+
+    Result := counter;
+
+    //ShowMessage(Result.ToString);
+end;
+
 function FindItemByObject(Node: TTreeNode; Obj: TObject): TTreeNode;
 var
   ChildNode: TTreeNode;
@@ -633,6 +670,17 @@ begin
     Node.Selected := True;
 end;
 
+function TfrmMain.FindConversationObjByString(conName: string): TConversation; // Find conversation by name return as TObject
+begin
+    for var i:= 0 to ConversationsList.Count -1 do
+    begin
+        if LowerCase(conName) = LowerCase(ConversationsList.Items[i].conName) then
+        Exit(ConversationsList.Items[i]);
+    end;
+
+    Result := nil;
+end;
+
 function TfrmMain.FindConversationById(id: Integer): string;
 var tempStr: string;
 begin
@@ -648,16 +696,17 @@ begin
 end;
 
 function TfrmMain.FindConversationObjById(idToLookFor: Integer): TConversation;
-    var tempCon: TConversation;
+//    var tempCon: TConversation;
 begin
-    tempCon:= nil;
+    var tempCon:= nil;
 
     for var K:= 0 to ConversationsList.Count -1 do
     begin
         if ConversationsList.Items[K].id = idToLookFor then begin
-           tempCon := ConversationsList.Items[K];
+            Exit(ConversationsList.Items[K]);
+           //tempCon := ConversationsList.Items[K];
                 //ShowMessage('Found conversation: ' + tempCon.conName + ' id=' + tempCon.id.ToString);
-           Break;
+           //Break;
         end;
     end;
 
@@ -732,6 +781,8 @@ begin
     end;
 end;
 
+
+
 procedure TfrmMain.AddLog(msg: string);
 begin
     mmoOutput.Lines.Add(msg);
@@ -776,19 +827,91 @@ begin
         frmSettings.ShowModal();
 end;
 
-procedure TfrmMain.ClearForNewFile();
+procedure TfrmMain.CreateConFile(bCreatingNew: Boolean);
 begin
-    for var i:= 0 to ConvoTree.Items.Count -1 do
+    if (currentConFile <> '') and (bFileModified = true) then
     begin
-        if Assigned(ConvoTree.Items[i].Data) then
-        begin
-//            AddLog('free object: ' + TConBaseObject(ConvoTree.Items[i].Data).ToString + i.ToString);
-            TConBaseObject(ConvoTree.Items[i].Data).Free();
+        case MessageDlg(strSaveConversationFileQuestion, mtConfirmation, mbYesNoCancel, 0) of
+          mrCancel:
+            begin
+                Exit();
+            end;
+          mrYes:
+            begin
+
+            end;
+          mrNo:
+            begin
+
+            end;
         end;
     end;
+
+    ClearForNewFile();
+
+    if (bCreatingNew = True) then
+        frmConvoFileProperties.ShowModal();
+end;
+
+procedure TfrmMain.ClearForNewFile();
+begin
+    ConEventList.Clear();
     ConvoTree.Items.Clear();
+    ConversationsList.Clear();  // Clear conversations list
+    conFileParameters.Clear(); // Clear header info
+    conFileParameters.fpCreatedByName  := ConversationUserName; // fill UserName in conParameters
+    conFileParameters.fpModifiedByName := ConversationUserName;
+
+    with frmConvoFileProperties do
+    begin
+        PageControl1.ActivePageIndex := 0; // Set first page
+
+        edtConFileVersion.Text := conFileParameters.fpFileVersion.ToString;
+
+        edtConFileCreatedOn.Text := conFileParameters.fpCreatedByDate; // add text to editbox
+        edtConFileCreatedBy.Text := conFileParameters.fpCreatedByName;
+
+        edtConFileLastModifiedOn.Text := conFileParameters.fpModifiedByDate; // add text to editbox
+        edtConFileLastModifiedBy.Text := conFileParameters.fpModifiedByName;
+        // Примечание: даты не заполняем, они подставляются автоматически в конструкторе или в методе Clear()
+    end;
+
+    bFileModified := False;
+end;
+
+procedure TfrmMain.GenerateAudioFileNames();
+begin
+//    var testCounter: Integer := 0;
+
+    for var CL := 0 to ConversationsList.Count -1 do
+    begin
+        var tempCounter := CountSpeakerEntries(ConversationsList.Items[CL], ConversationsList.Items[CL].conOwnerName);
+//        ShowMessage(tempCounter.ToString);
+        for var e := 0 to High(ConversationsList.Items[CL].Events) do
+        begin
+            if ConversationsList.Items[CL].Events[e] is TConEventSpeech then
+            begin
+//                Inc(testCounter);
+//                AddLog(testCounter.ToString);
+
+                var tempSpeech := TConEventSpeech(ConversationsList.Items[CL].Events[e]);
+                var audioStr := conFileParameters.fpAudioPackage + '\'
+                      + ConversationsList.Items[CL].conOwnerName + '\'
+                      + ConversationsList.Items[CL].conName + '\'
+                      + tempSpeech.ActorValue + '0' + tempCounter.ToString + '.mp3';
+
+                tempSpeech.mp3File := audioStr;
 
 
+            end;
+
+            if ConversationsList.Items[CL].Events[e] is TConEventChoice then
+            begin
+
+
+            end;
+        end;
+    end;
 end;
 
 procedure TfrmMain.ClearForNewFile1Click(Sender: TObject);
@@ -798,6 +921,7 @@ end;
 
 procedure TfrmMain.OpenRecentFile(aFile: string);
 begin
+    ClearForNewFile();
 // ToDo: Add check if file has been modified, ask to save, etc.
     if LowerCase(ExtractFileExt(aFile)) = '.xml' then
          LoadConXMLFile(aFile) else
@@ -805,9 +929,14 @@ begin
          LoadConFile(aFile)
          else
     begin
-       MessageDlg('Unknown file!',  mtWarning, [mbOK], 0);
+       MessageDlg(strUnknownFile,  mtWarning, [mbOK], 0);
        Exit();
     end;
+
+    ToggleMenusPanels(True);
+
+    currentConFile := aFile;
+    StatusBar.Panels[1].Text := currentConFile;
 end;
 
 procedure TfrmMain.AddRecentFile(aFile: string);
@@ -841,10 +970,9 @@ begin
     end;
 end;
 
-procedure TfrmMain.CloseXMLfile();
+procedure TfrmMain.Close1Click(Sender: TObject);
 begin
-    ConversationsList.Clear();
-    conFileParameters.Clear();
+    ClearForNewFile();
 end;
 
 procedure TfrmMain.LoadCfg();
@@ -2157,9 +2285,11 @@ procedure TfrmMain.HeaderControl1DrawSection(HeaderControl: THeaderControl; Sect
 var TempRect: TRect; // Переменная для временного прямоугольника
 begin
     TempRect := Rect;
+
+    GradientFillCanvas(HeaderControl1.Canvas, clBtnFace, clWindow, Rect, gdVertical);
+
     with HeaderControl1.Canvas do
     begin
-        Frame3D(HeaderControl1.Canvas, TempRect, RGB(212, 208, 200), clBlack, 1); // Рамка секций.
         Font.Name := CEP_EVENT_HEADER_LIST_FONT_NAME; // Шрифт
         Font.Size := CEP_EVENT_HEADER_LIST_FONT_SIZE;
         Font.Color := clBlack;
@@ -2466,6 +2596,19 @@ end;
 procedure TfrmMain.ConversationsListCount1Click(Sender: TObject);
 begin
     AddLog('Items in ConversationsList: ' + ConversationsList.Count.ToString);
+
+    for var i:= 0 to ConversationsList.Count -1 do
+    begin
+        AddLog(ConversationsList.Items[i].conName + ' id: ' + ConversationsList.Items[i].id.ToString);
+    end;
+
+end;
+
+procedure TfrmMain.Conversation_PropertiesExecute(Sender: TObject);
+begin
+    if Assigned(CurrentConversation) = false then Exit();
+
+    frmConvoProperties.EditConversation(CurrentConversation);
 end;
 
 procedure TfrmMain.ConvoTreeChange(Sender: TObject; Node: TTreeNode);
@@ -2529,9 +2672,19 @@ begin
     end;
 end;
 
+procedure TfrmMain.ConvoTreeEdited(Sender: TObject; Node: TTreeNode; var S: string);
+begin
+    TConversation(Node.data).conName := S;
+end;
+
 procedure TfrmMain.ConvoTreeEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
 begin
-    AllowEdit := False; //Node.Level = 1;  // only allow editing level 1 (conversation name)
+//    if ((Assigned(Node.Data) = true) and (Node.Data is TConversation)) then
+    if TObject(Node.Data) is TConversation then
+    begin
+        AllowEdit := True;
+//        TConversation(Node.data).conName := Node.Text;
+    end;
 end;
 
 procedure TfrmMain.End1Click(Sender: TObject);
@@ -2575,6 +2728,7 @@ begin
 
 //    if CurrentConversation <> nil then
 //        ConversationsList.Remove(CurrentConversation); // delete conversation from list
+
     AddLog(#13#10 + '------------- ConversationsList contents:');
     for var k:= 0 to ConversationsList.Count -1 do begin
         AddLog(ConversationsList.Items[k].conName + ' k = ' + k.ToString);
@@ -2585,52 +2739,52 @@ procedure TfrmMain.Event_DeleteExecute(Sender: TObject);
 begin
     if bAskForEventDelete = true then
     begin
-        if Application.MessageBox(PChar(strAskDeleteEventText), PChar(strAskDeleteEventTitle),
-           MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDYES then
-        DeleteCurrentEvent();
-    end
-    else
+        if MessageDlg(strAskDeleteEventText, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+            DeleteCurrentEvent();
+    end else
         DeleteCurrentEvent();
 end;
 
 procedure TfrmMain.Exit1Click(Sender: TObject);
 begin
-  SaveCfg();
-  Application.Terminate();
+    SaveCfg();
+    Application.Terminate();
 end;
 
 procedure TfrmMain.ExpandAll2Click(Sender: TObject);
 begin
-  ConvoTree.FullExpand();
+    ConvoTree.FullExpand();
 end;
 
 procedure TfrmMain.mnuExpandedEventList1Click(Sender: TObject);
 begin
-  bExpandedEventList := mnuExpandedEventList1.Checked;
-  ConEventList.Invalidate(); // Refresh the event list
+    bExpandedEventList := mnuExpandedEventList1.Checked;
+    ConEventList.Invalidate(); // Refresh the event list
 end;
 
 procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  SaveCfg();
-  AnimateWindow(Handle, 300, AW_BLEND or AW_HIDE);
+    SaveCfg();
+    AnimateWindow(Handle, 300, AW_BLEND or AW_HIDE);
 end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
-    Application.Title := strAppTitle + ' [version ' + GetAppVersionStr() +']';
+    Application.Title := strAppTitle;
     frmMain.Caption := Application.Title;
 
     LoadCfg();
     CreateObjectLists();
     ConvoTree.AlphaSort(true);
-end;
 
+    ToggleMenusPanels(False);
+end;
 
 procedure TfrmMain.CreateObjectLists();
 begin
     // create objects to store conversation data
-    ConversationsList := TObjectList<TConversation>.Create(); // Create conversations list
+    ConversationsList := TObjectList<TConversation>.Create(True); // Create conversations list // True = ownsObjects
+
     conFileParameters := TConFileParameters.Create(); // Create header
     listPawnsActors := conFileParameters.fpActors; // Assign
     listSkills := conFileParameters.fpSkills;
@@ -2638,68 +2792,88 @@ begin
     listFlags := conFileParameters.fpFlags;
 end;
 
+procedure TfrmMain.ToggleMenusPanels(bVisible: Boolean);
+begin
+    if bVisible = True then
+    begin
+        pnlEventList.Show();
+        Splitter1.Show();
+        pnlConvoTree.Show();
+        ConversationMenu.Visible:= True;
+        EventsMenu.Visible      := True;
+        TablesMenu.Visible      := True;
+
+        Close1.Visible          := True;
+        Save1.Visible           := True;
+        SaveAs1.Visible         := True;
+        GenAudioNames.Visible   := True;
+        ConvoProperties.Visible := True;
+    end;
+
+    if bVisible = False then
+    begin
+        pnlEventList.Hide();
+        pnlConvoTree.Hide();
+        Splitter1.Hide();
+        ConversationMenu.Visible:= False;
+        EventsMenu.Visible      := False;
+        TablesMenu.Visible      := False;
+
+        Close1.Visible          := False;
+        Save1.Visible           := False;
+        SaveAs1.Visible         := False;
+        GenAudioNames.Visible   := False;
+        ConvoProperties.Visible := False;
+
+    end;
+end;
+
 procedure TfrmMain.CreateTestFile1Click(Sender: TObject);
 begin
     SaveConFile('C:\Temp\First26.con');
 end;
 
+procedure TfrmMain.FileCloseExecute(Sender: TObject);
+begin
+    CreateConFile(False);
+end;
+
+procedure TfrmMain.FileGenerateAudioNamesExecute(Sender: TObject);
+begin
+    GenerateAudioFileNames();
+    ConEventList.Invalidate();
+end;
+
 procedure TfrmMain.FileNewExecute(Sender: TObject);
 begin
-    if conXmlFile <> '' then
-    begin
-        if Application.MessageBox('At the moment you have another file opened.'
-          + #13#10 + 'Do you wish to save it before creating a new one?' + #13#10 +
-          'Click "Yes" to cancel operation, so you can save current file.',
-          'Create new file?', MB_YESNO + MB_ICONWARNING + MB_TOPMOST) = IDYES then
-          Exit();
-    end;
-
-    ConversationsList.Clear();  // Clear conversations list
-    conFileParameters.Clear(); // Clear header info
-    conFileParameters.fpCreatedByName := ConversationUserName; // fill UserName in conParameters
-    conFileParameters.fpModifiedByName := ConversationUserName;
-
-    with frmConvoFileProperties do
-    begin
-        PageControl1.ActivePageIndex := 0; // Set first page
-
-        edtConFileVersion.Text := conFileParameters.fpFileVersion.ToString; // same
-
-        edtConFileCreatedOn.Text := conFileParameters.fpCreatedByDate; // add text to editbox
-        edtConFileCreatedBy.Text := conFileParameters.fpCreatedByName;
-
-        edtConFileLastModifiedOn.Text := conFileParameters.fpModifiedByDate; // add text to editbox
-        edtConFileLastModifiedBy.Text := conFileParameters.fpModifiedByName;
-        // Примечание: даты не заполняем, они подставляются автоматически в конструкторе или в методе Clear()
-    end;
-
-    frmConvoFileProperties.ShowModal();
+    CreateConFile(True);
 end;
 
 procedure TfrmMain.FileOpenExecute(Sender: TObject);
 begin
+    ClearForNewFile(); // free memory before loading new file
+
     FileOpenDialog.FileTypeIndex := OpenFileFilterIndex; // restore filter index
 
     if FileOpenDialog.Execute() = true then
     begin
         OpenFileFilterIndex := FileOpenDialog.FileTypeIndex; // save filter index
-        conXmlFile := FileOpenDialog.FileName;  // Assign filename to global variable
+        currentConFile := FileOpenDialog.FileName;  // Assign filename to global variable
 
-        if UpperCase(ExtractFileExt(conXmlFile)) = '.XML' then
-            LoadConXMLFile(conXmlFile)
-        else if UpperCase(ExtractFileExt(conXmlFile)) = '.CON' then
-            LoadConFile(conXmlFile)
+        if UpperCase(ExtractFileExt(currentConFile)) = '.XML' then
+            LoadConXMLFile(currentConFile)
+        else if UpperCase(ExtractFileExt(currentConFile)) = '.CON' then
+            LoadConFile(currentConFile)
         else
             begin
-                MessageBox(Handle, 'Please select .con or .xml file!', 'Invalid file', MB_OK + MB_ICONWARNING + MB_DEFBUTTON2 + MB_TOPMOST);
+                MessageDlg(strSelectConXML,  mtError, [mbOK], 0);
                 Exit();
             end;
 
-        StatusBar.Panels[1].Text := conXmlFile; // filename in StatusBar
-        AddRecentFile(conXmlFile);  // Add to recent
+        StatusBar.Panels[1].Text := currentConFile; // filename in StatusBar
+        AddRecentFile(currentConFile);  // Add to recent
     end;
 end;
-
 
 procedure TfrmMain.FilePropertiesExecute(Sender: TObject);
 begin
@@ -2713,12 +2887,45 @@ begin
 
     if FileSaveDialog.Execute() = true then
     begin
-        savefileName := FileSaveDialog.FileName;
+        if FileSaveDialog.FileTypeIndex = 0 then
+        begin
+            savefileName := FileSaveDialog.FileName;
 
-        if ExtractFileExt(savefileName) = '' then
-            savefileName := savefileName + '.xml'; // for now
+            if ExtractFileExt(savefileName) = '' then
+                savefileName := savefileName + '.xml';
 
-        BuildConXMLFile(FileSaveDialog.FileName);
+            BuildConXMLFile(FileSaveDialog.FileName);
+        end;
+
+        if FileSaveDialog.FileTypeIndex = 1 then
+        begin
+            savefileName := FileSaveDialog.FileName;
+
+            if ExtractFileExt(savefileName) = '' then
+                savefileName := savefileName + '.con';
+
+            SaveConFile(FileSaveDialog.FileName);
+        end;
+    end;
+end;
+
+procedure TfrmMain.FileSaveExecute(Sender: TObject);
+begin
+//    ShowMessage(currentConFile);
+
+    if (currentConFile <> ''){ and (bFileModified = true)} then
+    begin
+        if LowerCase(ExtractFileExt(currentConFile)) = '.xml' then
+        begin
+            //ShowMessage('About to save XML: ' + currentConFile);
+            BuildConXMLFile(currentConFile);
+        end;
+
+        if LowerCase(ExtractFileExt(currentConFile)) = '.con' then
+        begin
+            //ShowMessage('About to save CON: ' + currentConFile);
+            SaveConFile(currentConFile);
+        end;
     end;
 end;
 
@@ -2830,11 +3037,6 @@ begin
     InsertEvent(Choice2.Tag);
 end;
 
-procedure TfrmMain.Close1Click(Sender: TObject);
-begin
-    CloseXMLfile();
-end;
-
 procedure TfrmMain.About1Click(Sender: TObject);
 begin
     frmAbout.ShowModal();
@@ -2865,6 +3067,7 @@ end;
 
 procedure TfrmMain.AddConversationExecute(Sender: TObject);
 begin
+    frmConvoProperties.EditMode := em_Create;
     frmConvoProperties.ShowModal();
 end;
 
@@ -2913,6 +3116,9 @@ begin
 
         memoSkillPointMessage.Font.Name := FontName;
         memoSkillPointMessage.Font.Size := FontSize;
+
+        mmoChoiceText.Font.Name := FontName;
+        mmoChoiceText.Font.Size := FontSize;
     end;
 
     frmConvoProperties.memoConversationNotes.Font.Name := FontName;
@@ -3119,7 +3325,6 @@ begin
     InsertEvent(PlayAnimation2.Tag);
 end;
 
-
 procedure TfrmMain.PopupConvoEventListPopup(Sender: TObject); // Enable/disable some menu items...
 begin
     if (ConvoTree.Items.Count < 1) or (ConvoTree.Selected.Level <> 1) then
@@ -3156,7 +3361,7 @@ end;
 
 procedure TfrmMain.PopupTreePopup(Sender: TObject); // block some menu items depending on selection
 begin
-    if ConvoTree.Items.Count < 1 then Exit();
+    if ConvoTree.Items.Count < 2 then Exit();
 
     if TreeHasItemsOfLevel(ConvoTree, 1) = true then
     begin
@@ -3167,11 +3372,6 @@ begin
         DeleteConversation.Enabled := ConvoTree.Selected.Level = 1;
         Conversation_Properties.Enabled := ConvoTree.Selected.Level = 1;
     end;
-end;
-
-procedure TfrmMain.Properties3Click(Sender: TObject);
-begin
-    frmConvoProperties.ShowModal();
 end;
 
 procedure TfrmMain.Random1Click(Sender: TObject);
