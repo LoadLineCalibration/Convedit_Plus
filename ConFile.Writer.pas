@@ -4,8 +4,8 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
-  Vcl.Dialogs, winapi.ActiveX, ConvEditPlus_Const, Conversation.Classes, system.TypInfo,
-  vcl.ComCtrls;
+  Vcl.Dialogs, winapi.ActiveX, ConvEditPlus.Consts, Conversation.Classes, system.TypInfo,
+  vcl.ComCtrls, MainWindow;
 
 procedure SaveConFile(newFile: string);
 
@@ -13,9 +13,15 @@ procedure WriteString(cw: TBinaryWriter; str: String);
 procedure WriteDouble(cw: TBinaryWriter; dbl: Double);
 procedure WriteInteger(cw: TBinaryWriter; Int: Integer);
 
+function DTStrToDouble(str: string): Double;
 
 
 implementation
+
+function DTStrToDouble(str: string): Double;
+begin
+    Result := StrToDateTime(str);
+end;
 
 procedure SaveConFile(newFile: string);
 var
@@ -35,27 +41,37 @@ try
     ConWrite.Write(Integer(CEP_CONXML_FILE_VERSION)); // version
 
     // temporary, for testing
-    WriteDouble(ConWrite, 45146.977847222224);
-    WriteString(ConWrite, 'CreatedBy: Some String with some chars!');
-    WriteDouble(ConWrite, 45146.977847222224);
-    WriteString(ConWrite, 'LastModifBy: some string');
-    WriteString(ConWrite, 'AudioPack');
-    WriteString(ConWrite, 'Notes');
+    WriteDouble(ConWrite, DTStrToDouble(frmMain.conFileParameters.fpCreatedByDate));
+    WriteString(ConWrite, frmMain.conFileParameters.fpCreatedByName);
+    WriteDouble(ConWrite, DTStrToDouble(frmMain.conFileParameters.fpModifiedByDate));
+    WriteString(ConWrite, frmMain.conFileParameters.fpModifiedByName);
+    WriteString(ConWrite, frmMain.conFileParameters.fpAudioPackage);
+    WriteString(ConWrite, frmMain.conFileParameters.fpNotes);
 
-    WriteInteger(ConWrite, 1); // numMissions
-        WriteInteger(ConWrite, 1); // mission1
+    WriteInteger(ConWrite, Length(frmMain.conFileParameters.fpMissions)); // numMissions
 
-    WriteInteger(ConWrite, 0); // tables data size
+    for var i := 0 to High(frmMain.conFileParameters.fpMissions) do
+    begin
+        WriteInteger(ConWrite, frmMain.conFileParameters.fpMissions[i]);
+    end;
+
+    WriteInteger(ConWrite, 10); // tables data size? Also Unrecognized1 in .xml version
+
+    // write tables here...
+
+    // actors
+    // numrecords (array length) then record Index, then record string size and string itself
+    // same for other 3 tables.
+
+    // flags
+
+    // Skills
+
+    // objects
 
     WriteInteger(ConWrite, 0); // unknown3
 
     WriteInteger(ConWrite, 0); // numConversations
-
-
-
-
-
-
 
     ConWrite.Close();
 finally
