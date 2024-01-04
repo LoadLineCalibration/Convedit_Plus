@@ -221,7 +221,6 @@ try
                 WriteLongBool(ConWrite, eventSpeech.bBold);      //
                 WriteInteger(ConWrite, eventSpeech.SpeechFont);  //
             end;
-            //
 
             if convList.Items[nc].Events[NEL].EventType = ET_Choice then //01
             begin
@@ -342,7 +341,12 @@ try
                 WriteCommonEventFields(ConWrite, eventMoveCam);
 
                 WriteInteger(ConWrite, Ord(eventMoveCam.CameraType)); // cameraType
-                WriteInteger(ConWrite, Ord(eventMoveCam.CameraAngle)); // cameraPosition
+
+                if eventMoveCam.CameraType = CT_Random then
+                    WriteInteger(ConWrite, 0)
+                else
+                    WriteInteger(ConWrite, Ord(eventMoveCam.CameraAngle)); // cameraPosition
+
                 WriteInteger(ConWrite, -1); // cameraTransition was not implemented anyway, so just write -1
             end;
 
@@ -423,7 +427,6 @@ try
 
                 WriteCommonEventFields(ConWrite, eventAddNote);
                 WriteString(ConWrite, eventAddNote.TextLine); // noteText
-
             end;
 
             if convList.Items[nc].Events[NEL].EventType = ET_AddSkillPoints then // 14
@@ -468,10 +471,9 @@ try
                 var eventEnd := TConEventEnd(convList.Items[nc].Events[NEL]);
 
                 WriteCommonEventFields(ConWrite, eventEnd);
-            end; //
+            end;
         end;
     end;
-
 
     ConWrite.Close();
 finally
