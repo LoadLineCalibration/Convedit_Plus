@@ -18,6 +18,28 @@ procedure WriteCommonEventFields(cw: TBinaryWriter; Event: TConEvent);
 function DateTimeStrToDouble(str: string): Double;
 function GetTablesSize(): Integer;
 
+procedure SaveConFileHeader(ConWrite: TBinaryWriter);
+
+procedure SaveSpeech(ConWrite: TBinaryWriter; eventSpeech: TConEventSpeech); // 00
+procedure SaveChoice(ConWrite: TBinaryWriter; eventChoice: TConEventChoice); // 01
+procedure SaveSetFlag(ConWrite: TBinaryWriter; eventSetFlag: TConEventSetFlag); // 02
+procedure SaveCheckFlag(ConWrite: TBinaryWriter; eventCheckFlag: TConEventCheckFlag); // 03
+procedure SaveCheckObject(ConWrite: TBinaryWriter; eventCheckObj: TConEventCheckObject); // 04
+procedure SaveTransObject(ConWrite: TBinaryWriter; eventTransObject: TConEventTransferObject); // 05
+procedure SaveMoveCam(ConWrite: TBinaryWriter; eventMoveCam: TConEventMoveCamera); // 06
+procedure SavePlayAnim(ConWrite: TBinaryWriter; eventPlayAnim: TConEventAnimation); // 07
+procedure SaveTrade(ConWrite: TBinaryWriter; eventTrade: TConEventTrade); // 08
+procedure SaveJump(ConWrite: TBinaryWriter; eventJump: TConEventJump); // 09
+procedure SaveRandom(ConWrite: TBinaryWriter; eventRandom: TConEventRandom); //10
+procedure SaveTrigger(ConWrite: TBinaryWriter; eventTrigger: TConEventTrigger); //11
+procedure SaveAddGoal(ConWrite: TBinaryWriter; eventAddGoal: TConEventAddGoal); // 12
+procedure SaveAddNote(ConWrite: TBinaryWriter; eventAddNote: TConEventAddNote); // 13
+procedure SaveAddSkillPts(ConWrite: TBinaryWriter; eventAddSkillPts: TConEventAddSkillPoints); // 14
+procedure SaveAddCredits(ConWrite: TBinaryWriter; eventAddCredits: TConEventAddCredits); // 15
+procedure SaveCheckPersona(ConWrite: TBinaryWriter; eventCheckPersona: TConEventCheckPersona); // 16
+procedure SaveComment(ConWrite: TBinaryWriter; eventComment: TConEventComment); // 17
+procedure SaveEnd(ConWrite: TBinaryWriter; eventEnd: TConEventEnd); // 18
+
 
 implementation
 
@@ -81,23 +103,15 @@ finally
 end;
 end;
 
-procedure SaveConFile(newFile: string);
-var
-  fileStr: TFileStream;
-  ConWrite: TBinaryWriter;
-  fileHdrBytes: TBytes;
-  tablesSize: Integer;
+procedure SaveConFileHeader(ConWrite: TBinaryWriter); // save information
 begin
-    tablesSize := GetTablesSize();
-
-    fileStr := TFileStream.Create(newFile, fmOpenWrite or fmCreate);
-    ConWrite := TBinaryWriter.Create(fileStr, TEncoding.ANSI, False);
+    var tablesSize := GetTablesSize();
+    var fileHdrBytes: TBytes;
 
     SetLength(fileHdrBytes, Length(conFileHeader));
     for var th := 0 to Length(conFileHeader) -1 do
         fileHdrBytes[th] := conFileHeader[th];
 
-try
     ConWrite.Write(fileHdrBytes); // Header
     WriteInteger(ConWrite, CEP_CONXML_FILE_VERSION); // version
 
@@ -147,7 +161,252 @@ try
         WriteInteger(ConWrite, o);
         WriteString(ConWrite, frmMain.conFileParameters.fpObjects.Strings[o]);
     end;
-    // end of tables
+end;
+
+procedure SaveSpeech(ConWrite: TBinaryWriter; eventSpeech: TConEventSpeech); // 00
+begin
+    WriteCommonEventFields(ConWrite, eventSpeech);
+
+    WriteInteger(ConWrite, eventSpeech.ActorIndex); // speaker id
+    WriteString(ConWrite, eventSpeech.ActorValue); // speaker Name
+
+    WriteInteger(ConWrite, eventSpeech.ActorToIndex); // speaking to id
+    WriteString(ConWrite, eventSpeech.ActorToValue); // speaking to name
+
+    WriteString(ConWrite, eventSpeech.TextLine); // speech text
+    WriteString(ConWrite, eventSpeech.mp3File); // Sound
+
+    WriteLongBool(ConWrite, eventSpeech.bContinued); // not implemented in game
+    WriteLongBool(ConWrite, eventSpeech.bBold);      //
+    WriteInteger(ConWrite, eventSpeech.SpeechFont);  //
+end;
+
+procedure SaveChoice(ConWrite: TBinaryWriter; eventChoice: TConEventChoice); // 01
+begin
+    WriteCommonEventFields(ConWrite, eventChoice);
+
+    WriteInteger(ConWrite, eventChoice.unk0); // unk0
+    WriteLongBool(ConWrite, eventChoice.bClearScreen); // bClearScreen
+    WriteInteger(ConWrite, eventChoice.NumChoices); // numChoiceList
+
+    for var chi := 0 to eventChoice.NumChoices -1 do
+    begin
+        WriteInteger(ConWrite, eventChoice.Choices[chi].Index); // unk0
+        WriteString(ConWrite, eventChoice.Choices[chi].textline); // choiceText
+        WriteLongBool(ConWrite, eventChoice.Choices[chi].bDisplayAsSpeech); // bDisplayAsSpeech
+
+        if eventChoice.Choices[chi].bSkillNeeded = -1 then
+        begin
+            WriteInteger(ConWrite, -1);  // skill is not required, so write skillName.id = -1
+        end;
+
+        if eventChoice.Choices[chi].bSkillNeeded >= 0 then
+        begin
+            WriteInteger(ConWrite, eventChoice.Choices[chi].bSkillNeeded);  // skill required, so write skillName.id
+            WriteString(ConWrite, eventChoice.Choices[chi].Skill); // skillName
+            WriteInteger(ConWrite, eventChoice.Choices[chi].SkillLevel); // skilllevelNeeded
+        end;
+
+        WriteString(ConWrite, eventChoice.Choices[chi].GoToLabel); // choiceLabel
+        WriteString(ConWrite, eventChoice.Choices[chi].mp3); // soundPath
+
+        var numFlagRefListChi := Length(eventChoice.Choices[chi].RequiredFlags);
+        WriteInteger(ConWrite, numFlagRefListChi); // numFlagRefList
+
+        for var NFRCh := 0 to numFlagRefListChi -1 do
+        begin
+            WriteInteger(ConWrite, eventChoice.Choices[chi].RequiredFlags[NFRCh].flagIndex);
+             WriteString(ConWrite, eventChoice.Choices[chi].RequiredFlags[NFRCh].flagName);
+           WriteLongBool(ConWrite, eventChoice.Choices[chi].RequiredFlags[NFRCh].flagValue);
+            WriteInteger(ConWrite, eventChoice.Choices[chi].RequiredFlags[NFRCh].flagExpiration);
+        end;
+    end;
+end;
+
+procedure SaveSetFlag(ConWrite: TBinaryWriter; eventSetFlag: TConEventSetFlag); // 02
+begin
+    WriteCommonEventFields(ConWrite, eventSetFlag);
+
+    var numFlagRefListSF := Length(eventSetFlag.SetFlags);
+    WriteInteger(ConWrite, numFlagRefListSF); // numFlagRefList
+
+    for var NFRSF := 0 to numFlagRefListSF -1 do
+    begin
+        WriteInteger(ConWrite, eventSetFlag.SetFlags[NFRSF].flagIndex);
+         WriteString(ConWrite, eventSetFlag.SetFlags[NFRSF].flagName);
+       WriteLongBool(ConWrite, eventSetFlag.SetFlags[NFRSF].flagValue);
+        WriteInteger(ConWrite, eventSetFlag.SetFlags[NFRSF].flagExpiration);
+    end;
+end;
+
+procedure SaveCheckFlag(ConWrite: TBinaryWriter; eventCheckFlag: TConEventCheckFlag); // 03
+begin
+    WriteCommonEventFields(ConWrite, eventCheckFlag);
+
+    var numFlagRefListCHF := Length(eventCheckFlag.FlagsToCheck);
+    WriteInteger(ConWrite, numFlagRefListCHF); // numFlagRefList
+
+    for var NFRCHF := 0 to numFlagRefListCHF -1 do
+    begin
+        WriteInteger(ConWrite, eventCheckFlag.FlagsToCheck[NFRCHF].flagIndex);
+         WriteString(ConWrite, eventCheckFlag.FlagsToCheck[NFRCHF].flagName);
+       WriteLongBool(ConWrite, eventCheckFlag.FlagsToCheck[NFRCHF].flagValue);
+        WriteInteger(ConWrite, eventCheckFlag.FlagsToCheck[NFRCHF].flagExpiration);
+    end;
+
+    WriteString(ConWrite, eventCheckFlag.GotoLabel); // setLabel
+end;
+
+procedure SaveCheckObject(ConWrite: TBinaryWriter; eventCheckObj: TConEventCheckObject); // 04
+begin
+    WriteCommonEventFields(ConWrite, eventCheckObj);
+
+    WriteInteger(ConWrite, eventCheckObj.ObjectIndex); // objectName.id
+    WriteString(ConWrite, eventCheckObj.ObjectValue); // objectName.Name
+    WriteString(ConWrite, eventCheckObj.GoToLabel); // failLabel
+end;
+
+procedure SaveTransObject(ConWrite: TBinaryWriter; eventTransObject: TConEventTransferObject); // 05
+begin
+    WriteCommonEventFields(ConWrite, eventTransObject);
+
+    WriteInteger(ConWrite, eventTransObject.ObjectIndex); // objectName.id
+    WriteString(ConWrite, eventTransObject.ObjectValue); // objectName.Name
+    WriteInteger(ConWrite, eventTransObject.Amount); // TransferCount
+
+    WriteInteger(ConWrite, eventTransObject.ActorFromIndex);
+    WriteString(ConWrite, eventTransObject.ActorFromValue);
+
+    WriteInteger(ConWrite, eventTransObject.ActorToIndex);
+    WriteString(ConWrite, eventTransObject.ActorToValue);
+
+    WriteString(ConWrite, eventTransObject.GotoLabel); // failLabel
+end;
+
+procedure SaveMoveCam(ConWrite: TBinaryWriter; eventMoveCam: TConEventMoveCamera); // 06
+begin
+    WriteCommonEventFields(ConWrite, eventMoveCam);
+
+    WriteInteger(ConWrite, Ord(eventMoveCam.CameraType)); // cameraType
+
+    if eventMoveCam.CameraType = CT_Random then
+        WriteInteger(ConWrite, 0)
+    else
+        WriteInteger(ConWrite, Ord(eventMoveCam.CameraAngle)); // cameraPosition
+
+    WriteInteger(ConWrite, -1); // cameraTransition was not implemented anyway, so just write -1
+end;
+
+procedure SavePlayAnim(ConWrite: TBinaryWriter; eventPlayAnim: TConEventAnimation); // 07
+begin
+    WriteCommonEventFields(ConWrite, eventPlayAnim);
+
+    WriteInteger(ConWrite, eventPlayAnim.ActorIndex); // eventOwnerName.id
+    WriteString(ConWrite, eventPlayAnim.ActorValue); // eventOwnerName.Name
+    WriteString(ConWrite, eventPlayAnim.AnimSequence); // seqStr
+    WriteLongBool(ConWrite, eventPlayAnim.bAnimPlayOnce); // playMode.
+    WriteInteger(ConWrite, eventPlayAnim.AnimPlayForSeconds); // This field is missing in ConEventAnimation.uc (by default)
+    WriteLongBool(ConWrite, eventPlayAnim.bAnimWaitToFinish); // bFinishAnim
+end;
+
+procedure SaveTrade(ConWrite: TBinaryWriter; eventTrade: TConEventTrade); // 08
+begin
+//
+end;
+
+procedure SaveJump(ConWrite: TBinaryWriter; eventJump: TConEventJump); // 09
+begin
+    WriteCommonEventFields(ConWrite, eventJump);
+
+    WriteString(ConWrite, eventJump.gotoLabel); // jumpLabel
+    WriteInteger(ConWrite, eventJump.conversationId); // conId
+end;
+
+procedure SaveRandom(ConWrite: TBinaryWriter; eventRandom: TConEventRandom); //10
+begin
+    WriteCommonEventFields(ConWrite, eventRandom);
+
+    var numRandomLabels := Length(eventRandom.GoToLabels);
+    WriteInteger(ConWrite, numRandomLabels);
+
+    for var NRL := 0 to numRandomLabels -1 do
+        WriteString(ConWrite, eventRandom.GoToLabels[NRL]);
+
+    WriteLongBool(ConWrite, eventRandom.bCycle); // cycle events
+    WriteLongBool(ConWrite, eventRandom.bCycleOnce);
+    WriteLongBool(ConWrite, eventRandom.bCycleRandom);
+end;
+
+procedure SaveTrigger(ConWrite: TBinaryWriter; eventTrigger: TConEventTrigger); //11
+begin
+    WriteCommonEventFields(ConWrite, eventTrigger);
+    WriteString(ConWrite, eventTrigger.TriggerTag);
+end;
+
+procedure SaveAddGoal(ConWrite: TBinaryWriter; eventAddGoal: TConEventAddGoal); // 12
+begin
+    WriteCommonEventFields(ConWrite, eventAddGoal);
+    WriteString(ConWrite, eventAddGoal.GoalName);
+
+    var bGoalCompleted := eventAddGoal.bComplete;
+    WriteLongBool(ConWrite, bGoalCompleted);
+
+    if (bGoalCompleted = False) then
+    begin
+        WriteString(ConWrite, eventAddGoal.GoalText);
+        WriteLongBool(ConWrite, eventAddGoal.bPrimaryGoal);
+    end;
+end;
+
+procedure SaveAddNote(ConWrite: TBinaryWriter; eventAddNote: TConEventAddNote); // 13
+begin
+    WriteCommonEventFields(ConWrite, eventAddNote);
+    WriteString(ConWrite, eventAddNote.TextLine); // noteText
+end;
+
+procedure SaveAddSkillPts(ConWrite: TBinaryWriter; eventAddSkillPts: TConEventAddSkillPoints); // 14
+begin
+    WriteCommonEventFields(ConWrite, eventAddSkillPts);
+    WriteInteger(ConWrite, eventAddSkillPts.Points); // pointsToAdd
+    WriteString(ConWrite, eventAddSkillPts.TextLine); // awardMessage
+end;
+
+procedure SaveAddCredits(ConWrite: TBinaryWriter; eventAddCredits: TConEventAddCredits); // 15
+begin
+    WriteCommonEventFields(ConWrite, eventAddCredits);
+    WriteInteger(ConWrite, eventAddCredits.Credits);
+end;
+
+procedure SaveCheckPersona(ConWrite: TBinaryWriter; eventCheckPersona: TConEventCheckPersona); // 16
+begin
+    WriteCommonEventFields(ConWrite, eventCheckPersona);
+
+    WriteInteger(ConWrite, Ord(eventCheckPersona.AttrToCheck)); // personaType
+    WriteInteger(ConWrite, Ord(eventCheckPersona.Condition));
+    WriteInteger(ConWrite, eventCheckPersona.CheckValue);
+    WriteString(ConWrite, eventCheckPersona.CheckGoToLabel); // JumpLabel
+end;
+
+procedure SaveComment(ConWrite: TBinaryWriter; eventComment: TConEventComment); // 17
+begin
+    WriteCommonEventFields(ConWrite, eventComment);
+    WriteString(ConWrite, eventComment.TextLine); // comment
+end;
+
+procedure SaveEnd(ConWrite: TBinaryWriter; eventEnd: TConEventEnd); // 18
+begin
+    WriteCommonEventFields(ConWrite, eventEnd);
+end;
+
+procedure SaveConFile(newFile: string);
+var
+    fileStr: TFileStream;
+    ConWrite: TBinaryWriter;
+begin
+    fileStr := TFileStream.Create(newFile, fmOpenWrite or fmCreate);
+    ConWrite := TBinaryWriter.Create(fileStr, TEncoding.ANSI, False);
+try
+    SaveConFileHeader(ConWrite);
 
     var numConversations := frmMain.ConversationsList.Count;
     var convList := frmMain.ConversationsList;
@@ -205,163 +464,49 @@ try
             if convList.Items[nc].Events[NEL].EventType = ET_Speech then // 00
             begin
                 var eventSpeech := TConEventSpeech(convList.Items[nc].Events[NEL]);
-
-                WriteCommonEventFields(ConWrite, eventSpeech);
-
-                WriteInteger(ConWrite, eventSpeech.ActorIndex); // speaker id
-                WriteString(ConWrite, eventSpeech.ActorValue); // speaker Name
-
-                WriteInteger(ConWrite, eventSpeech.ActorToIndex); // speaking to id
-                WriteString(ConWrite, eventSpeech.ActorToValue); // speaking to name
-
-                WriteString(ConWrite, eventSpeech.TextLine); // speech text
-                WriteString(ConWrite, eventSpeech.mp3File); // Sound
-
-                WriteLongBool(ConWrite, eventSpeech.bContinued); // not implemented in game
-                WriteLongBool(ConWrite, eventSpeech.bBold);      //
-                WriteInteger(ConWrite, eventSpeech.SpeechFont);  //
+                SaveSpeech(ConWrite, eventSpeech);
             end;
 
             if convList.Items[nc].Events[NEL].EventType = ET_Choice then //01
             begin
                 var eventChoice := TConEventChoice(convList.Items[nc].Events[NEL]);
-
-                WriteCommonEventFields(ConWrite, eventChoice);
-
-                WriteInteger(ConWrite, eventChoice.unknown0); // unknown0
-                WriteLongBool(ConWrite, eventChoice.bClearScreen); // bClearScreen
-                WriteInteger(ConWrite, eventChoice.NumChoices); // numChoiceList
-
-                for var chi := 0 to eventChoice.NumChoices -1 do
-                begin
-                    WriteInteger(ConWrite, eventChoice.Choices[chi].Index); // unk0
-                    WriteString(ConWrite, eventChoice.Choices[chi].textline); // choiceText
-                    WriteLongBool(ConWrite, eventChoice.Choices[chi].bDisplayAsSpeech); // bDisplayAsSpeech
-
-                    if eventChoice.Choices[chi].bSkillNeeded = -1 then
-                    begin
-                        WriteInteger(ConWrite, -1);  // skill is not required, so write skillName.id = -1
-                    end;
-
-                    if eventChoice.Choices[chi].bSkillNeeded >= 0 then
-                    begin
-                        WriteInteger(ConWrite, eventChoice.Choices[chi].bSkillNeeded);  // skill required, so write skillName.id
-                        WriteString(ConWrite, eventChoice.Choices[chi].Skill); // skillName
-                        WriteInteger(ConWrite, eventChoice.Choices[chi].SkillLevel); // skilllevelNeeded
-                    end;
-
-                    WriteString(ConWrite, eventChoice.Choices[chi].GoToLabel); // choiceLabel
-                    WriteString(ConWrite, eventChoice.Choices[chi].mp3); // soundPath
-
-                    var numFlagRefListChi := Length(eventChoice.Choices[chi].RequiredFlags);
-                    WriteInteger(ConWrite, numFlagRefListChi); // numFlagRefList
-
-                    for var NFRCh := 0 to numFlagRefListChi -1 do
-                    begin
-                        WriteInteger(ConWrite, eventChoice.Choices[chi].RequiredFlags[NFRCh].flagIndex);
-                         WriteString(ConWrite, eventChoice.Choices[chi].RequiredFlags[NFRCh].flagName);
-                       WriteLongBool(ConWrite, eventChoice.Choices[chi].RequiredFlags[NFRCh].flagValue);
-                        WriteInteger(ConWrite, eventChoice.Choices[chi].RequiredFlags[NFRCh].flagExpiration);
-                    end;
-                end;
+                SaveChoice(ConWrite, eventChoice);
             end;
 
             if convList.Items[nc].Events[NEL].EventType = ET_SetFlag then // 02
             begin
                 var eventSetFlag := TConEventSetFlag(convList.Items[nc].Events[NEL]);
-
-                WriteCommonEventFields(ConWrite, eventSetFlag);
-
-                var numFlagRefListSF := Length(eventSetFlag.SetFlags);
-                WriteInteger(ConWrite, numFlagRefListSF); // numFlagRefList
-
-                for var NFRSF := 0 to numFlagRefListSF -1 do
-                begin
-                    WriteInteger(ConWrite, eventSetFlag.SetFlags[NFRSF].flagIndex);
-                     WriteString(ConWrite, eventSetFlag.SetFlags[NFRSF].flagName);
-                   WriteLongBool(ConWrite, eventSetFlag.SetFlags[NFRSF].flagValue);
-                    WriteInteger(ConWrite, eventSetFlag.SetFlags[NFRSF].flagExpiration);
-                end;
+                SaveSetFlag(ConWrite, eventSetFlag);
             end;
 
             if convList.Items[nc].Events[NEL].EventType = ET_CheckFlag then // 03
             begin
                 var eventCheckFlag := TConEventCheckFlag(convList.Items[nc].Events[NEL]);
-
-                WriteCommonEventFields(ConWrite, eventCheckFlag);
-
-                var numFlagRefListCHF := Length(eventCheckFlag.FlagsToCheck);
-                WriteInteger(ConWrite, numFlagRefListCHF); // numFlagRefList
-
-                for var NFRCHF := 0 to numFlagRefListCHF -1 do
-                begin
-                    WriteInteger(ConWrite, eventCheckFlag.FlagsToCheck[NFRCHF].flagIndex);
-                     WriteString(ConWrite, eventCheckFlag.FlagsToCheck[NFRCHF].flagName);
-                   WriteLongBool(ConWrite, eventCheckFlag.FlagsToCheck[NFRCHF].flagValue);
-                    WriteInteger(ConWrite, eventCheckFlag.FlagsToCheck[NFRCHF].flagExpiration);
-                end;
-
-                WriteString(ConWrite, eventCheckFlag.GotoLabel); // setLabel
+                SaveCheckFlag(ConWrite, eventCheckFlag);
             end;
 
             if convList.Items[nc].Events[NEL].EventType = ET_CheckObject then // 04
             begin
                 var eventCheckObject := TConEventCheckObject(convList.Items[nc].Events[NEL]);
-
-                WriteCommonEventFields(ConWrite, eventCheckObject);
-
-                WriteInteger(ConWrite, eventCheckObject.ObjectIndex); // objectName.id
-                WriteString(ConWrite, eventCheckObject.ObjectValue); // objectName.Name
-                WriteString(ConWrite, eventCheckObject.GoToLabel); // failLabel
+                SaveCheckObject(ConWrite, eventCheckObject);
             end;
 
             if convList.Items[nc].Events[NEL].EventType = ET_TransferObject then // 05
             begin
                 var eventTransObject := TConEventTransferObject(convList.Items[nc].Events[NEL]);
-
-                WriteCommonEventFields(ConWrite, eventTransObject);
-
-                WriteInteger(ConWrite, eventTransObject.ObjectIndex); // objectName.id
-                WriteString(ConWrite, eventTransObject.ObjectValue); // objectName.Name
-                WriteInteger(ConWrite, eventTransObject.Amount); // TransferCount
-
-                WriteInteger(ConWrite, eventTransObject.ActorFromIndex);
-                WriteString(ConWrite, eventTransObject.ActorFromValue);
-
-                WriteInteger(ConWrite, eventTransObject.ActorToIndex);
-                WriteString(ConWrite, eventTransObject.ActorToValue);
-
-                WriteString(ConWrite, eventTransObject.GotoLabel); // failLabel
+                SaveTransObject(ConWrite, eventTransObject);
             end;
 
             if convList.Items[nc].Events[NEL].EventType = ET_MoveCamera then // 06
             begin
                 var eventMoveCam := TConEventMoveCamera(convList.Items[nc].Events[NEL]);
-
-                WriteCommonEventFields(ConWrite, eventMoveCam);
-
-                WriteInteger(ConWrite, Ord(eventMoveCam.CameraType)); // cameraType
-
-                if eventMoveCam.CameraType = CT_Random then
-                    WriteInteger(ConWrite, 0)
-                else
-                    WriteInteger(ConWrite, Ord(eventMoveCam.CameraAngle)); // cameraPosition
-
-                WriteInteger(ConWrite, -1); // cameraTransition was not implemented anyway, so just write -1
+                SaveMoveCam(ConWrite, eventMoveCam);
             end;
 
             if convList.Items[nc].Events[NEL].EventType = ET_Animation then // 07
             begin
                 var eventAnim := TConEventAnimation(convList.Items[nc].Events[NEL]);
-
-                WriteCommonEventFields(ConWrite, eventAnim);
-
-                WriteInteger(ConWrite, eventAnim.ActorIndex); // eventOwnerName.id
-                WriteString(ConWrite, eventAnim.ActorValue); // eventOwnerName.Name
-                WriteString(ConWrite, eventAnim.AnimSequence); // seqStr
-                WriteLongBool(ConWrite, eventAnim.bAnimPlayOnce); // playMode.
-                WriteInteger(ConWrite, eventAnim.AnimPlayForSeconds); // This field is missing in ConEventAnimation.uc (by default)
-                WriteLongBool(ConWrite, eventAnim.bAnimWaitToFinish); // bFinishAnim
+                SavePlayAnim(ConWrite, eventAnim);
             end;
 
             if convList.Items[nc].Events[NEL].EventType = ET_Trade then // 08
@@ -372,105 +517,61 @@ try
             if convList.Items[nc].Events[NEL].EventType = ET_Jump then // 09
             begin
                 var eventJump := TConEventJump(convList.Items[nc].Events[NEL]);
-
-                WriteCommonEventFields(ConWrite, eventJump);
-
-                WriteString(ConWrite, eventJump.gotoLabel); // jumpLabel
-                WriteInteger(ConWrite, eventJump.conversationId); // conId
+                SaveJump(ConWrite, eventJump);
             end;
 
             if convList.Items[nc].Events[NEL].EventType = ET_Random then // 10
             begin
                 var eventRandom := TConEventRandom(convList.Items[nc].Events[NEL]);
-
-                WriteCommonEventFields(ConWrite, eventRandom);
-
-                var numRandomLabels := Length(eventRandom.GoToLabels);
-                WriteInteger(ConWrite, numRandomLabels);
-
-                for var NRL := 0 to numRandomLabels -1 do
-                    WriteString(ConWrite, eventRandom.GoToLabels[NRL]);
-
-                WriteLongBool(ConWrite, eventRandom.bCycle); // cycle events
-                WriteLongBool(ConWrite, eventRandom.bCycleOnce);
-                WriteLongBool(ConWrite, eventRandom.bCycleRandom);
+                SaveRandom(ConWrite, eventRandom);
             end;
 
             if convList.Items[nc].Events[NEL].EventType = ET_Trigger then // 11
             begin
                 var eventTrigger := TConEventTrigger(convList.Items[nc].Events[NEL]);
-
-                WriteCommonEventFields(ConWrite, eventTrigger);
-                WriteString(ConWrite, eventTrigger.TriggerTag);
+                SaveTrigger(ConWrite, eventTrigger);
             end;
 
             if convList.Items[nc].Events[NEL].EventType = ET_AddGoal then // 12
             begin
                 var eventAddGoal := TConEventAddGoal(convList.Items[nc].Events[NEL]);
-
-                WriteCommonEventFields(ConWrite, eventAddGoal);
-                WriteString(ConWrite, eventAddGoal.GoalName);
-
-                var bGoalCompleted := eventAddGoal.bComplete;
-                WriteLongBool(ConWrite, bGoalCompleted);
-
-                if (bGoalCompleted = False) then
-                begin
-                    WriteString(ConWrite, eventAddGoal.GoalText);
-                    WriteLongBool(ConWrite, eventAddGoal.bPrimaryGoal);
-                end;
+                SaveAddGoal(ConWrite, eventAddGoal);
             end;
 
             if convList.Items[nc].Events[NEL].EventType = ET_AddNote then // 13
             begin
                 var eventAddNote := TConEventAddNote(convList.Items[nc].Events[NEL]);
-
-                WriteCommonEventFields(ConWrite, eventAddNote);
-                WriteString(ConWrite, eventAddNote.TextLine); // noteText
+                SaveAddNote(ConWrite, eventAddNote);
             end;
 
             if convList.Items[nc].Events[NEL].EventType = ET_AddSkillPoints then // 14
             begin
                 var eventAddSkillPoints := TConEventAddSkillPoints(convList.Items[nc].Events[NEL]);
-
-                WriteCommonEventFields(ConWrite, eventAddSkillPoints);
-                WriteInteger(ConWrite, eventAddSkillPoints.Points); // pointsToAdd
-                WriteString(ConWrite, eventAddSkillPoints.TextLine); // awardMessage
+                SaveAddSkillPts(ConWrite, eventAddSkillPoints);
             end;
 
             if convList.Items[nc].Events[NEL].EventType = ET_AddCredits then // 15
             begin
                 var eventAddCredits := TConEventAddCredits(convList.Items[nc].Events[NEL]);
-
-                WriteCommonEventFields(ConWrite, eventAddCredits);
-                WriteInteger(ConWrite, eventAddCredits.Credits);
+                SaveAddCredits(ConWrite, eventAddCredits);
             end;
 
             if convList.Items[nc].Events[NEL].EventType = ET_CheckPersona then // 16
             begin
                 var eventCheckPersona := TConEventCheckPersona(convList.Items[nc].Events[NEL]);
-
-                WriteCommonEventFields(ConWrite, eventCheckPersona);
-
-                WriteInteger(ConWrite, Ord(eventCheckPersona.AttrToCheck)); // personaType
-                WriteInteger(ConWrite, Ord(eventCheckPersona.Condition));
-                WriteInteger(ConWrite, eventCheckPersona.CheckValue);
-                WriteString(ConWrite, eventCheckPersona.CheckGoToLabel); // JumpLabel
+                SaveCheckPersona(ConWrite, eventCheckPersona);
             end;
 
             if convList.Items[nc].Events[NEL].EventType = ET_Comment then // 17
             begin
                 var eventComment := TConEventComment(convList.Items[nc].Events[NEL]);
-
-                WriteCommonEventFields(ConWrite, eventComment);
-                WriteString(ConWrite, eventComment.TextLine); // comment
+                SaveComment(ConWrite, eventComment);
             end;
 
             if convList.Items[nc].Events[NEL].EventType = ET_End then // 18
             begin
                 var eventEnd := TConEventEnd(convList.Items[nc].Events[NEL]);
-
-                WriteCommonEventFields(ConWrite, eventEnd);
+                SaveEnd(ConWrite, eventEnd);
             end;
         end;
     end;
