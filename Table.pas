@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Conversation.Classes, AddInsertEvent,
-  ConvEditPlus_Const, ConvoProperties, EditValueDialog, Vcl.Menus, system.Types, convEditPlus.Enums,
+  ConvEditPlus.Consts, ConvoProperties, EditValueDialog, Vcl.Menus, system.Types, convEditPlus.Enums,
   system.UITypes;
 
 type
@@ -338,12 +338,11 @@ begin
     end;
 end;
 
-
 procedure TfrmTableEdit.btnAddDefGrenadesClick(Sender: TObject);
 begin
     if Application.MessageBox(PChar(strAddDefaultGrenadesQuestion), '', MB_OKCANCEL +
-       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then begin
-
+       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then
+    begin
        for var i:= 0 to Length(Default_DeusEx_Grenades) -1 do
            lstTableContents.items.Add(Default_DeusEx_Grenades[i]);
 
@@ -354,8 +353,8 @@ end;
 procedure TfrmTableEdit.btnAddDefInfolinkNamesClick(Sender: TObject);
 begin
     if Application.MessageBox(PChar(strAddDefInfoLinkNamesQuestion), '', MB_OKCANCEL +
-       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then begin
-
+       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then
+    begin
        for var i:= 0 to Length(Default_DeusEx_Infolink_Names) -1 do
            lstTableContents.items.Add(Default_DeusEx_Infolink_Names[i]);
 
@@ -366,7 +365,8 @@ end;
 procedure TfrmTableEdit.btnAddDefMiscItemsClick(Sender: TObject);
 begin
     if Application.MessageBox(PChar(strAddDefaultMiscItemsQuestion), '', MB_OKCANCEL +
-       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then begin
+       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then
+    begin
 
        for var i:= 0 to Length(Default_DeusEx_MiscItems) -1 do
            lstTableContents.items.Add(Default_DeusEx_MiscItems[i]);
@@ -378,8 +378,8 @@ end;
 procedure TfrmTableEdit.btnAddDefSkillsClick(Sender: TObject);
 begin
     if Application.MessageBox(PChar(strAddDefaultSkillsQuestion), '', MB_OKCANCEL +
-       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then begin
-
+       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then
+    begin
        for var i:= 0 to Length(Default_DeusEx_Skills) -1 do
            lstTableContents.items.Add(Default_DeusEx_Skills[i]);
 
@@ -402,7 +402,8 @@ end;
 procedure TfrmTableEdit.btnAddDef_LR_WeaponsClick(Sender: TObject);
 begin
     if Application.MessageBox(PChar(strAddDefaultFirearmsQuestion), '', MB_OKCANCEL +
-       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then begin
+       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then
+    begin
 
        for var i:= 0 to Length(Default_DeusEx_LongRange) -1 do
            lstTableContents.items.Add(Default_DeusEx_LongRange[i]);
@@ -429,7 +430,7 @@ end;
 
 procedure TfrmTableEdit.btnCloseClick(Sender: TObject);
 begin
-    ApplyTableChanges();
+//    ApplyTableChanges();
     Close();
 end;
 
@@ -437,19 +438,19 @@ procedure TfrmTableEdit.btnDeleteClick(Sender: TObject);
 begin
     var LastSelIndex: Integer;
 
-        if (lstTableContents.ItemIndex <> -1) and (CanDeleteItem(lstTableContents.Items[lstTableContents.ItemIndex])) = true then
+    if (lstTableContents.ItemIndex <> -1) and (CanDeleteItem(lstTableContents.Items[lstTableContents.ItemIndex])) = true then
+    begin
+        if MessageDlg(strAskDeleteTableItem, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
         begin
-            if MessageDlg(strAskDeleteTableItem, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
-            begin
-                LastSelIndex := lstTableContents.ItemIndex;
-                lstTableContents.Items.Delete(lstTableContents.ItemIndex);
+            LastSelIndex := lstTableContents.ItemIndex;
+            lstTableContents.Items.Delete(lstTableContents.ItemIndex);
 
-                if LastSelIndex < lstTableContents.Count then
-                    lstTableContents.ItemIndex := LastSelIndex
-                    else
-                lstTableContents.ItemIndex := lstTableContents.Count -1;
-            end;
+            if LastSelIndex < lstTableContents.Count then
+                lstTableContents.ItemIndex := LastSelIndex
+                else
+            lstTableContents.ItemIndex := lstTableContents.Count -1;
         end;
+    end;
 
     UpdateButtonsState();
 end;
@@ -557,9 +558,12 @@ begin
     if (chkDoubleClickEditItem.Checked = true) then 
     begin
         UpdateButtonsState();
-        if (btnEdit.Enabled = True) then btnEditClick(btnEdit);    
+        if (btnEdit.Enabled = True) then btnEditClick(btnEdit);
     end else
-        SendTableDataBack();
+        begin
+            ApplyTableChanges();
+            SendTableDataBack();
+        end;
 
     if chkDoubleClickEditItem.Checked = false then
        btnCloseClick(btnClose);
@@ -640,23 +644,33 @@ begin
     else
         TextB4Tab := Copy(UseText, 1, TabIndex -1);
 
-    lstTableContents.Items.Add(TextB4Tab);
+    //lstTableContents.Items.Add(TextB4Tab);
+    editTable.Text := TextB4Tab;
+    btnAddItemClick(self);
 end;
 
 procedure TfrmTableEdit.SendTableDataBack(); // Send data back to listbox, editbox, etc.
-    var idx, current: Integer;
+var
+    idx, current: Integer;
 begin
     current := lstTableContents.ItemIndex;
     if current = -1 then Exit();
 
     if TableItemreceiver is TListBox then
     begin
-       idx:=TListBox(TableItemreceiver).ItemIndex;
+       idx := TListBox(TableItemreceiver).ItemIndex;
        TListBox(TableItemreceiver).Items[idx] := lstTableContents.Items[current];
-    end
-    else if TableItemReceiver is TComboBox then
+    end;
+    {else }if TableItemReceiver is TComboBox then
     begin
-        TComboBox(TableItemReceiver).ItemIndex := TComboBox(TableItemReceiver).Items.IndexOf(lstTableContents.Items[current]);
+        var cmbReceiver := TComboBox(TableItemReceiver);
+
+        cmbReceiver.SetFocus();
+        cmbReceiver.ItemIndex := cmbReceiver.Items.IndexOf(lstTableContents.Items[current]);
+
+        ShowMessage(cmbReceiver.Items.IndexOf(lstTableContents.Items[current]).ToString);
+
+        //TComboBox(TableItemReceiver).ItemIndex := TComboBox(TableItemReceiver).Items.IndexOf(lstTableContents.Items[current]);
     end;
 end;
 
