@@ -14,7 +14,6 @@ const CEP_EVENT_HEADER_LIST_FONT_SIZE = 10;
 const CEP_SPEECH_EVENT_FONT = 'Verdana';
 const CEP_SPEECH_EVENT_FONT_SIZE = 10;
 
-// maybe temporary?
 const CEP_MAX_PLAYABLE_MISSIONS = 97;
 const CEP_MAX_RECENT_FILES = 7; //actually 8...
 const CEP_MIN_CONVO_TREE_PANEL_WIDTH = 50; { To avoid situation when tree panel has been
@@ -260,6 +259,7 @@ ResourceString
     btnReorderHint = 'Enable changing order of events. Hold %s key and drag one of items.';
 
     strInvalidConFileHdr = 'Invalid .con file header! Loading aborted. Please choose valid .con file.';
+    strSelectConXML = 'Please select .con or .xml file!';
 
     strEmptyValue = '<empty>';
 
@@ -267,11 +267,16 @@ ResourceString
     strDefaultChoiceText = 'This is default choice text. Modify it, add jump label and other parameters. Then click "Save Item" button and then "Update".';
 
     strUnknownFile = 'Unknown file!';
+    strNotImplemented = 'This feature is not implemented (and probably not implemented in game code?)';
 
     strClearRecentQuestion = 'Are you sure you want to clear list or recent files?';
     strClearRecentTitle = 'Clear recent files list?';
 
     strConversationAlreadyExists = 'Conversation with such name already exists!';
+
+    strSaveConversationFileQuestion = 'The Current Conversation File has not been saved. Save Changes before closing it?';
+
+    strDontUseCT_Actor = 'CT_Actor camera type is not implemented in Deus Ex. Please select Predefined or Random mode.';
 
 
 
