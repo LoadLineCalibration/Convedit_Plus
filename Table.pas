@@ -667,10 +667,6 @@ begin
 
         cmbReceiver.SetFocus();
         cmbReceiver.ItemIndex := cmbReceiver.Items.IndexOf(lstTableContents.Items[current]);
-
-        ShowMessage(cmbReceiver.Items.IndexOf(lstTableContents.Items[current]).ToString);
-
-        //TComboBox(TableItemReceiver).ItemIndex := TComboBox(TableItemReceiver).Items.IndexOf(lstTableContents.Items[current]);
     end;
 end;
 
@@ -679,12 +675,6 @@ var
     CustomClasses: TStringList;
 begin
     CustomItemsPopup.Items.Clear(); // удалить ранее созданные элементы меню
-
-//    if not FileExists(CUSTOM_CLASSES_FILE) then
-//    begin
-//       ShowMessage(Format(strCustomClassesNotFound, [CUSTOM_CLASSES_FILE]));
-//       Exit();
-//    end;
 
     CustomClasses := TStringList.Create();
 try

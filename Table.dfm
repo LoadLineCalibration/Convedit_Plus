@@ -1,7 +1,7 @@
 object frmTableEdit: TfrmTableEdit
   Left = 0
   Top = 0
-  BorderIcons = [biSystemMenu, biMaximize]
+  BorderIcons = [biSystemMenu]
   Caption = 'Table'
   ClientHeight = 366
   ClientWidth = 473
@@ -58,7 +58,7 @@ object frmTableEdit: TfrmTableEdit
     366)
   TextHeight = 15
   object lstTableContents: TListBox
-    Left = 7
+    Left = 8
     Top = 72
     Width = 350
     Height = 223
@@ -137,6 +137,7 @@ object frmTableEdit: TfrmTableEdit
     Width = 102
     Height = 25
     Anchors = [akTop, akRight]
+    Cancel = True
     Caption = '&Close'
     TabOrder = 6
     StyleName = 'Windows'
