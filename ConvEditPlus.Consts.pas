@@ -264,7 +264,7 @@ ResourceString
     strEmptyValue = '<empty>';
 
     strMax10ChoiceItems = 'DeusEx hardcoded to use max 10 choice items per ConEventChoice. Cannot add any more, sorry!';
-    strDefaultChoiceText = 'This is default choice text. Modify it, add jump label and other parameters. Then click "Save Item" button and then "Update".';
+    strDefaultChoiceText = 'Default Choice Text. Modify it, add jump label and set other parameters you need. Then click "Save Item" button and then "Update".';
 
     strUnknownFile = 'Unknown file!';
     strNotImplemented = 'This feature is not implemented (and probably not implemented in game code?)';
