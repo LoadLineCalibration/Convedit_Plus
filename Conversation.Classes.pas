@@ -110,9 +110,11 @@ TChoiceItemObject = class(TConBaseObject) // for editing Choice Items, use as li
   Index: Integer;
   textline: string;
   bDisplayAsSpeech: Boolean;
-  bSkillNeeded: Integer; // 4 bytes. if -1, then Skill is not required. Otherwise there will be skill id from table and skillName. // 0 - true, -1 false  // was Boolean before ConEditExport ver. 7
+  bSkillNeeded: Integer; // 4 bytes. if -1, then Skill is not required. Otherwise there will be skill id from table and skillName.
+                         // 0 - true, -1 false
+                         // was Boolean before ConEditExport ver. 7
    Skill: string; // skillName
-   SkillLevel: Integer;
+   SkillLevel: Integer; // from 0 to 3
   GoToLabel: string;
   mp3: string;
   RequiredFlags: array of TFlag;
@@ -120,8 +122,8 @@ end;
 
 
 TConEvent = class(TConBaseObject)
-    unknown0: Integer; // for .con files
-    unknown1: Integer; // both 4 bytes
+    EventIdx: Integer; // looks like Index (was Unknown0)
+    unknown1: Integer; //
     EventLabel: string; // can't use "Label"...
     EventType: TEventType; // speech, choice, etc...
 end;
@@ -527,12 +529,12 @@ end;
 
 function TConFileParameters.conXMLDateTime(): string;
 begin
-    var EngDate:= TFormatSettings.Create('en-US'); // Для записи даты на Английском (иначе берется язык системы)
+    var EngDate:= TFormatSettings.Create('en-US'); // To save date in English (otherwise it uses system lang)// Note: This is not a Constructor
 
     var myTime := FormatDateTime('HH:MM:SS', Now());
     var myDate := FormatDateTime('dd mmm yyyy', Now(), EngDate);
 
-    Result := myDate + ' ' + myTime + ' GMT'; // stub, not a real GMT!
+    Result := myDate + ' ' + myTime;// + ' GMT'; // stub, not a real GMT!
 end;
 
 
