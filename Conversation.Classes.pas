@@ -528,13 +528,11 @@ begin
 end;
 
 function TConFileParameters.conXMLDateTime(): string;
+var
+    currDateTime: string;
 begin
-    var EngDate:= TFormatSettings.Create('en-US'); // To save date in English (otherwise it uses system lang)// Note: This is not a Constructor
-
-    var myTime := FormatDateTime('HH:MM:SS', Now());
-    var myDate := FormatDateTime('dd mmm yyyy', Now(), EngDate);
-
-    Result := myDate + ' ' + myTime;// + ' GMT'; // stub, not a real GMT!
+    currDateTime := DateTimeToStr(Now());
+    Result := currDateTime;
 end;
 
 
