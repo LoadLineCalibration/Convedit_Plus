@@ -11,6 +11,8 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, ConvEditPlus.Consts,
   System.Types, System.Generics.Collections;
 
+function conXMLDateTime(): string;
+
 
 type TEventType =
 (
@@ -95,10 +97,10 @@ type TPersonaTypes =
 
 // for use in TConversation and TConEventCheckFlag
 type TFlag = record
-  flagIndex: Integer;
-  flagName: string;
-  flagValue: Boolean;
-  flagExpiration: Integer;
+    flagIndex: Integer;
+    flagName: string;
+    flagValue: Boolean;
+    flagExpiration: Integer;
 end;
 
 TConBaseObject = class(TObject) // base class!
@@ -106,18 +108,18 @@ destructor Destroy(); override;
 end;
 
 TChoiceItemObject = class(TConBaseObject) // for editing Choice Items, use as listview item.data
-  public
-  Index: Integer;
-  textline: string;
-  bDisplayAsSpeech: Boolean;
-  bSkillNeeded: Integer; // 4 bytes. if -1, then Skill is not required. Otherwise there will be skill id from table and skillName.
-                         // 0 - true, -1 false
-                         // was Boolean before ConEditExport ver. 7
-   Skill: string; // skillName
-   SkillLevel: Integer; // from 0 to 3
-  GoToLabel: string;
-  mp3: string;
-  RequiredFlags: array of TFlag;
+    public
+    Index: Integer;
+    textline: string;
+    bDisplayAsSpeech: Boolean;
+    bSkillNeeded: Integer; // 4 bytes. if -1, then Skill is not required. Otherwise there will be skill id from table and skillName.
+                           // 0 - true, -1 false
+                           // was Boolean before ConEditExport ver. 7
+     Skill: string; // skillName
+     SkillLevel: Integer; // from 0 to 3
+    GoToLabel: string;
+    mp3: string;
+    RequiredFlags: array of TFlag;
 end;
 
 
@@ -349,39 +351,40 @@ TConversation = class(TConBaseObject)
     // events...
     numEventList: Integer; // 4 bytes
     Events: array of TConEvent;
+
+    constructor Create();
 end;
 
 // Contains base information about conversation file.
 TConFileParameters = class (TObject)
-  fpFileVersion: Integer;
-  fpCreatedByName: string;
-  fpCreatedByDate: string;
+    fpFileVersion: Integer;
+    fpCreatedByName: string;
+    fpCreatedByDate: string;
 
-  fpModifiedByDate: string;
-  fpModifiedByName: string;
+    fpModifiedByDate: string;
+    fpModifiedByName: string;
 
-  fpAudioPackage: string;
-  fpNotes: string;
+    fpAudioPackage: string;
+    fpNotes: string;
 
-  var fpMissions: array of Integer;
+    var fpMissions: array of Integer;
 
-  tablesSize: Integer; // for .con files
-  var fpActors: TStringList;
-  var fpFlags: TStringList; //TStringList contains strings and automatically adds indexes, this is exactly what I need!
-  var fpSkills: TStringList;
-  var fpObjects: TStringList;
-  {public declarations}
-  public
-  constructor Create();
-  destructor Destroy(); override;
+    tablesSize: Integer; // for .con files
+    var fpActors: TStringList;
+    var fpFlags: TStringList; //TStringList contains strings and automatically adds indexes, this is exactly what I need!
+    var fpSkills: TStringList;
+    var fpObjects: TStringList;
+    {public declarations}
+    public
+    constructor Create();
+    destructor Destroy(); override;
 
-  procedure Clear();
-  function conXMLDateTime(): string;
+    procedure Clear();
 end;
 
 // default values for flags
 const
-  DefaultFlag: TFlag = (flagIndex: -1; flagName: ''; flagValue: False; flagExpiration: 0);
+    DefaultFlag: TFlag = (flagIndex: -1; flagName: ''; flagValue: False; flagExpiration: 0);
 
 
 implementation
@@ -390,7 +393,6 @@ destructor TConBaseObject.Destroy();
 begin
     inherited;
 end;
-
 
 constructor TConEventSpeech.Create(); // 00
 begin
@@ -409,77 +411,77 @@ end;
 
 constructor TConEventCheckFlag.Create(); // 03
 begin
-  EventType := ET_CheckFlag;
+    EventType := ET_CheckFlag;
 end;
 
 constructor TConEventCheckObject.Create(); // 04
 begin
-  EventType := ET_CheckObject;
+    EventType := ET_CheckObject;
 end;
 
 constructor TConEventTransferObject.Create(); // 05
 begin
-  EventType := ET_TransferObject;
+    EventType := ET_TransferObject;
 end;
 
 constructor TConEventMoveCamera.Create(); // 06
 begin
-  EventType := ET_MoveCamera;
+    EventType := ET_MoveCamera;
 end;
 
 constructor TConEventAnimation.Create(); // 07
 begin
-  EventType := ET_Animation;
+    EventType := ET_Animation;
 end;
 
 constructor TConEventTrade.Create(); // 08
 begin
-  EventType := ET_Trade;
+    EventType := ET_Trade;
 end;
 
 constructor TConEventJump.Create(); // 09
 begin
-  EventType := ET_Jump;
+    EventType := ET_Jump;
 end;
 
 constructor TConEventRandom.Create(); // 10
 begin
-  EventType := ET_Random;
+    EventType := ET_Random;
 end;
 
 constructor TConEventTrigger.Create(); // 11
 begin
-  EventType := ET_Trigger;
+    EventType := ET_Trigger;
 end;
 
 constructor TConEventAddGoal.Create(); // 12
 begin
-  EventType := ET_AddGoal;
+    EventType := ET_AddGoal;
 end;
 
 constructor TConEventAddNote.Create(); // 13
 begin
-  EventType := ET_AddNote;
+    EventType := ET_AddNote;
 end;
 
 constructor TConEventAddSkillPoints.Create(); // 14
 begin
-  EventType := ET_AddSkillPoints;
+    EventType := ET_AddSkillPoints;
 end;
 
 constructor TConEventAddCredits.Create(); // 15
 begin
-  EventType := ET_AddCredits;
+    EventType := ET_AddCredits;
 end;
 
 constructor TConEventCheckPersona.Create(); // 16
 begin
-  EventType := ET_CheckPersona;
+    EventType := ET_CheckPersona;
 end;
 
 constructor TConEventComment.Create(); // 17
 begin
-  EventType := ET_Comment;
+    EventType := ET_Comment;
 end;
 
 constructor TConEventEnd.Create(); // 18
@@ -487,47 +489,54 @@ begin
     EventType:= ET_End;
 end;
 
+constructor TConversation.Create();
+begin
+    conCreatedByDate := conXMLDateTime();
+
+    inherited;
+end;
+
 constructor TConFileParameters.Create(); // create required lists here. Also fill some fields.
 begin
-  fpFileVersion := CEP_CONXML_FILE_VERSION;
-  fpCreatedByDate := conXMLDateTime();
+    fpFileVersion := CEP_CONXML_FILE_VERSION;
+    fpCreatedByDate := conXMLDateTime();
 
-  fpActors :=  TStringList.Create();
-  fpFlags :=   TStringList.Create();
-  fpSkills :=  TStringList.Create();
-  fpObjects := TStringList.Create();
+    fpActors :=  TStringList.Create();
+    fpFlags :=   TStringList.Create();
+    fpSkills :=  TStringList.Create();
+    fpObjects := TStringList.Create();
 
-  inherited; // Super.doSomething()
+    inherited;
 end;
 
 destructor TConFileParameters.Destroy(); // освободить память при уничтоженнии объекта
 begin
-  fpActors.Free();
-  fpFlags.Free();
-  fpSkills.Free();
-  fpObjects.Free();
+    fpActors.Free();
+    fpFlags.Free();
+    fpSkills.Free();
+    fpObjects.Free();
 
-  inherited; // Super.doSomething()
+    inherited;
 end;
 
 procedure TConFileParameters.Clear(); // clear everything and set current date + time
 begin
-  fpCreatedByName:= '';
-  fpCreatedByDate:= conXMLDateTime();
+    fpCreatedByName:= '';
+    fpCreatedByDate:= conXMLDateTime();
 
-  fpModifiedByName:= '';
-  fpModifiedByDate:= conXMLDateTime();
+    fpModifiedByName:= '';
+    fpModifiedByDate:= conXMLDateTime();
 
-  fpAudioPackage:= '';
-  fpNotes:='';
+    fpAudioPackage:= '';
+    fpNotes:='';
 
-  fpActors.Clear();
-  fpFlags.Clear();
-  fpSkills.Clear();
-  fpObjects.Clear();
+    fpActors.Clear();
+    fpFlags.Clear();
+    fpSkills.Clear();
+    fpObjects.Clear();
 end;
 
-function TConFileParameters.conXMLDateTime(): string;
+function conXMLDateTime(): string;
 var
     currDateTime: string;
 begin
