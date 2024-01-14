@@ -35,6 +35,7 @@ procedure FillCheckPersona(ConRead: TBinaryReader; eventCheckPersona: TConEventC
 procedure FillComment(ConRead: TBinaryReader; eventComment: TConEventComment; eventLabel: string);
 procedure FillEnd(ConRead: TBinaryReader; eventEnd: TConEventEnd; eventLabel: string);
 
+
 function DoubleToDateTime(floatDateTime: Double): TDateTime;
 function GetConString(conRead: TBinaryReader): string;
 function GetConLongBool(conRead: TBinaryReader): Boolean;
@@ -81,12 +82,12 @@ begin
     ConRead := TBinaryReader.Create(fileStr, TEncoding.ANSI, False);
 
     var headerBytes := ConRead.ReadBytes(26);
-{
-    if CompareMem(headerBytes, @conFileHeader, 26) = False then
+
+{    if CompareMem(headerBytes, @conFileHeader, 26) = False then
     begin
         MessageDlg(strInvalidConFileHdr,  mtError, [mbOK], 0);
         Exit();
-    end; }
+    end;  }
 
 try
     with frmMain do
@@ -133,7 +134,7 @@ try
 
         FillTables(ConRead); // fill tables
 
-        var unknown4 := ConRead.ReadInteger(); // ignore
+        var unknown4 := ConRead.ReadInteger(); // 006 uses unk3. Seems like same as numConversations
         AddLog('unknown4 skipped, size = ' + unknown4.ToString);
 
         var numConversations := ConRead.ReadInteger(); // numConversations
@@ -264,7 +265,7 @@ try
                 for var NEL := 0 to tempConvo.numEventList -1 do
                 begin
                     var tempEvent: TConEvent;
-                    var Unknown0 := ConRead.ReadInteger();
+                    var EventIdx := ConRead.ReadInteger();
                     var Unknown1 := ConRead.ReadInteger();
                     var intEventType := ConRead.ReadInteger();
                     var eventLabel := GetConString(ConRead);
@@ -274,7 +275,7 @@ try
                     begin
                         AddLog('Reading event: ET_Speech, position: 0x'+ ConRead.BaseStream.Position.ToHexString(1));
                         tempEvent := TConEventSpeech.Create();
-                        tempEvent.unknown0 := Unknown0;
+                        tempEvent.EventIdx := EventIdx;
                         tempEvent.unknown1 := Unknown1;
                         FillSpeech(ConRead, TConEventSpeech(tempEvent), eventLabel);
                     end;
@@ -283,7 +284,7 @@ try
                     begin
                         AddLog('Reading event: ET_Choice, position: 0x'+ ConRead.BaseStream.Position.ToHexString(1));
                         tempEvent := TConEventChoice.Create();
-                        tempEvent.unknown0 := Unknown0;
+                        tempEvent.EventIdx := EventIdx;
                         tempEvent.unknown1 := Unknown1;
                         FillChoice(ConRead, TConEventChoice(tempEvent), eventLabel);
                     end;
@@ -292,7 +293,7 @@ try
                     begin
                         AddLog('Reading event: ET_SetFlag, position: 0x'+ ConRead.BaseStream.Position.ToHexString(1));
                         tempEvent := TConEventSetFlag.Create();
-                        tempEvent.unknown0 := Unknown0;
+                        tempEvent.EventIdx := EventIdx;
                         tempEvent.unknown1 := Unknown1;
                         FillSetFlag(ConRead, TConEventSetFlag(tempEvent), eventLabel);
                     end;
@@ -301,7 +302,7 @@ try
                     begin
                         AddLog('Reading event: ET_CheckFlag, position: 0x'+ ConRead.BaseStream.Position.ToHexString(1));
                         tempEvent := TConEventCheckFlag.Create();
-                        tempEvent.unknown0 := Unknown0;
+                        tempEvent.EventIdx := EventIdx;
                         tempEvent.unknown1 := Unknown1;
                         FillCheckFlag(ConRead, TConEventCheckFlag(tempEvent), eventLabel);
                     end;
@@ -310,7 +311,7 @@ try
                     begin
                         AddLog('Reading event: ET_CheckObject, position: 0x'+ ConRead.BaseStream.Position.ToHexString(1));
                         tempEvent := TConEventCheckObject.Create();
-                        tempEvent.unknown0 := Unknown0;
+                        tempEvent.EventIdx := EventIdx;
                         tempEvent.unknown1 := Unknown1;
                         FillCheckObject(ConRead, TConEventCheckObject(tempEvent), eventLabel);
                     end;
@@ -319,7 +320,7 @@ try
                     begin
                         AddLog('Reading event: ET_TransferObject, position: 0x'+ ConRead.BaseStream.Position.ToHexString(1));
                         tempEvent := TConEventTransferObject.Create();
-                        tempEvent.unknown0 := Unknown0;
+                        tempEvent.EventIdx := EventIdx;
                         tempEvent.unknown1 := Unknown1;
                         FillTransferObject(ConRead, TConEventTransferObject(tempEvent), eventLabel);
                     end;
@@ -328,7 +329,7 @@ try
                     begin
                         AddLog('Reading event: ET_MoveCamera, position: 0x'+ ConRead.BaseStream.Position.ToHexString(1));
                         tempEvent := TConEventMoveCamera.Create();
-                        tempEvent.unknown0 := Unknown0;
+                        tempEvent.EventIdx := EventIdx;
                         tempEvent.unknown1 := Unknown1;
                         FillMoveCamera(ConRead, TConEventMoveCamera(tempEvent), eventLabel);
                     end;
@@ -337,7 +338,7 @@ try
                     begin
                         AddLog('Reading event: ET_Animation, position: 0x'+ ConRead.BaseStream.Position.ToHexString(1));
                         tempEvent := TConEventAnimation.Create();
-                        tempEvent.unknown0 := Unknown0;
+                        tempEvent.EventIdx := EventIdx;
                         tempEvent.unknown1 := Unknown1;
                         FillAnimation(ConRead, TConEventAnimation(tempEvent), eventLabel);
                     end;
@@ -346,7 +347,7 @@ try
                     begin
                         AddLog('Reading event: ET_Trade, position: 0x'+ ConRead.BaseStream.Position.ToHexString(1));
                         tempEvent := TConEventTrade.Create();
-                        tempEvent.unknown0 := Unknown0;
+                        tempEvent.EventIdx := EventIdx;
                         tempEvent.unknown1 := Unknown1;
                         FillTrade(ConRead, TConEventTrade(tempEvent), eventLabel);
                     end;
@@ -355,7 +356,7 @@ try
                     begin
                         AddLog('Reading event: ET_Jump, position: 0x'+ ConRead.BaseStream.Position.ToHexString(1));
                         tempEvent := TConEventJump.Create();
-                        tempEvent.unknown0 := Unknown0;
+                        tempEvent.EventIdx := EventIdx;
                         tempEvent.unknown1 := Unknown1;
                         FillJump(ConRead, TConEventJump(tempEvent), eventLabel);
                     end;
@@ -364,7 +365,7 @@ try
                     begin
                         AddLog('Reading event: ET_Random, position: 0x'+ ConRead.BaseStream.Position.ToHexString(1));
                         tempEvent := TConEventRandom.Create();
-                        tempEvent.unknown0 := Unknown0;
+                        tempEvent.EventIdx := EventIdx;
                         tempEvent.unknown1 := Unknown1;
                         FillRandom(ConRead, TConEventRandom(tempEvent), eventLabel);
                     end;
@@ -373,7 +374,7 @@ try
                     begin
                         AddLog('Reading event: ET_Trigger, position: 0x'+ ConRead.BaseStream.Position.ToHexString(1));
                         tempEvent := TConEventTrigger.Create();
-                        tempEvent.unknown0 := Unknown0;
+                        tempEvent.EventIdx := EventIdx;
                         tempEvent.unknown1 := Unknown1;
                         FillTrigger(ConRead, TConEventTrigger(tempEvent), eventLabel);
                     end;
@@ -382,7 +383,7 @@ try
                     begin
                         AddLog('Reading event: ET_AddGoal, position: 0x'+ ConRead.BaseStream.Position.ToHexString(1));
                         tempEvent := TConEventAddGoal.Create();
-                        tempEvent.unknown0 := Unknown0;
+                        tempEvent.EventIdx := EventIdx;
                         tempEvent.unknown1 := Unknown1;
                         FillAddGoal(ConRead, TConEventAddGoal(tempEvent), eventLabel);
                     end;
@@ -391,7 +392,7 @@ try
                     begin
                         AddLog('Reading event: ET_AddNote, position: 0x'+ ConRead.BaseStream.Position.ToHexString(1));
                         tempEvent := TConEventAddNote.Create();
-                        tempEvent.unknown0 := Unknown0;
+                        tempEvent.EventIdx := EventIdx;
                         tempEvent.unknown1 := Unknown1;
                         FillAddNote(ConRead, TConEventAddNote(tempEvent), eventLabel);
                     end;
@@ -400,7 +401,7 @@ try
                     begin
                         AddLog('Reading event: ET_AddSkillPoints, position: 0x'+ ConRead.BaseStream.Position.ToHexString(1));
                         tempEvent := TConEventAddSkillPoints.Create();
-                        tempEvent.unknown0 := Unknown0;
+                        tempEvent.EventIdx := EventIdx;
                         tempEvent.unknown1 := Unknown1;
                         FillAddSkillPoints(ConRead, TConEventAddSkillPoints(tempEvent), eventLabel);
                     end;
@@ -409,7 +410,7 @@ try
                     begin
                         AddLog('Reading event: ET_AddCredits, position: 0x'+ ConRead.BaseStream.Position.ToHexString(1));
                         tempEvent := TConEventAddCredits.Create();
-                        tempEvent.unknown0 := Unknown0;
+                        tempEvent.EventIdx := EventIdx;
                         tempEvent.unknown1 := Unknown1;
                         FillAddCredits(ConRead, TConEventAddCredits(tempEvent), eventLabel);
                     end;
@@ -418,7 +419,7 @@ try
                     begin
                         AddLog('Reading event: ET_CheckPersona, position: 0x'+ ConRead.BaseStream.Position.ToHexString(1));
                         tempEvent := TConEventCheckPersona.Create();
-                        tempEvent.unknown0 := Unknown0;
+                        tempEvent.EventIdx := EventIdx;
                         tempEvent.unknown1 := Unknown1;
                         FillCheckPersona(ConRead, TConEventCheckPersona(tempEvent), eventLabel);
                     end;
@@ -427,7 +428,7 @@ try
                     begin
                         AddLog('Reading event: ET_Comment, position: 0x'+ ConRead.BaseStream.Position.ToHexString(1));
                         tempEvent := TConEventComment.Create();
-                        tempEvent.unknown0 := Unknown0;
+                        tempEvent.EventIdx := EventIdx;
                         tempEvent.unknown1 := Unknown1;
                         FillComment(ConRead, TConEventComment(tempEvent), eventLabel);
                     end;
@@ -436,7 +437,7 @@ try
                     begin
                         AddLog('Reading event: ET_End, position: 0x'+ ConRead.BaseStream.Position.ToHexString(1));
                         tempEvent := TConEventEnd.Create();
-                        tempEvent.unknown0 := Unknown0;
+                        tempEvent.EventIdx := EventIdx;
                         tempEvent.unknown1 := Unknown1;
                         FillEnd(ConRead, TConEventEnd(tempEvent), eventLabel);
                     end;
@@ -444,46 +445,8 @@ try
                     tempConvo.Events[NEL] := tempEvent;
                 end;
 
-                var NodeConName, NodeConOwnerName, NodeDependsOnFlags: TTreeNode;
-
-                frmMain.ConvoTree.Items.BeginUpdate();
-
-                if frmMain.ItemExistsInTreeView(frmMain.ConvoTree, tempConvo.conOwnerName) = false then
-                begin
-                   NodeConOwnerName:= frmMain.ConvoTree.Items.Add(nil, tempConvo.conOwnerName);
-                   NodeConOwnerName.ImageIndex := 0;
-                   NodeConOwnerName.ExpandedImageIndex := 0;
-                   NodeConOwnerName.SelectedIndex := 0;
-                end;
-                // Add owner's conversations
-                NodeConName:= frmMain.ConvoTree.Items.AddChildObject(NodeConOwnerName, tempConvo.conName, tempConvo);
-                NodeConName.ImageIndex := 1;
-                NodeConName.ExpandedImageIndex := 1;
-                NodeConName.SelectedIndex := 1;
-
-                // Flags required by this conversation
-                for var DOF:= 0 to Length(tempConvo.conDependsOnFlags) -1 do
-                begin
-                    NodeDependsOnFlags:= frmMain.ConvoTree.Items.AddChild(NodeConName,
-                    tempConvo.conDependsOnFlags[DOF].flagName + ' = '
-                    + BoolToStr(tempConvo.conDependsOnFlags[DOF].flagValue, true));
-
-                    // red icon = false, green icon = true
-                    if NodeDependsOnFlags.Text.EndsText('true', NodeDependsOnFlags.Text) then
-                    begin
-                        NodeDependsOnFlags.ImageIndex := 2;
-                        NodeDependsOnFlags.ExpandedImageIndex := 2;
-                        NodeDependsOnFlags.SelectedIndex := 2;
-                    end else
-                    begin
-                        NodeDependsOnFlags.ImageIndex := 3;
-                        NodeDependsOnFlags.ExpandedImageIndex := 3;
-                        NodeDependsOnFlags.SelectedIndex := 3;
-                    end;
-                end;
-
                 frmMain.ConversationsList.Add(tempConvo);
-                frmMain.ConvoTree.Items.EndUpdate();
+
             end;
     end;
 
@@ -579,12 +542,14 @@ begin
 
     speechEvent.SpeechFont := ConRead.ReadInteger();
     frmMain.AddLog('SpeechFont = ' + speechEvent.SpeechFont.ToString);
+
+    speechEvent.LineBreaksCount := frmMain.CountLineBreaks(speechEvent.TextLine);
 end;
 
 procedure FillChoice(ConRead: TBinaryReader; choiceEvent: TConEventChoice; eventLabel: string);
 begin
     choiceEvent.EventLabel := eventLabel;
-    frmMain.AddLog('Label = ' + choiceEvent.EventLabel);
+    frmMain.AddLog('choice Label = ' + choiceEvent.EventLabel);
 
     choiceEvent.unk0 := ConRead.ReadInteger(); // unk0
     frmMain.AddLog('choice unk0 = ' + choiceEvent.unk0.ToString);
@@ -793,7 +758,7 @@ begin
     eventAddGoal.GoalName := GetConString(ConRead); // goalNameString
     eventAddGoal.bComplete := GetConLongBool(ConRead);
 
-    if eventAddGoal.bComplete then // Если цель выполнена, то дальше данных уже нет, выходим
+    if eventAddGoal.bComplete = True then // Если цель выполнена, то дальше данных уже нет, выходим
         Exit();
 
     eventAddGoal.GoalText := GetConString(ConRead);
@@ -839,5 +804,7 @@ procedure FillEnd(ConRead: TBinaryReader; eventEnd: TConEventEnd; eventLabel: st
 begin
     eventEnd.EventLabel := eventLabel;
 end;
+
+
 
 end.

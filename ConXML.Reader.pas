@@ -332,47 +332,7 @@ try
             end;
         end;
 
-        var NodeConName, NodeConOwnerName, NodeDependsOnFlags: TTreeNode;
-
-        frmMain.ConvoTree.Items.BeginUpdate();
-
-        if frmMain.ItemExistsInTreeView(frmMain.ConvoTree, tempConvo.conOwnerName) = false then
-        begin
-           NodeConOwnerName:= frmMain.ConvoTree.Items.Add(nil, tempConvo.conOwnerName);
-           NodeConOwnerName.ImageIndex := 0;
-           NodeConOwnerName.ExpandedImageIndex := 0;
-           NodeConOwnerName.SelectedIndex := 0;
-        end;
-        // Add owner's conversations
-        NodeConName:= frmMain.ConvoTree.Items.AddChildObject(NodeConOwnerName, tempConvo.conName, tempConvo);
-        NodeConName.ImageIndex := 1;
-        NodeConName.ExpandedImageIndex := 1;
-        NodeConName.SelectedIndex := 1;
-
-        // Flags required by this conversation
-        for var DOF:= 0 to Length(tempConvo.conDependsOnFlags) -1 do
-        begin
-            NodeDependsOnFlags:= frmMain.ConvoTree.Items.AddChild(NodeConName,
-            tempConvo.conDependsOnFlags[DOF].flagName + ' = '
-            + BoolToStr(tempConvo.conDependsOnFlags[DOF].flagValue, true));
-
-            // red icon = false, green icon = true
-            if NodeDependsOnFlags.Text.EndsText('true', NodeDependsOnFlags.Text) then
-            begin
-                NodeDependsOnFlags.ImageIndex := 2;
-                NodeDependsOnFlags.ExpandedImageIndex := 2;
-                NodeDependsOnFlags.SelectedIndex := 2;
-            end else
-            begin
-                NodeDependsOnFlags.ImageIndex := 3;
-                NodeDependsOnFlags.ExpandedImageIndex := 3;
-                NodeDependsOnFlags.SelectedIndex := 3;
-            end;
-        end;
-
-//        frmMain.ConvoTree.AlphaSort(true);
         frmMain.ConversationsList.Add(tempConvo);
-        frmMain.ConvoTree.Items.EndUpdate();
     end;
 
 finally
