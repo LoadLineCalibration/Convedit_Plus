@@ -118,7 +118,7 @@ const conFileHeader: array[0..25] of Byte =
 
 
 
-ResourceString
+Const
     ET_Speech_Caption         = 'Speech';
 	ET_Choice_Caption         = 'Choice';
 	ET_SetFlag_Caption        = 'Set Flags';
@@ -139,6 +139,8 @@ ResourceString
 	ET_Comment_Caption        = 'Comment';
 	ET_End_Caption            = 'End';
     // The strings above should not be translated (I doubt if someone will ever need that!)
+
+ResourceString
 
     // Can be translated from here and below
     ET_Random_TargetLabels = 'Target labels:';
@@ -198,6 +200,10 @@ ResourceString
 
     strChoiceWithSkills = ' • %s  [Goto: %s]  [Requires Skill: %s]  [Audio File: %s]';
     strChoiceNoSkills = ' • %s  [Goto: %s] [Audio File: %s]';
+
+    strChoiceWithSkillsNoAudio = ' • %s  [Goto: %s]  [Requires Skill: %s]';
+    strChoiceNoSkillsNoAudio = ' • %s  [Goto: %s]';
+
     strDependsOnFlag = 'Flags: ';
 
     strLabelStartsFromDigit = 'Cannot add label since it starts from a number.';
