@@ -138,7 +138,10 @@ Const
 	ET_CheckPersona_Caption   = 'Check Persona';
 	ET_Comment_Caption        = 'Comment';
 	ET_End_Caption            = 'End';
-    // The strings above should not be translated (I doubt if someone will ever need that!)
+
+    STATS_CHOICE_SPEAKER = 'JCDenton';
+
+
 
 ResourceString
 
@@ -283,6 +286,8 @@ ResourceString
     strSaveConversationFileQuestion = 'The Current Conversation File has not been saved. Save Changes before closing it?';
 
     strDontUseCT_Actor = 'CT_Actor camera type is not implemented in Deus Ex. Please select Predefined or Random mode.';
+
+    strStatsEmptyFile = 'Nothing to count!';
 
 
 
