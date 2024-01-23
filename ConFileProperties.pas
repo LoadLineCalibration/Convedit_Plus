@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Samples.Spin, Vcl.ComCtrls, Vcl.ExtCtrls,
-  Conversation.Classes, vcl.GraphUtil, system.Types;
+  Conversation.Classes, vcl.GraphUtil, system.Types, ConvEditPlus.Consts, system.Generics.Collections,
+  system.UITypes;
 
 type
   TfrmConvoFileProperties = class(TForm)
@@ -41,7 +42,7 @@ type
     Label7: TLabel;
     Label1: TLabel;
     edtConFileCreatedOn: TEdit;
-    StaticText1: TStaticText;
+    btnFillStats: TButton;
     procedure btnCancelClick(Sender: TObject);
     procedure btnAddToLeftClick(Sender: TObject);
     procedure btnRemoveClick(Sender: TObject);
@@ -53,6 +54,7 @@ type
     procedure FillMissionList();
     procedure ResetAll();
     procedure LoadAfterCreation();
+    procedure FillStats(); //
 
     procedure FormShow(Sender: TObject);
     procedure edtConvoFileAudioPackageChange(Sender: TObject);
@@ -60,6 +62,7 @@ type
     procedure btnOkClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure lstAllMissionsDrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
+    procedure btnFillStatsClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -89,16 +92,65 @@ begin
 
         for var i:=0 to lstAllMissions.Items.Count -1 do
         begin
-            for var mc:= 0 to High(fpMissions) do               //if TMissionNumObj(lstAllMissions.Items.Objects[i]).missionNum = fpMissions[mc] then
+            for var mc:= 0 to High(fpMissions) do
             if lstAllMissions.Items.ValueFromIndex[i].ToInteger = fpMissions[mc] then
             begin
-                //frmMain.mmoOutput.Lines.Add(TMissionNumObj(lstAllMissions.Items.Objects[i]).missionNum.ToString);// + ' ' + BoolToStr(lstAllMissions.Selected[i], true));
                 frmMain.AddLog(lstAllMissions.Items.ValueFromIndex[i]);
                 lstAllMissions.Selected[i] := True;  // select items we have saved before
             end;
         end;
     end;
     btnAddToLeftClick(btnAddToLeft); // "click" the button to add items from right list.
+end;
+
+procedure TfrmConvoFileProperties.FillStats(); // Note: choices must be also included
+begin
+    if frmMain.ConversationsList.Count < 1 then
+    begin
+        MessageDlg(strStatsEmptyFile,  mtWarning, [mbOK], 0);
+        Exit();
+    end;
+
+    lvStatistics.Clear(); // clear ListView
+
+    var CounterDict:= TDictionary<string, Integer>.Create();
+
+    for var con in frmMain.ConversationsList do
+    begin
+        for var i:= 0 to High(con.Events) do
+        begin
+            if con.Events[i] is TConEventSpeech then
+            begin
+                var SpeechEvent := TConEventSpeech(con.Events[i]);
+
+                if CounterDict.ContainsKey(SpeechEvent.ActorValue) = False then
+                    CounterDict.Add(SpeechEvent.ActorValue, 0);
+
+                CounterDict[SpeechEvent.ActorValue] := CounterDict[SpeechEvent.ActorValue] + 1;
+            end;
+
+            if con.Events[i] is TConEventChoice then
+            begin
+                var Choice := TConEventChoice(con.Events[i]);
+
+                if CounterDict.ContainsKey(STATS_CHOICE_SPEAKER) = False then
+                    CounterDict.Add(STATS_CHOICE_SPEAKER, 0);
+
+                CounterDict[STATS_CHOICE_SPEAKER] := CounterDict[STATS_CHOICE_SPEAKER] + Length(Choice.Choices);
+            end;
+        end;
+    end;
+
+    for var ActorVal in CounterDict.Keys do
+    begin
+        var Counter := CounterDict[ActorVal];
+
+        var ListItem := lvStatistics.Items.Add();
+        ListItem.Caption := ActorVal;
+        ListItem.SubItems.Add(Counter.ToString);
+    end;
+
+    CounterDict.Free();
 end;
 
 procedure TfrmConvoFileProperties.lstAllMissionsDrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
@@ -141,40 +193,20 @@ begin
 end;
 
 procedure TfrmConvoFileProperties.FillMissionList();
-//var
-//    missionNumItem: TMissionNumObj;
 begin
-//    missionNumItem := nil;
-//try
     with lstAllMissions do
     begin
         Clear();
-        // Fill in four steps! :D
-        //missionNumItem := TMissionNumObj.Create(99);
-        //Items.AddObject('EndGame_' + missionNumItem.missionNum.ToString, missionNumItem);
-        Items.AddPair('EndGame', '99');  //Object('EndGame_' + missionNumItem.missionNum.ToString, missionNumItem);
-
-        //missionNumItem := TMissionNumObj.Create(98);
-        //Items.AddObject('Intro_' + missionNumItem.missionNum.ToString, missionNumItem);
+        // Fill in four steps!
+        Items.AddPair('EndGame', '99');
         Items.AddPair('Intro', '98');
 
         for var i:= 0 to 9 do
-        begin
-            //missionNumItem := TMissionNumObj.Create(i);
-            //Items.AddObject('Mission 0' + missionNumItem.missionNum.ToString, missionNumItem);
             Items.AddPair('Mission 0' + i.ToString, i.ToString);
-        end;
 
         for var k:=10 to 97 do
-        begin
-            //missionNumItem := TMissionNumObj.Create(k);
-            //Items.AddObject('Mission ' + missionNumItem.missionNum.ToString, missionNumItem);
             Items.AddPair('Mission ' + k.ToString, k.ToString);
-        end;
     end;
-//finally
-//missionNumItem.Free();
-//end;
 end;
 
 procedure TfrmConvoFileProperties.UpdateConParameters();
@@ -185,7 +217,7 @@ begin
         SetLength(conFileParameters.fpMissions, lstThisFileMissions.Items.Count);
         for var i:= 0 to lstThisFileMissions.Items.Count -1 do
         begin
-            conFileParameters.fpMissions[i] := lstThisFileMissions.Items.ValueFromIndex[i].ToInteger; //TMissionNumObj(lstThisFileMissions.Items.Objects[i]).missionNum;
+            conFileParameters.fpMissions[i] := lstThisFileMissions.Items.ValueFromIndex[i].ToInteger;
         end;
 
         conFileParameters.fpCreatedByName := edtConFileCreatedBy.Text;
@@ -195,7 +227,9 @@ begin
         conFileParameters.fpModifiedByDate := edtConFileLastModifiedOn.Text;
 
         conFileParameters.fpAudioPackage := edtConvoFileAudioPackage.Text;
-        conFileParameters.fpNotes := mmoConvFileNotes.Lines[0];
+        conFileParameters.fpNotes := mmoConvFileNotes.Text;
+
+        ToggleMenusPanels(True); // show tree and EventList
     end;
 end;
 
@@ -209,18 +243,15 @@ begin
     CheckIfCorrect();
 end;
 
-// Добавить из всех в используемые
-procedure TfrmConvoFileProperties.btnAddToLeftClick(Sender: TObject);
-var i: Integer;
+procedure TfrmConvoFileProperties.btnAddToLeftClick(Sender: TObject); // add from all
 begin
-    for i := lstAllMissions.Items.Count -1 downto 0 do
+    for var i := lstAllMissions.Items.Count -1 downto 0 do
         if lstAllMissions.Selected[i] then
         begin
             lstThisFileMissions.Items.Add(lstAllMissions.Items[i]);
-            //lstThisFileMissions.Items.AddObject(lstAllMissions.Items[i], lstAllMissions.Items.Objects[i]);
-            //lstThisFileMissions.Items.AddPair(lstAllMissions.Items[i], lstAllMissions.Items.ValueFromIndex[i]);
             lstAllMissions.Items.Delete(i);
         end;
+
     CheckIfCorrect();
 end;
 
@@ -229,24 +260,26 @@ begin
     Close();
 end;
 
+procedure TfrmConvoFileProperties.btnFillStatsClick(Sender: TObject);
+begin
+    FillStats();
+end;
+
 procedure TfrmConvoFileProperties.btnOkClick(Sender: TObject);
 begin
     UpdateConParameters();
     Close();
 end;
 
-// Убрать из используемых.
 procedure TfrmConvoFileProperties.btnRemoveClick(Sender: TObject);
-var i: Integer;
 begin
-    for i := lstThisFileMissions.Items.Count -1 downto 0 do
+    for var i := lstThisFileMissions.Items.Count -1 downto 0 do
         if lstThisFileMissions.Selected[i] then
         begin
             lstAllMissions.Items.Add(lstThisFileMissions.Items[i]);
-            //lstAllMissions.Items.AddObject(lstThisFileMissions.Items[i], lstThisFileMissions.Items.Objects[i]);
-            //lstAllMissions.Items.AddPair(lstThisFileMissions.Items[i], lstThisFileMissions.Items.ValueFromIndex[i]);
             lstThisFileMissions.Items.Delete(i);
         end;
+
     CheckIfCorrect();
 end;
 

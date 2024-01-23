@@ -47,7 +47,7 @@ object frmConvoFileProperties: TfrmConvoFileProperties
       Top = 3
       Width = 394
       Height = 412
-      ActivePage = tsMissions
+      ActivePage = tsStats
       Align = alClient
       Style = tsFlatButtons
       TabOrder = 0
@@ -147,7 +147,7 @@ object frmConvoFileProperties: TfrmConvoFileProperties
         end
       end
       object tsFlags: TTabSheet
-        Caption = 'Audio &&&& Notes'
+        Caption = 'Audio and Notes'
         ImageIndex = 1
         object Label10: TLabel
           Left = 24
@@ -211,8 +211,21 @@ object frmConvoFileProperties: TfrmConvoFileProperties
             item
               Caption = 'Lines'
             end>
+          StyleName = 'Windows'
+          ReadOnly = True
+          RowSelect = True
+          SortType = stText
           TabOrder = 0
           ViewStyle = vsReport
+        end
+        object btnFillStats: TButton
+          Left = 225
+          Top = 17
+          Width = 158
+          Height = 25
+          Caption = 'Load statistics'
+          TabOrder = 1
+          OnClick = btnFillStatsClick
         end
       end
       object tsInfo: TTabSheet
@@ -330,15 +343,5 @@ object frmConvoFileProperties: TfrmConvoFileProperties
     TabOrder = 2
     StyleElements = []
     OnClick = btnCancelClick
-  end
-  object StaticText1: TStaticText
-    Left = 8
-    Top = 437
-    Width = 217
-    Height = 36
-    AutoSize = False
-    Caption = #1055#1088#1080#1084#1077#1095#1072#1085#1080#1077': 98 is Intro, 99 is EndGame'
-    TabOrder = 3
-    StyleName = 'Windows'
   end
 end
