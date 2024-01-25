@@ -6,7 +6,8 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.StdActns, Conversation.Classes,
   System.Actions, Vcl.ActnList, Vcl.Menus, Vcl.Samples.Spin, WinApi.ActiveX, Vcl.Buttons, Vcl.Imaging.pngimage,
-  ConvEditPlus_Util, System.ImageList, Vcl.ImgList, Vcl.MPlayer, Winapi.MMSystem, system.UITypes, ES.BaseControls, ES.Layouts;
+  ConvEditPlus_Util, System.ImageList, Vcl.ImgList, Vcl.MPlayer, Winapi.MMSystem, system.UITypes, ES.BaseControls,
+  ES.Layouts, ConvEditPlus.Enums, ConvEditPlus.Consts;
 
 type
   TfrmEventInsAdd = class(TForm)
@@ -229,39 +230,65 @@ type
     ChoiceEditPanel: TEsPanel;
     btnSaveChoiceItem: TBitBtn;
     StaticText1: TStaticText;
+    chkFollowMainWindow: TCheckBox;
+
+    // new functions
+    function CanAddRandomLabel(): Boolean;
+    function GetChoiceItemSpeech(ChoiceItem: TChoiceItemObject): string;
+
     // new procedures
     procedure UpdateControlsState();
     procedure UpdateAddRandomLabelButtonState();
     procedure RepaintCurrentEvent();
 
-    function CanAddRandomLabel(): Boolean;
-    function GetChoiceItemSpeech(ChoiceItem: TChoiceItemObject): string;
+    procedure KillPhantoms();
 
     //https://engineertips.wordpress.com/2019/10/06/delphi-exchange-listview-items-move-listview-items/
     procedure ExchangeListViewItems(lv: TListView; const i, j: Integer);
-//    procedure CopyChoiceRecToObj(source: TChoiceItem; dest: TChoiceItemObject);
+
+    procedure FillChoiceItemIndexes();
 
     // Make sure all events are valid, contains no illegal characters, etc.
     procedure ValidateEvents(event: TConEvent);
-    procedure ValidateSpeech(speech: TConEventSpeech);
-    procedure ValidateChoice(choice: TConEventChoice);
-    procedure ValidateSetFlags(setFlags: TConEventSetFlag);
-    procedure ValidateCheckFlags(checkFlags: TConEventCheckFlag);
-    procedure ValidateCheckObject(checkObj: TConEventCheckObject);
-    procedure ValidateTransferObject(transObj: TConEventTransferObject);
-    procedure ValidateMoveCamera(moveCam: TConEventMoveCamera);
-    procedure ValidatePlayAnim(playAnim: TConEventAnimation);
-    procedure ValidateBuySellTrade(trade: TConEventTrade);
-    procedure ValidateJump(jump: TConEventJump);
-    procedure ValidateRandom(rand: TConEventRandom);
-    procedure ValidateTrigger(trigger: TConEventTrigger);
-    procedure ValidateAddCompGoal(theGoal: TConEventAddGoal);
-    procedure ValidateAddNote(note: TConEventAddNote);
-    procedure ValidateAddSkillPoints(skillPts: TConEventAddSkillPoints);
-    procedure ValidateAddCredits(credits: TConEventAddCredits);
-    procedure ValidateCheckPersona(checkPersona: TConEventCheckPersona);
-    procedure ValidateComment(comment: TConEventComment);
-    procedure ValidateEnd(endEvent: TConEventEnd);
+    function ValidateSpeech(speech: TConEventSpeech): Boolean;
+    function ValidateChoice(choice: TConEventChoice): Boolean;
+    function ValidateSetFlags(setFlags: TConEventSetFlag): Boolean;
+    function ValidateCheckFlags(checkFlags: TConEventCheckFlag): Boolean;
+    function ValidateCheckObject(checkObj: TConEventCheckObject): Boolean;
+    function ValidateTransferObject(transObj: TConEventTransferObject): Boolean;
+    function ValidateMoveCamera(moveCam: TConEventMoveCamera): Boolean;
+    function ValidatePlayAnim(playAnim: TConEventAnimation): Boolean;
+    function ValidateBuySellTrade(trade: TConEventTrade): Boolean;
+    function ValidateJump(var jump: TConEventJump): Boolean;
+    function ValidateRandom(rand: TConEventRandom): Boolean;
+    function ValidateTrigger(trigger: TConEventTrigger): Boolean;
+    function ValidateAddCompGoal(theGoal: TConEventAddGoal): Boolean;
+    function ValidateAddNote(note: TConEventAddNote): Boolean;
+    function ValidateAddSkillPoints(skillPts: TConEventAddSkillPoints): Boolean;
+    function ValidateAddCredits(credits: TConEventAddCredits): Boolean;
+    function ValidateCheckPersona(checkPersona: TConEventCheckPersona): Boolean;
+    function ValidateComment(comment: TConEventComment): Boolean;
+    function ValidateEnd(endEvent: TConEventEnd): Boolean;
+
+    procedure NewSpeech(bInsert: Boolean = False);
+    procedure NewChoice(bInsert: Boolean = False);
+    procedure NewSetFlags(bInsert: Boolean = False);
+    procedure NewCheckFlags(bInsert: Boolean = False);
+    procedure NewCheckObject(bInsert: Boolean = False);
+    procedure NewTransferObject(bInsert: Boolean = False);
+    procedure NewMoveCamera(bInsert: Boolean = False);
+    procedure NewPlayAnim(bInsert: Boolean = False);
+    procedure NewBuySellTrade(bInsert: Boolean = False);
+    procedure NewJump(bInsert: Boolean = False);
+    procedure NewRandom(bInsert: Boolean = False);
+    procedure NewTrigger(bInsert: Boolean = False);
+    procedure NewAddCompGoal(bInsert: Boolean = False);
+    procedure NewAddNote(bInsert: Boolean = False);
+    procedure NewAddSkillPoints(bInsert: Boolean = False);
+    procedure NewAddCredits(bInsert: Boolean = False);
+    procedure NewCheckPersona(bInsert: Boolean = False);
+    procedure NewComment(bInsert: Boolean = False);
+    procedure NewEnd(bInsert: Boolean = False);
 
     // show colored warning message if event was not updated
     procedure EventWarning(bShow: Boolean;  msg: string = '');
@@ -357,11 +384,25 @@ type
     procedure btnSaveChoiceItemClick(Sender: TObject);
     procedure btnAddChoiceFlagClick(Sender: TObject);
     procedure lvChoiceFlagListDblClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure mmoChoiceTextChange(Sender: TObject);
+    procedure btnInsertEventClick(Sender: TObject);
+    procedure memoSpeechChange(Sender: TObject);
+    procedure lvCheckFlagsChange(Sender: TObject; Item: TListItem; Change: TItemChange);
+    procedure cmbChkFlgJumpToLabelChange(Sender: TObject);
+    procedure cmbObjectToCheckChange(Sender: TObject);
+    procedure cmbObjectToTransferChange(Sender: TObject);
+    procedure cmbPawnToAnimateChange(Sender: TObject);
+    procedure cboJumpLabelChange(Sender: TObject);
+    procedure editTriggerTagChange(Sender: TObject);
+    procedure editGoalNameChange(Sender: TObject);
+    procedure memoNoteTextChange(Sender: TObject);
+    procedure cmbCheckLabelJumpChange(Sender: TObject);
+    procedure memoCommentTextChange(Sender: TObject);
   private
     { Private declarations }
   public
-    const BTN_FIND_ACTOR_INDENT = 6;
-
+    bCreatingNewEvent: Boolean;
     { Public declarations }
   end;
 
@@ -374,8 +415,8 @@ implementation
 
 {$R *.dfm}
 
-uses Table, ConvoProperties, EditValueDialog, EditChoice,
-     HelpWindow, frmFlagList1, ConvEditPlus_Const, MainWindow;
+uses Table, ConvoProperties, EditValueDialog, HelpWindow,
+     frmFlagList1, MainWindow;
 
 
 procedure TfrmEventInsAdd.FillSpeech(speech: TConEventSpeech);
@@ -405,7 +446,7 @@ begin
     cmbEventType.ItemIndex := 1;
     cmbEventTypeChange(cmbEventType);
 
-    editEventLabel.Text:= choice.EventLabel;
+    editEventLabel.Text := choice.EventLabel;
 
     lvChoiceList.Clear();
     chkClearScreen.Checked := choice.bClearScreen;
@@ -419,26 +460,6 @@ begin
         choiceItem.SubItems.Add(TChoiceItemObject(choiceItem.Data).GoToLabel);
         choiceItem.SubItems.Add(TChoiceItemObject(choiceItem.Data).Index.ToString);
     end;
-
-
-{    for var chi := 0 to choice.NumChoices -1 do begin
-        var choiceItem:= lvChoiceList.Items.Add();
-            choiceItem.Data := TChoiceItemObject.Create();
-            TChoiceItemObject(choiceItem.Data).Index := choice.Choices[chi].Index;
-            TChoiceItemObject(choiceItem.Data).textline := choice.Choices[chi].textline;
-            TChoiceItemObject(choiceItem.Data).bDisplayAsSpeech := choice.Choices[chi].bDisplayAsSpeech;
-            TChoiceItemObject(choiceItem.Data).bSkillNeeded := choice.Choices[chi].bSkillNeeded;
-            TChoiceItemObject(choiceItem.Data).Skill := choice.Choices[chi].Skill;
-            TChoiceItemObject(choiceItem.Data).SkillLevel := choice.Choices[chi].SkillLevel;
-            TChoiceItemObject(choiceItem.Data).GoToLabel := choice.Choices[chi].GoToLabel;
-            TChoiceItemObject(choiceItem.Data).mp3 := choice.Choices[chi].mp3;
-
-            CopyChoiceRecToObj(choice.Choices[chi], TChoiceItemObject(choiceItem.Data)); // Flags
-
-            choiceItem.Caption := TChoiceItemObject(choiceItem.Data).textline;
-            choiceItem.SubItems.Add(TChoiceItemObject(choiceItem.Data).GoToLabel);
-            choiceItem.SubItems.Add(TChoiceItemObject(choiceItem.Data).Index.ToString);
-    end; }
 end;
 
 procedure TfrmEventInsAdd.FillSetFlags(flags: TConEventSetFlag);
@@ -450,7 +471,8 @@ begin
 
     lvSetFlags.Clear();
 
-    for var sf:=0 to High(flags.SetFlags) do begin
+    for var sf:=0 to High(flags.SetFlags) do
+    begin
         var sfItem:= lvSetFlags.Items.Add();
             sfItem.Caption:= flags.SetFlags[sf].flagName;
             sfItem.SubItems.Add(BoolToStr(flags.SetFlags[sf].flagValue, true));
@@ -469,14 +491,16 @@ begin
     lvCheckFlags.Clear();
     cmbChkFlgJumpToLabel.Clear();
 
-    for var cf:=0 to High(check.FlagsToCheck) do begin
+    for var cf:=0 to High(check.FlagsToCheck) do
+    begin
         var cfItem:= lvCheckFlags.Items.Add();
             cfItem.Caption:= check.FlagsToCheck[cf].flagName;
             cfItem.SubItems.Add(BoolToStr(check.FlagsToCheck[cf].flagValue, true));
             cfItem.SubItems.Add(check.FlagsToCheck[cf].flagIndex.ToString);
     end;
 
-    for var evt:=0 to High(frmMain.CurrentConversation.Events) do begin
+    for var evt:=0 to High(frmMain.CurrentConversation.Events) do
+    begin
         if frmMain.CurrentConversation.Events[evt].EventLabel <> '' then
            cmbChkFlgJumpToLabel.Items.Add(frmMain.CurrentConversation.Events[evt].EventLabel);
     end;
@@ -563,7 +587,8 @@ begin
 
     chkWaitFinishAnim.Checked := playAnim.bAnimWaitToFinish; // set the checkbox first, it can be disabled by other options.
 
-    if playAnim.bAnimPlayOnce = true then begin
+    if playAnim.bAnimPlayOnce = true then
+    begin
        rbPlayAnimOnce.Checked := playAnim.bAnimPlayOnce;
         rbPlayAnimOnceClick(self);
     end else begin
@@ -709,16 +734,17 @@ begin
     end;
 
     case checkPersona.Condition of
-      EC_Less:         cmbCheckCondition.ItemIndex := 0;
-      EC_LessEqual:    cmbCheckCondition.ItemIndex := 1;
-      EC_Equal:        cmbCheckCondition.ItemIndex := 2;
-      EC_GreaterEqual: cmbCheckCondition.ItemIndex := 3;
-      EC_Greater:      cmbCheckCondition.ItemIndex := 4;
+        EC_Less:         cmbCheckCondition.ItemIndex := 0;
+        EC_LessEqual:    cmbCheckCondition.ItemIndex := 1;
+        EC_Equal:        cmbCheckCondition.ItemIndex := 2;
+        EC_GreaterEqual: cmbCheckCondition.ItemIndex := 3;
+        EC_Greater:      cmbCheckCondition.ItemIndex := 4;
     end;
 
     editConditionValue.Value := checkPersona.CheckValue;
 
-    for var jumpLbl := 0 to High(frmMain.CurrentConversation.Events) do begin
+    for var jumpLbl := 0 to High(frmMain.CurrentConversation.Events) do
+    begin
         if frmMain.CurrentConversation.Events[jumpLbl].EventLabel <> '' then
             cmbCheckLabelJump.Items.Add(frmMain.CurrentConversation.Events[jumpLbl].EventLabel);
     end;
@@ -804,43 +830,53 @@ begin
     LV.SetFocus();
 end;
 
-procedure TfrmEventInsAdd.ValidateSpeech(speech: TConEventSpeech); // Check if entered values are correct, then write values back to object.
+function TfrmEventInsAdd.ValidateSpeech(speech: TConEventSpeech): Boolean; // Check if entered values are correct, then write values back to object.
 begin
     if Length(Trim(memoSpeech.Text)) < 1 then
     begin
         EventWarning(True, strSpeechTextIsEmpty);
         memoSpeech.SetFocus();
-        memoSpeech.Text := strDefaultString;
+        //memoSpeech.Text := strDefaultString;
         memoSpeech.SelectAll();
-        Exit();
+        Exit(False);
     end;
 
     if cmbSpeakingFrom.ItemIndex = -1 then
     begin
         EventWarning(True, 'Select Speaking actor!');
-        Exit();
+        Exit(False);
     end;
 
     if cmbSpeakingTo.ItemIndex = -1 then
     begin
         EventWarning(True, 'Select SpeakingTo actor!');
-        Exit();
+        Exit(False);
     end;
 
+    speech.ActorValue   := cmbSpeakingFrom.Items[cmbSpeakingFrom.ItemIndex];
+    speech.ActorIndex   := frmMain.FindTableIdByName(tmActorsPawns, cmbSpeakingFrom.Items[cmbSpeakingFrom.ItemIndex]);
 
-    speech.TextLine := memoSpeech.Text;
+    speech.ActorToValue := cmbSpeakingTo.Items[cmbSpeakingTo.ItemIndex];
+    speech.ActorToIndex := frmMain.FindTableIdByName(tmActorsPawns, cmbSpeakingTo.Items[cmbSpeakingTo.ItemIndex]);
+
+    speech.TextLine     := memoSpeech.Text;
     speech.LineBreaksCount := frmMain.CountLineBreaks(memoSpeech.Text);
+
+
     // update value so ItemHeight will be updated as well
     frmMain.ConEventList.Items.ValueFromIndex[frmMain.ConEventList.ItemIndex] := frmMain.GetSpeechEventItemHeight([speech]).ToString;
     RepaintCurrentEvent();
     EventWarning(false);
+
+    Exit(True);
 end;
 
-procedure TfrmEventInsAdd.ValidateChoice(choice: TConEventChoice);
+function TfrmEventInsAdd.ValidateChoice(choice: TConEventChoice): Boolean;
 begin
-    if lvChoiceList.Items.Count < 1 then begin
-      EventWarning(True, 'Add some choices first!');
-      Exit();
+    if lvChoiceList.Items.Count < 1 then
+    begin
+        EventWarning(True, 'Add some choices first!');
+        Exit(False);
     end;
 
     SetLength(choice.Choices, lvChoiceList.Items.Count);
@@ -852,23 +888,25 @@ begin
     end;
 
     frmMain.ConEventList.Items.ValueFromIndex[frmMain.ConEventList.ItemIndex] := frmMain.GetNumChoiceLines([choice]).ToString;
-
     RepaintCurrentEvent();
+    EventWarning(false);
+
+    Exit(True);
 end;
 
-procedure TfrmEventInsAdd.ValidateSetFlags(setFlags: TConEventSetFlag);
+function TfrmEventInsAdd.ValidateSetFlags(setFlags: TConEventSetFlag): Boolean;
 begin
-    if lvSetFlags.Items.Count < 1 then begin
-       EventWarning(True, 'Please add flags to set!');
-       Exit();
+    if lvSetFlags.Items.Count < 1 then
+    begin
+        EventWarning(True, 'Please add flags to set!');
+        Exit(False);
     end;
 
-    //setFlags.ArrayLength := lvSetFlags.Items.Count;
     setFlags.numFlags := lvSetFlags.Items.Count;
-    //SetLength(setFlags.SetFlags, setFlags.ArrayLength);
     SetLength(setFlags.SetFlags, setFlags.numFlags);
 
-    for var newsetflg := 0 to lvSetFlags.Items.Count -1 do begin
+    for var newsetflg := 0 to lvSetFlags.Items.Count -1 do
+    begin
         setFlags.SetFlags[newsetflg].flagName       := lvSetFlags.Items[newsetflg].Caption; // flag name
         setFlags.SetFlags[newsetflg].flagValue      := lvSetFlags.Items[newsetflg].SubItems[0].ToBoolean; // value
         setFlags.SetFlags[newsetflg].flagExpiration := lvSetFlags.Items[newsetflg].SubItems[1].ToInteger; // expiration
@@ -878,21 +916,23 @@ begin
     frmMain.ConEventList.Items.ValueFromIndex[frmMain.ConEventList.ItemIndex] := frmMain.GetFlagsSize([setFlags]).ToString;
     RepaintCurrentEvent();
     EventWarning(False);
+
+    Exit(True);
 end;
 
-procedure TfrmEventInsAdd.ValidateCheckFlags(checkFlags: TConEventCheckFlag);
+function TfrmEventInsAdd.ValidateCheckFlags(checkFlags: TConEventCheckFlag): Boolean;
 begin
-    if lvCheckFlags.Items.Count < 1 then begin
+    if lvCheckFlags.Items.Count < 1 then
+    begin
        EventWarning(True, 'Please add flags to check!');
-       Exit();
+       Exit(False);
     end;
 
-    //checkFlags.ArrayLength := lvCheckFlags.Items.Count;
     checkFlags.numFlags := lvCheckFlags.Items.Count;
-    //SetLength(checkFlags.FlagsToCheck, checkFlags.ArrayLength);
     SetLength(checkFlags.FlagsToCheck, checkFlags.numFlags);
 
-    for var newCheckFlg:=0 to lvCheckFlags.Items.Count -1 do begin
+    for var newCheckFlg:=0 to lvCheckFlags.Items.Count -1 do
+    begin
         checkFlags.FlagsToCheck[newCheckFlg].flagName := lvCheckFlags.Items[newCheckFlg].Caption; // flag name
         checkFlags.FlagsToCheck[newCheckFlg].flagValue:= lvCheckFlags.Items[newCheckFlg].SubItems[0].ToBoolean; // value
         checkFlags.FlagsToCheck[newCheckFlg].flagIndex:= lvCheckFlags.Items[newCheckFlg].SubItems[1].ToInteger; // index
@@ -901,9 +941,11 @@ begin
     frmMain.ConEventList.Items.ValueFromIndex[frmMain.ConEventList.ItemIndex] := frmMain.GetChkFlagsSize([checkFlags]).ToString;
     RepaintCurrentEvent();
     EventWarning(False);
+
+    Exit(True);
 end;
 
-procedure TfrmEventInsAdd.ValidateCheckObject(checkObj: TConEventCheckObject);
+function TfrmEventInsAdd.ValidateCheckObject(checkObj: TConEventCheckObject): Boolean;
 begin
     checkObj.ObjectValue := cmbObjectToCheck.Items[cmbObjectToCheck.ItemIndex];
     checkObj.ObjectIndex := cmbObjectToCheck.ItemIndex;
@@ -911,9 +953,11 @@ begin
     checkObj.GoToLabel := cmbObjNotFoundJumpTo.Items[cmbObjNotFoundJumpTo.ItemIndex];
 
     RepaintCurrentEvent();
+
+    Exit(True);
 end;
 
-procedure TfrmEventInsAdd.ValidateTransferObject(transObj: TConEventTransferObject);
+function TfrmEventInsAdd.ValidateTransferObject(transObj: TConEventTransferObject): Boolean;
 begin
     transObj.ObjectValue := cmbObjectToTransfer.Items[cmbObjectToTransfer.ItemIndex];
     transObj.ObjectIndex := frmMain.FindTableIdByName(tmObjects, transObj.ObjectValue); // Use item id from Table, not from combobox
@@ -929,20 +973,25 @@ begin
     transObj.GotoLabel := cmbTransferObjectFailLabel.Items[cmbTransferObjectFailLabel.ItemIndex];
 
     RepaintCurrentEvent();
+
+    Exit(True);
 end;
 
-procedure TfrmEventInsAdd.ValidateMoveCamera(moveCam: TConEventMoveCamera);
+function TfrmEventInsAdd.ValidateMoveCamera(moveCam: TConEventMoveCamera): Boolean;
 begin
-    if rbSpecialCameraPos.Checked = True then begin
-        EventWarning(True, 'CT_Actor camera type is not implemented in Deus Ex. Please select Predefined or Random mode.');
-        Exit();
+    if rbSpecialCameraPos.Checked = True then
+    begin
+        EventWarning(True, strDontUseCT_Actor);
+        Exit(False);
     end;
 
-    if rbPredefinedCameraPos.Checked = true then begin
+    if rbPredefinedCameraPos.Checked = true then
+    begin
         moveCam.CameraType := CT_Predefined;
         moveCam.CameraAngle := TCameraPositions(cbbPredefinedCameraPos.ItemIndex);
     end else
-    if rbRandomCameraPos.Checked = true then begin
+    if rbRandomCameraPos.Checked = true then
+    begin
         moveCam.CameraType := CT_Random;
     end;
 
@@ -950,20 +999,23 @@ begin
 
     RepaintCurrentEvent();
     EventWarning(false);
+
+    Exit(True);
 end;
 
-procedure TfrmEventInsAdd.ValidatePlayAnim(playAnim: TConEventAnimation);
+function TfrmEventInsAdd.ValidatePlayAnim(playAnim: TConEventAnimation): Boolean;
 begin
-    if StringStartsFromDigit(cmbAnimSeq.Text) = true then begin
+    if StringStartsFromDigit(cmbAnimSeq.Text) = true then
+    begin
         EventWarning(true, 'Error: Animation name should not start from digit!');
-        Exit();
+        Exit(False);
     end;
 
-    if IsInvalidFName(cmbAnimSeq.Text) = true then begin
+    if IsInvalidFName(cmbAnimSeq.Text) = true then
+    begin
         EventWarning(true, 'Error: Invalid animation name!');
-        Exit();
+        Exit(False);
     end;
-
 
     playAnim.ActorValue := cmbPawnToAnimate.Items[cmbPawnToAnimate.ItemIndex];
     playAnim.ActorIndex := frmMain.FindTableIdByName(tmActorsPawns, playanim.ActorValue);
@@ -975,38 +1027,46 @@ begin
 
     playAnim.bAnimWaitToFinish := chkWaitFinishAnim.Checked;
 
-    if chkAnimTimed.Checked = true then begin
+    if chkAnimTimed.Checked = true then
+    begin
         playAnim.AnimPlayForSeconds := edtPlayAnimSeconds.Value;
     end else
         playAnim.AnimPlayForSeconds := 0;
 
     EventWarning(false);
     RepaintCurrentEvent();
+
+    Exit(True);
 end;
 
-procedure TfrmEventInsAdd.ValidateBuySellTrade(trade: TConEventTrade);
+function TfrmEventInsAdd.ValidateBuySellTrade(trade: TConEventTrade): Boolean;
 begin
     ShowMessage('BuySellTrade not implemented');
+    Exit(False);
 end;
 
-procedure TfrmEventInsAdd.ValidateJump(jump: TConEventJump);
+function TfrmEventInsAdd.ValidateJump(var jump: TConEventJump): Boolean;
 begin
-    jump.conversationId := TConversation(cboJumpConv.Items.Objects[cboJumpConv.ItemIndex]).id;
+    jump.conversationId := frmMain.FindConversationObjByString(cboJumpConv.Items[cboJumpConv.ItemIndex]).id; //TConversation(cboJumpConv.Items.Objects[cboJumpConv.ItemIndex]).id;
     jump.gotoLabel := cboJumpLabel.Items[cboJumpLabel.ItemIndex];
 
     RepaintCurrentEvent();
+
+    Exit(True);
 end;
 
-procedure TfrmEventInsAdd.ValidateRandom(rand: TConEventRandom);
+function TfrmEventInsAdd.ValidateRandom(rand: TConEventRandom): Boolean;
 begin
-    if lstRandomLabels.Items.Count < 1 then begin  // check if we're have any labels to save
+    if lstRandomLabels.Items.Count < 1 then
+    begin  // check if we're have any labels to save
        EventWarning(True, 'Add some labels to jump to!');
-       Exit();
+       Exit(False);
     end;
 
     SetLength(rand.GoToLabels, lstRandomLabels.Items.Count); // set new array size
 
-    for var nr:= 0 to lstRandomLabels.Items.Count -1 do begin // overwrite array
+    for var nr:= 0 to lstRandomLabels.Items.Count -1 do
+    begin // overwrite array
         rand.GoToLabels[nr] := lstRandomLabels.Items[nr];
     end;
 
@@ -1017,68 +1077,84 @@ begin
     frmMain.ConEventList.Items.ValueFromIndex[frmMain.ConEventList.ItemIndex] := frmMain.GetRandomEventItemHeight([rand]).ToString;
     RepaintCurrentEvent();
     EventWarning(False);
+
+    Exit(True);
 end;
 
-procedure TfrmEventInsAdd.ValidateTrigger(trigger: TConEventTrigger);
+function TfrmEventInsAdd.ValidateTrigger(trigger: TConEventTrigger): Boolean;
 begin
-    if (Length(editTriggerTag.Text) > 0) and (StringStartsFromDigit(editTriggerTag.Text)) then begin
+    if (Length(editTriggerTag.Text) > 0) and (StringStartsFromDigit(editTriggerTag.Text)) then
+    begin
        EventWarning(True, 'Invalid characters in TriggerTag!');
-       Exit();
+       Exit(False);
     end;
 
-    if Length(editTriggerTag.Text) < 1 then begin
+    if Length(editTriggerTag.Text) < 1 then
+    begin
        EventWarning(True, 'TriggerTag cannot be empty!');
-       Exit();
+       Exit(False);
     end;
 
     trigger.TriggerTag := editTriggerTag.Text;
 
     RepaintCurrentEvent();
     EventWarning(False);
+
+    Exit(True);
 end;
 
-procedure TfrmEventInsAdd.ValidateAddCompGoal(theGoal: TConEventAddGoal);
+function TfrmEventInsAdd.ValidateAddCompGoal(theGoal: TConEventAddGoal): Boolean;
 begin
     theGoal.GoalName := editGoalName.Text; // в любом случае
 
-    if rbAddGoal.Checked = True then begin
+    if rbAddGoal.Checked = True then
+    begin
        theGoal.bComplete := False;
        theGoal.bPrimaryGoal := chkPrimaryGoal.Checked;
        theGoal.GoalText := memoGoalText.Text;
-    end else begin
+    end else
+    begin
        theGoal.bComplete := True;
     end;
 
     RepaintCurrentEvent();
     EventWarning(False);
+
+    Exit(True);
 end;
 
-procedure TfrmEventInsAdd.ValidateAddNote(note: TConEventAddNote);
+function TfrmEventInsAdd.ValidateAddNote(note: TConEventAddNote): Boolean;
 begin
     note.TextLine := memoNoteText.Text;
 
     RepaintCurrentEvent();
     EventWarning(False);
+
+    Exit(True);
 end;
 
-procedure TfrmEventInsAdd.ValidateAddSkillPoints(skillPts: TConEventAddSkillPoints);
+function TfrmEventInsAdd.ValidateAddSkillPoints(skillPts: TConEventAddSkillPoints): Boolean;
 begin
     skillPts.Points := editSkillPointsAmount.Value;
     skillPts.TextLine := memoSkillPointMessage.Text;
 
     RepaintCurrentEvent();
     EventWarning(False);
+
+    Exit(True);
 end;
 
-procedure TfrmEventInsAdd.ValidateAddCredits(credits: TConEventAddCredits);
+function TfrmEventInsAdd.ValidateAddCredits(credits: TConEventAddCredits): Boolean;
 begin
     credits.Credits := seAddCredits.Value;
 
     RepaintCurrentEvent();
     EventWarning(False);
+
+    Exit(True);
 end;
 
-procedure TfrmEventInsAdd.ValidateCheckPersona(checkPersona: TConEventCheckPersona);
+function TfrmEventInsAdd.ValidateCheckPersona(checkPersona: TConEventCheckPersona): Boolean;
 begin
     if rbCreditsCheck.Checked = True then checkPersona.AttrToCheck := EP_Credits else
     if rbHealthCheck.Checked = True then checkPersona.AttrToCheck := EP_Health else
@@ -1097,36 +1173,560 @@ begin
 
     RepaintCurrentEvent();
     EventWarning(False);
+
+    Exit(True);
 end;
 
-procedure TfrmEventInsAdd.ValidateComment(comment: TConEventComment);
+function TfrmEventInsAdd.ValidateComment(comment: TConEventComment): Boolean;
 begin
     if Length(Trim(memoCommentText.Text)) < 1 then
     begin
         EventWarning(true, strCommentTextIsEmpty);
         memoCommentText.SetFocus();
-        Exit();
+        Exit(False);
     end;
 
     comment.TextLine := memoCommentText.Text;
 
     RepaintCurrentEvent();
     EventWarning(False);
+
+    Exit(True);
 end;
 
-procedure TfrmEventInsAdd.ValidateEnd(endEvent: TConEventEnd);
+function TfrmEventInsAdd.ValidateEnd(endEvent: TConEventEnd): Boolean;
 begin
     RepaintCurrentEvent();
+    Exit(True);
 end;
+
+procedure TfrmEventInsAdd.NewSpeech(bInsert: Boolean = False);
+begin
+    KillPhantoms();
+
+    var newEvent := TConEventSpeech.Create();  // создать новыое событие
+
+    if ValidateSpeech(newEvent) = False then // new event is invalid, so kill it. Otherwise add to array of events.
+    begin
+        newEvent.Free();
+        Abort();
+    end;
+
+    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
+    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    frmMain.ConEventList.Items.AddObject(ET_Speech_Caption, frmMain.CurrentEvent);
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+
+    if tempItemIndex <> -1 then
+        frmMain.ConEventList.ItemIndex := tempItemIndex;
+
+    RepaintCurrentEvent();
+    bCreatingNewEvent := False;
+    KillPhantoms();
+
+    Exit();
+end;
+
+procedure TfrmEventInsAdd.NewChoice(bInsert: Boolean = False);
+begin
+    KillPhantoms();
+
+    var NewEvent := TConEventChoice.Create();
+
+    if ValidateChoice(NewEvent) = False then
+    begin
+        NewEvent.Free();
+        Abort();
+    end;
+
+    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
+    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    frmMain.ConEventList.Items.AddObject(ET_Choice_Caption, frmMain.CurrentEvent);
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+
+    if tempItemIndex <> -1 then
+        frmMain.ConEventList.ItemIndex := tempItemIndex;
+
+    RepaintCurrentEvent();
+    bCreatingNewEvent := False;
+    KillPhantoms();
+
+    Exit();
+end;
+
+procedure TfrmEventInsAdd.NewSetFlags(bInsert: Boolean = False);
+begin
+    KillPhantoms();
+
+    var newEvent := TConEventSetFlag.Create();
+
+    if ValidateSetFlags(newEvent) = False then
+    begin
+        newEvent.Free();
+        Abort();
+    end;
+
+    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
+    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    frmMain.ConEventList.Items.AddObject(ET_SetFlag_Caption, frmMain.CurrentEvent);
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+
+    if tempItemIndex <> -1 then
+        frmMain.ConEventList.ItemIndex := tempItemIndex;
+
+    RepaintCurrentEvent();
+    bCreatingNewEvent := False;
+    KillPhantoms();
+
+    Exit();
+end;
+
+procedure TfrmEventInsAdd.NewCheckFlags(bInsert: Boolean = False);
+begin
+    KillPhantoms();
+
+    var NewEvent := TConEventCheckFlag.Create();
+
+    if ValidateCheckFlags(NewEvent) = False then
+    begin
+        newEvent.Free();
+        Abort();
+    end;
+
+    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
+    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    frmMain.ConEventList.Items.AddObject(ET_CheckFlag_Caption, frmMain.CurrentEvent);
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+
+    if tempItemIndex <> -1 then
+        frmMain.ConEventList.ItemIndex := tempItemIndex;
+
+    RepaintCurrentEvent();
+    bCreatingNewEvent := False;
+    KillPhantoms();
+
+    Exit();
+end;
+
+procedure TfrmEventInsAdd.NewCheckObject(bInsert: Boolean = False);
+begin
+    KillPhantoms();
+
+    var NewEvent := TConEventCheckObject.Create();
+
+    if ValidateCheckObject(NewEvent) = False then
+    begin
+        NewEvent.Free();
+        Abort();
+    end;
+
+    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
+    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    frmMain.ConEventList.Items.AddObject(ET_CheckObject_Caption, frmMain.CurrentEvent);
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+
+    if tempItemIndex <> -1 then
+        frmMain.ConEventList.ItemIndex := tempItemIndex;
+
+    RepaintCurrentEvent();
+    bCreatingNewEvent := False;
+    KillPhantoms();
+end;
+
+procedure TfrmEventInsAdd.NewTransferObject(bInsert: Boolean = False);
+begin
+    KillPhantoms();
+
+    var NewEvent := TConEventTransferObject.Create();
+
+    if ValidateTransferObject(NewEvent) = false then
+    begin
+        NewEvent.Free();
+        Abort();
+    end;
+
+    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
+    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    frmMain.ConEventList.Items.AddObject(ET_TransferObject_Caption, frmMain.CurrentEvent);
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+
+    if tempItemIndex <> -1 then
+        frmMain.ConEventList.ItemIndex := tempItemIndex;
+
+    RepaintCurrentEvent();
+    bCreatingNewEvent := False;
+    KillPhantoms();
+end;
+
+procedure TfrmEventInsAdd.NewMoveCamera(bInsert: Boolean = False);
+begin
+    KillPhantoms();
+
+    var NewEvent := TConEventMoveCamera.Create();
+
+    if ValidateMoveCamera(NewEvent) = false then
+    begin
+        NewEvent.Free();
+        Abort();
+    end;
+
+    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
+    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    frmMain.ConEventList.Items.AddObject(ET_MoveCamera_Caption, frmMain.CurrentEvent);
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+
+    if tempItemIndex <> -1 then
+        frmMain.ConEventList.ItemIndex := tempItemIndex;
+
+    RepaintCurrentEvent();
+    bCreatingNewEvent := False;
+    KillPhantoms();
+end;
+
+procedure TfrmEventInsAdd.NewPlayAnim(bInsert: Boolean = False);
+begin
+    KillPhantoms();
+
+    var NewEvent := TConEventAnimation.Create();
+
+    if ValidatePlayAnim(NewEvent) = false then
+    begin
+        NewEvent.Free();
+        Abort();
+    end;
+
+    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
+    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    frmMain.ConEventList.Items.AddObject(ET_Animation_Caption, frmMain.CurrentEvent);
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+
+    if tempItemIndex <> -1 then
+        frmMain.ConEventList.ItemIndex := tempItemIndex;
+
+    RepaintCurrentEvent();
+    bCreatingNewEvent := False;
+    KillPhantoms();
+end;
+
+procedure TfrmEventInsAdd.NewBuySellTrade(bInsert: Boolean = False);
+begin
+  // Not implemented
+end;
+
+procedure TfrmEventInsAdd.NewJump(bInsert: Boolean = False);
+begin
+    KillPhantoms();
+
+    var NewEvent := TConEventJump.Create();
+
+    if ValidateJump(NewEvent) = false then
+    begin
+        NewEvent.Free();
+        Abort();
+    end;
+
+    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
+    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    frmMain.ConEventList.Items.AddObject(ET_Jump_Caption, frmMain.CurrentEvent);
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+
+    if tempItemIndex <> -1 then
+        frmMain.ConEventList.ItemIndex := tempItemIndex;
+
+    RepaintCurrentEvent();
+    bCreatingNewEvent := False;
+    KillPhantoms();
+end;
+
+procedure TfrmEventInsAdd.NewRandom(bInsert: Boolean = False);
+begin
+    KillPhantoms();
+
+    var NewEvent := TConEventRandom.Create();
+
+    if ValidateRandom(NewEvent) = false then
+    begin
+        NewEvent.Free();
+        Abort();
+    end;
+
+    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
+    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    frmMain.ConEventList.Items.AddObject(ET_Random_Caption, frmMain.CurrentEvent);
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+
+    if tempItemIndex <> -1 then
+        frmMain.ConEventList.ItemIndex := tempItemIndex;
+
+    RepaintCurrentEvent();
+    bCreatingNewEvent := False;
+    KillPhantoms();
+end;
+
+procedure TfrmEventInsAdd.NewTrigger(bInsert: Boolean = False);
+begin
+    KillPhantoms();
+
+    var NewEvent := TConEventTrigger.Create();
+
+    if ValidateTrigger(NewEvent) = false then
+    begin
+        NewEvent.Free();
+        Abort();
+    end;
+
+    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
+    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    frmMain.ConEventList.Items.AddObject(ET_Trigger_Caption, frmMain.CurrentEvent);
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+
+    if tempItemIndex <> -1 then
+        frmMain.ConEventList.ItemIndex := tempItemIndex;
+
+    RepaintCurrentEvent();
+    bCreatingNewEvent := False;
+    KillPhantoms();
+end;
+
+procedure TfrmEventInsAdd.NewAddCompGoal(bInsert: Boolean = False);
+begin
+    KillPhantoms();
+
+    var NewEvent := TConEventAddGoal.Create();
+
+    if ValidateAddCompGoal(NewEvent) = false then
+    begin
+        NewEvent.Free();
+        Abort();
+    end;
+
+    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
+    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    frmMain.ConEventList.Items.AddObject(ET_AddGoal_Caption, frmMain.CurrentEvent);
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+
+    if tempItemIndex <> -1 then
+        frmMain.ConEventList.ItemIndex := tempItemIndex;
+
+    RepaintCurrentEvent();
+    bCreatingNewEvent := False;
+    KillPhantoms();
+end;
+
+procedure TfrmEventInsAdd.NewAddNote(bInsert: Boolean = False);
+begin
+    KillPhantoms();
+
+    var NewEvent := TConEventAddNote.Create();
+
+    if ValidateAddNote(NewEvent) = false then
+    begin
+        NewEvent.Free();
+        Abort();
+    end;
+
+    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
+    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    frmMain.ConEventList.Items.AddObject(ET_AddNote_Caption, frmMain.CurrentEvent);
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+
+    if tempItemIndex <> -1 then
+        frmMain.ConEventList.ItemIndex := tempItemIndex;
+
+    RepaintCurrentEvent();
+    bCreatingNewEvent := False;
+    KillPhantoms();
+end;
+
+procedure TfrmEventInsAdd.NewAddSkillPoints(bInsert: Boolean = False);
+begin
+    KillPhantoms();
+
+    var NewEvent := TConEventAddSkillPoints.Create();
+
+    if ValidateAddSkillPoints(NewEvent) = false then
+    begin
+        NewEvent.Free();
+        Abort();
+    end;
+
+    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
+    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    frmMain.ConEventList.Items.AddObject(ET_AddSkillPoints_Caption, frmMain.CurrentEvent);
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+
+    if tempItemIndex <> -1 then
+        frmMain.ConEventList.ItemIndex := tempItemIndex;
+
+    RepaintCurrentEvent();
+    bCreatingNewEvent := False;
+    KillPhantoms();
+end;
+
+procedure TfrmEventInsAdd.NewAddCredits(bInsert: Boolean = False);
+begin
+    KillPhantoms();
+
+    var NewEvent := TConEventAddCredits.Create();
+
+    if ValidateAddCredits(NewEvent) = false then
+    begin
+        NewEvent.Free();
+        Abort();
+    end;
+
+    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
+    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    frmMain.ConEventList.Items.AddObject(ET_AddCredits_Caption, frmMain.CurrentEvent);
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+
+    if tempItemIndex <> -1 then
+        frmMain.ConEventList.ItemIndex := tempItemIndex;
+
+    RepaintCurrentEvent();
+    bCreatingNewEvent := False;
+    KillPhantoms();
+end;
+
+procedure TfrmEventInsAdd.NewCheckPersona(bInsert: Boolean = False);
+begin
+    KillPhantoms();
+
+    var NewEvent := TConEventCheckPersona.Create();
+
+    if ValidateCheckPersona(NewEvent) = false then
+    begin
+        NewEvent.Free();
+        Abort();
+    end;
+
+    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
+    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    frmMain.ConEventList.Items.AddObject(ET_CheckPersona_Caption, frmMain.CurrentEvent);
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+
+    if tempItemIndex <> -1 then
+        frmMain.ConEventList.ItemIndex := tempItemIndex;
+
+    RepaintCurrentEvent();
+    bCreatingNewEvent := False;
+    KillPhantoms();
+end;
+
+procedure TfrmEventInsAdd.NewComment(bInsert: Boolean = False);
+begin
+    KillPhantoms();
+
+    var NewEvent := TConEventComment.Create();
+
+    if ValidateComment(NewEvent) = false then
+    begin
+        NewEvent.Free();
+        Abort();
+    end;
+
+    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
+    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    frmMain.ConEventList.Items.AddObject(ET_Comment_Caption, frmMain.CurrentEvent);
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+
+    if tempItemIndex <> -1 then
+        frmMain.ConEventList.ItemIndex := tempItemIndex;
+
+    RepaintCurrentEvent();
+    bCreatingNewEvent := False;
+    KillPhantoms();
+end;
+
+procedure TfrmEventInsAdd.NewEnd(bInsert: Boolean = False);
+begin
+    KillPhantoms();
+
+    var NewEvent := TConEventEnd.Create();
+
+    if ValidateEnd(NewEvent) = false then
+    begin
+        NewEvent.Free();
+        Abort();
+    end;
+
+    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
+    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    frmMain.ConEventList.Items.AddObject(ET_End_Caption, frmMain.CurrentEvent);
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+
+    if tempItemIndex <> -1 then
+        frmMain.ConEventList.ItemIndex := tempItemIndex;
+
+    RepaintCurrentEvent();
+    bCreatingNewEvent := False;
+    KillPhantoms();
+end;
+
 
 procedure TfrmEventInsAdd.ValidateEvents(event: TConEvent);
 begin
-    if StringStartsFromDigit(Trim(editEventLabel.Text)) then begin
+    if StringStartsFromDigit(Trim(editEventLabel.Text)) then
+    begin
        ShowMessage(strLabelStartsFromDigit);
        Exit();
     end;
 
-    event.EventLabel := editEventLabel.Text; // add event label if any
+    event.EventLabel := editEventLabel.Text; // add/update event label in any case
 
     if (event is TConEventSpeech) and (cmbEventType.ItemIndex = 0) then begin
        ValidateSpeech(TConEventSpeech(event));
@@ -1187,8 +1787,7 @@ begin
     end;
 end;
 
-// Can we add a label?
-function TfrmEventInsAdd.CanAddRandomLabel(): Boolean;
+function TfrmEventInsAdd.CanAddRandomLabel(): Boolean; // Can we add a label?
 begin
     if (lstRandomLabels.Items.Count = 0) then
         Exit(true);
@@ -1211,11 +1810,52 @@ begin
     frmFlagList.ShowModalCheckFlags(lvCheckFlags);
 end;
 
-procedure TfrmEventInsAdd.btnAddChoiceClick(Sender: TObject);
+procedure TfrmEventInsAdd.btnAddChoiceClick(Sender: TObject); // Add Choice
 begin
-    frmEditChoice.Receiver := lvChoiceList;
-    frmEditChoice.bEditMode := False;
-    frmEditChoice.ShowModal();
+    if lvChoiceList.Items.Count = CEP_MAX_CHOICES then // we're reached the limit!
+    begin
+        MessageDlg(strMax10ChoiceItems,  mtError, [mbOK], 0);
+        Exit();
+    end;
+
+    var newChoiceItemObj := TChoiceItemObject.Create(); // Object
+    newChoiceItemObj.textline := strDefaultChoiceText;  // Default choice text
+    newChoiceItemObj.bDisplayAsSpeech := True;
+    newChoiceItemObj.bSkillNeeded := -1;
+
+    var newChoiceListItem := lvChoiceList.Items.Add(); // ListView item
+    newChoiceListItem.Caption := newChoiceItemObj.textline;
+    newChoiceListItem.SubItems.Add('');
+    newChoiceListItem.SubItems.Add(newChoiceListItem.Index.ToString);
+    newChoiceListItem.Data := newChoiceItemObj;
+    newChoiceItemObj.Index := newChoiceListItem.Index;
+
+    lvChoiceList.Selected := newChoiceListItem;
+    lvChoiceList.OnClick(lvChoiceList);
+    mmoChoiceText.SelectAll();
+    mmoChoiceText.SetFocus();
+
+    FillChoiceItemIndexes();
+end;
+
+procedure TfrmEventInsAdd.btnDeleteChoiceClick(Sender: TObject); // Delete choice with optional confirmation
+begin
+    if (frmMain.bAskForEventDelete = true) and (lvChoiceList.ItemIndex <> -1) then begin
+       if Application.MessageBox(PChar(strDelChoiceText), PChar(strDelChoiceTitle), MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDYES then
+          lvChoiceList.Items.Delete(lvChoiceList.ItemIndex);
+    end else
+       lvChoiceList.Items.Delete(lvChoiceList.ItemIndex);
+
+    FillChoiceItemIndexes();
+end;
+
+procedure TfrmEventInsAdd.FillChoiceItemIndexes();
+begin
+    for var i:= 0 to lvChoiceList.Items.Count -1 do
+    begin
+        if Assigned(lvChoiceList.Items[i].data) then
+            TChoiceItemObject(lvChoiceList.Items[i].data).Index := i;
+    end;
 end;
 
 procedure TfrmEventInsAdd.btnAddChoiceFlagClick(Sender: TObject);
@@ -1225,13 +1865,15 @@ end;
 
 procedure TfrmEventInsAdd.btnAddEventClick(Sender: TObject);
 begin
-    if (chkAutoSwapSpeaker.Checked = true) and (cmbEventType.ItemIndex = Ord(ET_Speech)) then
+    frmMain.AddEvent(cmbEventType.ItemIndex);
+
+{    if (chkAutoSwapSpeaker.Checked = true) and (cmbEventType.ItemIndex = Ord(ET_Speech)) then
     begin
        var tempIndex:= cmbSpeakingFrom.ItemIndex; // swap items in comboboxes
 
        cmbSpeakingFrom.ItemIndex := cmbSpeakingTo.ItemIndex;
        cmbSpeakingTo.ItemIndex := tempIndex;
-    end;
+    end; }
 end;
 
 procedure TfrmEventInsAdd.btnAddSetFlagClick(Sender: TObject);
@@ -1253,15 +1895,6 @@ begin
     Close();
 end;
 
-procedure TfrmEventInsAdd.btnDeleteChoiceClick(Sender: TObject); // Delete choice with optional confirmation
-begin
-    if (frmMain.bAskForEventDelete = true) and (lvChoiceList.ItemIndex <> -1) then begin
-       if Application.MessageBox(PChar(strDelChoiceText), PChar(strDelChoiceTitle), MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDYES then
-          lvChoiceList.Items.Delete(lvChoiceList.ItemIndex);
-    end else
-       lvChoiceList.Items.Delete(lvChoiceList.ItemIndex);
-end;
-
 procedure TfrmEventInsAdd.btnDeleteSetFlagClick(Sender: TObject);
 begin
     for var lst := lvSetFlags.Items.Count -1 downto 0 do begin
@@ -1272,8 +1905,7 @@ end;
 
 procedure TfrmEventInsAdd.btnEditCameraSpecialPosClick(Sender: TObject);
 begin
-    Application.MessageBox('This feature is not implemented (and probably not implemented in game code?)', 'Not implemented',
-    MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+    MessageDlg(strNotImplemented,  mtWarning, [mbOK], 0);
 end;
 
 procedure TfrmEventInsAdd.btnFindObjectClick(Sender: TObject);
@@ -1304,6 +1936,11 @@ begin
         17: frmHelp.LoadHelpResource('Comment');
         18: frmHelp.LoadHelpResource('End');
     end;
+end;
+
+procedure TfrmEventInsAdd.btnInsertEventClick(Sender: TObject);
+begin
+    frmMain.InsertEvent(cmbEventType.ItemIndex);
 end;
 
 procedure TfrmEventInsAdd.btnMoveUpChoiceClick(Sender: TObject);
@@ -1378,13 +2015,14 @@ end;
 
 procedure TfrmEventInsAdd.btnRemoveCurrentRandomLabelClick(Sender: TObject); // Только выбранную
 begin
-    if (lstRandomLabels.ItemIndex <> -1) then // Примечание: <> это то-же что и !=
+    if (lstRandomLabels.ItemIndex <> -1) then
        lstRandomLabels.Items.Delete(lstRandomLabels.ItemIndex);
 end;
 
 procedure TfrmEventInsAdd.btnSaveChoiceItemClick(Sender: TObject);
 begin
     var ChoiceItemData := lvChoiceList.Items[lvChoiceList.ItemIndex].Data;
+
     if Assigned(ChoiceItemData) then
     begin
         // Update stored object
@@ -1436,12 +2074,41 @@ end;
 
 procedure TfrmEventInsAdd.btnUpdateClick(Sender: TObject);
 begin
+    cmbEventType.Enabled := False;
+
+    if bCreatingNewEvent = True then
+    begin
+        case cmbEventType.ItemIndex of
+        0: NewSpeech();
+        1: NewChoice();
+        2: NewSetFlags();
+        3: NewCheckFlags();
+        4: NewCheckObject();
+        5: NewTransferObject();
+        6: NewMoveCamera();
+        7: NewPlayAnim();
+        8: NewBuySellTrade();
+        9: NewJump();
+        10:NewRandom();
+        11:NewTrigger();
+        12:NewAddCompGoal();
+        13:NewAddNote();
+        14:NewAddSkillPoints();
+        15:NewAddCredits();
+        16:NewCheckPersona();
+        17:NewComment();
+        18:NewEnd();
+        end;
+    end;
+
     ValidateEvents(frmMain.CurrentEvent);
+    KillPhantoms();
 end;
 
 procedure TfrmEventInsAdd.btnDeleteCheckFlagClick(Sender: TObject);
 begin
-    for var lst := lvCheckFlags.Items.Count -1 downto 0 do begin
+    for var lst := lvCheckFlags.Items.Count -1 downto 0 do
+    begin
         if lvCheckFlags.Items[lst].Selected = True then
             lvCheckFlags.Items[lst].Delete();
     end;
@@ -1450,6 +2117,21 @@ end;
 procedure TfrmEventInsAdd.cboJumpConvChange(Sender: TObject);
 begin
     cboJumpLabel.Items.Clear();
+
+    var tempConvoName := cboJumpConv.Items[cboJumpConv.ItemIndex];
+    var TempConvo := frmMain.FindConversationObjByString(tempConvoName);
+
+    frmMain.filleventLabels(TempConvo, cboJumpLabel);
+
+    if cboJumpLabel.Items.Count > 0 then
+        cboJumpLabel.ItemIndex := 0;
+
+    btnUpdate.Enabled := (cboJumpConv.ItemIndex <> -1) and (cboJumpLabel.ItemIndex <> -1);
+end;
+
+procedure TfrmEventInsAdd.cboJumpLabelChange(Sender: TObject);
+begin
+    btnUpdate.Enabled := (cboJumpConv.ItemIndex <> -1) and (cboJumpLabel.ItemIndex <> -1);
 end;
 
 procedure TfrmEventInsAdd.chAlphaBlendClick(Sender: TObject);
@@ -1480,10 +2162,10 @@ begin
     for var i := 0 to grpSkillGrp.ControlCount -1  do
         grpSkillGrp.Controls[i].Enabled := chkReqSkill.Checked;
 
-    if  (cmbChoiceItemSkill.Items.Count > 0) and (chkReqSkill.Checked = true) then
-    begin
-        cmbChoiceItemSkill.ItemIndex := 0;
-    end;
+//    if  (cmbChoiceItemSkill.Items.Count > 0) and (chkReqSkill.Checked = true) then
+//    begin
+//        cmbChoiceItemSkill.ItemIndex := 0;
+//    end;
 end;
 
 procedure TfrmEventInsAdd.chkSpeechWordWrapClick(Sender: TObject);
@@ -1517,36 +2199,68 @@ begin
     FilterEditInput(key);
 end;
 
+procedure TfrmEventInsAdd.cmbCheckLabelJumpChange(Sender: TObject);
+begin
+    btnUpdate.Enabled := cmbCheckLabelJump.ItemIndex <> -1;
+end;
+
+procedure TfrmEventInsAdd.cmbChkFlgJumpToLabelChange(Sender: TObject);
+begin
+    btnUpdate.Enabled := (lvCheckFlags.Items.Count > 0) and (cmbChkFlgJumpToLabel.ItemIndex <> -1);
+end;
+
 procedure TfrmEventInsAdd.cmbEventTypeChange(Sender: TObject);
 begin
     EventsPages.ActivePageIndex := cmbEventType.ItemIndex;
     mp3Pos_pb.Visible := EventsPages.ActivePageIndex < 2;
     mp3VolumeControl.Visible := EventsPages.ActivePageIndex < 2;
-    btnUpdate.Enabled := EventsPages.ActivePageIndex <> 8;
+    btnUpdate.Visible := EventsPages.ActivePageIndex <> 8;
     EventWarning(False);
 
-{
     case cmbEventType.ItemIndex of
-    0: frmMain.CurrentEventType := ET_Speech;
-    1: frmMain.CurrentEventType := ET_Choice;
-    2: frmMain.CurrentEventType := ET_SetFlag;
-    3: frmMain.CurrentEventType := ET_CheckFlag;
-    4: frmMain.CurrentEventType := ET_CheckObject;
-    5: frmMain.CurrentEventType := ET_TransferObject;
-    6: frmMain.CurrentEventType := ET_MoveCamera;
-    7: frmMain.CurrentEventType := ET_Animation;
-    8: frmMain.CurrentEventType := ET_Trade;
-    9: frmMain.CurrentEventType := ET_Jump;
-    10: frmMain.CurrentEventType := ET_Random;
-    11: frmMain.CurrentEventType := ET_Trigger;
-    12: frmMain.CurrentEventType := ET_AddGoal;
-    13: frmMain.CurrentEventType := ET_AddNote;
-    14: frmMain.CurrentEventType := ET_AddSkillPoints;
-    15: frmMain.CurrentEventType := ET_AddCredits;
-    16: frmMain.CurrentEventType := ET_CheckPersona;
-    17: frmMain.CurrentEventType := ET_Comment;
-    18: frmMain.CurrentEventType := ET_End;
-    end; }
+    0: memoSpeechChange(self);
+    1: lvChoiceListChange(lvChoiceList, lvChoiceList.Selected, ctState);
+    2: lvSetFlagsChange(lvSetFlags, lvSetFlags.Selected, ctState);
+    3: lvCheckFlagsChange(lvCheckFlags, lvCheckFlags.Selected, ctState);
+    4: cmbObjectToCheckChange(self);
+    5: cmbObjectToTransferChange(self);
+    6: ;
+    7: cmbPawnToAnimateChange(self);
+    8: ;
+    9:
+    begin
+        frmMain.AddLog('stub');
+//        cboJumpConvChange(self);
+    //    cboJumpLabelChange(self);
+    end;
+    10:;
+    11:editTriggerTagChange(self);
+    12:editGoalNameChange(self);
+    13:memoNoteTextChange(Self);
+    14:;
+    15:;
+    16:cmbCheckLabelJumpChange(Self);
+    17:memoCommentTextChange(Self);
+    18:btnUpdate.Enabled := True;
+    end;
+end;
+
+procedure TfrmEventInsAdd.cmbObjectToCheckChange(Sender: TObject);
+begin
+    btnUpdate.Enabled := (cmbObjectToCheck.ItemIndex <> -1) and (cmbObjNotFoundJumpTo.ItemIndex <> -1);
+end;
+
+procedure TfrmEventInsAdd.cmbObjectToTransferChange(Sender: TObject);
+begin
+    btnUpdate.Enabled := (cmbObjectToTransfer.ItemIndex <> -1) and
+                         (cmbTransferObjectTo.ItemIndex <> -1) and
+                         (cmbTransferObjectFrom.ItemIndex <> -1) and
+                         (cmbTransferObjectFailLabel.ItemIndex <> -1);
+end;
+
+procedure TfrmEventInsAdd.cmbPawnToAnimateChange(Sender: TObject);
+begin
+    btnUpdate.Enabled := (cmbPawnToAnimate.ItemIndex <> -1) and (Trim(cmbAnimSeq.Text) <> '');
 end;
 
 procedure TfrmEventInsAdd.Consolas10Click(Sender: TObject);
@@ -1563,6 +2277,16 @@ procedure TfrmEventInsAdd.editConditionValueChange(Sender: TObject);
 begin
     if (Sender as TSpinEdit).Value < 0 then
        (Sender as TSpinEdit).Value := 0;
+end;
+
+procedure TfrmEventInsAdd.editGoalNameChange(Sender: TObject);
+begin
+    btnUpdate.Enabled := (Trim(editGoalName.Text) <> '') and (Trim(memoGoalText.Text) <> '');
+end;
+
+procedure TfrmEventInsAdd.editTriggerTagChange(Sender: TObject);
+begin
+    btnUpdate.Enabled := Trim(editTriggerTag.Text) <> '';
 end;
 
 procedure TfrmEventInsAdd.AllowFNameInput(Sender: TObject; var Key: Char);
@@ -1590,6 +2314,7 @@ begin
     if controlSent = 'memoCommentText' then memoCommentText.Font := FontDlgMemo.Font else
     if controlSent = 'memoConversationNotes' then frmConvoProperties.memoConversationNotes.Font := FontDlgMemo.Font else
     if controlSent = 'memoGoalText' then memoGoalText.Font := FontDlgMemo.Font;
+    if controlSent = 'mmoChoiceText' then mmoChoiceText.Font := FontDlgMemo.Font;
 
 end;
 
@@ -1608,15 +2333,18 @@ end;
 procedure TfrmEventInsAdd.FormMouseWheelDown(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
 begin
     if ActiveControl is TSpinEdit then begin
-        if Shift = [] then begin
+        if Shift = [] then
+        begin
            TSpinEdit(ActiveControl).Value := TSpinEdit(ActiveControl).Value - 1;
            Handled := True;
         end else
-        if Shift = [ssCtrl] then begin
+        if Shift = [ssCtrl] then
+        begin
            TSpinEdit(ActiveControl).Value := TSpinEdit(ActiveControl).Value - 10;
            Handled := True;
         end else
-        if Shift = [ssShift] then begin
+        if Shift = [ssShift] then
+        begin
            TSpinEdit(ActiveControl).Value := TSpinEdit(ActiveControl).Value - 100;
            Handled := True;
         end;
@@ -1626,19 +2354,32 @@ end;
 procedure TfrmEventInsAdd.FormMouseWheelUp(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
 begin
     if ActiveControl is TSpinEdit then begin
-        if Shift = [] then begin
+        if Shift = [] then
+        begin
            TSpinEdit(ActiveControl).Value := TSpinEdit(ActiveControl).Value + 1;
            Handled := True;
         end else
-        if Shift = [ssCtrl] then begin
+        if Shift = [ssCtrl] then
+        begin
            TSpinEdit(ActiveControl).Value := TSpinEdit(ActiveControl).Value + 10;
            Handled := True;
         end else
-        if Shift = [ssShift] then begin
+        if Shift = [ssShift] then
+        begin
            TSpinEdit(ActiveControl).Value := TSpinEdit(ActiveControl).Value + 100;
            Handled := True;
         end;
     end;
+end;
+
+procedure TfrmEventInsAdd.FormShow(Sender: TObject);
+begin
+    pgcChoiceDetails.ActivePageIndex := 0;
+end;
+
+procedure TfrmEventInsAdd.lvCheckFlagsChange(Sender: TObject; Item: TListItem; Change: TItemChange);
+begin
+    btnUpdate.Enabled := (lvCheckFlags.Items.Count > 0) and (cmbChkFlgJumpToLabel.ItemIndex <> -1);
 end;
 
 procedure TfrmEventInsAdd.lvCheckFlagsDblClick(Sender: TObject);
@@ -1655,24 +2396,30 @@ procedure TfrmEventInsAdd.lvChoiceListChange(Sender: TObject; Item: TListItem; C
 begin
     with lvChoiceList do
     begin
-        if ((ItemIndex = -1) or (Items.Count < 1)) then begin
+        if ((ItemIndex = -1) or (Items.Count < 1)) then
+        begin
           btnDeleteChoice.Enabled := False;
         end
-        else begin
+        else
+        begin
           btnDeleteChoice.Enabled := true;
         end;
 
-        if ((ItemIndex = -1) or (Items.Count < 2)) then begin
+        if ((ItemIndex = -1) or (Items.Count < 2)) then
+        begin
           btnMoveUpChoice.Enabled := False;
           btnMoveDownChoice.Enabled := False;
         end
-        else begin
+        else
+        begin
           btnMoveUpChoice.Enabled := True;
           btnMoveDownChoice.Enabled := True;
         end;
 
         ChoiceEditPanel.Visible := ItemIndex > -1;
     end;
+
+    btnUpdate.Enabled := lvChoiceList.Items.Count > 0;
 end;
 
 procedure TfrmEventInsAdd.lvChoiceListClick(Sender: TObject);
@@ -1724,14 +2471,19 @@ end;
 
 procedure TfrmEventInsAdd.lvSetFlagsChange(Sender: TObject; Item: TListItem; Change: TItemChange);
 begin
-    with lvSetFlags do begin
-        if ((ItemIndex = -1) or (Items.Count < 1)) then begin
-          btnDeleteSetFlag.Enabled := False;
+    with lvSetFlags do
+    begin
+        if ((ItemIndex = -1) or (Items.Count < 1)) then
+        begin
+            btnDeleteSetFlag.Enabled := False;
         end
-        else begin
-          btnDeleteSetFlag.Enabled := true;
+        else
+        begin
+            btnDeleteSetFlag.Enabled := true;
         end;
     end;
+
+    btnUpdate.Enabled := lvSetFlags.Items.Count > 0;
 end;
 
 procedure TfrmEventInsAdd.lvSetFlagsDblClick(Sender: TObject);
@@ -1744,6 +2496,16 @@ begin
     AllowEdit := False;
 end;
 
+procedure TfrmEventInsAdd.memoCommentTextChange(Sender: TObject);
+begin
+    btnUpdate.Enabled := Trim(memoCommentText.Text) <> '';
+end;
+
+procedure TfrmEventInsAdd.memoNoteTextChange(Sender: TObject);
+begin
+    btnUpdate.Enabled := Trim(memoNoteText.Text) <> '';
+end;
+
 procedure TfrmEventInsAdd.MemoPopupPopup(Sender: TObject);
 begin
     ChangeMemoFont.Visible := MemoPopup.PopupComponent is TMemo;
@@ -1753,17 +2515,28 @@ begin
        ChangeMemoFont.Caption := 'Font... ' + '(' + MemoPopup.PopupComponent.Name + ')';
 end;
 
+procedure TfrmEventInsAdd.memoSpeechChange(Sender: TObject);
+begin
+    btnUpdate.Enabled := (Trim(memoSpeech.Text) <> '') and (cmbSpeakingFrom.ItemIndex <> -1) and (cmbSpeakingTo.ItemIndex <> -1);
+end;
+
+procedure TfrmEventInsAdd.mmoChoiceTextChange(Sender: TObject);
+begin
+    btnSaveChoiceItem.Enabled := (Length(Trim(mmoChoiceText.Text)) > 0) and (cbbChoiceJumpToLabel.ItemIndex <> -1);
+end;
 
 procedure TfrmEventInsAdd.mp1Notify(Sender: TObject);
 begin
     mp3pos_pb.Max := mp1.Length; // update slider position
     mp3Pos_pb.Position := mp1.Position;
 
-    if mp1.Mode = mpStopped then begin
+    if mp1.Mode = mpStopped then
+    begin
        mp3posUpdateTimer.Enabled := False;
        btnPlayAudioFile.Caption := strPlayMP3;
     end;
-    if mp1.Mode = mpPlaying then begin
+    if mp1.Mode = mpPlaying then
+    begin
       btnPlayAudioFile.Caption := strStopMP3;
     end;
 end;
@@ -1772,7 +2545,8 @@ procedure TfrmEventInsAdd.mp3posUpdateTimerTimer(Sender: TObject);
 begin
     mp3Pos_pb.Position := mp1.Position;
 
-    if mp1.Mode = mpStopped then begin
+    if mp1.Mode = mpStopped then
+    begin
        mp3posUpdateTimer.Enabled := False;
        btnPlayAudioFile.Caption := strPlayMP3;
     end;
@@ -1803,14 +2577,13 @@ begin
         grpGoalControls.Controls[i].Enabled := not rbGoalCompleted.Checked;
 end;
 
-
 procedure TfrmEventInsAdd.rbLoopAnimClick(Sender: TObject);
 begin
     if (rbLoopAnim.Checked = True) then
-        begin
-            chkWaitFinishAnim.Checked := false;
-            chkWaitFinishAnim.Enabled := false;
-        end;
+    begin
+        chkWaitFinishAnim.Checked := false;
+        chkWaitFinishAnim.Enabled := false;
+    end;
 end;
 
 procedure TfrmEventInsAdd.rbPlayAnimOnceClick(Sender: TObject);
@@ -1839,20 +2612,25 @@ begin
     frmMain.SetMemoFont(10, 'Tahoma');
 end;
 
-
 procedure TfrmEventInsAdd.RepaintCurrentEvent();
 begin
     frmMain.ConEventList.SetFocus(); // repaint selected event
     SetFocus();
 end;
 
-procedure TfrmEventInsAdd.UpdateControlsState(); // Обновить состояние элементов управления.
+procedure TfrmEventInsAdd.KillPhantoms(); // no ideas why this is happening...
 begin
-  mp1.Notify:= True; // set Notify to Media Player
-  chAlphaBlend.Checked := AlphaBlend;
-  chkAnimTimedClick(self);
+    for var i:= frmMain.ConEventList.Items.count -1 downto 0 do
+      if frmMain.ConEventList.Items[i].StartsWith('=') then
+          frmMain.ConEventList.Items.Delete(i);
 end;
 
+procedure TfrmEventInsAdd.UpdateControlsState(); // Обновить состояние элементов управления.
+begin
+    mp1.Notify:= True; // set Notify to Media Player
+    chAlphaBlend.Checked := AlphaBlend;
+    chkAnimTimedClick(self);
+end;
 
 procedure TfrmEventInsAdd.UpdateAddRandomLabelButtonState();
 begin
