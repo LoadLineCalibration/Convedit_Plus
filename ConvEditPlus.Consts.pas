@@ -289,6 +289,8 @@ ResourceString
 
     strStatsEmptyFile = 'Nothing to count!';
 
+    strMissionsInList = 'Mission %2.2d';
+
 
 
 

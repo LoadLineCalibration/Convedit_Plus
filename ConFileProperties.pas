@@ -43,6 +43,7 @@ type
     Label1: TLabel;
     edtConFileCreatedOn: TEdit;
     btnFillStats: TButton;
+    lbl3: TLabel;
     procedure btnCancelClick(Sender: TObject);
     procedure btnAddToLeftClick(Sender: TObject);
     procedure btnRemoveClick(Sender: TObject);
@@ -197,15 +198,11 @@ begin
     with lstAllMissions do
     begin
         Clear();
-        // Fill in four steps!
         Items.AddPair('EndGame', '99');
         Items.AddPair('Intro', '98');
 
-        for var i:= 0 to 9 do
-            Items.AddPair('Mission 0' + i.ToString, i.ToString);
-
-        for var k:=10 to 97 do
-            Items.AddPair('Mission ' + k.ToString, k.ToString);
+        for var i:= 0 to 97 do
+            Items.AddPair(Format(strMissionsInList, [i]), i.ToString);
     end;
 end;
 
