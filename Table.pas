@@ -301,7 +301,9 @@ begin
             frmMain.listPawnsActors.Assign(lstTableContents.Items);
 
             if frmConvoProperties.Visible = True then
+            begin
                 frmConvoProperties.cmbConvoOwner.Items.Assign(lstTableContents.Items);
+            end;
 
             if frmEventInsAdd.Visible = True then
             begin
@@ -500,6 +502,9 @@ procedure TfrmTableEdit.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
     if frmFlagList.Visible = true then
         frmFlagList.FillFlagsList(); // Update flags list
+
+    if frmConvoProperties.Visible = True then
+        frmConvoProperties.editConvoNameChange(self);
 end;
 
 procedure TfrmTableEdit.FormShow(Sender: TObject); // присвоить заголовок

@@ -614,7 +614,7 @@ end;
 
 procedure WriteCommonEventFields(cw: TBinaryWriter; Event: TConEvent);
 begin
-    WriteInteger(cw, Event.unknown0);
+    WriteInteger(cw, Event.EventIdx);
     WriteInteger(cw, Event.unknown1);
     WriteInteger(cw, Ord(Event.EventType));
     WriteString(cw, Event.EventLabel);

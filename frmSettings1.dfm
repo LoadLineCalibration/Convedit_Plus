@@ -265,7 +265,7 @@ object frmSettings: TfrmSettings
     StyleName = 'Windows'
   end
   object btnOk: TButton
-    Left = 367
+    Left = 368
     Top = 457
     Width = 75
     Height = 25

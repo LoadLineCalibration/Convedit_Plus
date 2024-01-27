@@ -31,7 +31,7 @@ implementation
 
 {$R *.dfm}
 
-uses AddInsertEvent, ConvoProperties, MainWindow, Table;
+uses AddInsertEvent, ConvoProperties, MainWindow, Table, ConvEditPlus_Util;
 
 procedure TfrmEditValue.btnOkClick(Sender: TObject);
 begin

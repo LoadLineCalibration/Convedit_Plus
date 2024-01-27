@@ -253,7 +253,6 @@ try
 
                       if ConversationsList.Items[con].Events[eventidx].EventType = ET_TransferObject then
                       begin
-
                          ConEvent.SetAttribute('EventType', '5');
                          ConEvent.SetAttribute('EventTypeName', 'TransferObject');
 
@@ -277,7 +276,6 @@ try
                              ActorTo.SetAttribute('Value', TransferObjectEvent.ActorToValue);
 
                          ConEvent.AddChild('gotoLabel').SetText(TransferObjectEvent.GotoLabel);
-
                       end;
 
                       if ConversationsList.Items[con].Events[eventidx].EventType = ET_MoveCamera then
@@ -326,7 +324,6 @@ try
 
                       if ConversationsList.Items[con].Events[eventidx].EventType = ET_Jump then
                       begin
-
                          ConEvent.SetAttribute('EventType', '9');
                          ConEvent.SetAttribute('EventTypeName', 'Jump');
 
@@ -342,7 +339,6 @@ try
 
                       if ConversationsList.Items[con].Events[eventidx].EventType = ET_Random then
                       begin
-
                          ConEvent.SetAttribute('EventType', '10');
                          ConEvent.SetAttribute('EventTypeName', 'Random');
 
@@ -363,7 +359,6 @@ try
 
                       if ConversationsList.Items[con].Events[eventidx].EventType = ET_Trigger then
                       begin
-
                          ConEvent.SetAttribute('EventType', '11');
                          ConEvent.SetAttribute('EventTypeName', 'Trigger');
 
@@ -375,7 +370,6 @@ try
 
                       if ConversationsList.Items[con].Events[eventidx].EventType = ET_AddGoal then
                       begin
-
                          ConEvent.SetAttribute('EventType', '12');
                          ConEvent.SetAttribute('EventTypeName', 'AddGoal');
 
@@ -392,7 +386,6 @@ try
 
                       if ConversationsList.Items[con].Events[eventidx].EventType = ET_AddNote then
                       begin
-
                          ConEvent.SetAttribute('EventType', '13');
                          ConEvent.SetAttribute('EventTypeName', 'AddNote');
 
@@ -404,7 +397,6 @@ try
 
                       if ConversationsList.Items[con].Events[eventidx].EventType = ET_AddSkillPoints then
                       begin
-
                          ConEvent.SetAttribute('EventType', '14');
                          ConEvent.SetAttribute('EventTypeName', 'AddSkillPoints');
 
@@ -419,7 +411,6 @@ try
 
                       if ConversationsList.Items[con].Events[eventidx].EventType = ET_AddCredits then
                       begin
-
                          ConEvent.SetAttribute('EventType', '15');
                          ConEvent.SetAttribute('EventTypeName', 'AddCredits');
 
@@ -431,7 +422,6 @@ try
 
                       if ConversationsList.Items[con].Events[eventidx].EventType = ET_CheckPersona then
                       begin
-
                          ConEvent.SetAttribute('EventType', '16');
                          ConEvent.SetAttribute('EventTypeName', 'CheckPersona');
 
@@ -448,7 +438,6 @@ try
 
                       if ConversationsList.Items[con].Events[eventidx].EventType = ET_Comment then
                       begin
-
                          ConEvent.SetAttribute('EventType', '17');
                          ConEvent.SetAttribute('EventTypeName', 'Comment');
 
@@ -467,7 +456,6 @@ try
                          if ConversationsList.Items[con].Events[eventidx].EventLabel <> '' then
                             ConEvent.AddChild('Label').SetText(ConversationsList.Items[con].Events[eventidx].EventLabel);
                       end;
-
               end;
         end;
     end;

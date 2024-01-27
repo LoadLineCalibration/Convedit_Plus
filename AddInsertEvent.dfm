@@ -2,7 +2,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   Left = 0
   Top = 0
   AlphaBlendValue = 128
-  BorderIcons = [biSystemMenu, biMaximize]
+  BorderIcons = [biSystemMenu]
   Caption = 'Event'
   ClientHeight = 594
   ClientWidth = 564
@@ -58,6 +58,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   OnCreate = FormCreate
   OnMouseWheelDown = FormMouseWheelDown
   OnMouseWheelUp = FormMouseWheelUp
+  OnShow = FormShow
   DesignSize = (
     564
     594)
@@ -83,7 +84,7 @@ object frmEventInsAdd: TfrmEventInsAdd
       AutoSize = False
       Caption = 'Event Label: '
       Layout = tlCenter
-      StyleElements = []
+      StyleName = 'Windows'
     end
     object Label2: TLabel
       Left = 16
@@ -94,7 +95,7 @@ object frmEventInsAdd: TfrmEventInsAdd
       AutoSize = False
       Caption = 'Event Type: '
       Layout = tlCenter
-      StyleElements = []
+      StyleName = 'Windows'
     end
     object lblStatus: TLabel
       Left = 16
@@ -131,7 +132,6 @@ object frmEventInsAdd: TfrmEventInsAdd
       ParentCtl3D = False
       TabOrder = 0
       Text = 'Speech'
-      StyleElements = []
       StyleName = 'Windows'
       OnChange = cmbEventTypeChange
       Items.Strings = (
@@ -163,7 +163,6 @@ object frmEventInsAdd: TfrmEventInsAdd
       Anchors = [akLeft, akTop, akRight]
       PopupMenu = MemoPopup
       TabOrder = 1
-      StyleElements = []
       OnKeyPress = AllowFNameInput
     end
   end
@@ -172,12 +171,14 @@ object frmEventInsAdd: TfrmEventInsAdd
     Top = 114
     Width = 556
     Height = 406
-    ActivePage = TabSheet2
+    ActivePage = TabSheet18
     Anchors = [akLeft, akTop, akRight, akBottom]
+    DoubleBuffered = True
+    ParentDoubleBuffered = False
     RaggedRight = True
     Style = tsFlatButtons
     TabOrder = 1
-    StyleElements = []
+    StyleName = 'Windows'
     object TabSheet1: TTabSheet
       Caption = 'Speech'
       object GroupBox20: TGroupBox
@@ -188,7 +189,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         Align = alClient
         Caption = ' Speech: '
         TabOrder = 0
-        StyleElements = []
+        StyleName = 'Windows'
         DesignSize = (
           548
           373)
@@ -201,7 +202,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           AutoSize = False
           Caption = 'Actor to Speak: '
           Layout = tlCenter
-          StyleElements = []
+          StyleName = 'Windows'
         end
         object Label6: TLabel
           Left = 16
@@ -212,7 +213,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           AutoSize = False
           Caption = 'Speaking To: '
           Layout = tlCenter
-          StyleElements = []
+          StyleName = 'Windows'
         end
         object Label7: TLabel
           Left = 16
@@ -222,7 +223,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           AutoSize = False
           Caption = 'Speech: '
           Layout = tlCenter
-          StyleElements = []
+          StyleName = 'Windows'
         end
         object Label8: TLabel
           Left = 18
@@ -235,7 +236,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Constraints.MinHeight = 17
           Constraints.MinWidth = 63
           Layout = tlCenter
-          StyleElements = []
+          StyleName = 'Windows'
           ExplicitTop = 327
         end
         object memoSpeech: TMemo
@@ -244,19 +245,20 @@ object frmEventInsAdd: TfrmEventInsAdd
           Width = 519
           Height = 206
           Anchors = [akLeft, akTop, akRight, akBottom]
-          Ctl3D = True
+          DoubleBuffered = True
           Font.Charset = RUSSIAN_CHARSET
           Font.Color = clWindowText
           Font.Height = -12
           Font.Name = 'Tahoma'
           Font.Style = []
           HideSelection = False
-          ParentCtl3D = False
+          ParentDoubleBuffered = False
           ParentFont = False
           PopupMenu = MemoPopup
           ScrollBars = ssVertical
           TabOrder = 0
           StyleName = 'Windows'
+          OnChange = memoSpeechChange
         end
         object cmbSpeakingFrom: TComboBox
           Left = 128
@@ -265,10 +267,9 @@ object frmEventInsAdd: TfrmEventInsAdd
           Height = 23
           Style = csDropDownList
           Anchors = [akLeft, akTop, akRight]
-          PopupMenu = MemoPopup
           TabOrder = 1
-          StyleElements = []
-          OnKeyPress = AllowFNameInput
+          StyleName = 'Windows'
+          OnChange = memoSpeechChange
         end
         object cmbSpeakingTo: TComboBox
           Left = 128
@@ -277,10 +278,9 @@ object frmEventInsAdd: TfrmEventInsAdd
           Height = 23
           Style = csDropDownList
           Anchors = [akLeft, akTop, akRight]
-          PopupMenu = MemoPopup
           TabOrder = 2
-          StyleElements = []
-          OnKeyPress = AllowFNameInput
+          StyleName = 'Windows'
+          OnChange = memoSpeechChange
         end
         object edtSpeechAudioFile: TEdit
           Left = 16
@@ -317,7 +317,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Constraints.MinHeight = 22
           Constraints.MinWidth = 22
           TabOrder = 5
-          StyleElements = []
+          StyleName = 'Windows'
           OnClick = btnSpeakingFromActorClick
         end
         object btnSpeakingToActor: TButton
@@ -332,7 +332,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Constraints.MinHeight = 22
           Constraints.MinWidth = 22
           TabOrder = 6
-          StyleElements = []
+          StyleName = 'Windows'
           OnClick = btnSpeakingToActorClick
         end
         object chkAutoSwapSpeaker: TCheckBox
@@ -348,11 +348,12 @@ object frmEventInsAdd: TfrmEventInsAdd
           Checked = True
           State = cbChecked
           TabOrder = 7
+          StyleName = 'Windows'
         end
         object chkSpeechWordWrap: TCheckBox
-          Left = 326
+          Left = 448
           Top = 316
-          Width = 209
+          Width = 87
           Height = 17
           Cursor = crHandPoint
           Hint = 'Check to enable/disable wordwrap and toggle horizontal scrollbar'
@@ -361,6 +362,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Checked = True
           State = cbChecked
           TabOrder = 8
+          StyleName = 'Windows'
           OnClick = chkSpeechWordWrapClick
         end
       end
@@ -379,8 +381,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         ParentBackground = False
         ParentColor = False
         TabOrder = 0
-        StyleElements = []
-        ExplicitTop = 4
+        StyleName = 'Windows'
         DesignSize = (
           548
           373)
@@ -394,7 +395,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Constraints.MaxHeight = 25
           Constraints.MaxWidth = 80
           TabOrder = 1
-          StyleElements = []
+          StyleName = 'Windows'
           OnClick = btnAddChoiceClick
         end
         object btnMoveDownChoice: TButton
@@ -429,7 +430,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Constraints.MaxWidth = 80
           Enabled = False
           TabOrder = 3
-          StyleElements = []
+          StyleName = 'Windows'
           OnClick = btnDeleteChoiceClick
         end
         object btnMoveUpChoice: TButton
@@ -463,7 +464,6 @@ object frmEventInsAdd: TfrmEventInsAdd
           DoubleBuffered = True
           ParentDoubleBuffered = False
           TabOrder = 5
-          StyleElements = []
         end
         object lvChoiceList: TListView
           Left = 14
@@ -507,7 +507,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object ChoiceEditPanel: TEsPanel
           Left = 14
-          Top = 176
+          Top = 179
           Width = 521
           Height = 167
           Anchors = [akLeft, akRight, akBottom]
@@ -529,17 +529,13 @@ object frmEventInsAdd: TfrmEventInsAdd
             Top = 3
             Width = 515
             Height = 161
-            ActivePage = Skills
+            ActivePage = tsFlags
             Align = alClient
             HotTrack = True
             Style = tsButtons
             TabOrder = 0
             TabWidth = 130
             StyleName = 'Windows'
-            ExplicitLeft = 2
-            ExplicitTop = 2
-            ExplicitWidth = 517
-            ExplicitHeight = 159
             object tsGeneral: TTabSheet
               Caption = 'Choice text'
               DesignSize = (
@@ -561,15 +557,20 @@ object frmEventInsAdd: TfrmEventInsAdd
                 Height = 95
                 Anchors = [akLeft, akTop, akRight]
                 DoubleBuffered = True
+                Font.Charset = DEFAULT_CHARSET
+                Font.Color = clWindowText
+                Font.Height = -12
+                Font.Name = 'Tahoma'
+                Font.Style = []
                 HideSelection = False
                 MaxLength = 256
                 ParentDoubleBuffered = False
+                ParentFont = False
                 PopupMenu = MemoPopup
                 ScrollBars = ssVertical
                 TabOrder = 0
-                WantReturns = False
                 StyleName = 'Windows'
-                ExplicitWidth = 503
+                OnChange = mmoChoiceTextChange
               end
               object chkDisplayChoiceAsSpeech: TCheckBox
                 Left = 198
@@ -591,6 +592,7 @@ object frmEventInsAdd: TfrmEventInsAdd
                 Style = csOwnerDrawVariable
                 TabOrder = 2
                 StyleElements = []
+                OnChange = mmoChoiceTextChange
               end
             end
             object tsFlags: TTabSheet
@@ -636,7 +638,6 @@ object frmEventInsAdd: TfrmEventInsAdd
                 TabOrder = 0
                 ViewStyle = vsReport
                 OnDblClick = lvChoiceFlagListDblClick
-                ExplicitWidth = 422
               end
               object btnAddChoiceFlag: TButton
                 Left = 429
@@ -649,8 +650,6 @@ object frmEventInsAdd: TfrmEventInsAdd
                 TabOrder = 1
                 StyleElements = []
                 OnClick = btnAddChoiceFlagClick
-                ExplicitLeft = 431
-                ExplicitTop = 67
               end
               object btnDeleteChoiceFlag: TButton
                 Left = 429
@@ -662,8 +661,6 @@ object frmEventInsAdd: TfrmEventInsAdd
                 Caption = 'Delete'
                 TabOrder = 2
                 StyleElements = []
-                ExplicitLeft = 431
-                ExplicitTop = 98
               end
             end
             object Skills: TTabSheet
@@ -680,7 +677,6 @@ object frmEventInsAdd: TfrmEventInsAdd
                 Anchors = [akLeft, akTop, akRight]
                 TabOrder = 0
                 StyleElements = []
-                ExplicitWidth = 503
                 object lbl1: TLabel
                   Left = 16
                   Top = 24
@@ -690,6 +686,7 @@ object frmEventInsAdd: TfrmEventInsAdd
                   AutoSize = False
                   Caption = 'Skill: '
                   Layout = tlCenter
+                  StyleName = 'Windows'
                 end
                 object Label37: TLabel
                   Left = 16
@@ -700,6 +697,7 @@ object frmEventInsAdd: TfrmEventInsAdd
                   AutoSize = False
                   Caption = 'At Level: '
                   Layout = tlCenter
+                  StyleName = 'Windows'
                 end
                 object cmbChoiceItemSkill: TComboBox
                   Left = 88
@@ -744,9 +742,8 @@ object frmEventInsAdd: TfrmEventInsAdd
                 Anchors = [akLeft, akTop, akBottom]
                 Caption = 'Requires Skill:'
                 TabOrder = 1
-                StyleElements = []
+                StyleName = 'Windows'
                 OnClick = chkReqSkillClick
-                ExplicitHeight = 15
               end
             end
           end
@@ -792,6 +789,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Font.Style = []
           ParentFont = False
           TabOrder = 7
+          StyleName = 'Windows'
         end
       end
     end
@@ -809,7 +807,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         ParentBackground = False
         ParentColor = False
         TabOrder = 0
-        StyleElements = []
+        StyleName = 'Windows'
         DesignSize = (
           548
           373)
@@ -856,7 +854,6 @@ object frmEventInsAdd: TfrmEventInsAdd
           GridLines = True
           HideSelection = False
           MultiSelect = True
-          StyleElements = []
           StyleName = 'Windows'
           RowSelect = True
           ParentFont = False
@@ -875,7 +872,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Anchors = [akRight, akBottom]
           Caption = 'Add Flag'
           TabOrder = 1
-          StyleElements = []
+          StyleName = 'Windows'
           OnClick = btnAddSetFlagClick
         end
         object btnDeleteSetFlag: TButton
@@ -887,7 +884,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Caption = 'Delete selected'
           Enabled = False
           TabOrder = 2
-          StyleElements = []
+          StyleName = 'Windows'
           OnClick = btnDeleteSetFlagClick
         end
       end
@@ -966,6 +963,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           SmallImages = ilSpecial
           TabOrder = 0
           ViewStyle = vsReport
+          OnChange = lvCheckFlagsChange
           OnDblClick = lvCheckFlagsDblClick
           OnEditing = lvSetFlagsEditing
         end
@@ -1005,7 +1003,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object cmbChkFlgJumpToLabel: TComboBox
           Left = 264
-          Top = 341
+          Top = 339
           Width = 271
           Height = 23
           Style = csDropDownList
@@ -1018,6 +1016,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           ParentFont = False
           TabOrder = 3
           StyleName = 'Windows'
+          OnChange = cmbChkFlgJumpToLabelChange
           OnKeyPress = AllowFNameInput
         end
       end
@@ -1048,7 +1047,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           AutoSize = False
           Caption = 'Object to Look for:'
           Layout = tlCenter
-          StyleElements = []
+          StyleName = 'Windows'
         end
         object Label11: TLabel
           Left = 24
@@ -1058,7 +1057,6 @@ object frmEventInsAdd: TfrmEventInsAdd
           AutoSize = False
           Caption = 'If Object NOT found, then Jump to Label'
           Layout = tlCenter
-          StyleElements = []
         end
         object cmbObjectToCheck: TComboBox
           Left = 24
@@ -1071,9 +1069,8 @@ object frmEventInsAdd: TfrmEventInsAdd
           Ctl3D = True
           ParentCtl3D = False
           TabOrder = 0
-          StyleElements = []
           StyleName = 'Windows'
-          OnKeyPress = AllowFNameInput
+          OnChange = cmbObjectToCheckChange
         end
         object cmbObjNotFoundJumpTo: TComboBox
           Left = 24
@@ -1086,9 +1083,8 @@ object frmEventInsAdd: TfrmEventInsAdd
           Ctl3D = True
           ParentCtl3D = False
           TabOrder = 1
-          StyleElements = []
           StyleName = 'Windows'
-          OnKeyPress = AllowFNameInput
+          OnChange = cmbObjectToCheckChange
         end
         object btnFindObject: TButton
           Left = 397
@@ -1098,7 +1094,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Anchors = [akTop, akRight]
           Caption = '...'
           TabOrder = 2
-          StyleElements = []
+          StyleName = 'Windows'
           OnClick = btnFindObjectClick
         end
       end
@@ -1117,7 +1113,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         ParentBackground = False
         ParentColor = False
         TabOrder = 0
-        StyleElements = []
+        StyleName = 'Windows'
         DesignSize = (
           548
           373)
@@ -1182,9 +1178,8 @@ object frmEventInsAdd: TfrmEventInsAdd
           Ctl3D = True
           ParentCtl3D = False
           TabOrder = 0
-          StyleElements = []
           StyleName = 'Windows'
-          OnKeyPress = AllowFNameInput
+          OnChange = cmbObjectToTransferChange
         end
         object cmbTransferObjectTo: TComboBox
           Left = 16
@@ -1197,9 +1192,8 @@ object frmEventInsAdd: TfrmEventInsAdd
           Ctl3D = True
           ParentCtl3D = False
           TabOrder = 1
-          StyleElements = []
           StyleName = 'Windows'
-          OnKeyPress = AllowFNameInput
+          OnChange = cmbObjectToTransferChange
         end
         object cmbTransferObjectFrom: TComboBox
           Left = 16
@@ -1212,9 +1206,8 @@ object frmEventInsAdd: TfrmEventInsAdd
           Ctl3D = True
           ParentCtl3D = False
           TabOrder = 2
-          StyleElements = []
           StyleName = 'Windows'
-          OnKeyPress = AllowFNameInput
+          OnChange = cmbObjectToTransferChange
         end
         object cmbTransferObjectFailLabel: TComboBox
           Left = 16
@@ -1227,9 +1220,8 @@ object frmEventInsAdd: TfrmEventInsAdd
           Ctl3D = True
           ParentCtl3D = False
           TabOrder = 3
-          StyleElements = []
           StyleName = 'Windows'
-          OnKeyPress = AllowFNameInput
+          OnChange = cmbObjectToTransferChange
         end
         object seAmountToTransfer: TSpinEdit
           Left = 16
@@ -1240,7 +1232,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           EditorEnabled = False
           MaxValue = 0
           MinValue = 0
-          StyleElements = []
+          StyleName = 'Windows'
           TabOrder = 4
           Value = 0
           OnChange = editConditionValueChange
@@ -1253,7 +1245,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Anchors = [akTop, akRight]
           Caption = '...'
           TabOrder = 5
-          StyleElements = []
+          StyleName = 'Windows'
           OnClick = btnObjectToTransferClick
         end
         object btnObjTransferToPawn: TButton
@@ -1264,7 +1256,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Anchors = [akTop, akRight]
           Caption = '...'
           TabOrder = 6
-          StyleElements = []
+          StyleName = 'Windows'
           OnClick = btnObjTransferToPawnClick
         end
         object btnTransferObjFrom: TButton
@@ -1275,7 +1267,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Anchors = [akTop, akRight]
           Caption = '...'
           TabOrder = 7
-          StyleElements = []
+          StyleName = 'Windows'
           OnClick = btnTransferObjFromClick
         end
       end
@@ -1318,7 +1310,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Checked = True
           TabOrder = 0
           TabStop = True
-          StyleElements = []
+          StyleName = 'Windows'
           OnClick = rbPredefinedCameraPosClick
         end
         object cbbPredefinedCameraPos: TComboBox
@@ -1334,9 +1326,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           ParentCtl3D = False
           TabOrder = 1
           Text = 'Side, Tight'
-          StyleElements = []
           StyleName = 'Windows'
-          OnChange = cmbEventTypeChange
           Items.Strings = (
             'Side, Tight'
             'Side, Mid'
@@ -1364,7 +1354,7 @@ object frmEventInsAdd: TfrmEventInsAdd
             'Specify Camera Position (not implemented in game code? Also can ' +
             'lead to crash)'
           TabOrder = 2
-          StyleElements = []
+          StyleName = 'Windows'
           OnClick = rbSpecialCameraPosClick
         end
         object rbRandomCameraPos: TRadioButton
@@ -1375,7 +1365,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Cursor = crHandPoint
           Caption = 'Random camera position'
           TabOrder = 3
-          StyleElements = []
+          StyleName = 'Windows'
           OnClick = rbRandomCameraPosClick
         end
         object btnEditCameraSpecialPos: TButton
@@ -1385,7 +1375,6 @@ object frmEventInsAdd: TfrmEventInsAdd
           Height = 25
           Caption = 'Edit Camera Properties...'
           TabOrder = 4
-          StyleElements = []
           OnClick = btnEditCameraSpecialPosClick
         end
         object cbbCameraTransition: TComboBox
@@ -1398,9 +1387,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Ctl3D = True
           ParentCtl3D = False
           TabOrder = 5
-          StyleElements = []
           StyleName = 'Windows'
-          OnChange = cmbEventTypeChange
           Items.Strings = (
             'Jump'
             'Spline')
@@ -1456,11 +1443,9 @@ object frmEventInsAdd: TfrmEventInsAdd
           Anchors = [akLeft, akTop, akRight]
           Ctl3D = True
           ParentCtl3D = False
-          PopupMenu = MemoPopup
           TabOrder = 0
-          StyleElements = []
           StyleName = 'Windows'
-          OnKeyPress = AllowFNameInput
+          OnChange = cmbPawnToAnimateChange
         end
         object cmbAnimSeq: TComboBox
           Left = 32
@@ -1473,6 +1458,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           ParentCtl3D = False
           TabOrder = 1
           StyleName = 'Windows'
+          OnChange = cmbPawnToAnimateChange
           OnKeyPress = AllowFNameInput
           Items.Strings = (
             'ToDo: Add list of animations here')
@@ -1484,7 +1470,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Height = 105
           Caption = ' Animation Duration: '
           TabOrder = 2
-          StyleElements = []
+          StyleName = 'Windows'
           object chkWaitFinishAnim: TCheckBox
             Left = 175
             Top = 24
@@ -1523,7 +1509,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Width = 393
           Height = 62
           TabOrder = 3
-          StyleElements = []
+          StyleName = 'Windows'
           DesignSize = (
             393
             62)
@@ -1535,7 +1521,6 @@ object frmEventInsAdd: TfrmEventInsAdd
             AutoSize = False
             Caption = 'Play for:                       Seconds'
             Layout = tlCenter
-            StyleElements = []
           end
           object Label21: TLabel
             Left = 159
@@ -1556,7 +1541,7 @@ object frmEventInsAdd: TfrmEventInsAdd
             EditorEnabled = False
             MaxValue = 0
             MinValue = 0
-            StyleElements = []
+            StyleName = 'Windows'
             TabOrder = 0
             Value = 0
             OnChange = editConditionValueChange
@@ -1569,7 +1554,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Height = 17
           Caption = 'Animation Timed:'
           TabOrder = 4
-          StyleElements = []
+          StyleName = 'Windows'
           OnClick = chkAnimTimedClick
         end
         object btnPawnToAnim: TButton
@@ -1599,7 +1584,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         ParentBackground = False
         ParentColor = False
         TabOrder = 0
-        StyleElements = []
+        StyleName = 'Windows'
         object Label4: TLabel
           Left = 2
           Top = 17
@@ -1610,7 +1595,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           AutoSize = False
           Caption = 'Not Implemented in game code, only for compatibility (maybe?)'
           Layout = tlCenter
-          StyleElements = []
+          StyleName = 'Windows'
           ExplicitTop = 15
           ExplicitWidth = 542
           ExplicitHeight = 360
@@ -1631,7 +1616,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         ParentBackground = False
         ParentColor = False
         TabOrder = 0
-        StyleElements = []
+        StyleName = 'Windows'
         DesignSize = (
           548
           373)
@@ -1643,7 +1628,6 @@ object frmEventInsAdd: TfrmEventInsAdd
           AutoSize = False
           Caption = 'Jump to Label:'
           Layout = tlCenter
-          StyleElements = []
         end
         object Label23: TLabel
           Left = 32
@@ -1653,7 +1637,6 @@ object frmEventInsAdd: TfrmEventInsAdd
           AutoSize = False
           Caption = 'Conversation:'
           Layout = tlCenter
-          StyleElements = []
         end
         object cboJumpLabel: TComboBox
           Left = 32
@@ -1666,10 +1649,8 @@ object frmEventInsAdd: TfrmEventInsAdd
           Ctl3D = True
           ParentCtl3D = False
           TabOrder = 0
-          StyleElements = []
           StyleName = 'Windows'
-          OnChange = cmbEventTypeChange
-          OnKeyPress = AllowFNameInput
+          OnChange = cboJumpLabelChange
         end
         object cboJumpConv: TComboBox
           Left = 32
@@ -1682,7 +1663,6 @@ object frmEventInsAdd: TfrmEventInsAdd
           Ctl3D = True
           ParentCtl3D = False
           TabOrder = 1
-          StyleElements = []
           StyleName = 'Windows'
           OnChange = cboJumpConvChange
         end
@@ -1702,7 +1682,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         ParentBackground = False
         ParentColor = False
         TabOrder = 0
-        StyleElements = []
+        StyleName = 'Windows'
         DesignSize = (
           548
           373)
@@ -1744,7 +1724,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Anchors = [akTop, akRight]
           Caption = 'Remove All'
           TabOrder = 1
-          StyleElements = []
+          StyleName = 'Windows'
           OnClick = btnRemoveAllRandomLabelsClick
         end
         object btnRemoveCurrentRandomLabel: TButton
@@ -1755,7 +1735,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Anchors = [akTop, akRight]
           Caption = 'Remove'
           TabOrder = 2
-          StyleElements = []
+          StyleName = 'Windows'
           OnClick = btnRemoveCurrentRandomLabelClick
         end
         object chkCycleEvents: TCheckBox
@@ -1766,7 +1746,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Anchors = [akRight, akBottom]
           Caption = 'Cycle Events'
           TabOrder = 3
-          StyleElements = []
+          StyleName = 'Windows'
           OnClick = chkCycleEventsClick
         end
         object chkCycleOnce: TCheckBox
@@ -1778,7 +1758,6 @@ object frmEventInsAdd: TfrmEventInsAdd
           Caption = 'Only Cycle Once'
           Enabled = False
           TabOrder = 4
-          StyleElements = []
         end
         object chkRandomAfterCycle: TCheckBox
           Left = 289
@@ -1789,7 +1768,6 @@ object frmEventInsAdd: TfrmEventInsAdd
           Caption = 'Random After cycle'
           Enabled = False
           TabOrder = 5
-          StyleElements = []
         end
         object lstRandomLabels: TListBox
           Left = 38
@@ -1801,7 +1779,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           ExtendedSelect = False
           ItemHeight = 20
           TabOrder = 6
-          StyleElements = []
+          StyleName = 'Windows'
         end
         object cmbEventRandomLabels: TComboBox
           Left = 38
@@ -1861,7 +1839,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Width = 59
           Height = 15
           Caption = 'Trigger tag:'
-          StyleElements = []
+          StyleName = 'Windows'
         end
         object editTriggerTag: TEdit
           Left = 40
@@ -1871,7 +1849,8 @@ object frmEventInsAdd: TfrmEventInsAdd
           PopupMenu = MemoPopup
           TabOrder = 0
           Text = 'editTriggerTag'
-          StyleElements = []
+          StyleName = 'Windows'
+          OnChange = editTriggerTagChange
           OnKeyPress = AllowFNameInput
         end
       end
@@ -1886,11 +1865,11 @@ object frmEventInsAdd: TfrmEventInsAdd
         Height = 373
         Align = alClient
         Caption = ' Add/Complete Goal: '
-        Color = 13226452
+        Color = clBtnFace
         ParentBackground = False
         ParentColor = False
         TabOrder = 0
-        StyleElements = []
+        StyleName = 'Windows'
         object lblGoalName: TLabel
           Left = 40
           Top = 56
@@ -1908,6 +1887,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           PopupMenu = MemoPopup
           TabOrder = 0
           StyleElements = []
+          OnChange = editGoalNameChange
           OnKeyPress = AllowFNameInput
         end
         object rbGoalCompleted: TRadioButton
@@ -1918,7 +1898,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Cursor = crHandPoint
           Caption = 'Goal Completed'
           TabOrder = 2
-          StyleElements = []
+          StyleName = 'Windows'
           OnClick = rbGoalCompletedClick
         end
         object grpGoalControls: TGroupBox
@@ -1927,7 +1907,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Width = 465
           Height = 202
           TabOrder = 3
-          StyleElements = []
+          StyleName = 'Windows'
           object chkPrimaryGoal: TCheckBox
             Left = 16
             Top = 174
@@ -1936,22 +1916,26 @@ object frmEventInsAdd: TfrmEventInsAdd
             Cursor = crHandPoint
             Caption = 'Primary Goal'
             TabOrder = 0
-            StyleElements = []
+            StyleName = 'Windows'
           end
           object memoGoalText: TMemo
             Left = 16
             Top = 16
             Width = 433
             Height = 152
+            DoubleBuffered = True
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -12
             Font.Name = 'Tahoma'
             Font.Style = []
+            HideSelection = False
+            ParentDoubleBuffered = False
             ParentFont = False
             PopupMenu = MemoPopup
             TabOrder = 1
             StyleElements = []
+            OnChange = editGoalNameChange
           end
         end
         object rbAddGoal: TRadioButton
@@ -1964,7 +1948,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Checked = True
           TabOrder = 1
           TabStop = True
-          StyleElements = []
+          StyleName = 'Windows'
           OnClick = rbAddGoalClick
         end
       end
@@ -1983,7 +1967,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         ParentBackground = False
         ParentColor = False
         TabOrder = 0
-        StyleElements = []
+        StyleName = 'Windows'
         DesignSize = (
           548
           373)
@@ -2003,19 +1987,20 @@ object frmEventInsAdd: TfrmEventInsAdd
           Width = 519
           Height = 304
           Anchors = [akLeft, akTop, akRight, akBottom]
-          Ctl3D = True
+          DoubleBuffered = True
           Font.Charset = RUSSIAN_CHARSET
           Font.Color = clWindowText
           Font.Height = -12
           Font.Name = 'Tahoma'
           Font.Style = []
           HideSelection = False
-          ParentCtl3D = False
+          ParentDoubleBuffered = False
           ParentFont = False
           PopupMenu = MemoPopup
           ScrollBars = ssVertical
           TabOrder = 0
-          StyleElements = []
+          StyleName = 'Windows'
+          OnChange = memoNoteTextChange
         end
       end
     end
@@ -2030,7 +2015,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         Align = alClient
         Caption = ' Add Skill Points: '
         TabOrder = 0
-        StyleElements = []
+        StyleName = 'Windows'
         DesignSize = (
           548
           373)
@@ -2060,19 +2045,19 @@ object frmEventInsAdd: TfrmEventInsAdd
           Width = 519
           Height = 238
           Anchors = [akLeft, akTop, akRight, akBottom]
-          Ctl3D = True
+          DoubleBuffered = True
           Font.Charset = RUSSIAN_CHARSET
           Font.Color = clWindowText
           Font.Height = -12
           Font.Name = 'Tahoma'
           Font.Style = []
           HideSelection = False
-          ParentCtl3D = False
+          ParentDoubleBuffered = False
           ParentFont = False
           PopupMenu = MemoPopup
           ScrollBars = ssVertical
           TabOrder = 0
-          StyleElements = []
+          StyleName = 'Windows'
         end
         object editSkillPointsAmount: TSpinEdit
           Left = 16
@@ -2083,7 +2068,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           EditorEnabled = False
           MaxValue = 0
           MinValue = 0
-          StyleElements = []
+          StyleName = 'Windows'
           TabOrder = 1
           Value = -1
           OnChange = editConditionValueChange
@@ -2101,7 +2086,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         Align = alClient
         Caption = ' Add Credits: '
         TabOrder = 0
-        StyleElements = []
+        StyleName = 'Windows'
         DesignSize = (
           548
           373)
@@ -2113,7 +2098,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           AutoSize = False
           Caption = 'Number of Credits to Add:'
           Layout = tlCenter
-          StyleElements = []
+          StyleName = 'Windows'
         end
         object Label31: TLabel
           Left = 16
@@ -2123,7 +2108,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           AutoSize = False
           Caption = '(can be negative, if you want to subtract), e.g. -252'
           Layout = tlCenter
-          StyleElements = []
+          StyleName = 'Windows'
         end
         object seAddCredits: TSpinEdit
           Left = 16
@@ -2134,7 +2119,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           EditorEnabled = False
           MaxValue = 0
           MinValue = 0
-          StyleElements = []
+          StyleName = 'Windows'
           TabOrder = 0
           Value = 0
         end
@@ -2154,7 +2139,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         ParentBackground = False
         ParentColor = False
         TabOrder = 0
-        StyleElements = []
+        StyleName = 'Windows'
         object Label32: TLabel
           Left = 40
           Top = 124
@@ -2163,7 +2148,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Caption = 'Condition:'
           Color = 13226708
           ParentColor = False
-          StyleElements = []
+          StyleName = 'Windows'
         end
         object Label33: TLabel
           Left = 40
@@ -2173,7 +2158,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Caption = 'Value:'
           Color = 13226964
           ParentColor = False
-          StyleElements = []
+          StyleName = 'Windows'
         end
         object Label34: TLabel
           Left = 40
@@ -2183,7 +2168,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Caption = 'Label to Jump To:'
           Color = 13226964
           ParentColor = False
-          StyleElements = []
+          StyleName = 'Windows'
         end
         object Label24: TLabel
           Left = 247
@@ -2196,6 +2181,7 @@ object frmEventInsAdd: TfrmEventInsAdd
             'ncrease/decrease value by 10.'#13#10'Hold Shift to increase/decrease v' +
             'alue by 100.'
           WordWrap = True
+          StyleName = 'Windows'
         end
         object GB_AttrToCheck: TGroupBox
           Left = 40
@@ -2215,7 +2201,7 @@ object frmEventInsAdd: TfrmEventInsAdd
             Checked = True
             TabOrder = 0
             TabStop = True
-            StyleElements = []
+            StyleName = 'Windows'
           end
           object rbHealthCheck: TRadioButton
             Left = 135
@@ -2225,7 +2211,7 @@ object frmEventInsAdd: TfrmEventInsAdd
             Cursor = crHandPoint
             Caption = 'Health'
             TabOrder = 1
-            StyleElements = []
+            StyleName = 'Windows'
           end
           object rbSkillPointsCheck: TRadioButton
             Left = 248
@@ -2235,7 +2221,7 @@ object frmEventInsAdd: TfrmEventInsAdd
             Cursor = crHandPoint
             Caption = 'Skill Points'
             TabOrder = 2
-            StyleElements = []
+            StyleName = 'Windows'
           end
         end
         object cmbCheckCondition: TComboBox
@@ -2244,7 +2230,9 @@ object frmEventInsAdd: TfrmEventInsAdd
           Width = 201
           Height = 23
           Style = csDropDownList
+          ItemIndex = 0
           TabOrder = 1
+          Text = ' < (Less Than)'
           StyleName = 'Windows'
           Items.Strings = (
             ' < (Less Than)'
@@ -2261,6 +2249,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Style = csDropDownList
           TabOrder = 2
           StyleName = 'Windows'
+          OnChange = cmbCheckLabelJumpChange
           OnKeyPress = AllowFNameInput
         end
         object editConditionValue: TSpinEdit
@@ -2289,11 +2278,11 @@ object frmEventInsAdd: TfrmEventInsAdd
         Height = 373
         Align = alClient
         Caption = ' Comment: '
-        Color = 13226452
+        Color = clBtnFace
         ParentBackground = False
         ParentColor = False
         TabOrder = 0
-        StyleElements = []
+        StyleName = 'Windows'
         DesignSize = (
           548
           373)
@@ -2313,19 +2302,20 @@ object frmEventInsAdd: TfrmEventInsAdd
           Width = 519
           Height = 304
           Anchors = [akLeft, akTop, akRight, akBottom]
-          Ctl3D = True
+          DoubleBuffered = True
           Font.Charset = RUSSIAN_CHARSET
           Font.Color = clWindowText
           Font.Height = -12
           Font.Name = 'Tahoma'
           Font.Style = []
           HideSelection = False
-          ParentCtl3D = False
+          ParentDoubleBuffered = False
           ParentFont = False
           PopupMenu = MemoPopup
           ScrollBars = ssVertical
           TabOrder = 0
-          StyleElements = []
+          StyleName = 'Windows'
+          OnChange = memoCommentTextChange
         end
       end
     end
@@ -2343,7 +2333,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         ParentBackground = False
         ParentColor = False
         TabOrder = 0
-        StyleElements = []
+        StyleName = 'Windows'
         object Label3: TLabel
           Left = 2
           Top = 17
@@ -2354,7 +2344,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           AutoSize = False
           Caption = 'End Conversation'
           Layout = tlCenter
-          StyleElements = []
+          StyleName = 'Windows'
           ExplicitLeft = 144
           ExplicitTop = 120
           ExplicitWidth = 95
@@ -2416,11 +2406,12 @@ object frmEventInsAdd: TfrmEventInsAdd
     Caption = 'Insert Event'
     TabOrder = 6
     StyleName = 'Windows'
+    OnClick = btnInsertEventClick
   end
   object chAlphaBlend: TCheckBox
-    Left = 296
+    Left = 279
     Top = 561
-    Width = 105
+    Width = 98
     Height = 25
     Cursor = crHandPoint
     Anchors = [akRight, akBottom]
@@ -2467,7 +2458,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   end
   object mp1: TMediaPlayer
     Left = 216
-    Top = 224
+    Top = 238
     Width = 57
     Height = 30
     VisibleButtons = [btPlay, btPause]
@@ -2516,6 +2507,22 @@ object frmEventInsAdd: TfrmEventInsAdd
     Step = 1
     TabOrder = 12
     StyleName = 'Windows'
+  end
+  object chkFollowMainWindow: TCheckBox
+    Left = 373
+    Top = 561
+    Width = 66
+    Height = 25
+    Cursor = crHandPoint
+    Hint = 
+      'Follow main window when moving. '#13#10'Works only within bounds of ma' +
+      'in window.'
+    Anchors = [akRight, akBottom]
+    Caption = 'Follow?'
+    TabOrder = 13
+    WordWrap = True
+    StyleName = 'Windows'
+    OnClick = chAlphaBlendClick
   end
   object MemoPopup: TPopupMenu
     OnPopup = MemoPopupPopup
@@ -2575,8 +2582,8 @@ object frmEventInsAdd: TfrmEventInsAdd
     end
   end
   object ActionList1: TActionList
-    Left = 72
-    Top = 248
+    Left = 16
+    Top = 224
     object EditCut1: TEditCut
       Category = 'Edit'
       Caption = 'Cu&t'
@@ -2625,14 +2632,14 @@ object frmEventInsAdd: TfrmEventInsAdd
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = []
-    Left = 88
-    Top = 208
+    Left = 96
+    Top = 224
   end
   object ilSpecial: TImageList
     Height = 20
     Width = 20
-    Left = 146
-    Top = 186
+    Left = 138
+    Top = 162
     Bitmap = {
       494C010101002000040014001400FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000500000001400000001002000000000000019
@@ -2852,7 +2859,7 @@ object frmEventInsAdd: TfrmEventInsAdd
     Enabled = False
     Interval = 35
     OnTimer = mp3posUpdateTimerTimer
-    Left = 184
-    Top = 230
+    Left = 176
+    Top = 246
   end
 end

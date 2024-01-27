@@ -198,6 +198,14 @@ object frmConvoFileProperties: TfrmConvoFileProperties
           Height = 15
           Caption = 'Speaker Statistics:'
         end
+        object lbl3: TLabel
+          Left = 120
+          Top = 3
+          Width = 263
+          Height = 39
+          AutoSize = False
+          Caption = 'Note: each ChoiceItem is treated as JCDenton'#39's '#13#10'speech.'
+        end
         object lvStatistics: TListView
           Left = 3
           Top = 48
@@ -219,9 +227,9 @@ object frmConvoFileProperties: TfrmConvoFileProperties
           ViewStyle = vsReport
         end
         object btnFillStats: TButton
-          Left = 225
-          Top = 17
-          Width = 158
+          Left = 3
+          Top = 1
+          Width = 102
           Height = 25
           Caption = 'Load statistics'
           TabOrder = 1

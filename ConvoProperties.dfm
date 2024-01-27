@@ -51,6 +51,7 @@ object frmConvoProperties: TfrmConvoProperties
   Position = poMainFormCenter
   ShowHint = True
   StyleElements = []
+  OnMouseWheel = FormMouseWheel
   OnShow = FormShow
   TextHeight = 15
   object lblTypeName: TLabel
@@ -107,11 +108,14 @@ object frmConvoProperties: TfrmConvoProperties
       Top = 3
       Width = 394
       Height = 404
-      ActivePage = Flags
+      ActivePage = tsinfo
       Align = alClient
+      DoubleBuffered = False
+      ParentDoubleBuffered = False
       Style = tsFlatButtons
       TabOrder = 0
-      StyleElements = []
+      TabWidth = 65
+      StyleName = 'Windows'
       object TabSheet1: TTabSheet
         Caption = 'General'
         DesignSize = (
@@ -164,14 +168,13 @@ object frmConvoProperties: TfrmConvoProperties
         end
         object cmbConvoOwner: TComboBox
           Left = 12
-          Top = 180
+          Top = 181
           Width = 333
           Height = 23
           Style = csDropDownList
           TabOrder = 2
           StyleElements = []
           OnChange = editConvoNameChange
-          OnKeyPress = cmbConvoOwnerKeyPress
         end
         object editConvoDescription: TEdit
           Left = 12
@@ -191,7 +194,7 @@ object frmConvoProperties: TfrmConvoProperties
         end
         object btnPickConvoOwner: TButton
           Left = 351
-          Top = 180
+          Top = 181
           Width = 21
           Height = 22
           Anchors = [akRight, akBottom]
@@ -339,9 +342,10 @@ object frmConvoProperties: TfrmConvoProperties
           Enabled = False
           MaxValue = 0
           MinValue = 0
-          StyleElements = []
+          StyleName = 'Windows'
           TabOrder = 4
           Value = 0
+          OnChange = editDistFromPlayerChange
         end
       end
       object Options: TTabSheet

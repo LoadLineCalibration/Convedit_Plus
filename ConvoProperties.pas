@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Samples.Spin, Vcl.Buttons,
-  System.StrUtils, Conversation.Classes, ConvEditPlus_Util, ConvEditPlus_Const;
+  System.StrUtils, Conversation.Classes, ConvEditPlus_Util, ConvEditPlus.Consts, ConvEditPlus.Enums,
+  System.UITypes;
 
 type
   TfrmConvoProperties = class(TForm)
@@ -66,19 +67,33 @@ type
     procedure btnOkClick(Sender: TObject);
     procedure editConvoNameChange(Sender: TObject);
     procedure editConvoNameKeyPress(Sender: TObject; var Key: Char);
-    procedure cmbConvoOwnerKeyPress(Sender: TObject; var Key: Char);
     procedure chkDisplayConvoOnlyOnceClick(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure btnAddFlagClick(Sender: TObject);
     procedure lvConvoDependsOnFlagsDblClick(Sender: TObject);
+
+    // new procedures
+    procedure AddNewConversation();
+    procedure EditConversation(convoToEdit: TConversation); // Load conversation info so we can change something
+    procedure UpdateConversation(convoToUpdate: TConversation); // write modified data back to Conversation we're loaded in procedure above
+    procedure ClearFields();
+    procedure FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+    procedure editDistFromPlayerChange(Sender: TObject);
+
+    // functions
+    function CheckConversationExists(conName: string): Boolean;
+    procedure FormShow(Sender: TObject);
+
   private
     { Private declarations }
   public
+    EditMode: TConversationEditMode;
     { Public declarations }
   end;
 
 var
   frmConvoProperties: TfrmConvoProperties;
+
+
 
 implementation
 
@@ -86,96 +101,42 @@ implementation
 
 uses AddInsertEvent, Table, EditValueDialog, HelpWindow, MainWindow, frmFlagList1;
 
-procedure TfrmConvoProperties.btnAddFlagClick(Sender: TObject);
+function TfrmConvoProperties.CheckConversationExists(conName: String): Boolean;
 begin
-    frmFlagList.ShowModalCheckFlags(lvConvoDependsOnFlags);
-end;
-
-procedure TfrmConvoProperties.btnCancelClick(Sender: TObject);
-begin
-    Close();
-end;
-
-procedure TfrmConvoProperties.chkNPCentersPCRadiusClick(Sender: TObject);
-begin
-    if (chkNPCentersPCRadius.Checked = true) then
+    for var i:= 0  to frmMain.ConversationsList.Count -1 do
     begin
-      editDistFromPlayer.Enabled := true;
-      lblDistFromPlayer.Enabled := true;
-    end else
-    begin
-      editDistFromPlayer.Enabled := false;
-      lblDistFromPlayer.Enabled := false;
-    end
-end;
-
-procedure TfrmConvoProperties.cmbConvoOwnerKeyPress(Sender: TObject; var Key: Char);
-begin
-    frmEventInsAdd.AllowFNameInput(Sender, Key);
-end;
-
-procedure TfrmConvoProperties.editConvoNameChange(Sender: TObject);
-    var L, L1: Integer;
-    var S, S1: string;
-begin
-    S := Trim(editConvoName.text);
-    L := Length(S);
-
-    S1 := Trim(cmbConvoOwner.text);
-    L1 := Length(S1);
-
-    // Unlock the "OK" button only if required fields are not empty and contains no digit in the beginning.
-    btnOk.Enabled := ((L > 0) and
-    (L1 > 0) and
-    (StringStartsFromDigit(S) = false) and
-    (StringStartsFromDigit(S1) = false));
-
-    lblTypeName.Visible := not btnOk.Enabled;
-    with pgcConvoPropertiesTabs do
-    begin
-        Flags.TabVisible := btnOk.Enabled;
-        Invoke.TabVisible := btnOk.Enabled;
-        Options.TabVisible := btnOk.Enabled;
-        tsinfo.TabVisible := btnOk.Enabled;
+        if LowerCase(frmMain.ConversationsList.Items[i].conName) = LowerCase(conName) then
+        begin
+            Exit(True);
+        end;
     end;
+
+    Result := False;
 end;
 
-procedure TfrmConvoProperties.editConvoNameKeyPress(Sender: TObject; var Key: Char);
+procedure TfrmConvoProperties.ClearFields();
 begin
-    frmEventInsAdd.AllowFNameInput(Sender, Key);
+    editConvoName.Clear();
+    editConvoDescription.Clear();
+    memoConversationNotes.Clear();
+    lvConvoDependsOnFlags.Clear();
 end;
 
-procedure TfrmConvoProperties.FormShow(Sender: TObject);
-begin
-    pgcConvoPropertiesTabs.TabIndex := 0;
-    editConvoNameChange(self);
-    cmbConvoOwner.Items.Assign(frmMain.listPawnsActors);
-end;
-
-procedure TfrmConvoProperties.lvConvoDependsOnFlagsDblClick(Sender: TObject);
-begin
-    frmMain.ToggleLV_FlagValue(lvConvoDependsOnFlags);
-end;
-
-procedure TfrmConvoProperties.btnHelpClick(Sender: TObject);
-begin
-    case pgcConvoPropertiesTabs.TabIndex of
-    0: frmHelp.LoadHelpResource('EmptyHelp');
-    1: frmHelp.LoadHelpResource('EmptyHelp');
-    2: frmHelp.LoadHelpResource('ConvPropertiesInvoke');
-    3: frmHelp.LoadHelpResource('ConvPropertiesOptions');
-    4: frmHelp.LoadHelpResource('EmptyHelp');
-    end;
-end;
-
-procedure TfrmConvoProperties.btnOkClick(Sender: TObject);
+procedure TfrmConvoProperties.AddNewConversation();
 begin
     var ConvoToAdd: TConversation;
     var NodeConName, NodeConOwnerName, NodeDependsOnFlags: TTreeNode;
 
+    if CheckConversationExists(editConvoName.Text) = True then
+    begin
+        MessageDlg(strConversationAlreadyExists,  mtError, [mbOK], 0);
+        Exit();
+    end;
+
+
     ConvoToAdd := TConversation.Create(); // create empty TConversation object
 
-    with convoToAdd do
+    with ConvoToAdd do
     begin
         conName := editConvoName.Text;
         conCreatedByName := frmMain.ConversationUserName;
@@ -210,8 +171,8 @@ begin
         end;
     end;
 
-    frmMain.ConversationsList.Add(ConvoToAdd);
-    ConvoToAdd.id := frmMain.ConversationsList.IndexOfItem(ConvoToAdd, TList.TDirection.FromBeginning);
+    frmMain.ConversationsList.Add(ConvoToAdd); // add to list
+    ConvoToAdd.id := frmMain.ConversationsList.IndexOfItem(ConvoToAdd, TList.TDirection.FromBeginning); // set id from list
 
     // Add conversation to the tree
     if frmMain.ItemExistsInTreeView(frmMain.ConvoTree, ConvoToAdd.conOwnerName) = False then
@@ -249,7 +210,196 @@ begin
             NodeDependsOnFlags.SelectedIndex := 3;
         end;
     end;
+end;
 
+procedure TfrmConvoProperties.UpdateConversation(convoToUpdate: TConversation);
+begin
+    with convoToUpdate do
+    begin
+        conName := editConvoName.Text;
+        conCreatedByName  := frmMain.ConversationUserName;
+        conModifiedByName := frmMain.ConversationUserName;
+
+        // conversation has only one owner
+        conOwnerName:= cmbConvoOwner.Items[cmbConvoOwner.ItemIndex];
+        conOwnerIndex := frmMain.FindTableIdByName(tmActorsPawns, conOwnerName);
+
+        // How conversation is activated + options
+        bInfoLink        := chkDataLinkConvo.Checked;
+        bOnlyOnce        := chkDisplayConvoOnlyOnce.Checked;
+        bPCBumps         := chkPCbumpsNPC.Checked;
+        bPCFrobs         := chkPCfrobsNPC.Checked;
+        bNonInteract     := chkNonInteractive.Checked;
+        bFirstPerson     := chkFPMode.Checked;
+        bRandomCamera    := chkRandomCameraPlacement.Checked;
+        bCanInterrupt    := chkCanBeInterruptedByAnotherConvo.Checked;
+        bCannotInterrupt := chkAbsolutelyCannotInterrupt.Checked;
+        bNPCSees         := chkNPCseesPlayer.Checked;
+        bNPCEnters       := chkNPCentersPCRadius.Checked;
+        distance         := editDistFromPlayer.Value;
+
+        // flags...
+        SetLength(conDependsOnFlags, lvConvoDependsOnFlags.Items.Count); // set size of array
+
+        for var cdof := 0 to High(conDependsOnFlags) do
+        begin
+            conDependsOnFlags[cdof].flagName := lvConvoDependsOnFlags.Items[cdof].Caption; // and fill it
+            conDependsOnFlags[cdof].flagValue := StrToBool(lvConvoDependsOnFlags.Items[cdof].SubItems[0]);
+            conDependsOnFlags[cdof].flagIndex := lvConvoDependsOnFlags.Items[cdof].SubItems[1].ToInteger;
+        end;
+
+
+        frmMain.ConvoTree.Items.Clear();
+        frmMain.BuildConvoTree();
+
+    end;
+end;
+
+procedure TfrmConvoProperties.EditConversation(convoToEdit: TConversation);
+begin
+    pgcConvoPropertiesTabs.ActivePageIndex := 0;
+    ClearFields();
+
+    cmbConvoOwner.Items.Assign(frmMain.listPawnsActors); //it must be here, not there!
+
+    if Assigned(convoToEdit) = false then Exit();
+
+    cmbConvoOwner.Items        := frmMain.listPawnsActors;
+    editConvoName.Text         := convoToEdit.conName;
+    editConvoDescription.Text  := convoToEdit.conDescription;
+    cmbConvoOwner.ItemIndex    := cmbConvoOwner.Items.IndexOf(convoToEdit.conOwnerName);
+    memoConversationNotes.Text := convoToEdit.conNotes;
+
+    for var i:= 0 to High(convoToEdit.conDependsOnFlags) do
+    begin
+        var cdFlag := lvConvoDependsOnFlags.Items.Add();
+
+        cdFlag.Caption := convoToEdit.conDependsOnFlags[i].flagName;
+        cdFlag.SubItems.Add(BoolToStr(convoToEdit.conDependsOnFlags[i].flagValue, True));
+        cdFlag.SubItems.Add(convoToEdit.conDependsOnFlags[i].flagIndex.ToString);
+    end;
+
+    chkPCfrobsNPC.Checked        := convoToEdit.bPCBumps;
+    chkNPCentersPCRadius.Checked := convoToEdit.bNPCEnters;
+    chkPCbumpsNPC.Checked        := convoToEdit.bPCBumps; // pointless?
+    chkNPCseesPlayer.Checked     := convoToEdit.bNPCSees; // same?
+
+    editDistFromPlayer.Value     := convoToEdit.distance;
+
+    chkDisplayConvoOnlyOnce.Checked           := convoToEdit.bOnlyOnce;
+    chkDataLinkConvo.Checked     := convoToEdit.bInfoLink;
+    chkNonInteractive.Checked    := convoToEdit.bNonInteract;
+    chkFPMode.Checked            := convoToEdit.bFirstPerson;
+    chkRandomCameraPlacement.Checked          := convoToEdit.bRandomCamera;
+    chkCanBeInterruptedByAnotherConvo.Checked := convoToEdit.bCanInterrupt;
+    chkAbsolutelyCannotInterrupt.Checked      := convoToEdit.bCannotInterrupt;
+
+    editConvoCreatedOn.Text := convoToEdit.conCreatedByDate;
+    editConvoCreatedBy.Text := convoToEdit.conCreatedByName;
+
+    editConvoLastModifiedOn.Text := convoToEdit.conModifiedByDate;
+    editLastModifiedBy.Text      := convoToEdit.conModifiedByName;
+
+    editConvoNameChange(self);
+
+    EditMode := em_Edit;
+
+    ShowModal();
+end;
+
+procedure TfrmConvoProperties.btnAddFlagClick(Sender: TObject);
+begin
+    frmFlagList.ShowModalCheckFlags(lvConvoDependsOnFlags);
+end;
+
+procedure TfrmConvoProperties.btnCancelClick(Sender: TObject);
+begin
+    Close();
+end;
+
+procedure TfrmConvoProperties.chkNPCentersPCRadiusClick(Sender: TObject);
+begin
+    if (chkNPCentersPCRadius.Checked = true) then
+    begin
+      editDistFromPlayer.Enabled := true;
+      lblDistFromPlayer.Enabled := true;
+    end else
+    begin
+      editDistFromPlayer.Enabled := false;
+      lblDistFromPlayer.Enabled := false;
+    end
+end;
+
+procedure TfrmConvoProperties.editConvoNameChange(Sender: TObject);
+begin
+    var S := Trim(editConvoName.text);
+    var L := Length(S);
+
+    // Unlock the "OK" button only if required fields are not empty and contains no digit in the beginning.
+    btnOk.Enabled := ((L > 0) and (StringStartsFromDigit(S) = false) and (cmbConvoOwner.ItemIndex <> -1) and (cmbConvoOwner.Items.Count > 0));
+
+    lblTypeName.Visible := not btnOk.Enabled;
+    with pgcConvoPropertiesTabs do
+    begin
+        Flags.TabVisible := btnOk.Enabled;
+        Invoke.TabVisible := btnOk.Enabled;
+        Options.TabVisible := btnOk.Enabled;
+        tsinfo.TabVisible := btnOk.Enabled;
+    end;
+end;
+
+procedure TfrmConvoProperties.editConvoNameKeyPress(Sender: TObject; var Key: Char);
+begin
+    frmEventInsAdd.AllowFNameInput(Sender, Key);
+end;
+
+procedure TfrmConvoProperties.editDistFromPlayerChange(Sender: TObject);
+begin
+    if editDistFromPlayer.Value <= 1 then
+        editDistFromPlayer.Value := 0;
+end;
+
+procedure TfrmConvoProperties.FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+begin
+    if WheelDelta < 1 then
+    begin
+       editDistFromPlayer.Value := editDistFromPlayer.Value - 2;
+       Handled := True;
+    end
+    else
+    begin
+       editDistFromPlayer.Value := editDistFromPlayer.Value + 2;
+       Handled := True;
+    end;
+end;
+
+procedure TfrmConvoProperties.FormShow(Sender: TObject);
+begin
+    editConvoNameChange(Self);
+end;
+
+procedure TfrmConvoProperties.lvConvoDependsOnFlagsDblClick(Sender: TObject);
+begin
+    frmMain.ToggleLV_FlagValue(lvConvoDependsOnFlags);
+end;
+
+procedure TfrmConvoProperties.btnHelpClick(Sender: TObject);
+begin
+    case pgcConvoPropertiesTabs.TabIndex of
+    0: frmHelp.LoadHelpResource('EmptyHelp');
+    1: frmHelp.LoadHelpResource('EmptyHelp');
+    2: frmHelp.LoadHelpResource('ConvPropertiesInvoke');
+    3: frmHelp.LoadHelpResource('ConvPropertiesOptions');
+    4: frmHelp.LoadHelpResource('EmptyHelp');
+    end;
+end;
+
+procedure TfrmConvoProperties.btnOkClick(Sender: TObject);
+begin
+    case EditMode of
+        em_Edit: UpdateConversation(frmMain.CurrentConversation);
+        em_Create: AddNewConversation();
+    end;
 
     Close();
 end;

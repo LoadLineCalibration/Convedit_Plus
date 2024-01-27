@@ -14,7 +14,7 @@ object frmEditValue: TfrmEditValue
   Position = poMainFormCenter
   StyleElements = []
   OnShow = FormShow
-  TextHeight = 14
+  TextHeight = 15
   object lblText: TLabel
     Left = 8
     Top = 8
