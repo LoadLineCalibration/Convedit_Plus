@@ -5,10 +5,10 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.ExtCtrls, Vcl.StdCtrls, ConvEditPlus.Consts,
-  Vcl.ComCtrls, System.Types, Vcl.Buttons, Vcl.ToolWin, System.IniFiles, System.IOUtils, Conversation.Classes,
-  System.ImageList, Vcl.ImgList, Table, Vcl.GraphUtil, ES.BaseControls, ES.Layouts, System.Actions, Vcl.ActnList,
-  System.Generics.Collections, System.TypInfo, xml.VerySimple, System.StrUtils, Vcl.MPlayer, ConvEditPlus.Enums,
-  system.UITypes;
+  system.UITypes, Vcl.ComCtrls, System.Types, Vcl.Buttons, Vcl.ToolWin, System.IniFiles, System.IOUtils,
+  Conversation.Classes, System.ImageList, Vcl.ImgList, Table, Vcl.GraphUtil, ES.BaseControls, ES.Layouts,
+  System.Actions, Vcl.ActnList, System.Generics.Collections, System.TypInfo, xml.VerySimple, System.StrUtils,
+  Vcl.MPlayer, ConvEditPlus.Enums;
 
 
 type
@@ -68,7 +68,6 @@ type
     pnlConvoTree: TPanel;
     Splitter1: TSplitter;
     ConvoTree: TTreeView;
-    pnlToolBar: TPanel;
     Add2: TMenuItem;
     Insert2: TMenuItem;
     Edit1: TMenuItem;
@@ -126,24 +125,9 @@ type
     N14: TMenuItem;
     ExpandAll2: TMenuItem;
     CollapseAll2: TMenuItem;
-    mainToolBar: TToolBar;
-    tbNewConversationFile: TToolButton;
-    tbOpenFile: TToolButton;
-    tbSaveFile: TToolButton;
-    ToolButton5: TToolButton;
-    tbPrint: TToolButton;
-    tbCut: TToolButton;
-    tbCopy: TToolButton;
-    tbPaste: TToolButton;
-    ToolButton11: TToolButton;
-    tbSearch: TToolButton;
-    tbProperties: TToolButton;
     ImageListToolbar: TImageList;
     N15: TMenuItem;
     About1: TMenuItem;
-    pnlSearchBox: TPanel;
-    cmbSearch: TComboBox;
-    Label1: TLabel;
     StatusBar: TStatusBar;
     MenusImageList: TImageList;
     N16: TMenuItem;
@@ -164,15 +148,12 @@ type
     Placeholder1: TMenuItem;
     N17: TMenuItem;
     pnlEventList: TEsPanel;
-    ToolButton1: TToolButton;
-    tbSettings: TToolButton;
     ActionList1: TActionList;
     FileOpen: TAction;
     FileNew: TAction;
     FileClose: TAction;
     FileSave: TAction;
     FileSaveAs: TAction;
-    FileExportToCon: TAction;
     FileGenerateAudioNames: TAction;
     FileProperties: TAction;
     AddConversation: TAction;
@@ -193,7 +174,6 @@ type
     Event_Delete: TAction;
     ShowOptions: TAction;
     FileSaveDialog: TFileSaveDialog;
-    Action1: TAction;
     N18: TMenuItem;
     ViewoutputTMemo1: TMenuItem;
     mmoOutput: TMemo;
@@ -202,18 +182,48 @@ type
     Clear1: TMenuItem;
     ConversationsListCount1: TMenuItem;
     MeasureItems1: TMenuItem;
-    btnReorder: TToolButton;
-    ToolButton2: TToolButton;
-    ToolButton3: TToolButton;
-    btnStickyWindow: TToolButton;
     btnCloseLog: TButton;
-    ToolButton4: TToolButton;
-    btnViewLog: TToolButton;
     N19: TMenuItem;
     ClearForNewFile1: TMenuItem;
     CreateTestFile1: TMenuItem;
+    tmrEventWinPosSync: TTimer;
+    DateTimeToDouble1: TMenuItem;
+    EventListItems1: TMenuItem;
+    CurrentConversationEvents1: TMenuItem;
+    SelectDirDialog: TFileOpenDialog;
+    mainToolBar: TToolBar;
+    tbNewConversationFile: TToolButton;
+    tbOpenFile: TToolButton;
+    tbSaveFile: TToolButton;
+    ToolButton4: TToolButton;
+    btnCloseFile: TToolButton;
+    ToolButton8: TToolButton;
+    tbPrint: TToolButton;
+    ToolButton5: TToolButton;
+    tbCut: TToolButton;
+    tbCopy: TToolButton;
+    tbPaste: TToolButton;
+    ToolButton9: TToolButton;
+    tbSearch: TToolButton;
+    ToolButton11: TToolButton;
+    tbProperties: TToolButton;
+    ToolButton7: TToolButton;
     btnGenAudio: TToolButton;
+    btnGenerateSpeechDirs: TToolButton;
     ToolButton6: TToolButton;
+    tbSettings: TToolButton;
+    ToolButton2: TToolButton;
+    btnReorder: TToolButton;
+    ToolButton3: TToolButton;
+    btnStickyWindow: TToolButton;
+    ToolButton1: TToolButton;
+    btnViewLog: TToolButton;
+    StaticText1: TStaticText;
+    EsPanel1: TEsPanel;
+    edtSearchBox: TEdit;
+    N20: TMenuItem;
+    Conversation_CheckLabels: TAction;
+    Button1: TButton;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -251,8 +261,6 @@ type
     function ItemExistsInTreeView(TreeView: TTreeView; ItemText: string): Boolean;
     function FindTreeItemByText(TreeView: TTreeView; Text: string): TTreeNode;
 
-    function CountSpeakerEntries(con: TConversation; conOwner: string): Integer;
-
     procedure SetMemoFont(FontSize: Integer; FontName: string);
     procedure PickTableObject(newTableMode: TTableMode; control: TControl);
     procedure FirstTimeLaunch();
@@ -261,6 +269,9 @@ type
     procedure ClearForNewFile();
 
     procedure GenerateAudioFileNames();
+    procedure SetEventIndexes();
+    procedure CreateAudioDirectories(const InitialPath: string); // automatically creates paths and empty files
+    procedure CopyFinalMp3(CopyTo, FileName: String);
 
     // loading and saving configuration file
     procedure LoadCfg();
@@ -271,8 +282,11 @@ type
     procedure OpenRecentFile(aFile: string);
 
     procedure LoadConXMLFile(aFileName: string);
+    procedure BuildConvoTree();
+
 
     procedure AddLog(msg: string);
+
     procedure DeleteCurrentEvent();
     procedure DeleteCurrentConversation();
 
@@ -397,8 +411,20 @@ type
     procedure FileCloseExecute(Sender: TObject);
     procedure FileNewExecute(Sender: TObject);
     procedure FileSaveExecute(Sender: TObject);
+    procedure tmrEventWinPosSyncTimer(Sender: TObject);
+    procedure DateTimeToDouble1Click(Sender: TObject);
+    procedure EventListItems1Click(Sender: TObject);
+    procedure CurrentConversationEvents1Click(Sender: TObject);
+    procedure btnGenerateSpeechDirsClick(Sender: TObject);
+    procedure mnuCustomizeToolbarClick(Sender: TObject);
+    procedure Conversation_CheckLabelsExecute(Sender: TObject);
+    procedure tbPrintClick(Sender: TObject);
+    procedure mainToolBarCustomDrawButton(Sender: TToolBar; Button: TToolButton;
+      State: TCustomDrawState; var DefaultDraw: Boolean);
   private
     { Private declarations }
+    procedure WMEnterSizeMove(var Msg: TMessage); message WM_ENTERSIZEMOVE;
+    procedure WMExitSizeMove(var Msg: TMessage); message WM_EXITSIZEMOVE;
   public
     { Public declarations }
 
@@ -447,6 +473,9 @@ type
     currentConFile: string; // global variable, so I can use it anywhere...
 
     bFileModified: Boolean; // set to True when file has been modified
+
+    eventsFormLeft: Integer;
+    eventsFormTop: Integer;
   end;
 
 var
@@ -456,10 +485,32 @@ var
 implementation
 
 {$R *.dfm}
+{$R SoundResources.res} // contains final.mp3
 
 uses frmSettings1, EditValueDialog, ConFileProperties, AboutBox1, ConvoProperties, frmFind1, AddInsertEvent,
      ConXml.Reader, ConXML.Writer, confile.Reader, conFile.Writer;
 
+
+
+procedure TfrmMain.WMEnterSizeMove(var Msg: TMessage);
+begin
+    tmrEventWinPosSync.Enabled := True;
+
+    var diffL := frmMain.Left - frmEventInsAdd.Left;
+    var diffT := frmMain.Top - frmEventInsAdd.Top;
+
+    eventsFormLeft := Abs(diffL);
+    eventsFormTop := Abs(diffT);
+
+    inherited;
+end;
+
+procedure TfrmMain.WMExitSizeMove(var Msg: TMessage);
+begin
+    tmrEventWinPosSync.Enabled := False;
+
+    inherited;
+end;
 
 function TfrmMain.GetFlagsSize(events: array of TConEvent): Integer;
 begin
@@ -610,31 +661,6 @@ begin
     end;
 end;
 
-function TfrmMain.CountSpeakerEntries(con: TConversation; conOwner: string): Integer;
-begin
-    var counter: Integer := 0;
-    var tempSpeech: TConEventSpeech;
-
-    for var i:= 0 to High(con.Events) do
-    begin
-        if (con.Events[i] is TConEventSpeech) then
-            tempSpeech := TConEventSpeech(con.Events[i]);
-
-        if Assigned(tempSpeech) then
-        begin
-
-        if UpperCase(tempSpeech.ActorValue) = UpperCase(conOwner) then
-            Inc(counter);
-        end;
-
-//        AddLog('Conversation:' + con.conName + );
-    end;
-
-    Result := counter;
-
-    //ShowMessage(Result.ToString);
-end;
-
 function FindItemByObject(Node: TTreeNode; Obj: TObject): TTreeNode;
 var
   ChildNode: TTreeNode;
@@ -696,19 +722,19 @@ begin
 end;
 
 function TfrmMain.FindConversationObjById(idToLookFor: Integer): TConversation;
-//    var tempCon: TConversation;
 begin
-    var tempCon:= nil;
+    var tempCon: TConversation := nil;
 
     for var K:= 0 to ConversationsList.Count -1 do
     begin
-        if ConversationsList.Items[K].id = idToLookFor then begin
-            Exit(ConversationsList.Items[K]);
-           //tempCon := ConversationsList.Items[K];
-                //ShowMessage('Found conversation: ' + tempCon.conName + ' id=' + tempCon.id.ToString);
-           //Break;
+        if ConversationsList.Items[K].id = idToLookFor then
+        begin
+           tempCon := ConversationsList.Items[K];
+           Break;
         end;
     end;
+
+//    ShowMessage('Found conversation: ' + tempCon.conName + ' id=' + tempCon.id.ToString);
 
     Result := tempCon;
 end;
@@ -720,33 +746,33 @@ begin
     result := -1;
 
     case tableMode of
-        tmActorsPawns:
-                 begin
-                     tempInteger := listPawnsActors.IndexOf(NameToLookFor);
-                     if tempInteger <> -1 then
-                        result := tempInteger;
-                 end;
+      tmActorsPawns:
+               begin
+                   tempInteger := listPawnsActors.IndexOf(NameToLookFor);
+                   if tempInteger <> -1 then
+                      result := tempInteger;
+               end;
 
-        tmFlags:
-                 begin
-                     tempInteger := listFlags.IndexOf(NameToLookFor);
-                     if tempInteger <> -1 then
-                        result := tempInteger;
-                 end;
+      tmFlags:
+               begin
+                   tempInteger := listFlags.IndexOf(NameToLookFor);
+                   if tempInteger <> -1 then
+                      result := tempInteger;
+               end;
 
-        tmSkills:
-                 begin
-                     tempInteger := listSkills.IndexOf(NameToLookFor);
-                     if tempInteger <> -1 then
-                        result := tempInteger;
-                 end;
+      tmSkills:
+               begin
+                   tempInteger := listSkills.IndexOf(NameToLookFor);
+                   if tempInteger <> -1 then
+                      result := tempInteger;
+               end;
 
-        tmObjects:
-                 begin
-                     tempInteger := listObjects.IndexOf(NameToLookFor);
-                     if tempInteger <> -1 then
-                        result := tempInteger;
-                 end;
+      tmObjects:
+               begin
+                   tempInteger := listObjects.IndexOf(NameToLookFor);
+                   if tempInteger <> -1 then
+                      result := tempInteger;
+               end;
     end;
 end;
 
@@ -781,11 +807,9 @@ begin
     end;
 end;
 
-
-
 procedure TfrmMain.AddLog(msg: string);
 begin
-    mmoOutput.Lines.Add(msg);
+//    mmoOutput.Lines.Add(msg);
 end;
 
 function TfrmMain.GetReorderButtonHint(): string;
@@ -802,7 +826,9 @@ begin
     if FileExists(aFileName) = false then
     begin
         Application.MessageBox(PWideChar(aFileName + ': Such file does not exists! Operation cancelled.'),'Error', MB_OK + MB_ICONSTOP + MB_TOPMOST);
-           for var R:= 0 to Length(RecentFiles) -1 do begin
+
+        for var R:= 0 to Length(RecentFiles) -1 do
+           begin
            if aFileName = RecentFiles[R] then
             begin
                 ShowMessage('Remove non-existing file');
@@ -815,6 +841,67 @@ begin
 
     LoadConXMLHeader(aFileName);
     LoadConXMLConversations(aFileName)
+end;
+
+procedure TfrmMain.mainToolBarCustomDrawButton(Sender: TToolBar;
+  Button: TToolButton; State: TCustomDrawState; var DefaultDraw: Boolean);
+begin
+    if bFlatToolbar = False then
+    begin
+        var TempRect := Button.BoundsRect;
+
+        Frame3D(Sender.Canvas, TempRect, clBtnHighlight, clBtnShadow, 1);
+    end;
+end;
+
+procedure TfrmMain.BuildConvoTree();
+begin
+    for var cList := 0 to ConversationsList.Count -1 do
+    begin
+        //ConvoTree.Items.BeginUpdate();
+
+        var NodeConName, NodeConOwnerName, NodeDependsOnFlags: TTreeNode;
+        var tempConvo := ConversationsList.Items[cList];
+
+        if ItemExistsInTreeView(ConvoTree, tempConvo.conOwnerName) = false then
+        begin
+           NodeConOwnerName:= frmMain.ConvoTree.Items.Add(nil, tempConvo.conOwnerName);
+           NodeConOwnerName.ImageIndex := 0;
+           NodeConOwnerName.ExpandedImageIndex := 0;
+           NodeConOwnerName.SelectedIndex := 0;
+        end;
+
+        // Add owner's conversations
+        NodeConName:= frmMain.ConvoTree.Items.AddChildObject(NodeConOwnerName, tempConvo.conName, tempConvo);
+        NodeConName.ImageIndex := 1;
+        NodeConName.ExpandedImageIndex := 1;
+        NodeConName.SelectedIndex := 1;
+
+        // Flags required by this conversation
+        for var DOF:= 0 to Length(tempConvo.conDependsOnFlags) -1 do
+        begin
+            NodeDependsOnFlags:= frmMain.ConvoTree.Items.AddChild(NodeConName,
+            tempConvo.conDependsOnFlags[DOF].flagName + ' = '
+            + BoolToStr(tempConvo.conDependsOnFlags[DOF].flagValue, true));
+
+            // red icon = false, green icon = true
+            if NodeDependsOnFlags.Text.EndsText('true', NodeDependsOnFlags.Text) then
+            begin
+                NodeDependsOnFlags.ImageIndex := 2;
+                NodeDependsOnFlags.ExpandedImageIndex := 2;
+                NodeDependsOnFlags.SelectedIndex := 2;
+            end else
+            begin
+                NodeDependsOnFlags.ImageIndex := 3;
+                NodeDependsOnFlags.ExpandedImageIndex := 3;
+                NodeDependsOnFlags.SelectedIndex := 3;
+            end;
+        end;
+
+        //ConvoTree.Items.EndUpdate();
+    end;
+
+    SetEventIndexes();
 end;
 
 procedure TfrmMain.FirstTimeLaunch();// First launch?
@@ -881,36 +968,164 @@ end;
 
 procedure TfrmMain.GenerateAudioFileNames();
 begin
-//    var testCounter: Integer := 0;
-
-    for var CL := 0 to ConversationsList.Count -1 do
+    // speech events
+    for var con in ConversationsList do
     begin
-        var tempCounter := CountSpeakerEntries(ConversationsList.Items[CL], ConversationsList.Items[CL].conOwnerName);
-//        ShowMessage(tempCounter.ToString);
-        for var e := 0 to High(ConversationsList.Items[CL].Events) do
+        var tempDict:= TDictionary<string,integer>.Create();
+
+        for var i:= 0 to High(con.Events) do
         begin
-            if ConversationsList.Items[CL].Events[e] is TConEventSpeech then
+            if con.Events[i] is TConEventSpeech then
             begin
-//                Inc(testCounter);
-//                AddLog(testCounter.ToString);
+                var speechEvent := TConEventSpeech(con.Events[i]);
+                var counter := 0;
 
-                var tempSpeech := TConEventSpeech(ConversationsList.Items[CL].Events[e]);
-                var audioStr := conFileParameters.fpAudioPackage + '\'
-                      + ConversationsList.Items[CL].conOwnerName + '\'
-                      + ConversationsList.Items[CL].conName + '\'
-                      + tempSpeech.ActorValue + '0' + tempCounter.ToString + '.mp3';
+                tempDict.TryGetValue(speechEvent.ActorValue, counter);
+                Inc(counter);
+                tempDict.AddOrSetValue(speechEvent.ActorValue, counter);
 
-                tempSpeech.mp3File := audioStr;
-
-
-            end;
-
-            if ConversationsList.Items[CL].Events[e] is TConEventChoice then
-            begin
-
-
+                if counter < 10 then // maybe just use Format() function?
+                    speechEvent.mp3File := conFileParameters.fpAudioPackage + '\'
+                                         + con.conOwnerName + '\'
+                                         + con.conName + '\'
+                                         + speechEvent.ActorValue
+                                         + '0' + counter.ToString + '.mp3'
+                else
+                    speechEvent.mp3File := conFileParameters.fpAudioPackage + '\'
+                                         + con.conOwnerName + '\'
+                                         + con.conName + '\'
+                                         + speechEvent.ActorValue
+                                         + counter.ToString + '.mp3';
             end;
         end;
+
+        tempDict.Free();
+    end;
+
+    for var con2 in ConversationsList do
+    begin
+        var ChoiceEventCounter := 0;
+        //var ChoiceItemCounter := -1;
+
+        for var k := 0 to High(con2.Events) do
+        begin
+            if con2.Events[k] is TConEventChoice then
+            begin
+                var Choice := TConEventChoice(con2.Events[k]);
+
+                Inc(ChoiceEventCounter);
+
+                for var ci := 0 to High(Choice.Choices) do
+                begin
+                    var choiceItem := Choice.Choices[ci];
+
+                    if ChoiceItem.bDisplayAsSpeech = True then
+                    begin
+                        //Inc(ChoiceItemCounter);
+
+                        if ci < 10 then
+                            ChoiceItem.mp3 := conFileParameters.fpAudioPackage + '\' + con2.conOwnerName + '\' + con2.conName + '\'
+                                                + 'Choice0' + ChoiceEventCounter.ToString + Chr(Ord('a') + ci) + '.mp3'
+                        else if ci > 9 then
+                            ChoiceItem.mp3 := conFileParameters.fpAudioPackage + '\' + con2.conOwnerName + '\' + con2.conName + '\'
+                                                + 'Choice' + ChoiceEventCounter.ToString + Chr(Ord('a') + ci) + '.mp3'
+
+                        //ChoiceItem.mp3 := 'Choice0' + ChoiceEventCounter.ToString + Chr(Ord('a') + ci) + '.mp3';
+                    end;
+                    //else
+                      //  ChoiceItem.mp3 := '';
+
+                end;
+                    //ChoiceItemCounter := -1; // Reset this counter
+            end;
+        end;
+    end;
+
+
+    // choices. Должно быть так:
+    // choice1
+    //        choiceitem1a
+    //        choiceitem1b
+    //        choiceitem1c
+    //        choiceitem1d
+
+    // choice2
+    //        choiceitem2a
+    //        choiceitem2b
+    //        choiceitem2c
+    // и так далее
+    // Только если  bDisplayAsSpeech = True
+    // Примечание: счетчик ChoiceEventCounter увеличивается в любом случае,
+    // даже если ChoiceItem.bDisplayAsSpeech = False для всех дочерних элементов
+end;
+
+procedure TfrmMain.SetEventIndexes();
+begin
+    for var con in ConversationsList do
+    begin
+        for var i:= 0 to High(con.Events) do
+            con.Events[i].EventIdx := i;
+    end;
+end;
+
+procedure TfrmMain.CreateAudioDirectories(const InitialPath: string);
+begin
+    GenerateAudioFileNames(); // Generate filenames and paths first
+
+    for var con in ConversationsList do
+    begin
+        for var event in con.Events do
+        begin
+            if event is TConEventSpeech then
+            begin
+                var speech := TConEventSpeech(event);
+                var dirStr := InitialPath + conFileParameters.fpAudioPackage + '\' + con.conOwnerName + '\' + con.conName + '\';
+
+                if DirectoryExists(DirStr) = False then
+                    ForceDirectories(dirStr); // create directory if required
+
+                var mp3FileStr := ExtractFileName(InitialPath + speech.mp3File);
+                CopyFinalMp3(dirStr, mp3FileStr); // Extract and copy placeholder .mp3 file
+            end;
+
+            if event is TConEventChoice then
+            begin
+                var ChoiceObj := TconEventChoice(event);
+
+                for var choiceItem in ChoiceObj.Choices do
+                begin
+                    if choiceItem.bDisplayAsSpeech = True then
+                    begin
+                        var choicemMP3 := choiceItem.mp3;
+                        var cDirStr := InitialPath + conFileParameters.fpAudioPackage + '\' + con.conOwnerName + '\' + con.conName + '\';
+
+                        if DirectoryExists(cDirStr) = False then
+                            ForceDirectories(cDirStr); // create directory if required
+
+                        var cMP3FileStr := ExtractFileName(InitialPath + choiceItem.mp3);
+                        CopyFinalMp3(cDirStr, cMP3FileStr);  // Extract and copy placeholder .mp3 file
+                    end;
+                end;
+            end;
+        end;
+    end;
+end;
+
+procedure TfrmMain.CopyFinalMp3(CopyTo, FileName: String);
+var
+    ResStream: TResourceStream;
+    FileStream: TFileStream;
+begin
+    ResStream := TResourceStream.Create(HInstance, 'FINAL','MP3');
+    try
+        FileStream := TFileStream.Create(CopyTo + '\' + FileName, fmCreate);
+        try
+            FileStream.CopyFrom(ResStream, 0);
+        finally
+            FileStream.Free();
+        end;
+    finally
+        ResStream.Free;
     end;
 end;
 
@@ -922,18 +1137,23 @@ end;
 procedure TfrmMain.OpenRecentFile(aFile: string);
 begin
     ClearForNewFile();
-// ToDo: Add check if file has been modified, ask to save, etc.
+    ToggleMenusPanels(True);
+
+    // ToDo: Add check if file has been modified, ask to save, etc.
     if LowerCase(ExtractFileExt(aFile)) = '.xml' then
-         LoadConXMLFile(aFile) else
+    begin
+         LoadConXMLFile(aFile);
+         BuildConvoTree();
+    end else
     if LowerCase(ExtractFileExt(aFile)) = '.con' then
-         LoadConFile(aFile)
-         else
+    begin
+         LoadConFile(aFile);
+         BuildConvoTree();
+    end else
     begin
        MessageDlg(strUnknownFile,  mtWarning, [mbOK], 0);
        Exit();
     end;
-
-    ToggleMenusPanels(True);
 
     currentConFile := aFile;
     StatusBar.Panels[1].Text := currentConFile;
@@ -976,122 +1196,122 @@ begin
 end;
 
 procedure TfrmMain.LoadCfg();
-var i: Integer;
 begin
-   MainFormIni := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
-   try
+    MainFormIni := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
+    try
     with MainFormIni do
     begin
-    // Main Form
-     pnlConvoTree.Width  := ReadInteger('frmMain', 'SplitterPosition',pnlConvoTree.Width);
-     Height  := ReadInteger('frmMain', 'Height',Height);
-     Width   := ReadInteger('frmMain', 'Width',Width);
+       // Main Form
+       pnlConvoTree.Width  := ReadInteger('frmMain', 'SplitterPosition',pnlConvoTree.Width);
+       Height  := ReadInteger('frmMain', 'Height',Height);
+       Width   := ReadInteger('frmMain', 'Width',Width);
 
-     if ReadBool('frmMain', 'bMaximized', false) then WindowState := wsMaximized else WindowState := wsNormal;
+       if ReadBool('frmMain', 'bMaximized', false) then WindowState := wsMaximized else WindowState := wsNormal;
 
-     bShowAudioFiles := ReadBool('frmMain', 'bShowAudioFiles', true);
-      mnuShowAudioFiles1.Checked := bShowAudioFiles;
+       bShowAudioFiles := ReadBool('frmMain', 'bShowAudioFiles', true);
+       mnuShowAudioFiles1.Checked := bShowAudioFiles;
 
-     bShowStatusBar := ReadBool('frmMain', 'bShowStatusBar', true);
-      StatusBar.Visible := bShowStatusBar;
-      mnuStatusbar.Checked := bShowStatusBar;
+       bShowStatusBar := ReadBool('frmMain', 'bShowStatusBar', true);
+       StatusBar.Visible := bShowStatusBar;
+       mnuStatusbar.Checked := bShowStatusBar;
 
-     bShowToolbar := ReadBool('frmMain', 'bShowToolbar', true);
-      pnlToolBar.Visible := bShowToolbar;
-      mnuToggleMainToolBar.Checked := bShowToolbar;
+       bShowToolbar := ReadBool('frmMain', 'bShowToolbar', true);
+       MainToolBar.Visible := bShowToolbar;
+       mnuToggleMainToolBar.Checked := bShowToolbar;
 
-     bExpandedEventList := ReadBool('frmMain', 'bExpandedEventList', true);
+       bExpandedEventList := ReadBool('frmMain', 'bExpandedEventList', true);
 
 
-    // Settings form
-     ConversationUserName := ReadString('frmMain', 'UserName', 'ConvEdit+');
-     ConFilePath := ReadString('frmMain', 'ConFilePath', '');
-     ConFileBakPath := ReadString('frmMain', 'ConFileBakPath', '');
-     ConFileAudioPath := ReadString('frmMain', 'ConFileAudioPath', '');
+      // Settings form
+       ConversationUserName := ReadString('frmMain', 'UserName', 'ConvEdit+');
+       ConFilePath := ReadString('frmMain', 'ConFilePath', '');
+       ConFileBakPath := ReadString('frmMain', 'ConFileBakPath', '');
+       ConFileAudioPath := ReadString('frmMain', 'ConFileAudioPath', '');
 
-     bExpandFlagsOnExpandAll := ReadBool('frmMain', 'bExpandFlagsOnExpandAll',true);
-     bAskForConvoDelete := ReadBool('frmMain', 'bAskForConvoDelete', true);
-     bAskForEventDelete := ReadBool('frmMain', 'bAskForEventDelete', true);
-     bHglEventWithNoAudio := ReadBool('frmMain', 'bHglEventWithNoAudio', true);
-     bHglEventsGradient := ReadBool('frmMain', 'bHglEventsGradient', true);
-     bFlatToolbar := ReadBool('frmMain', 'bFlatToolbar', false);
-        mainToolBar.Flat := bFlatToolbar;
-        if bFlatToolbar = true then HeaderControl1.Style := hsFlat else HeaderControl1.Style := hsButtons;
+       bExpandFlagsOnExpandAll := ReadBool('frmMain', 'bExpandFlagsOnExpandAll',true);
+       bAskForConvoDelete := ReadBool('frmMain', 'bAskForConvoDelete', true);
+       bAskForEventDelete := ReadBool('frmMain', 'bAskForEventDelete', true);
+       bHglEventWithNoAudio := ReadBool('frmMain', 'bHglEventWithNoAudio', true);
+       bHglEventsGradient := ReadBool('frmMain', 'bHglEventsGradient', true);
+       bFlatToolbar := ReadBool('frmMain', 'bFlatToolbar', false);
+          mainToolBar.Flat := bFlatToolbar;
+          if bFlatToolbar = true then HeaderControl1.Style := hsFlat else HeaderControl1.Style := hsButtons;
 
-     bAutoSaveEnabled := ReadBool('frmMain', 'bAutoSaveEnabled', false);
-     AutoSaveMinutes := ReadInteger('frmMain', 'AutoSaveMinutes', 5);
+       bAutoSaveEnabled := ReadBool('frmMain', 'bAutoSaveEnabled', false);
+       AutoSaveMinutes := ReadInteger('frmMain', 'AutoSaveMinutes', 5);
 
-     clrHighlightEvent := ReadInteger('frmMain', 'clrHighlightEvent', 16767927);
-     clrHighlightEventFrom := ReadInteger('frmMain', 'clrHighlightEventFrom', 16767927);
-     clrHighlightEventTo := ReadInteger('frmMain', 'clrHighlightEventTo', 16777215);
-     clrGrid := ReadInteger('frmMain', 'clrGrid',  clGray);
+       clrHighlightEvent := ReadInteger('frmMain', 'clrHighlightEvent', 16767927);
+       clrHighlightEventFrom := ReadInteger('frmMain', 'clrHighlightEventFrom', 16767927);
+       clrHighlightEventTo := ReadInteger('frmMain', 'clrHighlightEventTo', 16777215);
+       clrGrid := ReadInteger('frmMain', 'clrGrid',  clGray);
 
-     bUse3DSelectionFrame := ReadBool('frmMain', 'bUse3DSelectionFrame', true);
-     bUseWhiteSelectedText := ReadBool('frmMain', 'bUseWhiteSelectedText', false);
+       bUse3DSelectionFrame := ReadBool('frmMain', 'bUse3DSelectionFrame', true);
+       bUseWhiteSelectedText := ReadBool('frmMain', 'bUseWhiteSelectedText', false);
 
-     ReorderModKey := TReorderEventsModKey(ReadInteger('frmMain', 'ReorderModKey', 0));
+       ReorderModKey := TReorderEventsModKey(ReadInteger('frmMain', 'ReorderModKey', 0));
 
-     btnReorder.Hint := GetReorderButtonHint(); // Update button tooltip
+       btnReorder.Hint := GetReorderButtonHint(); // Update button tooltip
 
-     // up to 8 recent files
-     for i := 0 to CEP_MAX_RECENT_FILES do begin
-         RecentFiles[i] := ReadString('RecentFiles', 'RecentFile'+i.ToString , '');
-         mniRecent.Items[i].Caption := RecentFiles[i];
-     end;
+       // up to 8 recent files
+       for var i := 0 to CEP_MAX_RECENT_FILES do
+       begin
+           RecentFiles[i] := ReadString('RecentFiles', 'RecentFile'+i.ToString , '');
+           mniRecent.Items[i].Caption := RecentFiles[i];
+       end;
     end;
-   finally
-     MainFormIni.Free();
-   end;
+
+    finally
+       MainFormIni.Free();
+    end;
 end;
 
 procedure TfrmMain.SaveCfg();
-var i: Integer;
 begin
-   MainFormIni := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
-   try
-    with MainFormIni do
-    begin
-     WriteInteger('frmMain', 'SplitterPosition', pnlConvoTree.Width);
-     WriteInteger('frmMain', 'Height', Height);
-     WriteInteger('frmMain', 'Width', Width);
-     WriteBool('frmMain', 'bMaximized', WindowState = wsMaximized);
-     WriteBool('frmMain', 'bShowAudioFiles', bShowAudioFiles);
-     WriteBool('frmMain', 'bShowStatusBar', bShowStatusBar);
-     WriteBool('frmMain', 'bShowToolbar', bShowToolbar);
+    MainFormIni := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
+    try
+       with MainFormIni do
+       begin
+           WriteInteger('frmMain', 'SplitterPosition', pnlConvoTree.Width);
+           WriteInteger('frmMain', 'Height', Height);
+           WriteInteger('frmMain', 'Width', Width);
+           WriteBool('frmMain', 'bMaximized', WindowState = wsMaximized);
+           WriteBool('frmMain', 'bShowAudioFiles', bShowAudioFiles);
+           WriteBool('frmMain', 'bShowStatusBar', bShowStatusBar);
+           WriteBool('frmMain', 'bShowToolbar', bShowToolbar);
 
-     // Settings form
-     WriteString('frmMain', 'UserName', ConversationUserName);
-     WriteString('frmMain', 'ConFilePath', ConFilePath);
-     WriteString('frmMain', 'ConFileBakPath', ConFileBakPath);
-     WriteString('frmMain', 'ConFileAudioPath', ConFileAudioPath);
+           // Settings form
+           WriteString('frmMain', 'UserName', ConversationUserName);
+           WriteString('frmMain', 'ConFilePath', ConFilePath);
+           WriteString('frmMain', 'ConFileBakPath', ConFileBakPath);
+           WriteString('frmMain', 'ConFileAudioPath', ConFileAudioPath);
 
-     WriteBool('frmMain', 'bExpandFlagsOnExpandAll', bExpandFlagsOnExpandAll);
-     WriteBool('frmMain', 'bAskForConvoDelete', bAskForConvoDelete);
-     WriteBool('frmMain', 'bAskForEventDelete', bAskForEventDelete);
-     WriteBool('frmMain', 'bHglEventWithNoAudio', bHglEventWithNoAudio);
-     WriteBool('frmMain', 'bHglEventsGradient', bHglEventsGradient);
-     WriteBool('frmMain', 'bFlatToolbar', bFlatToolbar);
-     WriteBool('frmMain', 'bAutoSaveEnabled', bAutoSaveEnabled);
+           WriteBool('frmMain', 'bExpandFlagsOnExpandAll', bExpandFlagsOnExpandAll);
+           WriteBool('frmMain', 'bAskForConvoDelete', bAskForConvoDelete);
+           WriteBool('frmMain', 'bAskForEventDelete', bAskForEventDelete);
+           WriteBool('frmMain', 'bHglEventWithNoAudio', bHglEventWithNoAudio);
+           WriteBool('frmMain', 'bHglEventsGradient', bHglEventsGradient);
+           WriteBool('frmMain', 'bFlatToolbar', bFlatToolbar);
+           WriteBool('frmMain', 'bAutoSaveEnabled', bAutoSaveEnabled);
 
-     WriteInteger('frmMain', 'AutoSaveMinutes', AutoSaveMinutes);
-     // Colors...
-     WriteInteger('frmMain', 'clrHighlightEvent', clrHighlightEvent);
-     WriteInteger('frmMain', 'clrHighlightEventFrom', clrHighlightEventFrom);
-     WriteInteger('frmMain', 'clrHighlightEventTo', clrHighlightEventTo);
-     WriteInteger('frmMain', 'clrGrid', clrGrid);
+           WriteInteger('frmMain', 'AutoSaveMinutes', AutoSaveMinutes);
+           // Colors...
+           WriteInteger('frmMain', 'clrHighlightEvent', clrHighlightEvent);
+           WriteInteger('frmMain', 'clrHighlightEventFrom', clrHighlightEventFrom);
+           WriteInteger('frmMain', 'clrHighlightEventTo', clrHighlightEventTo);
+           WriteInteger('frmMain', 'clrGrid', clrGrid);
 
-     WriteBool('frmMain', 'bUse3DSelectionFrame', bUse3DSelectionFrame);
-     WriteBool('frmMain', 'bUseWhiteSelectedText', bUseWhiteSelectedText);
+           WriteBool('frmMain', 'bUse3DSelectionFrame', bUse3DSelectionFrame);
+           WriteBool('frmMain', 'bUseWhiteSelectedText', bUseWhiteSelectedText);
 
-     WriteInteger('frmMain', 'ReorderModKey',Ord(ReorderModKey));
+           WriteInteger('frmMain', 'ReorderModKey',Ord(ReorderModKey));
 
-     // up to 8 recent files
-     for i := 0 to CEP_MAX_RECENT_FILES do
-         WriteString('RecentFiles', 'RecentFile'+i.ToString, RecentFiles[i]);
+       // up to 8 recent files
+       for var i := 0 to CEP_MAX_RECENT_FILES do
+           WriteString('RecentFiles', 'RecentFile'+i.ToString, RecentFiles[i]);
+       end;
+    finally
+       MainFormIni.Free();
     end;
-   finally
-     MainFormIni.Free();
-   end;
 end;
 
 procedure TfrmMain.DrawET_Speech(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
@@ -1207,28 +1427,34 @@ begin
 
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clNavy;
 
-        for var E:= 0 to EventChoice.NumChoices -1 do begin
-
+        for var E:= 0 to EventChoice.NumChoices -1 do
+        begin
             Inc(tempRect.Top, 17);
             if EventChoice.Choices[E].bSkillNeeded <> -1 then
             begin // bSkillNedded <>  -1, i.e. true
                 if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clNavy;
 
-                DrawText(handle, Format(strChoiceWithSkills, [EventChoice.Choices[E].textline,
-                                                              EventChoice.Choices[E].GoToLabel,
-                                                              EventChoice.Choices[E].Skill,
-                                                              EventChoice.Choices[E].mp3]),
-                                                              -1, TempRect, DT_END_ELLIPSIS);
+                if EventChoice.Choices[E].bDisplayAsSpeech = True then
+                    DrawText(handle, Format(strChoiceWithSkills, [EventChoice.Choices[E].textline,
+                                                                  EventChoice.Choices[E].GoToLabel,
+                                                                  EventChoice.Choices[E].Skill,
+                                                                  EventChoice.Choices[E].mp3]),
+                                                                  -1, TempRect, DT_END_ELLIPSIS)
+                else
+                    DrawText(handle, Format(strChoiceWithSkillsNoAudio, [EventChoice.Choices[E].textline, // Hide mp3 field if bDisplayAsSpeech = False
+                                                                         EventChoice.Choices[E].GoToLabel,
+                                                                         EventChoice.Choices[E].Skill]),
+                                                                         -1, TempRect, DT_END_ELLIPSIS);
 
                 if Length(EventChoice.Choices[E].RequiredFlags) > 0 then
                 begin
-
                     Font.Name := CEP_EVENT_LIST_FONT_NAME;
                     Font.Size := CEP_EVENT_LIST_FONT_SIZE;
                     if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clYellow else Font.Color := clBlue;
 
                         FlagsStr := '';
-                    for var F := 0 to Length(EventChoice.Choices[E].RequiredFlags) -1 do begin
+                    for var F := 0 to Length(EventChoice.Choices[E].RequiredFlags) -1 do
+                    begin
                         FlagsStr := FlagsStr + '[' + EventChoice.Choices[E].RequiredFlags[F].flagName + '='
                                          + BoolToStr(EventChoice.Choices[E].RequiredFlags[F].flagValue, True) + '] ';
                     end;
@@ -1243,13 +1469,18 @@ begin
             begin // bSkillNeeded = 0 or greater
                 if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clNavy;
 
-                DrawText(handle, Format(strChoiceNoSkills, [EventChoice.Choices[E].textline,
-                                                            EventChoice.Choices[E].GoToLabel,
-                                                            EventChoice.Choices[E].mp3]),
-                                                            -1, TempRect, DT_END_ELLIPSIS);
+                if EventChoice.Choices[E].bDisplayAsSpeech = True then
+                    DrawText(handle, Format(strChoiceNoSkills, [EventChoice.Choices[E].textline,
+                                                                EventChoice.Choices[E].GoToLabel,
+                                                                EventChoice.Choices[E].mp3]),
+                                                                -1, TempRect, DT_END_ELLIPSIS)
+                else
+                    DrawText(Handle, Format(strChoiceNoSkillsNoAudio, [EventChoice.Choices[E].textline, // Hide mp3 field if bDisplayAsSpeech = False
+                                                                       EventChoice.Choices[E].GoToLabel]),
+                                                                       -1, TempRect, DT_END_ELLIPSIS);
 
-                if Length(EventChoice.Choices[E].RequiredFlags) > 0 then begin
-
+                if Length(EventChoice.Choices[E].RequiredFlags) > 0 then
+                begin
                     Font.Name := CEP_EVENT_LIST_FONT_NAME;
                     Font.Size := CEP_EVENT_LIST_FONT_SIZE;
                     if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clYellow else Font.Color := clBlue;
@@ -2282,21 +2513,28 @@ begin
 end;
 
 procedure TfrmMain.HeaderControl1DrawSection(HeaderControl: THeaderControl; Section: THeaderSection; const Rect: TRect; Pressed: Boolean);
-var TempRect: TRect; // Переменная для временного прямоугольника
+//var TempRect: TRect; // Переменная для временного прямоугольника
 begin
-    TempRect := Rect;
+    var TempRect := Rect;
 
-    GradientFillCanvas(HeaderControl1.Canvas, clBtnFace, clWindow, Rect, gdVertical);
+    GradientFillCanvas(HeaderControl1.Canvas, clBtnFace, clBtnHighlight, Rect, gdVertical);
 
     with HeaderControl1.Canvas do
     begin
         Font.Name := CEP_EVENT_HEADER_LIST_FONT_NAME; // Шрифт
         Font.Size := CEP_EVENT_HEADER_LIST_FONT_SIZE;
-        Font.Color := clBlack;
+        Font.Color := clBtnText;
 
         SetBkMode(Handle, TRANSPARENT); // Прозрачный фон.
         TempRect.Left := Rect.Left + 4; // Отступ
         DrawText(Handle, Section.Text, -1, TempRect, DT_END_ELLIPSIS); // Название
+    end;
+
+    if bFlatToolbar = False then
+    begin
+        var TempRect2 := Rect;
+
+        Frame3D(HeaderControl1.Canvas, TempRect2, clBtnHighlight, clBtnShadow, 2);
     end;
 end;
 
@@ -2307,15 +2545,15 @@ end;
 
 procedure TfrmMain.SendStringToEditValue(control: TControl);
 begin
-  if control = nil then Exit();
+    if control = nil then Exit();
 
-  if control is TEdit then frmEditValue.editValue.Text := TEdit(control).Text else
-  if control is TComboBox then frmEditValue.editValue.Text := TComboBox(control).Text else
-  if control is TListBox then frmEditValue.editValue.Text := TListBox(control).Items[TListBox(control).ItemIndex];
+    if control is TEdit then frmEditValue.editValue.Text := TEdit(control).Text else
+    if control is TComboBox then frmEditValue.editValue.Text := TComboBox(control).Text else
+    if control is TListBox then frmEditValue.editValue.Text := TListBox(control).Items[TListBox(control).ItemIndex];
 
 
-  frmEditValue.receiver := control; // назначить имя элемента управления на переменную.
-  frmEditValue.ShowModal();
+    frmEditValue.receiver := control; // назначить имя элемента управления на переменную.
+    frmEditValue.ShowModal();
 end;
 
 procedure TfrmMain.FillEventLabels(con: TConversation; listToFill: TCustomListControl);
@@ -2351,7 +2589,7 @@ begin
        frmEventInsAdd.mp1.Stop();
 
     if TConEvent(ConEventList.Items.Objects[ConEventList.ItemIndex]) <> nil then
-       CurrentEvent:= TConEvent(ConEventList.Items.Objects[ConEventList.ItemIndex]);
+       CurrentEvent := TConEvent(ConEventList.Items.Objects[ConEventList.ItemIndex]);
 
     objStr:= '  EventType = ' + CurrentEvent.ClassName;
 
@@ -2417,7 +2655,7 @@ end;
 
 procedure TfrmMain.ConEventListDrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
 var
-    labelStr: string;
+    labelStr, idxStr: string;
     tempRect: TRect;
 begin
 //    if ConEventList.Items.Count < 1 then
@@ -2438,7 +2676,10 @@ begin
         if CurrentConversation <> nil then
         begin
             if TConEvent(ConEventList.Items.Objects[Index]) <> nil then
+            begin
                labelStr:= TConEvent(ConEventList.Items.Objects[Index]).EventLabel;
+               idxStr := TConEvent(ConEventList.Items.Objects[Index]).EventIdx.toString;
+            end;
         end;
 
         // Turns out, original ConEdit highlights events with non-empty label with green color!
@@ -2483,7 +2724,14 @@ begin
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then
            Font.Color := clWhite else Font.Color := clMaroon;
 
-        TextOut(Rect.Left + 4, Rect.Top + 4, labelStr);
+        //TextOut(Rect.Left + 4, Rect.Top + 4, labelStr);
+        TextOut(Rect.Left + 20, Rect.Top + 4, labelStr);
+
+        // draw event index here (set color and draw text)
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then
+           Font.Color := clYellow else Font.Color := clBlue;
+
+        TextOut(Rect.Left, Rect.Top + 4, idxStr);
     end;
 end;
 
@@ -2536,6 +2784,13 @@ begin
     Exit();
 
     EventJump := TConEventJump(ConEventList.Items.Objects[ConEventList.ItemIndex]);
+
+    if Assigned(EventJump) = False then
+    begin
+        ShowMessage('EventJump not assigned');
+        Exit();
+    end;
+
 
     if (EventJump.currentConversationId <> EventJump.conversationId) then
     begin
@@ -2602,6 +2857,11 @@ begin
         AddLog(ConversationsList.Items[i].conName + ' id: ' + ConversationsList.Items[i].id.ToString);
     end;
 
+end;
+
+procedure TfrmMain.Conversation_CheckLabelsExecute(Sender: TObject);
+begin
+    // Find out what it does do
 end;
 
 procedure TfrmMain.Conversation_PropertiesExecute(Sender: TObject);
@@ -2697,6 +2957,13 @@ begin
   InsertEvent(End2.Tag);
 end;
 
+procedure TfrmMain.DateTimeToDouble1Click(Sender: TObject);
+begin
+    var testDT := Now();
+
+    ShowMessage(testDT.ToString);
+end;
+
 procedure TfrmMain.DeleteConversationExecute(Sender: TObject);
 begin
     if bAskForConvoDelete = true then
@@ -2735,6 +3002,13 @@ begin
     end;
 end;
 
+procedure TfrmMain.EventListItems1Click(Sender: TObject);
+begin
+    for var i:= 0 to ConEventList.Count -1 do
+        AddLog('ConEventList[' + i.ToString + '] ' + ConEventList.Items[i]);
+
+end;
+
 procedure TfrmMain.Event_DeleteExecute(Sender: TObject);
 begin
     if bAskForEventDelete = true then
@@ -2756,6 +3030,11 @@ begin
     ConvoTree.FullExpand();
 end;
 
+procedure TfrmMain.mnuCustomizeToolbarClick(Sender: TObject);
+begin
+//    mainToolBar.
+end;
+
 procedure TfrmMain.mnuExpandedEventList1Click(Sender: TObject);
 begin
     bExpandedEventList := mnuExpandedEventList1.Checked;
@@ -2765,7 +3044,6 @@ end;
 procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
     SaveCfg();
-    AnimateWindow(Handle, 300, AW_BLEND or AW_HIDE);
 end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
@@ -2799,8 +3077,8 @@ begin
         pnlEventList.Show();
         Splitter1.Show();
         pnlConvoTree.Show();
-        ConversationMenu.Visible:= True;
-        EventsMenu.Visible      := True;
+        ConversationMenu.Visible:= False;
+        EventsMenu.Visible      := False;
         TablesMenu.Visible      := True;
 
         Close1.Visible          := True;
@@ -2824,13 +3102,18 @@ begin
         SaveAs1.Visible         := False;
         GenAudioNames.Visible   := False;
         ConvoProperties.Visible := False;
-
     end;
 end;
 
 procedure TfrmMain.CreateTestFile1Click(Sender: TObject);
 begin
     SaveConFile('C:\Temp\First26.con');
+end;
+
+procedure TfrmMain.CurrentConversationEvents1Click(Sender: TObject);
+begin
+    for var i:= 0 to High(CurrentConversation.Events) do
+        AddLog('Event[' + i.ToString + '] ' + CurrentConversation.Events[i].ClassName);
 end;
 
 procedure TfrmMain.FileCloseExecute(Sender: TObject);
@@ -2861,17 +3144,23 @@ begin
         currentConFile := FileOpenDialog.FileName;  // Assign filename to global variable
 
         if UpperCase(ExtractFileExt(currentConFile)) = '.XML' then
-            LoadConXMLFile(currentConFile)
+        begin
+            LoadConXMLFile(currentConFile);
+            BuildConvoTree();
+        end
         else if UpperCase(ExtractFileExt(currentConFile)) = '.CON' then
-            LoadConFile(currentConFile)
-        else
-            begin
+        begin
+            LoadConFile(currentConFile);
+            BuildConvoTree();
+        end
+        else begin
                 MessageDlg(strSelectConXML,  mtError, [mbOK], 0);
                 Exit();
-            end;
+        end;
 
         StatusBar.Panels[1].Text := currentConFile; // filename in StatusBar
         AddRecentFile(currentConFile);  // Add to recent
+        ToggleMenusPanels(True);
     end;
 end;
 
@@ -2887,24 +3176,27 @@ begin
 
     if FileSaveDialog.Execute() = true then
     begin
-        if FileSaveDialog.FileTypeIndex = 0 then
-        begin
-            savefileName := FileSaveDialog.FileName;
-
-            if ExtractFileExt(savefileName) = '' then
-                savefileName := savefileName + '.xml';
-
-            BuildConXMLFile(FileSaveDialog.FileName);
-        end;
+//        ShowMessage('FileSaveDialog.FileTypeIndex = ' + FileSaveDialog.FileTypeIndex.ToString);
 
         if FileSaveDialog.FileTypeIndex = 1 then
         begin
             savefileName := FileSaveDialog.FileName;
 
             if ExtractFileExt(savefileName) = '' then
+                savefileName := savefileName + '.xml';
+
+            BuildConXMLFile(savefileName);
+        end;
+
+        if FileSaveDialog.FileTypeIndex = 2 then
+        begin
+            savefileName := FileSaveDialog.FileName;
+
+            var FileExt := ExtractFileExt(savefileName);
+            if FileExt = '' then
                 savefileName := savefileName + '.con';
 
-            SaveConFile(FileSaveDialog.FileName);
+            SaveConFile(savefileName);
         end;
     end;
 end;
@@ -3083,6 +3375,180 @@ end;
 
 procedure TfrmMain.AddEvent(TargetPage: Integer); // Add event to end
 begin
+    frmEventInsAdd.editEventLabel.Clear();
+
+    case TargetPage of
+    0: // speech
+    begin
+        frmEventInsAdd.cmbSpeakingFrom.Clear();
+        frmEventInsAdd.cmbSpeakingFrom.Items.Assign(frmMain.conFileParameters.fpActors);
+
+        // Speaking To
+        frmEventInsAdd.cmbSpeakingTo.Clear();
+        frmEventInsAdd.cmbSpeakingTo.Items.Assign(frmMain.conFileParameters.fpActors);
+
+        frmEventInsAdd.memoSpeech.Clear();
+
+        frmEventInsAdd.bCreatingNewEvent := True;
+    end;
+    1: // Choice
+    begin
+        frmEventInsAdd.lvChoiceList.Clear();
+        frmEventInsAdd.mmoChoiceText.Clear();
+        frmEventInsAdd.lvChoiceFlagList.Clear();
+        frmEventInsAdd.cbbChoiceJumpToLabel.Clear();
+
+        FillEventLabels(frmMain.CurrentConversation, frmEventInsAdd.cbbChoiceJumpToLabel);
+
+        frmEventInsAdd.bCreatingNewEvent := True;
+    end;
+    2: // SetFlags
+    begin
+        frmEventInsAdd.lvSetFlags.Clear();
+
+        frmEventInsAdd.bCreatingNewEvent := True;
+    end;
+    3: // CheckFlags
+    begin
+        frmEventInsAdd.lvCheckFlags.Clear();
+        frmEventInsAdd.cmbChkFlgJumpToLabel.Clear();
+
+        FillEventLabels(frmMain.CurrentConversation, frmEventInsAdd.cmbChkFlgJumpToLabel);
+
+        frmEventInsAdd.bCreatingNewEvent := True;
+    end;
+    4: // CheckObject
+    begin
+        frmEventInsAdd.cmbObjectToCheck.Clear();
+        frmEventInsAdd.cmbObjectToCheck.Items.Assign(listObjects);
+
+        frmEventInsAdd.cmbObjNotFoundJumpTo.Clear();
+        FillEventLabels(frmMain.CurrentConversation, frmEventInsAdd.cmbObjNotFoundJumpTo);
+
+        frmEventInsAdd.bCreatingNewEvent := True;
+    end;
+    5: // TransferObject
+    begin
+        frmEventInsAdd.cmbObjectToTransfer.Clear();
+        frmEventInsAdd.cmbObjectToTransfer.Items.Assign(listObjects);
+
+        frmEventInsAdd.seAmountToTransfer.Value := 1;
+
+        frmEventInsAdd.cmbTransferObjectTo.Clear();
+        frmEventInsAdd.cmbTransferObjectTo.Items.Assign(listPawnsActors);
+
+        frmEventInsAdd.cmbTransferObjectFrom.Clear();
+        frmEventInsAdd.cmbTransferObjectFrom.Items.Assign(listPawnsActors);
+
+        frmEventInsAdd.cmbTransferObjectFailLabel.Clear();
+        FillEventLabels(frmMain.CurrentConversation, frmEventInsAdd.cmbTransferObjectFailLabel);
+
+        frmEventInsAdd.bCreatingNewEvent := True;
+    end;
+    6: // MoveCamera
+    begin
+        frmEventInsAdd.rbPredefinedCameraPos.Checked := True;
+        frmEventInsAdd.rbPredefinedCameraPosClick(self);
+
+        frmEventInsAdd.bCreatingNewEvent := True;
+    end;
+    7: // PlayAnimation
+    begin
+        frmEventInsAdd.cmbPawnToAnimate.Clear();
+        frmEventInsAdd.cmbPawnToAnimate.Items.Assign(listPawnsActors);
+
+        frmEventInsAdd.rbPlayAnimOnce.Checked := True;
+        frmEventInsAdd.rbPlayAnimOnceClick(self);
+
+        frmEventInsAdd.bCreatingNewEvent := True;
+    end;
+    8: // BuySellTrade -- skip
+    begin
+        //
+    end;
+    9: // Jump
+    begin
+        frmEventInsAdd.cboJumpConv.Clear();
+        for var co := 0 to ConversationsList.Count -1 do
+            frmEventInsAdd.cboJumpConv.Items.Add(ConversationsList.Items[co].conName);
+
+        frmEventInsAdd.cboJumpLabel.Clear();
+        FillEventLabels(frmMain.CurrentConversation, frmEventInsAdd.cboJumpLabel);
+
+        frmEventInsAdd.bCreatingNewEvent := True;
+    end;
+    10:// Random
+    begin
+        frmEventInsAdd.lstRandomLabels.Clear();
+
+        frmEventInsAdd.cmbEventRandomLabels.Clear();
+        FillEventLabels(frmMain.CurrentConversation, frmEventInsAdd.cmbEventRandomLabels);
+
+        frmEventInsAdd.chkCycleEvents.Checked := False;
+        frmEventInsAdd.chkCycleOnce.Checked := False;
+        frmEventInsAdd.chkRandomAfterCycle.Checked := False;
+
+        frmEventInsAdd.bCreatingNewEvent := True;
+    end;
+    11:// Trigger
+    begin
+        frmEventInsAdd.editTriggerTag.Clear();
+
+        frmEventInsAdd.bCreatingNewEvent := True;
+    end;
+    12://AddGoal
+    begin
+        frmEventInsAdd.editGoalName.Clear();
+        frmEventInsAdd.memoGoalText.Clear();
+
+        frmEventInsAdd.rbAddGoal.Checked := True;
+        frmEventInsAdd.chkPrimaryGoal.Checked := False;
+
+        frmEventInsAdd.bCreatingNewEvent := True;
+    end;
+    13:// AddNote
+    begin
+        frmEventInsAdd.memoNoteText.Clear();
+
+        frmEventInsAdd.bCreatingNewEvent := True;
+    end;
+    14:// AddSkillPoints
+    begin
+        frmEventInsAdd.editSkillPointsAmount.Value := 0;
+        frmEventInsAdd.memoSkillPointMessage.Clear();
+
+        frmEventInsAdd.bCreatingNewEvent := True;
+    end;
+    15:// AddCredits
+    begin
+        frmEventInsAdd.seAddCredits.Value := 0;
+
+        frmEventInsAdd.bCreatingNewEvent := True;
+    end;
+    16:// CheckPersona
+    begin
+        frmEventInsAdd.rbCreditsCheck.Checked := True;
+
+        frmEventInsAdd.cmbCheckCondition.ItemIndex := 0;
+
+        frmEventInsAdd.editConditionValue.Value := 0;
+
+        FillEventLabels(frmMain.CurrentConversation, frmEventInsAdd.cmbCheckLabelJump);
+
+        frmEventInsAdd.bCreatingNewEvent := True;
+    end;
+    17:// Comment
+    begin
+        frmEventInsAdd.memoCommentText.Clear();
+
+        frmEventInsAdd.bCreatingNewEvent := True;
+    end;
+    18:// End
+    begin
+        frmEventInsAdd.bCreatingNewEvent := True;
+    end;
+    end;
+
     if (frmEventInsAdd.Visible = false) then
     frmEventInsAdd.Show();
 
@@ -3242,6 +3708,14 @@ begin
     InsertEvent(AddSkillPoints2.Tag);
 end;
 
+procedure TfrmMain.btnGenerateSpeechDirsClick(Sender: TObject);
+begin
+    if SelectDirDialog.Execute() = True then
+    begin
+        CreateAudioDirectories(SelectDirDialog.FileName + '\');
+    end;
+end;
+
 procedure TfrmMain.btnReorderClick(Sender: TObject);
 begin
     if btnReorder.Down = true then ConEventList.DragMode := TDragMode.dmAutomatic
@@ -3312,7 +3786,7 @@ end;
 procedure TfrmMain.mnuToggleMainToolBarClick(Sender: TObject);
 begin
     bShowToolbar := mnuToggleMainToolBar.Checked;
-    pnlToolBar.Visible := mnuToggleMainToolBar.Checked;
+    MainToolBar.Visible := mnuToggleMainToolBar.Checked;
 end;
 
 procedure TfrmMain.PlayAnimation1Click(Sender: TObject);
@@ -3389,9 +3863,23 @@ begin
     OpenRecentFile((Sender as TMenuItem).Caption);
 end;
 
+procedure TfrmMain.tbPrintClick(Sender: TObject);
+begin
+    MessageDlg('Printing is not implemented yet ',  mtWarning, [mbOK], 0);
+end;
+
 procedure TfrmMain.tbSearchClick(Sender: TObject);
 begin
     frmFind.ShowModal();
+end;
+
+procedure TfrmMain.tmrEventWinPosSyncTimer(Sender: TObject);
+begin
+    if (frmEventInsAdd.Visible = True) and (frmEventInsAdd.chkFollowMainWindow.Checked = True) then
+    begin
+        frmEventInsAdd.Left := frmMain.Left + eventsFormLeft;
+        frmEventInsAdd.Top := frmMain.Top + eventsFormTop;
+    end;
 end;
 
 procedure TfrmMain.TransferObject1Click(Sender: TObject);
