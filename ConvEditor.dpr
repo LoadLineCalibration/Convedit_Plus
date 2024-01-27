@@ -17,19 +17,29 @@ uses
   ConvoProperties in 'ConvoProperties.pas' {frmConvoProperties},
   EditValueDialog in 'EditValueDialog.pas' {frmEditValue},
   ConFileProperties in 'ConFileProperties.pas' {frmConvoFileProperties},
-  EditChoice in 'EditChoice.pas' {frmEditChoice},
   HelpWindow in 'HelpWindow.pas' {frmHelp},
   frmFlagList1 in 'frmFlagList1.pas' {frmFlagList},
   frmSettings1 in 'frmSettings1.pas' {frmSettings},
-  ConvEditPlus_Const in 'ConvEditPlus_Const.pas',
+  ConvEditPlus.Consts in 'ConvEditPlus.Consts.pas',
   ConvEditPlus_Util in 'ConvEditPlus_Util.pas',
   frmFind1 in 'frmFind1.pas' {frmFind},
   AboutBox1 in 'AboutBox1.pas' {frmAbout},
   AddInsertEvent in 'AddInsertEvent.pas' {frmEventInsAdd},
   Conversation.Classes in 'Conversation.Classes.pas',
-  ConXML.Service in 'ConXML.Service.pas';
+  ConXML.Reader in 'ConXML.Reader.pas',
+  ConFile.Reader in 'ConFile.Reader.pas',
+  ConvEdit.Configuration in 'ConvEdit.Configuration.pas',
+  ConFile.Writer in 'ConFile.Writer.pas',
+  ConXML.writer in 'ConXML.writer.pas',
+  ConvEditPlus.Enums in 'ConvEditPlus.Enums.pas',
+  Vcl.Themes,
+  Vcl.Styles;
 
 {$R *.res}
+
+// Should run under Windows 2000
+{$SETPEOSVERSION 5.0}
+{$SETPESUBSYSVERSION 5.0}
 
 begin
   Application.Initialize;
@@ -40,7 +50,6 @@ begin
   Application.CreateForm(TfrmConvoProperties, frmConvoProperties);
   Application.CreateForm(TfrmEditValue, frmEditValue);
   Application.CreateForm(TfrmConvoFileProperties, frmConvoFileProperties);
-  Application.CreateForm(TfrmEditChoice, frmEditChoice);
   Application.CreateForm(TfrmHelp, frmHelp);
   Application.CreateForm(TfrmFlagList, frmFlagList);
   Application.CreateForm(TfrmSettings, frmSettings);
