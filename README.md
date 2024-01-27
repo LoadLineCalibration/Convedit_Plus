@@ -1,16 +1,15 @@
 # Convedit_Plus
 
-Full sources will be added when program will be in working state.
-
 An attempt to recreate Deus Ex conversation editor (ConEdit or ConvEdit) in Delphi Language (Pascal). 
 
 Uses FreeEsVCLComponents: https://github.com/errorcalc/FreeEsVclComponents
 
 Uses Xml.VerySimple: https://github.com/Dennis1000/verysimplexml
 
-Built with Delphi 11
+Built with Delphi 11.3
 
-Compatible with ['Windows7'..'Windows 11']
+Compatible with [Windows 2000 .. Windows 11]
+(not sure about Windows 2000/XP, need to check)
 
 Features:
 * Portable -- only single .exe file and all configuration data stored in .ini file. Does not uses System Registry. No more messing with .ocx files! 
@@ -18,4 +17,5 @@ Features:
 * Supports scrolling with mouse wheel!
 
 Screenshot:
-![изображение](https://github.com/LoadLineCalibration/Convedit_Plus/assets/44388228/2fb0298c-7a40-46b2-b66e-dda34b58aec0)
+![изображение](https://github.com/LoadLineCalibration/Convedit_Plus/assets/44388228/c2533a80-5c6d-4d1d-8109-4c3a704ac33c)
+
