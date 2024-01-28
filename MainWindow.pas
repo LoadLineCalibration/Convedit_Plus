@@ -635,14 +635,15 @@ var
     i: Integer;
 begin
     Result := False;
+
     for i := 0 to TreeView.Items.Count - 1 do
     begin
         // Compare the text of each item with the desired item text
-        if TreeView.Items[i].Text = ItemText then
+        if LowerCase(TreeView.Items[i].Text) = LowerCase(ItemText) then
         begin
             Result := True;
-            Break; // Exit the loop if the item is found
-        end;
+            Exit(); // Exit the loop if the item is found
+        end
     end;
 end;
 
@@ -696,7 +697,7 @@ begin
     Node.Selected := True;
 end;
 
-function TfrmMain.FindConversationObjByString(conName: string): TConversation; // Find conversation by name return as TObject
+function TfrmMain.FindConversationObjByString(conName: string): TConversation; // Find conversation by name and return as TObject
 begin
     for var i:= 0 to ConversationsList.Count -1 do
     begin
@@ -858,8 +859,6 @@ procedure TfrmMain.BuildConvoTree();
 begin
     for var cList := 0 to ConversationsList.Count -1 do
     begin
-        //ConvoTree.Items.BeginUpdate();
-
         var NodeConName, NodeConOwnerName, NodeDependsOnFlags: TTreeNode;
         var tempConvo := ConversationsList.Items[cList];
 
@@ -869,6 +868,16 @@ begin
            NodeConOwnerName.ImageIndex := 0;
            NodeConOwnerName.ExpandedImageIndex := 0;
            NodeConOwnerName.SelectedIndex := 0;
+        end
+        else
+        begin
+           NodeConOwnerName := ConvoTree.Items.GetFirstNode;
+           while NodeConOwnerName <> nil do
+           begin
+               if NodeConOwnerName.Text = tempConvo.conOwnerName then
+                   Break;
+               NodeConOwnerName := NodeConOwnerName.GetNextSibling;
+           end;
         end;
 
         // Add owner's conversations
@@ -897,12 +906,70 @@ begin
                 NodeDependsOnFlags.SelectedIndex := 3;
             end;
         end;
-
-        //ConvoTree.Items.EndUpdate();
     end;
 
     SetEventIndexes();
 end;
+
+{procedure TfrmMain.BuildConvoTree();
+begin
+    for var cList := 0 to ConversationsList.Count -1 do
+    begin
+        var NodeConName, NodeConOwnerName, NodeDependsOnFlags: TTreeNode;
+        var tempConvo := ConversationsList.Items[cList];
+
+        NodeConOwnerName := nil; // Initialize the variable
+
+        // Check if the owner's name node already exists
+        for var i := 0 to ConvoTree.Items.Count - 1 do
+        begin
+            if ConvoTree.Items[i].Text = tempConvo.conOwnerName then
+            begin
+                NodeConOwnerName := ConvoTree.Items[i];
+                Break; // Exit the loop if the node is found
+            end;
+        end;
+
+        // If the owner's name node doesn't exist, create it
+        if NodeConOwnerName = nil then
+        begin
+            NodeConOwnerName := ConvoTree.Items.Add(nil, tempConvo.conOwnerName);
+            NodeConOwnerName.ImageIndex := 0;
+            NodeConOwnerName.ExpandedImageIndex := 0;
+            NodeConOwnerName.SelectedIndex := 0;
+        end;
+
+        // Add owner's conversations
+        NodeConName := ConvoTree.Items.AddChildObject(NodeConOwnerName, tempConvo.conName, tempConvo);
+        NodeConName.ImageIndex := 1;
+        NodeConName.ExpandedImageIndex := 1;
+        NodeConName.SelectedIndex := 1;
+
+        // Flags required by this conversation
+        for var DOF := 0 to Length(tempConvo.conDependsOnFlags) - 1 do
+        begin
+            NodeDependsOnFlags := ConvoTree.Items.AddChild(NodeConName,
+            tempConvo.conDependsOnFlags[DOF].flagName + ' = '
+            + BoolToStr(tempConvo.conDependsOnFlags[DOF].flagValue, true));
+
+            // red icon = false, green icon = true
+            if NodeDependsOnFlags.Text.EndsWith('true') then
+            begin
+                NodeDependsOnFlags.ImageIndex := 2;
+                NodeDependsOnFlags.ExpandedImageIndex := 2;
+                NodeDependsOnFlags.SelectedIndex := 2;
+            end
+            else
+            begin
+                NodeDependsOnFlags.ImageIndex := 3;
+                NodeDependsOnFlags.ExpandedImageIndex := 3;
+                NodeDependsOnFlags.SelectedIndex := 3;
+            end;
+        end;
+    end;
+
+    SetEventIndexes();
+end;}
 
 procedure TfrmMain.FirstTimeLaunch();// First launch?
 var iniName, aPath: string;
