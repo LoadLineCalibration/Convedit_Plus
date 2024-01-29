@@ -120,24 +120,24 @@ const conFileHeader: array[0..25] of Byte =
 
 Const
     ET_Speech_Caption         = 'Speech';
-	ET_Choice_Caption         = 'Choice';
-	ET_SetFlag_Caption        = 'Set Flags';
-	ET_CheckFlag_Caption      = 'Check Flags';
-	ET_CheckObject_Caption    = 'Check Object';
-	ET_TransferObject_Caption = 'Transfer Object';
-	ET_MoveCamera_Caption     = 'Move Camera';
-	ET_Animation_Caption      = 'Animation';
-	ET_Trade_Caption          = 'Trade';
-	ET_Jump_Caption           = 'Jump';
-	ET_Random_Caption         = 'Random Label';
-	ET_Trigger_Caption        = 'Trigger';
-	ET_AddGoal_Caption        = 'Add Goal';
-	ET_AddNote_Caption        = 'Add Note';
-	ET_AddSkillPoints_Caption = 'Add Skill Points';
-	ET_AddCredits_Caption     = 'Add Credits';
-	ET_CheckPersona_Caption   = 'Check Persona';
-	ET_Comment_Caption        = 'Comment';
-	ET_End_Caption            = 'End';
+    ET_Choice_Caption         = 'Choice';
+    ET_SetFlag_Caption        = 'Set Flags';
+    ET_CheckFlag_Caption      = 'Check Flags';
+    ET_CheckObject_Caption    = 'Check Object';
+    ET_TransferObject_Caption = 'Transfer Object';
+    ET_MoveCamera_Caption     = 'Move Camera';
+    ET_Animation_Caption      = 'Animation';
+    ET_Trade_Caption          = 'Trade';
+    ET_Jump_Caption           = 'Jump';
+    ET_Random_Caption         = 'Random Label';
+    ET_Trigger_Caption        = 'Trigger';
+    ET_AddGoal_Caption        = 'Add Goal';
+    ET_AddNote_Caption        = 'Add Note';
+    ET_AddSkillPoints_Caption = 'Add Skill Points';
+    ET_AddCredits_Caption     = 'Add Credits';
+    ET_CheckPersona_Caption   = 'Check Persona';
+    ET_Comment_Caption        = 'Comment';
+    ET_End_Caption            = 'End';
 
     STATS_CHOICE_SPEAKER = 'JCDenton';
 
@@ -265,7 +265,25 @@ ResourceString
 
     strDefaultString = 'Default text';
 
-    btnReorderHint = 'Enable changing order of events. Hold %s key and drag one of items.';
+    // Toolbar buttons tooltips
+    tbNewConversationFileHint = 'Create new conversation file';
+    tbOpenFileHint = 'Open existing .con or .xml file';
+    tbSaveFileHint = 'Save current file. To save under different name or format, use "Save As..."';
+    tbCloseFileHint = 'Close current file, ask to save if been modified';
+    tbPrintHint = 'Print conversations';
+    tbCutHint = 'Cut selected event to clipboard';
+    tbCopyHint = 'Copy selected event to clipboard';
+    tbPasteHint = 'Paste event from clipboard';
+    tbSearchHint = 'Find text in conversations/events';
+    tbPropertiesHint = 'Displays properties of current conversations, also allows to modify some fields, like name, flags, etc.';
+    tbGenAudioHint = 'Generate audio filenames for Speech and Choice events.';
+    tbGenerateAudioDirsHint = 'Create all required directories with placeholder .mp3 files.' + #10#13 +
+                              'You will need to replace these placeholder files with real speech files.';
+    tbSettingsHint = 'Change program settings';
+    tbReorderHint = 'Enable changing order of events. Hold %s key and drag one of items.';
+    tbStickyWindowHint = 'Window will snap to screen';
+    tbShowLog = 'Show log';
+
 
     strInvalidConFileHdr = 'Invalid .con file header! Loading aborted. Please choose valid .con file.';
     strSelectConXML = 'Please select .con or .xml file!';
