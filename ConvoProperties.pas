@@ -73,8 +73,8 @@ type
 
     // new procedures
     procedure AddNewConversation();
-    procedure EditConversation(convoToEdit: TConversation); // Load conversation info so we can change something
-    procedure UpdateConversation(convoToUpdate: TConversation); // write modified data back to Conversation we're loaded in procedure above
+    procedure EditConversation(var convoToEdit: TConversation); // Load conversation info so we can change something
+    procedure UpdateConversation(var convoToUpdate: TConversation); // write modified data back to Conversation we're loaded in procedure above
     procedure ClearFields();
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure editDistFromPlayerChange(Sender: TObject);
@@ -141,6 +141,8 @@ begin
         conName := editConvoName.Text;
         conCreatedByName := frmMain.ConversationUserName;
         conModifiedByName := frmMain.ConversationUserName;
+
+        conModifiedByDate := conXMLDateTime(); // set current date/time
 
         // conversation has only one owner
         conOwnerName:= cmbConvoOwner.Items[cmbConvoOwner.ItemIndex];
@@ -212,7 +214,7 @@ begin
     end;
 end;
 
-procedure TfrmConvoProperties.UpdateConversation(convoToUpdate: TConversation);
+procedure TfrmConvoProperties.UpdateConversation(var convoToUpdate: TConversation);
 begin
     with convoToUpdate do
     begin
@@ -220,9 +222,13 @@ begin
         conCreatedByName  := frmMain.ConversationUserName;
         conModifiedByName := frmMain.ConversationUserName;
 
+        conModifiedByDate := conXMLDateTime(); // set current date/time
+
         // conversation has only one owner
-        conOwnerName:= cmbConvoOwner.Items[cmbConvoOwner.ItemIndex];
-        conOwnerIndex := frmMain.FindTableIdByName(tmActorsPawns, conOwnerName);
+        var tempConvoOwnerName := cmbConvoOwner.Items[cmbConvoOwner.ItemIndex];
+
+        conOwnerName := tempConvoOwnerName; //cmbConvoOwner.Items[cmbConvoOwner.ItemIndex];
+        conOwnerIndex := frmMain.FindTableIdByName(tmActorsPawns, tempConvoOwnerName);
 
         // How conversation is activated + options
         bInfoLink        := chkDataLinkConvo.Checked;
@@ -247,15 +253,13 @@ begin
             conDependsOnFlags[cdof].flagValue := StrToBool(lvConvoDependsOnFlags.Items[cdof].SubItems[0]);
             conDependsOnFlags[cdof].flagIndex := lvConvoDependsOnFlags.Items[cdof].SubItems[1].ToInteger;
         end;
-
-
-        frmMain.ConvoTree.Items.Clear();
-        frmMain.BuildConvoTree();
-
     end;
+
+    frmMain.ConvoTree.Items.Clear();
+    frmMain.BuildConvoTree();
 end;
 
-procedure TfrmConvoProperties.EditConversation(convoToEdit: TConversation);
+procedure TfrmConvoProperties.EditConversation(var convoToEdit: TConversation);
 begin
     pgcConvoPropertiesTabs.ActivePageIndex := 0;
     ClearFields();

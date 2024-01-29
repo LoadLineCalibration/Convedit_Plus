@@ -492,6 +492,7 @@ end;
 constructor TConversation.Create();
 begin
     conCreatedByDate := conXMLDateTime();
+    conModifiedByDate := conXMLDateTime();
 
     inherited;
 end;
@@ -501,9 +502,9 @@ begin
     fpFileVersion := CEP_CONXML_FILE_VERSION;
     fpCreatedByDate := conXMLDateTime();
 
-    fpActors :=  TStringList.Create();
-    fpFlags :=   TStringList.Create();
-    fpSkills :=  TStringList.Create();
+    fpActors  := TStringList.Create();
+    fpFlags   := TStringList.Create();
+    fpSkills  := TStringList.Create();
     fpObjects := TStringList.Create();
 
     inherited;
