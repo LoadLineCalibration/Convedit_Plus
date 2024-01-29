@@ -28,7 +28,6 @@ uses
   Conversation.Classes in 'Conversation.Classes.pas',
   ConXML.Reader in 'ConXML.Reader.pas',
   ConFile.Reader in 'ConFile.Reader.pas',
-  ConvEdit.Configuration in 'ConvEdit.Configuration.pas',
   ConFile.Writer in 'ConFile.Writer.pas',
   ConXML.writer in 'ConXML.writer.pas',
   ConvEditPlus.Enums in 'ConvEditPlus.Enums.pas',
