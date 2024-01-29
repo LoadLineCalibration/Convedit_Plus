@@ -2,9 +2,18 @@
 
 An attempt to recreate Deus Ex conversation editor (ConEdit or ConvEdit) in Delphi Language (Pascal). 
 
-Uses FreeEsVCLComponents: https://github.com/errorcalc/FreeEsVclComponents
+what in __NOT__ implemented yet:
+* Insert event
+* text wrap
+* label checking
+* and other minor stuff
+  
+Also some bugs here and there. 
 
-Uses Xml.VerySimple: https://github.com/Dennis1000/verysimplexml
+--
+
+* Uses FreeEsVCLComponents: https://github.com/errorcalc/FreeEsVclComponents
+* Uses Xml.VerySimple: https://github.com/Dennis1000/verysimplexml
 
 Built with Delphi 11.3
 
