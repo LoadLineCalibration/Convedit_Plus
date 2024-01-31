@@ -275,6 +275,7 @@ ResourceString
     tbCopyHint = 'Copy selected event to clipboard';
     tbPasteHint = 'Paste event from clipboard';
     tbSearchHint = 'Find text in conversations/events';
+    tbVerifyLabelsHint = 'Verify if references to labels are valid.';
     tbPropertiesHint = 'Displays properties of current conversations, also allows to modify some fields, like name, flags, etc.';
     tbGenAudioHint = 'Generate audio filenames for Speech and Choice events.';
     tbGenerateAudioDirsHint = 'Create all required directories with placeholder .mp3 files.' + #10#13 +
