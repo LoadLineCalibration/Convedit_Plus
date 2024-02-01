@@ -32,7 +32,8 @@ uses
   ConXML.writer in 'ConXML.writer.pas',
   ConvEditPlus.Enums in 'ConvEditPlus.Enums.pas',
   Vcl.Themes,
-  Vcl.Styles;
+  Vcl.Styles,
+  uFrmLabelErrors in 'uFrmLabelErrors.pas' {frmLabelErrors};
 
 {$R *.res}
 
@@ -55,6 +56,7 @@ begin
   Application.CreateForm(TfrmFind, frmFind);
   Application.CreateForm(TfrmAbout, frmAbout);
   Application.CreateForm(TfrmEventInsAdd, frmEventInsAdd);
+  Application.CreateForm(TfrmLabelErrors, frmLabelErrors);
   Application.HintHidePause := 10000;
   Application.Run;
 end.
