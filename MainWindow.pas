@@ -8,7 +8,7 @@ uses
   system.UITypes, Vcl.ComCtrls, System.Types, Vcl.Buttons, Vcl.ToolWin, System.IniFiles, System.IOUtils,
   Conversation.Classes, System.ImageList, Vcl.ImgList, Table, Vcl.GraphUtil, ES.BaseControls, ES.Layouts,
   System.Actions, Vcl.ActnList, System.Generics.Collections, System.TypInfo, xml.VerySimple, System.StrUtils,
-  Vcl.MPlayer, ConvEditPlus.Enums;
+  Vcl.MPlayer, ConvEditPlus.Enums, Winapi.ShellAPI;
 
 
 type
@@ -145,7 +145,7 @@ type
     RecentFile5: TMenuItem;
     RecentFile6: TMenuItem;
     RecentFile7: TMenuItem;
-    Placeholder1: TMenuItem;
+    mnuGithub: TMenuItem;
     N17: TMenuItem;
     pnlEventList: TEsPanel;
     ActionList1: TActionList;
@@ -161,7 +161,6 @@ type
     Conversation_Cut: TAction;
     Conversation_Copy: TAction;
     Conversation_Paste: TAction;
-    Check_Labels: TAction;
     Conversation_Properties: TAction;
     Conversation_Find: TAction;
     ConTree_ExpandAll: TAction;
@@ -196,7 +195,7 @@ type
     tbOpenFile: TToolButton;
     tbSaveFile: TToolButton;
     ToolButton4: TToolButton;
-    btnCloseFile: TToolButton;
+    tbCloseFile: TToolButton;
     ToolButton8: TToolButton;
     tbPrint: TToolButton;
     ToolButton5: TToolButton;
@@ -208,14 +207,14 @@ type
     ToolButton11: TToolButton;
     tbProperties: TToolButton;
     ToolButton7: TToolButton;
-    btnGenAudio: TToolButton;
-    btnGenerateSpeechDirs: TToolButton;
+    tbGenAudio: TToolButton;
+    tbGenerateAudioDirs: TToolButton;
     ToolButton6: TToolButton;
     tbSettings: TToolButton;
     ToolButton2: TToolButton;
     btnReorder: TToolButton;
     ToolButton3: TToolButton;
-    btnStickyWindow: TToolButton;
+    tbStickyWindow: TToolButton;
     ToolButton1: TToolButton;
     btnViewLog: TToolButton;
     StaticText1: TStaticText;
@@ -224,6 +223,8 @@ type
     N20: TMenuItem;
     Conversation_CheckLabels: TAction;
     Button1: TButton;
+    tbVerifyLabels: TToolButton;
+    ToolButton12: TToolButton;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -234,6 +235,9 @@ type
     procedure InsertEvent(TargetPage: Integer); // Insert event at current position in the list
     procedure EditCurrentEvent(EventToEdit: TConEvent);
     procedure ToggleLV_FlagValue(lstv: TListView);
+
+    procedure VerifyLabels();
+    function CheckEventLabel(con: TConversation; aLabel: string): string;
 
     procedure SendStringToEditValue(control: TControl);
 
@@ -401,7 +405,7 @@ type
     procedure ConEventListDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
     procedure ConEventListDragDrop(Sender, Source: TObject; X, Y: Integer);
     procedure btnReorderClick(Sender: TObject);
-    procedure btnStickyWindowClick(Sender: TObject);
+    procedure tbStickyWindowClick(Sender: TObject);
     procedure ClearForNewFile1Click(Sender: TObject);
     procedure CreateTestFile1Click(Sender: TObject);
     procedure Close1Click(Sender: TObject);
@@ -415,12 +419,14 @@ type
     procedure DateTimeToDouble1Click(Sender: TObject);
     procedure EventListItems1Click(Sender: TObject);
     procedure CurrentConversationEvents1Click(Sender: TObject);
-    procedure btnGenerateSpeechDirsClick(Sender: TObject);
+    procedure tbGenerateAudioDirsClick(Sender: TObject);
     procedure mnuCustomizeToolbarClick(Sender: TObject);
     procedure Conversation_CheckLabelsExecute(Sender: TObject);
     procedure tbPrintClick(Sender: TObject);
     procedure mainToolBarCustomDrawButton(Sender: TToolBar; Button: TToolButton;
       State: TCustomDrawState; var DefaultDraw: Boolean);
+    procedure mnuGithubClick(Sender: TObject);
+    procedure Check_LabelsExecute(Sender: TObject);
   private
     { Private declarations }
     procedure WMEnterSizeMove(var Msg: TMessage); message WM_ENTERSIZEMOVE;
@@ -428,54 +434,52 @@ type
   public
     { Public declarations }
 
-    conFileParameters: TConFileParameters; // To store basic data (header)
+    var conFileParameters: TConFileParameters; // To store basic data (header)
 
-    ConversationsList: TObjectList<TConversation>; // To store conversations and their events
-    CurrentConversation: TConversation; // Conversation currently selected in ConvoTree
-    CurrentEvent: TConEvent; // Current (selected) event in event list
+    var ConversationsList: TObjectList<TConversation>; // To store conversations and their events
+    var CurrentConversation: TConversation; // Conversation currently selected in ConvoTree
+    var CurrentEvent: TConEvent; // Current (selected) event in event list
 
     // sets of strings to store Tables
-    listPawnsActors: TStringList;
-    listFlags: TStringList;
-    listSkills: TStringList;
-    listObjects: TStringList;
-
+    var listPawnsActors: TStringList;
+    var listFlags: TStringList;
+    var listSkills: TStringList;
+    var listObjects: TStringList;
 
     // Configuration file
-
     // color variables for configuration file (clrGrid is color of separators between events)
-    clrHighlightEvent, clrHighlightEventFrom, clrHighlightEventTo, clrGrid: TColor;
+    var clrHighlightEvent, clrHighlightEventFrom, clrHighlightEventTo, clrGrid: TColor;
 
     // boolean variables for configuration file
-    bShowAudioFiles, bShowStatusBar, bShowToolbar, bExpandedEventList,
+    var bShowAudioFiles, bShowStatusBar, bShowToolbar, bExpandedEventList,
     bExpandFlagsOnExpandAll,
     bAskForConvoDelete, bAskForEventDelete, bHglEventWithNoAudio,
     bHglEventsGradient, bFlatToolbar, bAutoSaveEnabled,
     bUse3DSelectionFrame, bUseWhiteSelectedText: Boolean;
 
     // strings
-    ConversationUserName,
+    var ConversationUserName,
     ConFilePath, ConFileBakPath, ConFileAudioPath: string;
 
     // Integer values
-    AutoSaveMinutes: Integer;
+    var AutoSaveMinutes: Integer;
 
     // to store recent files!
-    RecentFiles: array[0..CEP_MAX_RECENT_FILES] of string;
+    var RecentFiles: array[0..CEP_MAX_RECENT_FILES] of string;
 
-    ReorderModKey: TReorderEventsModKey; // Hold xxx key to reorder events
-    OpenFileFilterIndex, SaveFileFilterIndex: Integer; // save last selected file filter when opening/saving file. Also to save some of my time :D
+    var ReorderModKey: TReorderEventsModKey; // Hold xxx key to reorder events
+    var OpenFileFilterIndex, SaveFileFilterIndex: Integer; // save last selected file filter when opening/saving file. Also to save some of my time :D
 
     // end of configuration file variables
 
-    MainFormIni: TIniFile;     // ini file
+    var MainFormIni: TIniFile;     // ini file
 
-    currentConFile: string; // global variable, so I can use it anywhere...
+    var currentConFile: string; // global variable, so I can use it anywhere...
 
-    bFileModified: Boolean; // set to True when file has been modified
+    var bFileModified: Boolean; // set to True when file has been modified
 
-    eventsFormLeft: Integer;
-    eventsFormTop: Integer;
+    var eventsFormLeft: Integer;
+    var eventsFormTop: Integer;
   end;
 
 var
@@ -488,7 +492,7 @@ implementation
 {$R SoundResources.res} // contains final.mp3
 
 uses frmSettings1, EditValueDialog, ConFileProperties, AboutBox1, ConvoProperties, frmFind1, AddInsertEvent,
-     ConXml.Reader, ConXML.Writer, confile.Reader, conFile.Writer;
+     ConXml.Reader, ConXML.Writer, confile.Reader, conFile.Writer, uFrmLabelErrors;
 
 
 
@@ -816,9 +820,9 @@ end;
 function TfrmMain.GetReorderButtonHint(): string;
 begin
     case ReorderModKey of
-      re_Ctrl: Result :=  Format(btnReorderHint, ['Ctrl']);
-      re_Shift: Result := Format(btnReorderHint, ['Shift']);
-      re_Alt: Result :=   Format(btnReorderHint, ['Alt']);
+      re_Ctrl: Result :=  Format(tbReorderHint, ['Ctrl']);
+      re_Shift: Result := Format(tbReorderHint, ['Shift']);
+      re_Alt: Result :=   Format(tbReorderHint, ['Alt']);
     end;
 end;
 
@@ -2636,7 +2640,7 @@ end;
 
 procedure TfrmMain.CollapseAll2Click(Sender: TObject);
 begin
-  ConvoTree.FullCollapse();
+    ConvoTree.FullCollapse();
 end;
 
 procedure TfrmMain.Comment1Click(Sender: TObject);
@@ -2928,7 +2932,7 @@ end;
 
 procedure TfrmMain.Conversation_CheckLabelsExecute(Sender: TObject);
 begin
-    // Find out what it does do
+    VerifyLabels();
 end;
 
 procedure TfrmMain.Conversation_PropertiesExecute(Sender: TObject);
@@ -3123,6 +3127,24 @@ begin
     ConvoTree.AlphaSort(true);
 
     ToggleMenusPanels(False);
+
+    tbNewConversationFile.Hint := tbNewConversationFileHint;
+    tbOpenFile.Hint := tbOpenFileHint;
+    tbSaveFile.Hint := tbSaveFileHint;
+    tbCloseFile.Hint := tbCloseFileHint;
+    tbPrint.Hint := tbPrintHint;
+
+    tbCut.Hint := tbCutHint;
+    tbCopy.Hint := tbCopyHint;
+    tbPaste.Hint := tbPasteHint;
+    tbSearch.Hint := tbSearchHint;
+    tbVerifyLabels.Hint := tbVerifyLabelsHint;
+    tbProperties.Hint := tbPropertiesHint;
+    tbGenAudio.Hint := tbGenAudioHint;
+    tbGenerateAudioDirs.Hint := tbGenerateAudioDirsHint;
+    tbSettings.Hint := tbSettingsHint;
+    tbStickyWindow.Hint := tbStickyWindowHint;
+    btnViewLog.hint := tbShowLogHint;
 end;
 
 procedure TfrmMain.CreateObjectLists();
@@ -3186,6 +3208,7 @@ end;
 procedure TfrmMain.FileCloseExecute(Sender: TObject);
 begin
     CreateConFile(False);
+    ToggleMenusPanels(False);
 end;
 
 procedure TfrmMain.FileGenerateAudioNamesExecute(Sender: TObject);
@@ -3285,7 +3308,9 @@ begin
             //ShowMessage('About to save CON: ' + currentConFile);
             SaveConFile(currentConFile);
         end;
-    end;
+    end
+    else
+    FileSaveAsExecute(FileSaveAs);
 end;
 
 procedure TfrmMain.Flags1Click(Sender: TObject);
@@ -3384,6 +3409,11 @@ end;
 procedure TfrmMain.CheckPersona2Click(Sender: TObject);
 begin
     InsertEvent(CheckPersona2.Tag);
+end;
+
+procedure TfrmMain.Check_LabelsExecute(Sender: TObject);
+begin
+    VerifyLabels();
 end;
 
 procedure TfrmMain.Choice1Click(Sender: TObject);
@@ -3692,6 +3722,168 @@ begin
     end;
 end;
 
+procedure TfrmMain.VerifyLabels();
+begin
+//    frmLabelErrors.ShowModal();
+{ events which use labels to jump to:
+
+    TConEventCheckFlag
+    TConEventCheckObject
+    TConEventTransferObject
+    TConEventJump
+    TConEventRandom (array)
+    TConEventCheckPersona
+
+    also TConEventChoice > Choices have JumpTolabel when choice is selected.
+    Note: the OG conedit allows empty labels in choiceitems, but gives an error if label is invalid
+}
+    if currentConFile = '' then Exit();
+
+
+    for var con in ConversationsList do
+    begin
+        for var event in con.Events do
+        begin
+            if event is TConEventCheckFlag then
+            begin
+                // ToDo: взять текущий Conversation, обойти его и поискать такую метку в EventLabel!
+                var EventCheckFlag := TConEventCheckFlag(event);
+
+                if EventCheckFlag.GotoLabel <> CheckEventLabel(con, EventCheckFlag.GotoLabel) then
+                begin
+                    with frmLabelErrors do
+                    begin
+                        var LErrorItem:= lvLabelErrors.Items.Add();
+
+                        LErrorItem.Caption := con.conName + ' > ' + event.ClassName;
+                        LErrorItem.SubItems.Add(EventCheckFlag.GotoLabel);
+                    end;
+                end;
+            end;
+
+            if event is TConEventCheckObject then
+            begin
+                var EventCheckObj := TConEventCheckObject(event);
+
+                if EventCheckObj.GoToLabel <> CheckEventLabel(con, EventCheckObj.GoToLabel) then
+                begin
+                    with frmLabelErrors do
+                    begin
+                        var LErrorItem:= lvLabelErrors.Items.Add();
+
+                        LErrorItem.Caption := con.conName + ' > ' + event.ClassName;
+                        LErrorItem.SubItems.Add(EventCheckObj.GotoLabel);
+                    end;
+                end;
+            end;
+
+            if event is TConEventTransferObject then
+            begin
+                var EventTransObj := TConEventTransferObject(event);
+
+                if EventTransObj.GotoLabel <> CheckEventLabel(con, EventTransObj.GotoLabel) then
+                begin
+                    with frmLabelErrors do
+                    begin
+                        var LErrorItem:= lvLabelErrors.Items.Add();
+
+                        LErrorItem.Caption := con.conName + ' > ' + event.ClassName;
+                        LErrorItem.SubItems.Add(EventTransObj.GotoLabel);
+                    end;
+                end;
+            end;
+
+            if event is TConEventJump then
+            begin
+                var EventJump := TConEventJump(event);
+                var JumpCon := FindConversationObjById(EventJump.conversationId);
+
+                if EventJump.gotoLabel <> CheckEventLabel(JumpCon, EventJump.gotoLabel) then
+                begin
+                    with frmLabelErrors do
+                    begin
+                        var LErrorItem:= lvLabelErrors.Items.Add();
+
+                        LErrorItem.Caption := con.conName + ' > ' + event.ClassName;
+                        LErrorItem.SubItems.Add(EventJump.GotoLabel);
+                    end;
+                end;
+            end;
+
+            if event is TConEventRandom then
+            begin
+                var EventRandom := TConEventRandom(event);
+
+                for var i:= 0 to High(EventRandom.GoToLabels) do
+                begin
+                    if EventRandom.GoToLabels[i] <> CheckEventLabel(con, EventRandom.GoToLabels[i]) then
+                    begin
+                        with frmLabelErrors do
+                        begin
+                            var LErrorItem:= lvLabelErrors.Items.Add();
+
+                            LErrorItem.Caption := con.conName + ' > ' + event.ClassName + ' > ' + EventRandom.GoToLabels[i];
+                            LErrorItem.SubItems.Add(EventRandom.GoToLabels[i]);
+                        end;
+                    end;
+                end;
+            end;
+
+            if event is TConEventCheckPersona then
+            begin
+                var EventCheckPersona := TConEventCheckPersona(event);
+
+                if EventCheckPersona.CheckGoToLabel <> CheckEventLabel(con, EventCheckPersona.CheckGoToLabel) then
+                begin
+                    with frmLabelErrors do
+                    begin
+                        var LErrorItem:= lvLabelErrors.Items.Add();
+
+                        LErrorItem.Caption := con.conName + ' > ' + event.ClassName;
+                        LErrorItem.SubItems.Add(EventCheckPersona.CheckGotoLabel);
+                    end;
+                end;
+            end;
+
+            if event is TConEventChoice then
+            begin
+                var ChoiceEvent := TConEventChoice(event);
+
+                for var k:= 0 to High(ChoiceEvent.Choices) do
+                begin
+                    if ChoiceEvent.Choices[k].GoToLabel <> CheckEventLabel(con, ChoiceEvent.Choices[k].GoToLabel) then
+                    begin
+                        with frmLabelErrors do
+                        begin
+                            var LErrorItem:= lvLabelErrors.Items.Add();
+
+                            LErrorItem.Caption := con.conName + ' > ' + event.ClassName;
+                            LErrorItem.SubItems.Add(ChoiceEvent.Choices[k].GoToLabel);
+                        end;
+                    end;
+                end;
+            end;
+        end;
+    end;
+
+
+    if frmLabelErrors.lvLabelErrors.Items.Count > 0 then
+        frmLabelErrors.Show() // only show if we have > 0 items!
+    else
+        MessageDlg(strLabelsValid,  mtInformation, [mbOK], 0);
+end;
+
+function TfrmMain.CheckEventLabel(con: TConversation; aLabel: string): String;
+begin
+    Result := '';
+
+    for var event in con.Events do
+    begin
+        if event.EventLabel = aLabel then
+            Result := event.EventLabel
+    end;
+end;
+
 procedure TfrmMain.EditCurrentEvent(EventToEdit: TConEvent);
 begin
     if (EventToEdit is TConEventSpeech) then begin
@@ -3775,7 +3967,7 @@ begin
     InsertEvent(AddSkillPoints2.Tag);
 end;
 
-procedure TfrmMain.btnGenerateSpeechDirsClick(Sender: TObject);
+procedure TfrmMain.tbGenerateAudioDirsClick(Sender: TObject);
 begin
     if SelectDirDialog.Execute() = True then
     begin
@@ -3789,9 +3981,9 @@ begin
         else ConEventList.DragMode := TDragMode.dmManual;
 end;
 
-procedure TfrmMain.btnStickyWindowClick(Sender: TObject);
+procedure TfrmMain.tbStickyWindowClick(Sender: TObject);
 begin
-    ScreenSnap := btnStickyWindow.Down;
+    ScreenSnap := tbStickyWindow.Down;
 end;
 
 procedure TfrmMain.Jump1Click(Sender: TObject);
@@ -3854,6 +4046,11 @@ procedure TfrmMain.mnuToggleMainToolBarClick(Sender: TObject);
 begin
     bShowToolbar := mnuToggleMainToolBar.Checked;
     MainToolBar.Visible := mnuToggleMainToolBar.Checked;
+end;
+
+procedure TfrmMain.mnuGithubClick(Sender: TObject);
+begin
+    ShellExecute(0, 'open', 'https://github.com/LoadLineCalibration/Convedit_Plus', nil, nil, SW_SHOWNORMAL);
 end;
 
 procedure TfrmMain.PlayAnimation1Click(Sender: TObject);
