@@ -283,7 +283,7 @@ ResourceString
     tbSettingsHint = 'Change program settings';
     tbReorderHint = 'Enable changing order of events. Hold %s key and drag one of items.';
     tbStickyWindowHint = 'Window will snap to screen';
-    tbShowLog = 'Show log';
+    tbShowLogHint = 'Show log';
 
 
     strInvalidConFileHdr = 'Invalid .con file header! Loading aborted. Please choose valid .con file.';
@@ -309,6 +309,8 @@ ResourceString
     strStatsEmptyFile = 'Nothing to count!';
 
     strMissionsInList = 'Mission %2.2d';
+
+    strLabelsValid = 'All label references are valid';
 
 
 

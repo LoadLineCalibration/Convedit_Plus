@@ -12,6 +12,7 @@ type
     Label1: TLabel;
     btnClose: TButton;
     procedure btnCloseClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
   public
@@ -28,6 +29,11 @@ implementation
 procedure TfrmLabelErrors.btnCloseClick(Sender: TObject);
 begin
     frmLabelErrors.Close();
+end;
+
+procedure TfrmLabelErrors.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+    lvLabelErrors.Items.Clear();
 end;
 
 end.

@@ -2,37 +2,50 @@ object frmLabelErrors: TfrmLabelErrors
   Left = 0
   Top = 0
   Caption = 'Error -- Missing Labels!'
-  ClientHeight = 431
-  ClientWidth = 441
+  ClientHeight = 402
+  ClientWidth = 476
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
+  Position = poOwnerFormCenter
   StyleName = 'Windows'
+  OnClose = FormClose
   DesignSize = (
-    441
-    431)
+    476
+    402)
   TextHeight = 15
   object Label1: TLabel
     Left = 8
-    Top = 348
-    Width = 339
-    Height = 75
+    Top = 8
+    Width = 460
+    Height = 82
     Alignment = taCenter
-    Anchors = [akLeft, akBottom]
+    Anchors = [akLeft, akTop, akRight]
+    AutoSize = False
     Caption = 
       'The labels listed above are referenced in conversations'#13#10'but are' +
       ' not defined in any events.'#13#10#13#10'You must correct these label refe' +
       'rences before the conversations'#13#10'will run properly in the game.'
-    ExplicitTop = 360
+    Color = clRed
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clYellow
+    Font.Height = -12
+    Font.Name = 'Verdana'
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+    Transparent = False
+    Layout = tlCenter
+    ExplicitWidth = 546
   end
   object lvLabelErrors: TListView
     Left = 8
-    Top = 8
-    Width = 425
-    Height = 327
+    Top = 96
+    Width = 460
+    Height = 267
     Anchors = [akLeft, akTop, akRight, akBottom]
     Columns = <
       item
@@ -48,17 +61,18 @@ object frmLabelErrors: TfrmLabelErrors
     DoubleBuffered = True
     GridLines = True
     HideSelection = False
+    StyleName = 'Windows'
     RowSelect = True
     ParentDoubleBuffered = False
     TabOrder = 0
     ViewStyle = vsReport
   end
   object btnClose: TButton
-    Left = 353
-    Top = 348
+    Left = 393
+    Top = 369
     Width = 75
     Height = 25
-    Anchors = [akLeft, akBottom]
+    Anchors = [akRight, akBottom]
     Caption = 'Close'
     TabOrder = 1
     OnClick = btnCloseClick
