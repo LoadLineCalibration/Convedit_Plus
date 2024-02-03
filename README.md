@@ -5,7 +5,8 @@ An attempt to recreate Deus Ex conversation editor (ConEdit or ConvEdit) in Delp
 what in __NOT__ implemented yet:
 * Insert event
 * text wrap
-* label checking
+* ~label checking~
+* deletion of unused tables entries
 * and other minor stuff
   
 Also some bugs here and there. 
