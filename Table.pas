@@ -35,6 +35,7 @@ type
     procedure ApplyTableChanges();
     procedure SendTableDataBack();
     procedure BuildCustomMenu();
+    procedure CleanupCurrentTable(aTableMode: TTableMode); // to remove unused table entries
 
     // new functions
     function CanDeleteItem(item: String): Boolean;
@@ -432,7 +433,8 @@ end;
 
 procedure TfrmTableEdit.btnCloseClick(Sender: TObject);
 begin
-//    ApplyTableChanges();
+    ApplyTableChanges();
+    SendTableDataBack();
     Close();
 end;
 
@@ -460,9 +462,7 @@ end;
 procedure TfrmTableEdit.btnDeleteUnusedClick(Sender: TObject);
 begin
     if MessageDlg(strAskRemoveUnused, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
-    begin
-        MessageDlg('Not implemented yet...',  mtWarning, [mbOK], 0);
-    end;
+        CleanupCurrentTable(TableMode);
 end;
 
 procedure TfrmTableEdit.btnEditClick(Sender: TObject);
@@ -525,13 +525,10 @@ end;
 
 procedure TfrmTableEdit.UpdateButtonsState(); // блокировать/разблокировать кнопки в зависимости от...
 begin
-    if (lstTableContents.ItemIndex <> -1) then
-       btnEdit.Enabled := true
-    else btnEdit.Enabled := false;
+    btnDeleteUnused.Enabled := lstTableContents.Count > 0;
+    btnDelete.Enabled := lstTableContents.ItemIndex <> -1;
+    btnEdit.Enabled := lstTableContents.ItemIndex <> -1;
 
-    if (lstTableContents.ItemIndex <> -1) then
-       btnDelete.Enabled := true
-    else btnDelete.Enabled := false;
 
     btnAddDefSkills.Enabled := not ListBoxContainsItem(lstTableContents, Default_DeusEx_Skills);
     btnAddDefSkills.Visible := TableMode = tmSkills;
@@ -560,18 +557,17 @@ end;
 
 procedure TfrmTableEdit.lstTableContentsDblClick(Sender: TObject); //dblClick list item
 begin
-    if (chkDoubleClickEditItem.Checked = true) then 
+    if chkDoubleClickEditItem.Checked = true then
     begin
         UpdateButtonsState();
         if (btnEdit.Enabled = True) then btnEditClick(btnEdit);
-    end else
-        begin
-            ApplyTableChanges();
-            SendTableDataBack();
-        end;
-
-    if chkDoubleClickEditItem.Checked = false then
-       btnCloseClick(btnClose);
+    end
+    else
+    begin
+        ApplyTableChanges();
+        SendTableDataBack();
+        Close();
+    end;
 end;
 
 procedure TfrmTableEdit.lstTableContentsEnter(Sender: TObject);
@@ -598,7 +594,8 @@ begin
             begin
                 MessageDlg(strCannotDeleteTableItem, mtWarning, [mbOK], 0);
                 Exit(False);
-            end else
+            end
+            else
                 Exit(True);
         end;
 
@@ -609,7 +606,8 @@ begin
                 MessageDlg(strCannotDeleteTableItem, mtWarning, [mbOK], 0);
                 Exit(False);
             end
-                else Exit(True);
+            else
+                Exit(True);
         end;
 
         tmSkills:
@@ -619,7 +617,8 @@ begin
                 MessageDlg(strCannotDeleteTableItem, mtWarning, [mbOK], 0);
                 Exit(False);
             end
-                else Exit(True);
+            else
+                Exit(True);
         end;
 
         tmObjects:
@@ -629,7 +628,8 @@ begin
                 MessageDlg(strCannotDeleteTableItem, mtWarning, [mbOK], 0);
                 Exit(False);
             end
-                else Exit(True);
+            else
+                Exit(True);
         end;
     end;
 
@@ -731,5 +731,108 @@ finally
     CustomClasses.Free();
 end;
 end;
+
+procedure TfrmTableEdit.CleanupCurrentTable(aTableMode: TTableMode);
+begin
+    var tempList := TStringList.Create();
+
+    case aTableMode of
+      tmActorsPawns:
+        begin
+            for var i:= 0 to lstTableContents.Items.Count -1 do
+                if CheckActorIsUsed(lstTableContents.Items[i]) = False then
+                    tempList.Add(lstTableContents.Items[i]);
+
+            if tempList.Count = 0 then
+            begin
+                MessageDlg('Nothing to delete!',  mtInformation, [mbOK], 0);
+                tempList.Free();
+                Exit();
+            end;
+
+            var listString := '';
+
+            for var j:= 0 to tempList.Count -1 do
+                listString := listString + tempList.Strings[j] + #13#10;
+
+            if MessageDlg(strAskUnusedActorsDelete + listString + strAskDeleteEntries,  mtConfirmation, mbOKCancel, 0) = mrOk then
+               for var e:= 0 to tempList.Count -1 do
+                  lstTableContents.Items.Delete(lstTableContents.Items.IndexOf(tempList[e]));
+        end;
+
+      tmFlags:
+        begin
+            for var i:= 0 to lstTableContents.Items.Count -1 do
+                if CheckFlagIsUsed(lstTableContents.Items[i]) = False then
+                    tempList.Add(lstTableContents.Items[i]);
+
+            if tempList.Count = 0 then
+            begin
+                MessageDlg('Nothing to delete!',  mtInformation, [mbOK], 0);
+                tempList.Free();
+                Exit();
+            end;
+
+            var listString := '';
+
+            for var j:= 0 to tempList.Count -1 do
+                listString := listString + tempList.Strings[j] + #13#10;
+
+            if MessageDlg(strAskUnusedFlagsDelete + listString + strAskDeleteEntries,  mtConfirmation, mbOKCancel, 0) = mrOk then
+               for var e:= 0 to tempList.Count -1 do
+                  lstTableContents.Items.Delete(lstTableContents.Items.IndexOf(tempList[e]));
+        end;
+
+      tmSkills:
+        begin
+            for var i:= 0 to lstTableContents.Items.Count -1 do
+                if CheckSkillIsUsed(lstTableContents.Items[i]) = False then
+                    tempList.Add(lstTableContents.Items[i]);
+
+            if tempList.Count = 0 then
+            begin
+                MessageDlg('Nothing to delete!',  mtInformation, [mbOK], 0);
+                tempList.Free();
+                Exit();
+            end;
+
+            var listString := '';
+
+            for var j:= 0 to tempList.Count -1 do
+                listString := listString + tempList.Strings[j] + #13#10;
+
+            if MessageDlg(strAskUnusedSkillsDelete + listString + strAskDeleteEntries,  mtConfirmation, mbOKCancel, 0) = mrOk then
+               for var e:= 0 to tempList.Count -1 do
+                  lstTableContents.Items.Delete(lstTableContents.Items.IndexOf(tempList[e]));
+        end;
+
+      tmObjects:
+        begin
+            for var i:= 0 to lstTableContents.Items.Count -1 do
+                if CheckObjectIsUsed(lstTableContents.Items[i]) = False then
+                    tempList.Add(lstTableContents.Items[i]);
+
+            if tempList.Count = 0 then
+            begin
+                MessageDlg('Nothing to delete!',  mtInformation, [mbOK], 0);
+                tempList.Free();
+                Exit();
+            end;
+
+            var listString := '';
+
+            for var j:= 0 to tempList.Count -1 do
+                listString := listString + tempList.Strings[j] + #13#10;
+
+            if MessageDlg(strAskUnusedObjectsDelete + listString + strAskDeleteEntries,  mtConfirmation, mbOKCancel, 0) = mrOk then
+               for var e:= 0 to tempList.Count -1 do
+                  lstTableContents.Items.Delete(lstTableContents.Items.IndexOf(tempList[e]));
+
+        end;
+    end;
+
+    tempList.Free();
+end;
+
 
 end.
