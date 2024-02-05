@@ -6,7 +6,7 @@ what in __NOT__ implemented yet:
 * Insert event
 * text wrap
 * ~label checking~
-* deletion of unused tables entries
+* ~deletion of unused tables entries~
 * and other minor stuff
   
 Also some bugs here and there. 
