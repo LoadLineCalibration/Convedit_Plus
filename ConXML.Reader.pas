@@ -520,19 +520,21 @@ begin
         if UpperCase(conChoiceNode.ChildNodes[R].Name) = UpperCase('clearScreen') then
            choiceEvent.bClearScreen := conChoiceNode.ChildNodes[R].NodeValue.ToBoolean;
 
-        if UpperCase(conChoiceNode.ChildNodes[R].Name) = UpperCase('Choices') then begin
+        if UpperCase(conChoiceNode.ChildNodes[R].Name) = UpperCase('Choices') then
+        begin
             var temp_ChoiceItem:= conChoiceNode.ChildNodes[R];
 
             choiceEvent.NumChoices := temp_ChoiceItem.ChildNodes.Count;
+            SetLength(choiceEvent.Choices, choiceEvent.NumChoices); // Range check error fix
 
             for var J:= 0 to temp_ChoiceItem.ChildNodes.Count -1 do begin
 
                 var ChoiceField:=temp_ChoiceItem.ChildNodes[J];
-                SetLength(choiceEvent.Choices, ChoiceField.ChildNodes.Count);
+                //SetLength(choiceEvent.Choices, ChoiceField.ChildNodes.Count);
                 choiceEvent.Choices[J] := TChoiceItemObject.Create(); // Create object
 
-                for var ci := 0 to ChoiceField.ChildNodes.Count -1 do begin
-
+                for var ci := 0 to ChoiceField.ChildNodes.Count -1 do
+                begin
                     if UpperCase(ChoiceField.ChildNodes[ci].Name) = UpperCase('Index') then
                         choiceEvent.Choices[J].Index := ChoiceField.ChildNodes[ci].NodeValue.ToInteger;
 
