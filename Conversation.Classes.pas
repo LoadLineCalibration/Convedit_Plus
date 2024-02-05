@@ -17,32 +17,32 @@ function conXMLDateTime(): string;
 type TEventType =
 (
     ET_Speech,
-	ET_Choice,
-	ET_SetFlag,
-	ET_CheckFlag,
-	ET_CheckObject,
-	ET_TransferObject,
-	ET_MoveCamera,
-	ET_Animation,
-	ET_Trade,
-	ET_Jump,
-	ET_Random,
-	ET_Trigger,
-	ET_AddGoal,
-	ET_AddNote,
-	ET_AddSkillPoints,
-	ET_AddCredits,
-	ET_CheckPersona,
-	ET_Comment,
-	ET_End
+    ET_Choice,
+    ET_SetFlag,
+    ET_CheckFlag,
+    ET_CheckObject,
+    ET_TransferObject,
+    ET_MoveCamera,
+    ET_Animation,
+    ET_Trade,
+    ET_Jump,
+    ET_Random,
+    ET_Trigger,
+    ET_AddGoal,
+    ET_AddNote,
+    ET_AddSkillPoints,
+    ET_AddCredits,
+    ET_CheckPersona,
+    ET_Comment,
+    ET_End
 );
 
 // Camera Types
 type TCameraTypes =
 (
     CT_Predefined,  // 0
-	CT_Speakers,    // 1
-	CT_Actor,       // 2
+    CT_Speakers,    // 1
+    CT_Actor,       // 2
     CT_Random       // 3
 );
 
@@ -50,20 +50,20 @@ type TCameraTypes =
 type TCameraPositions =
 (
     CP_SideTight,
-	CP_SideMid,
-	CP_SideAbove,
-	CP_SideAbove45,
-	CP_ShoulderLeft,
-	CP_ShoulderRight,
-	CP_HeadShotTight,
-	CP_HeadShotMid,
-	CP_HeadShotLeft,
-	CP_HeadShotRight,
-	CP_HeadShotSlightRight,
-	CP_HeadShotSlightLeft,
-	CP_StraightAboveLookingDown,
-	CP_StraightBelowLookingUp,
-	CP_BelowLookingUp
+    CP_SideMid,
+    CP_SideAbove,
+    CP_SideAbove45,
+    CP_ShoulderLeft,
+    CP_ShoulderRight,
+    CP_HeadShotTight,
+    CP_HeadShotMid,
+    CP_HeadShotLeft,
+    CP_HeadShotRight,
+    CP_HeadShotSlightRight,
+    CP_HeadShotSlightLeft,
+    CP_StraightAboveLookingDown,
+    CP_StraightBelowLookingUp,
+    CP_BelowLookingUp
 );
 
 type TCameraTransitions =
@@ -80,19 +80,19 @@ type TAnimationModes =
 
 type TConditions =
 (
-	EC_Less,
-	EC_LessEqual,
-	EC_Equal,
-	EC_GreaterEqual,
-	EC_Greater
+    EC_Less,
+    EC_LessEqual,
+    EC_Equal,
+    EC_GreaterEqual,
+    EC_Greater
 );
 
 // Event Persona types
 type TPersonaTypes =
 (
-	EP_Credits,
-	EP_Health,
-	EP_SkillPoints
+    EP_Credits,
+    EP_Health,
+    EP_SkillPoints
 );
 
 // for use in TConversation and TConEventCheckFlag

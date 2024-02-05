@@ -312,6 +312,13 @@ ResourceString
 
     strLabelsValid = 'All label references are valid';
 
+    strAskUnusedActorsDelete = 'The following Actors are not used:'+ #13#10#13#10;
+    strAskUnusedFlagsDelete = 'The following Flags are not used:'+ #13#10#13#10;
+    strAskUnusedSkillsDelete = 'The following Skills are not used:'+ #13#10#13#10;
+    strAskUnusedObjectsDelete = 'The following Objects are not used:'+ #13#10#13#10;
+
+    strAskDeleteEntries = #13#10 + 'Ok to delete these entries?';
+
 
 
 

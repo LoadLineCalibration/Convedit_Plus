@@ -108,7 +108,7 @@ object frmConvoProperties: TfrmConvoProperties
       Top = 3
       Width = 394
       Height = 404
-      ActivePage = tsinfo
+      ActivePage = TabSheet1
       Align = alClient
       DoubleBuffered = False
       ParentDoubleBuffered = False

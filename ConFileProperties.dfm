@@ -47,7 +47,7 @@ object frmConvoFileProperties: TfrmConvoFileProperties
       Top = 3
       Width = 394
       Height = 412
-      ActivePage = tsStats
+      ActivePage = tsMissions
       Align = alClient
       Style = tsFlatButtons
       TabOrder = 0
@@ -118,6 +118,7 @@ object frmConvoFileProperties: TfrmConvoFileProperties
             '.'
           Caption = '<-- Add All'
           TabOrder = 3
+          Visible = False
           StyleElements = []
         end
         object btnRemove: TButton
@@ -143,6 +144,7 @@ object frmConvoFileProperties: TfrmConvoFileProperties
             '.'
           Caption = '> Remove All -->'
           TabOrder = 5
+          Visible = False
           StyleElements = []
         end
       end

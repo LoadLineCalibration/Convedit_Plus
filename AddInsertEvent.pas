@@ -1216,7 +1216,7 @@ begin
     SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
     frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
     frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
-    frmMain.ConEventList.Items.AddObject(ET_Speech_Caption, frmMain.CurrentEvent);
+    frmMain.ConEventList.Items.AddPair(ET_Speech_Caption,'50', frmMain.CurrentEvent);
 
     var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
 

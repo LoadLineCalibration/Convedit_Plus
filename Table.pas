@@ -649,7 +649,6 @@ begin
     else
         TextB4Tab := Copy(UseText, 1, TabIndex -1);
 
-    //lstTableContents.Items.Add(TextB4Tab);
     editTable.Text := TextB4Tab;
     btnAddItemClick(self);
 end;

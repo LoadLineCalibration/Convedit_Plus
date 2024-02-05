@@ -58,7 +58,7 @@ object frmTableEdit: TfrmTableEdit
     366)
   TextHeight = 15
   object lstTableContents: TListBox
-    Left = 8
+    Left = 7
     Top = 72
     Width = 350
     Height = 223
@@ -121,7 +121,7 @@ object frmTableEdit: TfrmTableEdit
     OnClick = btnDeleteClick
   end
   object btnDeleteUnused: TButton
-    Left = 364
+    Left = 363
     Top = 137
     Width = 102
     Height = 25
