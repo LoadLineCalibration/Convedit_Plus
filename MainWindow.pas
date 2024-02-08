@@ -222,9 +222,9 @@ type
     edtSearchBox: TEdit;
     N20: TMenuItem;
     Conversation_CheckLabels: TAction;
-    Button1: TButton;
     tbVerifyLabels: TToolButton;
     ToolButton12: TToolButton;
+    Label1: TLabel;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -264,6 +264,8 @@ type
     function TreeHasItemsOfLevel(Tree: TTreeView; LevelToCheck: Integer): Boolean;
     function ItemExistsInTreeView(TreeView: TTreeView; ItemText: string): Boolean;
     function FindTreeItemByText(TreeView: TTreeView; Text: string): TTreeNode;
+
+    procedure SelectTreeItemByObject(TreeView: TTreeView; Obj: TObject);
 
     procedure SetMemoFont(FontSize: Integer; FontName: string);
     procedure PickTableObject(newTableMode: TTableMode; control: TControl);
@@ -427,6 +429,7 @@ type
       State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure mnuGithubClick(Sender: TObject);
     procedure Check_LabelsExecute(Sender: TObject);
+    procedure edtSearchBoxKeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
     procedure WMEnterSizeMove(var Msg: TMessage); message WM_ENTERSIZEMOVE;
@@ -689,8 +692,23 @@ begin
     end;
 end;
 
-procedure SelectTreeItemByObject(TreeView: TTreeView; Obj: TObject);
+procedure TfrmMain.SelectTreeItemByObject(TreeView: TTreeView; Obj: TObject);
 var
+    Node: TTreeNode;
+begin
+    Node := TreeView.Items.GetFirstNode;
+
+    while Node <> nil do
+    begin
+        if Node.Data = Obj then
+        begin
+            TreeView.Selected := Node;
+            Node.MakeVisible;
+            Exit();
+        end;
+        Node := Node.GetNext;
+    end;
+{var
   Node: TTreeNode;
 begin
   // Traverse the TreeView to find the desired item
@@ -698,7 +716,7 @@ begin
 
   // If the item is found, select it
   if Node <> nil then
-    Node.Selected := True;
+    Node.Selected := True;}
 end;
 
 function TfrmMain.FindConversationObjByString(conName: string): TConversation; // Find conversation by name and return as TObject
@@ -3749,7 +3767,7 @@ begin
                 // ToDo: взять текущий Conversation, обойти его и поискать такую метку в EventLabel!
                 var EventCheckFlag := TConEventCheckFlag(event);
 
-                if EventCheckFlag.GotoLabel <> CheckEventLabel(con, EventCheckFlag.GotoLabel) then
+                if LowerCase(EventCheckFlag.GotoLabel) <> LowerCase(CheckEventLabel(con, EventCheckFlag.GotoLabel)) then
                 begin
                     with frmLabelErrors do
                     begin
@@ -3765,7 +3783,7 @@ begin
             begin
                 var EventCheckObj := TConEventCheckObject(event);
 
-                if EventCheckObj.GoToLabel <> CheckEventLabel(con, EventCheckObj.GoToLabel) then
+                if LowerCase(EventCheckObj.GoToLabel) <> LowerCase(CheckEventLabel(con, EventCheckObj.GoToLabel)) then
                 begin
                     with frmLabelErrors do
                     begin
@@ -3781,7 +3799,7 @@ begin
             begin
                 var EventTransObj := TConEventTransferObject(event);
 
-                if EventTransObj.GotoLabel <> CheckEventLabel(con, EventTransObj.GotoLabel) then
+                if LowerCase(EventTransObj.GotoLabel) <> LowerCase(CheckEventLabel(con, EventTransObj.GotoLabel)) then
                 begin
                     with frmLabelErrors do
                     begin
@@ -3798,7 +3816,7 @@ begin
                 var EventJump := TConEventJump(event);
                 var JumpCon := FindConversationObjById(EventJump.conversationId);
 
-                if EventJump.gotoLabel <> CheckEventLabel(JumpCon, EventJump.gotoLabel) then
+                if LowerCase(EventJump.gotoLabel) <> LowerCase(CheckEventLabel(JumpCon, EventJump.gotoLabel)) then
                 begin
                     with frmLabelErrors do
                     begin
@@ -3816,7 +3834,7 @@ begin
 
                 for var i:= 0 to High(EventRandom.GoToLabels) do
                 begin
-                    if EventRandom.GoToLabels[i] <> CheckEventLabel(con, EventRandom.GoToLabels[i]) then
+                    if LowerCase(EventRandom.GoToLabels[i]) <> LowerCase(CheckEventLabel(con, EventRandom.GoToLabels[i])) then
                     begin
                         with frmLabelErrors do
                         begin
@@ -3833,7 +3851,7 @@ begin
             begin
                 var EventCheckPersona := TConEventCheckPersona(event);
 
-                if EventCheckPersona.CheckGoToLabel <> CheckEventLabel(con, EventCheckPersona.CheckGoToLabel) then
+                if LowerCase(EventCheckPersona.CheckGoToLabel) <> LowerCase(CheckEventLabel(con, EventCheckPersona.CheckGoToLabel)) then
                 begin
                     with frmLabelErrors do
                     begin
@@ -3851,7 +3869,7 @@ begin
 
                 for var k:= 0 to High(ChoiceEvent.Choices) do
                 begin
-                    if ChoiceEvent.Choices[k].GoToLabel <> CheckEventLabel(con, ChoiceEvent.Choices[k].GoToLabel) then
+                    if LowerCase(ChoiceEvent.Choices[k].GoToLabel) <> LowerCase(CheckEventLabel(con, ChoiceEvent.Choices[k].GoToLabel)) then
                     begin
                         with frmLabelErrors do
                         begin
@@ -3879,7 +3897,7 @@ begin
 
     for var event in con.Events do
     begin
-        if event.EventLabel = aLabel then
+        if LowerCase(event.EventLabel) = LowerCase(aLabel) then
             Result := event.EventLabel
     end;
 end;
@@ -3944,6 +3962,15 @@ begin
     if frmEventInsAdd.Visible = false then begin
         frmEventInsAdd.cmbEventType.Enabled := False;
         frmEventInsAdd.Show();
+    end;
+end;
+
+procedure TfrmMain.edtSearchBoxKeyPress(Sender: TObject; var Key: Char);
+begin
+    if Key = #13 then // Enter
+    begin
+        frmFind.rbCurrentConvo.Checked := true;
+        frmFind.SearchInConversations(edtSearchBox.Text);
     end;
 end;
 
@@ -4134,7 +4161,7 @@ end;
 
 procedure TfrmMain.tbSearchClick(Sender: TObject);
 begin
-    frmFind.ShowModal();
+    frmFind.Show();
 end;
 
 procedure TfrmMain.tmrEventWinPosSyncTimer(Sender: TObject);
