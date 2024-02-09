@@ -41,6 +41,15 @@ object frmLabelErrors: TfrmLabelErrors
     Layout = tlCenter
     ExplicitWidth = 546
   end
+  object Label2: TLabel
+    Left = 8
+    Top = 369
+    Width = 225
+    Height = 25
+    AutoSize = False
+    Caption = 'DblClick on item to jump to it.'
+    Layout = tlCenter
+  end
   object lvLabelErrors: TListView
     Left = 8
     Top = 96
@@ -62,10 +71,12 @@ object frmLabelErrors: TfrmLabelErrors
     GridLines = True
     HideSelection = False
     StyleName = 'Windows'
+    ReadOnly = True
     RowSelect = True
     ParentDoubleBuffered = False
     TabOrder = 0
     ViewStyle = vsReport
+    OnDblClick = lvLabelErrorsDblClick
   end
   object btnClose: TButton
     Left = 393

@@ -3742,7 +3742,7 @@ end;
 
 procedure TfrmMain.VerifyLabels();
 begin
-//    frmLabelErrors.ShowModal();
+    frmLabelErrors.lvLabelErrors.Clear();
 { events which use labels to jump to:
 
     TConEventCheckFlag
@@ -3773,8 +3773,8 @@ begin
                     begin
                         var LErrorItem:= lvLabelErrors.Items.Add();
 
-                        LErrorItem.Caption := con.conName + ' > ' + event.ClassName;
-                        LErrorItem.SubItems.Add(EventCheckFlag.GotoLabel);
+                        LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
+                        LErrorItem.SubItems.AddObject(EventCheckFlag.GotoLabel, EventCheckFlag);
                     end;
                 end;
             end;
@@ -3789,8 +3789,8 @@ begin
                     begin
                         var LErrorItem:= lvLabelErrors.Items.Add();
 
-                        LErrorItem.Caption := con.conName + ' > ' + event.ClassName;
-                        LErrorItem.SubItems.Add(EventCheckObj.GotoLabel);
+                        LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
+                        LErrorItem.SubItems.AddObject(EventCheckObj.GotoLabel, EventCheckObj);
                     end;
                 end;
             end;
@@ -3805,8 +3805,8 @@ begin
                     begin
                         var LErrorItem:= lvLabelErrors.Items.Add();
 
-                        LErrorItem.Caption := con.conName + ' > ' + event.ClassName;
-                        LErrorItem.SubItems.Add(EventTransObj.GotoLabel);
+                        LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
+                        LErrorItem.SubItems.AddObject(EventTransObj.GotoLabel, EventTransObj);
                     end;
                 end;
             end;
@@ -3822,8 +3822,8 @@ begin
                     begin
                         var LErrorItem:= lvLabelErrors.Items.Add();
 
-                        LErrorItem.Caption := con.conName + ' > ' + event.ClassName;
-                        LErrorItem.SubItems.Add(EventJump.GotoLabel);
+                        LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
+                        LErrorItem.SubItems.AddObject(EventJump.GotoLabel, EventJump);
                     end;
                 end;
             end;
@@ -3840,8 +3840,8 @@ begin
                         begin
                             var LErrorItem:= lvLabelErrors.Items.Add();
 
-                            LErrorItem.Caption := con.conName + ' > ' + event.ClassName + ' > ' + EventRandom.GoToLabels[i];
-                            LErrorItem.SubItems.Add(EventRandom.GoToLabels[i]);
+                            LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName + ' > ' + EventRandom.GoToLabels[i];
+                            LErrorItem.SubItems.AddObject(EventRandom.GoToLabels[i], EventRandom);
                         end;
                     end;
                 end;
@@ -3857,8 +3857,8 @@ begin
                     begin
                         var LErrorItem:= lvLabelErrors.Items.Add();
 
-                        LErrorItem.Caption := con.conName + ' > ' + event.ClassName;
-                        LErrorItem.SubItems.Add(EventCheckPersona.CheckGotoLabel);
+                        LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
+                        LErrorItem.SubItems.AddObject(EventCheckPersona.CheckGotoLabel, EventCheckPersona);
                     end;
                 end;
             end;
@@ -3875,8 +3875,8 @@ begin
                         begin
                             var LErrorItem:= lvLabelErrors.Items.Add();
 
-                            LErrorItem.Caption := con.conName + ' > ' + event.ClassName;
-                            LErrorItem.SubItems.Add(ChoiceEvent.Choices[k].GoToLabel);
+                            LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
+                            LErrorItem.SubItems.AddObject(ChoiceEvent.Choices[k].GoToLabel, ChoiceEvent);
                         end;
                     end;
                 end;
