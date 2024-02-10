@@ -1,11 +1,13 @@
 object frmFind: TfrmFind
   Left = 0
   Top = 0
-  BorderStyle = bsDialog
+  BorderIcons = [biSystemMenu]
   Caption = 'Find'
-  ClientHeight = 165
-  ClientWidth = 390
+  ClientHeight = 497
+  ClientWidth = 482
   Color = clBtnFace
+  Constraints.MinHeight = 200
+  Constraints.MinWidth = 486
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -12
@@ -49,109 +51,232 @@ object frmFind: TfrmFind
     00008FFF0000001F0000000F0000000900000001000000000000000000000000
     0000000000000000000000000000F0000000F0000000F0000000F8000000}
   Position = poMainFormCenter
-  StyleElements = []
-  TextHeight = 14
+  StyleName = 'Windows'
+  OnClose = FormClose
+  DesignSize = (
+    482
+    497)
+  TextHeight = 15
   object Label1: TLabel
-    Left = 8
-    Top = 16
-    Width = 73
-    Height = 14
+    Left = 10
+    Top = 8
+    Width = 65
+    Height = 23
     AutoSize = False
     Caption = 'Find What:'
-    StyleElements = []
+    Layout = tlCenter
   end
   object Label2: TLabel
     Left = 8
-    Top = 49
-    Width = 73
-    Height = 14
-    AutoSize = False
-    Caption = 'Events:'
-    StyleElements = []
+    Top = 199
+    Width = 189
+    Height = 15
+    Caption = 'Search results (DblClick to jump to):'
+    Layout = tlCenter
   end
   object cbbFindWhat: TComboBox
-    Left = 87
+    Left = 74
     Top = 8
-    Width = 178
-    Height = 22
+    Width = 294
+    Height = 23
     TabOrder = 0
-    StyleElements = []
-  end
-  object cbbFindInEvents: TComboBox
-    Left = 87
-    Top = 41
-    Width = 178
-    Height = 22
-    Style = csDropDownList
-    TabOrder = 1
-    StyleElements = []
+    StyleName = 'Windows'
   end
   object btnFind: TButton
-    Left = 283
+    Left = 374
     Top = 8
-    Width = 91
+    Width = 100
     Height = 25
-    Caption = 'Find Next'
-    TabOrder = 2
-    StyleElements = []
+    Caption = 'Find All'
+    Default = True
+    TabOrder = 1
+    StyleName = 'Windows'
+    OnClick = btnFindClick
   end
   object btnClose: TButton
-    Left = 283
+    Left = 374
     Top = 39
-    Width = 91
+    Width = 100
     Height = 25
-    Caption = 'Close'
-    TabOrder = 3
-    StyleElements = []
+    Cancel = True
+    Caption = 'Close [ESC]'
+    TabOrder = 2
+    StyleName = 'Windows'
     OnClick = btnCloseClick
   end
   object GroupBox1: TGroupBox
     Left = 8
-    Top = 85
-    Width = 217
-    Height = 73
+    Top = 37
+    Width = 189
+    Height = 76
     Caption = 'Search in:'
-    TabOrder = 4
-    StyleElements = []
+    TabOrder = 3
+    StyleName = 'Windows'
     object rbAllConvos: TRadioButton
       Left = 16
       Top = 24
-      Width = 185
+      Width = 166
       Height = 17
       Cursor = crHandPoint
       Caption = 'All Conversations'
+      Checked = True
       TabOrder = 0
-      StyleElements = []
+      TabStop = True
     end
     object rbCurrentConvo: TRadioButton
       Left = 16
       Top = 47
-      Width = 185
+      Width = 166
       Height = 17
       Cursor = crHandPoint
       Caption = 'Current conversation only'
-      Checked = True
       TabOrder = 1
-      TabStop = True
-      StyleElements = []
     end
   end
-  object chkFindWholeWordOnly: TCheckBox
-    Left = 231
-    Top = 109
-    Width = 151
-    Height = 17
-    Cursor = crHandPoint
-    Caption = 'Find whole word only?'
-    TabOrder = 5
+  object GroupBox2: TGroupBox
+    Left = 203
+    Top = 37
+    Width = 165
+    Height = 76
+    Caption = 'Options:'
+    TabOrder = 4
+    StyleName = 'Windows'
+    object chkFindWholeWordOnly: TCheckBox
+      Left = 16
+      Top = 47
+      Width = 151
+      Height = 17
+      Cursor = crHandPoint
+      Caption = 'Find whole word only?'
+      TabOrder = 0
+    end
+    object chkMatchCase: TCheckBox
+      Left = 16
+      Top = 24
+      Width = 151
+      Height = 17
+      Cursor = crHandPoint
+      Caption = 'Match case?'
+      TabOrder = 1
+    end
   end
-  object chkMatchCase: TCheckBox
-    Left = 231
-    Top = 132
-    Width = 151
-    Height = 17
-    Cursor = crHandPoint
-    Caption = 'Match case?'
+  object lbSearchResults: TListBox
+    Left = 8
+    Top = 216
+    Width = 469
+    Height = 273
+    Style = lbOwnerDrawFixed
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    ItemHeight = 20
+    TabOrder = 5
+    OnDblClick = lbSearchResultsDblClick
+    ExplicitWidth = 465
+  end
+  object edtSearchResults: TEdit
+    Left = 219
+    Top = 194
+    Width = 258
+    Height = 21
+    Font.Charset = RUSSIAN_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Lucida Console'
+    Font.Style = []
+    ParentColor = True
+    ParentFont = False
     TabOrder = 6
+  end
+  object grpLookIn: TGroupBox
+    Left = 8
+    Top = 119
+    Width = 469
+    Height = 74
+    Caption = 'Look in these events:'
+    TabOrder = 7
+    StyleName = 'Windows'
+    object chkLookInSpeech: TCheckBox
+      Left = 12
+      Top = 24
+      Width = 88
+      Height = 17
+      Cursor = crHandPoint
+      Caption = 'Speech'
+      Checked = True
+      State = cbChecked
+      TabOrder = 0
+    end
+    object chkLookInChoices: TCheckBox
+      Left = 106
+      Top = 24
+      Width = 99
+      Height = 17
+      Cursor = crHandPoint
+      Caption = 'Choice'
+      Checked = True
+      State = cbChecked
+      TabOrder = 1
+    end
+    object chkLookInGoals: TCheckBox
+      Left = 211
+      Top = 24
+      Width = 128
+      Height = 17
+      Cursor = crHandPoint
+      Caption = 'Add/Complete goal'
+      Checked = True
+      State = cbChecked
+      TabOrder = 2
+    end
+    object chkLookInComments: TCheckBox
+      Left = 211
+      Top = 47
+      Width = 128
+      Height = 17
+      Cursor = crHandPoint
+      Caption = 'Comment'
+      Checked = True
+      State = cbChecked
+      TabOrder = 3
+    end
+    object chkLookInNotes: TCheckBox
+      Left = 12
+      Top = 47
+      Width = 88
+      Height = 17
+      Cursor = crHandPoint
+      Caption = 'Add Note'
+      Checked = True
+      State = cbChecked
+      TabOrder = 4
+    end
+    object chkLookInAddSkillPts: TCheckBox
+      Left = 106
+      Top = 47
+      Width = 99
+      Height = 17
+      Cursor = crHandPoint
+      Caption = 'Add SkillPoints'
+      Checked = True
+      State = cbChecked
+      TabOrder = 5
+    end
+    object btnCheckAll: TButton
+      Left = 371
+      Top = 15
+      Width = 88
+      Height = 25
+      Caption = 'Check All'
+      TabOrder = 6
+      OnClick = btnCheckAllClick
+    end
+    object btnCheckSpeechOnly: TButton
+      Left = 371
+      Top = 39
+      Width = 88
+      Height = 25
+      Caption = 'Only Speech'
+      TabOrder = 7
+      OnClick = btnCheckSpeechOnlyClick
+    end
   end
 end
