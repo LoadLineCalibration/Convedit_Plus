@@ -236,9 +236,6 @@ type
     procedure EditCurrentEvent(EventToEdit: TConEvent);
     procedure ToggleLV_FlagValue(lstv: TListView);
 
-    procedure VerifyLabels();
-    function CheckEventLabel(con: TConversation; aLabel: string): string;
-
     procedure SendStringToEditValue(control: TControl);
 
     procedure FillEventLabels(con: TConversation; listToFill: TCustomListControl);
@@ -428,7 +425,6 @@ type
     procedure mainToolBarCustomDrawButton(Sender: TToolBar; Button: TToolButton;
       State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure mnuGithubClick(Sender: TObject);
-    procedure Check_LabelsExecute(Sender: TObject);
     procedure edtSearchBoxKeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
@@ -2950,7 +2946,12 @@ end;
 
 procedure TfrmMain.Conversation_CheckLabelsExecute(Sender: TObject);
 begin
-    VerifyLabels();
+    frmLabelErrors.VerifyLabels();
+
+    if frmLabelErrors.lvLabelErrors.Items.Count > 0 then
+        frmLabelErrors.Show() // only show if we have > 0 items!
+    else
+        MessageDlg(strLabelsValid,  mtInformation, [mbOK], 0);
 end;
 
 procedure TfrmMain.Conversation_PropertiesExecute(Sender: TObject);
@@ -3429,11 +3430,6 @@ begin
     InsertEvent(CheckPersona2.Tag);
 end;
 
-procedure TfrmMain.Check_LabelsExecute(Sender: TObject);
-begin
-    VerifyLabels();
-end;
-
 procedure TfrmMain.Choice1Click(Sender: TObject);
 begin
     AddEvent(Choice1.Tag);
@@ -3740,168 +3736,6 @@ begin
     end;
 end;
 
-procedure TfrmMain.VerifyLabels();
-begin
-    frmLabelErrors.lvLabelErrors.Clear();
-{ events which use labels to jump to:
-
-    TConEventCheckFlag
-    TConEventCheckObject
-    TConEventTransferObject
-    TConEventJump
-    TConEventRandom (array)
-    TConEventCheckPersona
-
-    also TConEventChoice > Choices have JumpTolabel when choice is selected.
-    Note: the OG conedit allows empty labels in choiceitems, but gives an error if label is invalid
-}
-    if currentConFile = '' then Exit();
-
-
-    for var con in ConversationsList do
-    begin
-        for var event in con.Events do
-        begin
-            if event is TConEventCheckFlag then
-            begin
-                // ToDo: взять текущий Conversation, обойти его и поискать такую метку в EventLabel!
-                var EventCheckFlag := TConEventCheckFlag(event);
-
-                if LowerCase(EventCheckFlag.GotoLabel) <> LowerCase(CheckEventLabel(con, EventCheckFlag.GotoLabel)) then
-                begin
-                    with frmLabelErrors do
-                    begin
-                        var LErrorItem:= lvLabelErrors.Items.Add();
-
-                        LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
-                        LErrorItem.SubItems.AddObject(EventCheckFlag.GotoLabel, EventCheckFlag);
-                    end;
-                end;
-            end;
-
-            if event is TConEventCheckObject then
-            begin
-                var EventCheckObj := TConEventCheckObject(event);
-
-                if LowerCase(EventCheckObj.GoToLabel) <> LowerCase(CheckEventLabel(con, EventCheckObj.GoToLabel)) then
-                begin
-                    with frmLabelErrors do
-                    begin
-                        var LErrorItem:= lvLabelErrors.Items.Add();
-
-                        LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
-                        LErrorItem.SubItems.AddObject(EventCheckObj.GotoLabel, EventCheckObj);
-                    end;
-                end;
-            end;
-
-            if event is TConEventTransferObject then
-            begin
-                var EventTransObj := TConEventTransferObject(event);
-
-                if LowerCase(EventTransObj.GotoLabel) <> LowerCase(CheckEventLabel(con, EventTransObj.GotoLabel)) then
-                begin
-                    with frmLabelErrors do
-                    begin
-                        var LErrorItem:= lvLabelErrors.Items.Add();
-
-                        LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
-                        LErrorItem.SubItems.AddObject(EventTransObj.GotoLabel, EventTransObj);
-                    end;
-                end;
-            end;
-
-            if event is TConEventJump then
-            begin
-                var EventJump := TConEventJump(event);
-                var JumpCon := FindConversationObjById(EventJump.conversationId);
-
-                if LowerCase(EventJump.gotoLabel) <> LowerCase(CheckEventLabel(JumpCon, EventJump.gotoLabel)) then
-                begin
-                    with frmLabelErrors do
-                    begin
-                        var LErrorItem:= lvLabelErrors.Items.Add();
-
-                        LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
-                        LErrorItem.SubItems.AddObject(EventJump.GotoLabel, EventJump);
-                    end;
-                end;
-            end;
-
-            if event is TConEventRandom then
-            begin
-                var EventRandom := TConEventRandom(event);
-
-                for var i:= 0 to High(EventRandom.GoToLabels) do
-                begin
-                    if LowerCase(EventRandom.GoToLabels[i]) <> LowerCase(CheckEventLabel(con, EventRandom.GoToLabels[i])) then
-                    begin
-                        with frmLabelErrors do
-                        begin
-                            var LErrorItem:= lvLabelErrors.Items.Add();
-
-                            LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName + ' > ' + EventRandom.GoToLabels[i];
-                            LErrorItem.SubItems.AddObject(EventRandom.GoToLabels[i], EventRandom);
-                        end;
-                    end;
-                end;
-            end;
-
-            if event is TConEventCheckPersona then
-            begin
-                var EventCheckPersona := TConEventCheckPersona(event);
-
-                if LowerCase(EventCheckPersona.CheckGoToLabel) <> LowerCase(CheckEventLabel(con, EventCheckPersona.CheckGoToLabel)) then
-                begin
-                    with frmLabelErrors do
-                    begin
-                        var LErrorItem:= lvLabelErrors.Items.Add();
-
-                        LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
-                        LErrorItem.SubItems.AddObject(EventCheckPersona.CheckGotoLabel, EventCheckPersona);
-                    end;
-                end;
-            end;
-
-            if event is TConEventChoice then
-            begin
-                var ChoiceEvent := TConEventChoice(event);
-
-                for var k:= 0 to High(ChoiceEvent.Choices) do
-                begin
-                    if LowerCase(ChoiceEvent.Choices[k].GoToLabel) <> LowerCase(CheckEventLabel(con, ChoiceEvent.Choices[k].GoToLabel)) then
-                    begin
-                        with frmLabelErrors do
-                        begin
-                            var LErrorItem:= lvLabelErrors.Items.Add();
-
-                            LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
-                            LErrorItem.SubItems.AddObject(ChoiceEvent.Choices[k].GoToLabel, ChoiceEvent);
-                        end;
-                    end;
-                end;
-            end;
-        end;
-    end;
-
-
-    if frmLabelErrors.lvLabelErrors.Items.Count > 0 then
-        frmLabelErrors.Show() // only show if we have > 0 items!
-    else
-        MessageDlg(strLabelsValid,  mtInformation, [mbOK], 0);
-end;
-
-function TfrmMain.CheckEventLabel(con: TConversation; aLabel: string): String;
-begin
-    Result := '';
-
-    for var event in con.Events do
-    begin
-        if LowerCase(event.EventLabel) = LowerCase(aLabel) then
-            Result := event.EventLabel
-    end;
-end;
-
 procedure TfrmMain.EditCurrentEvent(EventToEdit: TConEvent);
 begin
     if (EventToEdit is TConEventSpeech) then begin
@@ -4151,7 +3985,12 @@ end;
 
 procedure TfrmMain.RecentFile0Click(Sender: TObject);
 begin
-    OpenRecentFile((Sender as TMenuItem).Caption);
+    var fileName := (Sender as TMenuItem).Caption;
+
+    if FileExists(fileName) = True then
+        OpenRecentFile(fileName)
+    else
+        MessageDlg('Such file does not exists!',  mtError, [mbOK], 0);
 end;
 
 procedure TfrmMain.tbPrintClick(Sender: TObject);
