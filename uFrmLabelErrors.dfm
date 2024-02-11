@@ -46,6 +46,7 @@ object frmLabelErrors: TfrmLabelErrors
     Top = 369
     Width = 225
     Height = 25
+    Anchors = [akLeft, akBottom]
     AutoSize = False
     Caption = 'DblClick on item to jump to it.'
     Layout = tlCenter
