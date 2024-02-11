@@ -251,7 +251,7 @@ ResourceString
     strDelChoiceTitle = 'Really delete this choice?';
     strDelChoiceText = 'Are you sure you want to delete selected choice item?';
 
-    strAppTitle = 'ConvEdit Plus';
+    strAppTitle = 'ConEditPlus';
     strNewFile = '(New File)';
 
     strActorPawn = 'Actor/Pawn:';
@@ -318,6 +318,11 @@ ResourceString
     strAskUnusedObjectsDelete = 'The following Objects are not used:'+ #13#10#13#10;
 
     strAskDeleteEntries = #13#10 + 'Ok to delete these entries?';
+
+    strSearchEnterSomething = 'You should enter text you want to find!';
+    strSearchSelectEvent = 'Select at least one event type to search in!';
+    strSearchSelectConversation = 'Select any conversation first!';
+    strSearchResults = 'Results: ';
 
 
 

@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, System.AnsiStrings, system.StrUtils,
-  Conversation.Classes, System.RegularExpressions, system.UITypes;
+  Conversation.Classes, System.RegularExpressions, system.UITypes, ConvEditPlus.Consts;
 
 type
   TfrmFind = class(TForm)
@@ -74,7 +74,7 @@ var
 begin
     if Trim(cbbFindWhat.Text).IsEmpty = true then
     begin
-        MessageDlg('You should enter text you want to find!',  mtWarning, [mbOK], 0);
+        MessageDlg(strSearchEnterSomething,  mtWarning, [mbOK], 0);
         Exit();
     end;
 
@@ -95,7 +95,7 @@ begin
 
     if bAllUnchecked = True then
     begin
-        MessageDlg('Select at least one event type to search in!',  mtWarning, [mbOK], 0);
+        MessageDlg(strSearchSelectEvent,  mtWarning, [mbOK], 0);
         Exit();
     end;
 
@@ -241,7 +241,7 @@ begin
 
         if con = nil then
         begin
-            MessageDlg('Select any conversation first!',  mtWarning, [mbOK], 0);
+            MessageDlg(strSearchSelectConversation,  mtWarning, [mbOK], 0);
             Exit();
         end;
 
@@ -303,7 +303,7 @@ begin
         end;
     end;
 
-    edtSearchResults.Text := 'Results: ' + lbSearchResults.Count.ToString;
+    edtSearchResults.Text := strSearchResults + lbSearchResults.Count.ToString;
 end;
 
 procedure TfrmFind.LookInSpeech(con: TConversation; SpeechEvent: TConEventSpeech; const TextToFind: string);

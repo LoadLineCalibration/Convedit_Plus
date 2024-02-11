@@ -170,7 +170,6 @@ object frmFind: TfrmFind
     ItemHeight = 20
     TabOrder = 5
     OnDblClick = lbSearchResultsDblClick
-    ExplicitWidth = 465
   end
   object edtSearchResults: TEdit
     Left = 219
