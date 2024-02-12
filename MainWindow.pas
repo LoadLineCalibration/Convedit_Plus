@@ -263,6 +263,8 @@ type
     function FindTreeItemByText(TreeView: TTreeView; Text: string): TTreeNode;
 
     procedure SelectTreeItemByObject(TreeView: TTreeView; Obj: TObject);
+    procedure SelectEventByObject(obj: TObject);
+
 
     procedure SetMemoFont(FontSize: Integer; FontName: string);
     procedure PickTableObject(newTableMode: TTableMode; control: TControl);
@@ -392,7 +394,7 @@ type
     procedure FileOpenExecute(Sender: TObject);
     procedure FileSaveAsExecute(Sender: TObject);
     procedure ConvoTreeChange(Sender: TObject; Node: TTreeNode);
-    procedure ConEventListMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure ConEventListMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ViewoutputTMemo1Click(Sender: TObject);
     procedure ConFileParameters1Click(Sender: TObject);
     procedure Clear1Click(Sender: TObject);
@@ -704,15 +706,22 @@ begin
         end;
         Node := Node.GetNext;
     end;
-{var
-  Node: TTreeNode;
-begin
-  // Traverse the TreeView to find the desired item
-  Node := FindItemByObject(TreeView.Items.GetFirstNode, Obj);
+end;
 
-  // If the item is found, select it
-  if Node <> nil then
-    Node.Selected := True;}
+procedure TfrmMain.SelectEventByObject(obj: TObject);
+begin
+    if Obj <> nil then
+    begin
+        for var i:= 0 to ConEventList.Count -1 do
+        begin
+            if ConEventList.Items.Objects[i] = Obj then
+            begin
+                ConEventList.Selected[i] := True;
+                //ConEventList.ItemIndex := i;
+                Break;
+            end;
+        end;
+    end;
 end;
 
 function TfrmMain.FindConversationObjByString(conName: string): TConversation; // Find conversation by name and return as TObject
@@ -844,22 +853,12 @@ procedure TfrmMain.LoadConXMLFile(aFileName: string);
 begin
     if FileExists(aFileName) = false then
     begin
-        Application.MessageBox(PWideChar(aFileName + ': Such file does not exists! Operation cancelled.'),'Error', MB_OK + MB_ICONSTOP + MB_TOPMOST);
-
-        for var R:= 0 to Length(RecentFiles) -1 do
-           begin
-           if aFileName = RecentFiles[R] then
-            begin
-                ShowMessage('Remove non-existing file');
-                RecentFiles[R]:='';
-            end;
-        end;
-
-       Exit();
+        MessageDlg(aFileName + ': Such file does not exists! Operation cancelled.',  mtError, [mbOK], 0);
+        Exit();
     end;
 
     LoadConXMLHeader(aFileName);
-    LoadConXMLConversations(aFileName)
+    LoadConXMLConversations(aFileName);
 end;
 
 procedure TfrmMain.mainToolBarCustomDrawButton(Sender: TToolBar;
@@ -2598,7 +2597,6 @@ begin
 end;
 
 procedure TfrmMain.HeaderControl1DrawSection(HeaderControl: THeaderControl; Section: THeaderSection; const Rect: TRect; Pressed: Boolean);
-//var TempRect: TRect; // Переменная для временного прямоугольника
 begin
     var TempRect := Rect;
 
@@ -2856,26 +2854,26 @@ begin
     if ConEventList.Items[Index] = ET_End_Caption then Height := 25; // fixed
 end;
 
-procedure TfrmMain.ConEventListMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TfrmMain.ConEventListMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
     var EventJump: TConEventJump;
+    var ConvoJump: TConversation;
     var JumpToConvoAreaRect: TRect;
 
     if (ConEventList.ItemIndex < 0) then
-    Exit();
-
+        Exit();
 
     if ConEventList.Items[ConEventList.ItemIndex] <> ET_Jump_Caption then
-    Exit();
+        Exit();
 
     EventJump := TConEventJump(ConEventList.Items.Objects[ConEventList.ItemIndex]);
+    ConvoJump := FindConversationObjById(EventJump.conversationId);
 
     if Assigned(EventJump) = False then
     begin
         ShowMessage('EventJump not assigned');
         Exit();
     end;
-
 
     if (EventJump.currentConversationId <> EventJump.conversationId) then
     begin
@@ -2889,8 +2887,18 @@ begin
         if PtInRect(JumpToConvoAreaRect, Point(X,Y)) and (Button = mbLeft)
         then
         begin
-            //ShowMessage('Clicked the button!');
-            SelectTreeItemByObject(ConvoTree, FindConversationObjById(EventJump.conversationId));
+            SelectTreeItemByObject(ConvoTree, ConvoJump);//FindConversationObjById(EventJump.conversationId));
+
+            for var i:= 0 to ConEventList.Count -1 do
+            begin
+                var Event:= ConEventList.Items.Objects[i];
+
+                if TConEvent(ConEventList.Items.Objects[i]).EventLabel = EventJump.gotoLabel then
+                begin
+                    ConEventList.ItemIndex := i;
+                    Break;
+                end;
+            end;
         end;
     end;
 end;
@@ -3312,20 +3320,36 @@ end;
 
 procedure TfrmMain.FileSaveExecute(Sender: TObject);
 begin
-//    ShowMessage(currentConFile);
-
-    if (currentConFile <> ''){ and (bFileModified = true)} then
+    if currentConFile <> '' then
     begin
         if LowerCase(ExtractFileExt(currentConFile)) = '.xml' then
         begin
-            //ShowMessage('About to save XML: ' + currentConFile);
-            BuildConXMLFile(currentConFile);
+            try
+                StatusBar.Panels[1].Text := 'Saving file: ' + currentConFile;
+                BuildConXMLFile(currentConFile);
+                StatusBar.Panels[1].Text := 'Saved: ' + currentConFile;
+            except
+                on EFCreateError do
+                begin
+                    StatusBar.Panels[1].Text := 'Error saving file: ' + currentConFile;
+                    raise Exception.Create(Format(strSaveError, [SysErrorMessage(GetLastError), currentConFile]));
+                end;
+            end;
         end;
 
         if LowerCase(ExtractFileExt(currentConFile)) = '.con' then
         begin
-            //ShowMessage('About to save CON: ' + currentConFile);
-            SaveConFile(currentConFile);
+            try
+                StatusBar.Panels[1].Text := 'Saving file: ' + currentConFile;
+                SaveConFile(currentConFile);
+                StatusBar.Panels[1].Text := 'Saved: ' + currentConFile;
+            except
+                on EFCreateError do
+                begin
+                    StatusBar.Panels[1].Text := 'Error saving file: ' + currentConFile;
+                    raise Exception.Create(Format(strSaveError, [SysErrorMessage(GetLastError), currentConFile]));
+                end;
+            end;
         end;
     end
     else

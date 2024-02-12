@@ -4,7 +4,7 @@ object frmMain: TfrmMain
   AlphaBlendValue = 250
   BorderWidth = 1
   Caption = 'ConvEdit+'
-  ClientHeight = 639
+  ClientHeight = 641
   ClientWidth = 1018
   Color = clAppWorkSpace
   CustomTitleBar.SystemColors = False
@@ -76,9 +76,9 @@ object frmMain: TfrmMain
   TextHeight = 15
   object Splitter1: TSplitter
     Left = 300
-    Top = 35
+    Top = 32
     Width = 5
-    Height = 552
+    Height = 589
     Cursor = crSizeWE
     Margins.Left = 5
     Margins.Top = 5
@@ -94,28 +94,26 @@ object frmMain: TfrmMain
   end
   object pnlConvoTree: TPanel
     Left = 0
-    Top = 35
+    Top = 32
     Width = 300
-    Height = 552
+    Height = 589
     Align = alLeft
     Color = 3947580
     DoubleBuffered = True
     ParentBackground = False
     ParentDoubleBuffered = False
     TabOrder = 0
-    ExplicitTop = 32
-    ExplicitHeight = 555
     object ConvoTree: TTreeView
       Left = 1
       Top = 1
       Width = 298
-      Height = 550
+      Height = 587
       Margins.Left = 0
       Margins.Top = 0
       Margins.Right = 0
       Margins.Bottom = 0
       Align = alClient
-      BorderWidth = 3
+      BorderWidth = 1
       DoubleBuffered = True
       Font.Charset = RUSSIAN_CHARSET
       Font.Color = clBlack
@@ -136,12 +134,11 @@ object frmMain: TfrmMain
       OnChange = ConvoTreeChange
       OnEdited = ConvoTreeEdited
       OnEditing = ConvoTreeEditing
-      ExplicitHeight = 553
     end
   end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 619
+    Top = 621
     Width = 1018
     Height = 20
     Font.Charset = DEFAULT_CHARSET
@@ -162,9 +159,9 @@ object frmMain: TfrmMain
   end
   object pnlEventList: TEsPanel
     Left = 305
-    Top = 35
+    Top = 32
     Width = 713
-    Height = 552
+    Height = 589
     Align = alClient
     Color = 3947580
     ParentBackground = False
@@ -172,16 +169,14 @@ object frmMain: TfrmMain
     TabOrder = 2
     CaptionVisible = False
     FrameStyle = Bump
-    ExplicitTop = 32
-    ExplicitHeight = 555
     DesignSize = (
       713
-      552)
+      589)
     object ConEventList: TListBox
       Left = 2
       Top = 22
       Width = 709
-      Height = 242
+      Height = 279
       Style = lbOwnerDrawVariable
       Align = alClient
       BorderStyle = bsNone
@@ -196,8 +191,7 @@ object frmMain: TfrmMain
       OnDragOver = ConEventListDragOver
       OnDrawItem = ConEventListDrawItem
       OnMeasureItem = ConEventListMeasureItem
-      OnMouseDown = ConEventListMouseDown
-      ExplicitHeight = 245
+      OnMouseUp = ConEventListMouseUp
     end
     object HeaderControl1: THeaderControl
       Left = 2
@@ -250,7 +244,7 @@ object frmMain: TfrmMain
     end
     object mmoOutput: TMemo
       Left = 2
-      Top = 264
+      Top = 301
       Width = 709
       Height = 286
       Align = alBottom
@@ -276,11 +270,10 @@ object frmMain: TfrmMain
       Visible = False
       WordWrap = False
       StyleName = 'Windows'
-      ExplicitTop = 267
     end
     object btnCloseLog: TButton
       Left = 694
-      Top = 297
+      Top = 283
       Width = 20
       Height = 20
       Hint = 'Close Log'
@@ -300,13 +293,14 @@ object frmMain: TfrmMain
       Visible = False
       StyleName = 'Windows'
       OnClick = ViewoutputTMemo1Click
-      ExplicitTop = 300
+      ExplicitTop = 286
     end
   end
   object mainToolBar: TToolBar
     Left = 0
     Top = 0
     Width = 1018
+    Height = 29
     AutoSize = True
     ButtonHeight = 30
     ButtonWidth = 32
@@ -325,6 +319,7 @@ object frmMain: TfrmMain
     ParentDoubleBuffered = False
     TabOrder = 3
     Transparent = False
+    StyleName = 'Windows'
     OnCustomDrawButton = mainToolBarCustomDrawButton
     object tbNewConversationFile: TToolButton
       Left = 2
@@ -431,7 +426,6 @@ object frmMain: TfrmMain
       Top = 0
       Width = 8
       Caption = 'ToolButton11'
-      Enabled = False
       ImageIndex = 6
       Style = tbsSeparator
     end
@@ -522,10 +516,50 @@ object frmMain: TfrmMain
       ImageIndex = 12
       OnClick = ViewoutputTMemo1Click
     end
+    object EsPanel1: TEsPanel
+      Left = 634
+      Top = 0
+      Width = 367
+      Height = 30
+      Color = clMenu
+      Ctl3D = True
+      ParentBackground = False
+      ParentColor = False
+      ParentCtl3D = False
+      TabOrder = 0
+      CaptionVisible = False
+      BevelInner = bvNone
+      BevelOuter = bvNone
+      FrameStyle = None
+      FrameColor = clBtnFace
+      object Label1: TLabel
+        Left = 9
+        Top = 1
+        Width = 72
+        Height = 30
+        AutoSize = False
+        Caption = 'Quick Search:'
+        Layout = tlCenter
+      end
+      object edtSearchBox: TEdit
+        Left = 88
+        Top = 4
+        Width = 277
+        Height = 22
+        Hint = 
+          'Enter text you want to find in current conversation and press EN' +
+          'TER'
+        HelpType = htKeyword
+        AutoSize = False
+        HideSelection = False
+        TabOrder = 0
+        OnKeyPress = edtSearchBoxKeyPress
+      end
+    end
   end
   object StaticText1: TStaticText
     Left = 0
-    Top = 32
+    Top = 29
     Width = 1018
     Height = 3
     Align = alTop
@@ -534,57 +568,7 @@ object frmMain: TfrmMain
     Color = clBtnFace
     ParentColor = False
     TabOrder = 4
-  end
-  object EsPanel1: TEsPanel
-    Left = 0
-    Top = 587
-    Width = 1018
-    Height = 32
-    Align = alBottom
-    Color = clMenu
-    Ctl3D = True
-    ParentBackground = False
-    ParentColor = False
-    ParentCtl3D = False
-    TabOrder = 5
-    Visible = False
-    CaptionVisible = False
-    FrameColor = clBtnFace
-    DesignSize = (
-      1018
-      32)
-    object edtSearchBox: TEdit
-      Left = 9
-      Top = 3
-      Width = 169
-      Height = 23
-      AutoSize = False
-      HideSelection = False
-      TabOrder = 0
-    end
-    object Button1: TButton
-      Left = 990
-      Top = 6
-      Width = 20
-      Height = 20
-      Hint = 'Close Log'
-      Anchors = [akRight, akBottom]
-      Caption = 'r'
-      Constraints.MaxHeight = 20
-      Constraints.MaxWidth = 20
-      Constraints.MinHeight = 20
-      Constraints.MinWidth = 20
-      Font.Charset = SYMBOL_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -12
-      Font.Name = 'Marlett'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 1
-      Visible = False
-      StyleName = 'Windows'
-      OnClick = ViewoutputTMemo1Click
-    end
+    ExplicitTop = 32
   end
   object PopupTree: TPopupMenu
     OnPopup = PopupTreePopup
