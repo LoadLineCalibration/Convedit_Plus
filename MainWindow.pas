@@ -716,8 +716,8 @@ begin
         begin
             if ConEventList.Items.Objects[i] = Obj then
             begin
-                ConEventList.Selected[i] := True;
-                //ConEventList.ItemIndex := i;
+                //ConEventList.Selected[i] := True;
+                ConEventList.ItemIndex := i;
                 Break;
             end;
         end;

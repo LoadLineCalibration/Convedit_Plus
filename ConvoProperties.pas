@@ -70,6 +70,7 @@ type
     procedure chkDisplayConvoOnlyOnceClick(Sender: TObject);
     procedure btnAddFlagClick(Sender: TObject);
     procedure lvConvoDependsOnFlagsDblClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
 
     // new procedures
     procedure AddNewConversation();
@@ -79,10 +80,8 @@ type
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure editDistFromPlayerChange(Sender: TObject);
 
-    // functions
+    // new functions
     function CheckConversationExists(conName: string): Boolean;
-    procedure FormShow(Sender: TObject);
-
   private
     { Private declarations }
   public

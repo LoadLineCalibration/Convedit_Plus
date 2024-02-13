@@ -145,16 +145,7 @@ begin
         var EventObj := lbSearchResults.Items.Objects[itemIdx];
 
         if EventObj <> nil then
-        begin
-            for var i:= 0 to frmMain.ConEventList.Count -1 do
-            begin
-                if frmMain.ConEventList.Items.Objects[i] = EventObj then
-                begin
-                    frmMain.ConEventList.Selected[i] := True;
-                    Break;
-                end;
-            end;
-        end;
+            frmMain.SelectEventByObject(EventObj);
     end;
 end;
 

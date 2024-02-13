@@ -519,6 +519,23 @@ begin
     if TableItemReceiver <> nil then // На случай если окно открыто из меню.
         Caption := Caption + ' [' + TableItemReceiver.Owner.ToString + '.' + TableItemReceiver.Name + ']';
 
+    // select item from combobox
+    if TableItemReceiver is TComboBox then
+    begin
+        var itemIdx := TComboBox(TableItemReceiver).ItemIndex;
+        var tempStr := TComboBox(TableItemReceiver).Items[itemIdx];
+
+        for var i := 0 to lstTableContents.Count -1 do
+        begin
+            if lstTableContents.Items[i] = tempStr then
+            begin
+                lstTableContents.ItemIndex := i;
+                Break;
+            end;
+        end;
+    end;
+
+
     // в очередной раз проверить кнопки.
     UpdateButtonsState();
 end;

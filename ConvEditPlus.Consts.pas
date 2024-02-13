@@ -324,6 +324,9 @@ ResourceString
     strSearchSelectConversation = 'Select any conversation first!';
     strSearchResults = 'Results: ';
 
+    // Error messages when trying to save file
+    strSaveError = 'Error saving file (%s):' + #13#10 +'%s';
+
 
 
 

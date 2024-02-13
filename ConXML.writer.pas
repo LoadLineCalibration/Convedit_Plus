@@ -19,7 +19,8 @@ begin
     conXML.Options := [];
     conXML.NodeIndentStr:= #9;
 try
-    with frmMain do begin
+    with frmMain do
+    begin
 
     var rootNode:= conXML.AddChild('DeusExConversationFile', ntElement);
     var ParamsNode:= rootNode.AddChild('Parameters');
