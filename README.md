@@ -34,15 +34,19 @@ Enhancements over OG ConEdit:
 * ...and other enhancements anf improvements...
 
 Screenshot of main window with loaded conversations file:
+
 ![изображение](https://github.com/LoadLineCalibration/Convedit_Plus/assets/44388228/e215a73f-a3e2-4d45-acfe-cc1eb2442a79)
 
 Search:
+
 ![изображение](https://github.com/LoadLineCalibration/Convedit_Plus/assets/44388228/5d6405d6-fcf6-4249-b6f3-c3d881c8d153)
 
 Label verification:
+
 ![изображение](https://github.com/LoadLineCalibration/Convedit_Plus/assets/44388228/2795e541-f871-4ae4-8eae-e8aef114f496)
 
 Enhanced 'Tables' window:
+
 ![изображение](https://github.com/LoadLineCalibration/Convedit_Plus/assets/44388228/d512c738-6c02-41aa-804f-99909df3d93a)
 
 
