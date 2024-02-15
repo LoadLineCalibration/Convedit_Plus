@@ -4,7 +4,7 @@ object frmFind: TfrmFind
   BorderIcons = [biSystemMenu]
   Caption = 'Find'
   ClientHeight = 497
-  ClientWidth = 482
+  ClientWidth = 484
   Color = clBtnFace
   Constraints.MinHeight = 200
   Constraints.MinWidth = 486
@@ -54,7 +54,7 @@ object frmFind: TfrmFind
   StyleName = 'Windows'
   OnClose = FormClose
   DesignSize = (
-    482
+    484
     497)
   TextHeight = 15
   object Label1: TLabel
@@ -68,7 +68,7 @@ object frmFind: TfrmFind
   end
   object Label2: TLabel
     Left = 8
-    Top = 199
+    Top = 229
     Width = 189
     Height = 15
     Caption = 'Search results (DblClick to jump to):'
@@ -162,9 +162,9 @@ object frmFind: TfrmFind
   end
   object lbSearchResults: TListBox
     Left = 8
-    Top = 216
+    Top = 250
     Width = 469
-    Height = 273
+    Height = 239
     Style = lbOwnerDrawFixed
     Anchors = [akLeft, akTop, akRight, akBottom]
     ItemHeight = 20
@@ -173,8 +173,8 @@ object frmFind: TfrmFind
   end
   object edtSearchResults: TEdit
     Left = 219
-    Top = 194
-    Width = 258
+    Top = 228
+    Width = 257
     Height = 21
     Font.Charset = RUSSIAN_CHARSET
     Font.Color = clWindowText
@@ -189,7 +189,7 @@ object frmFind: TfrmFind
     Left = 8
     Top = 119
     Width = 469
-    Height = 74
+    Height = 98
     Caption = 'Look in these events:'
     TabOrder = 7
     StyleName = 'Windows'
@@ -276,6 +276,28 @@ object frmFind: TfrmFind
       Caption = 'Only Speech'
       TabOrder = 7
       OnClick = btnCheckSpeechOnlyClick
+    end
+    object chkLookInCheckFlags: TCheckBox
+      Left = 12
+      Top = 70
+      Width = 88
+      Height = 17
+      Cursor = crHandPoint
+      Caption = 'CheckFlags'
+      Checked = True
+      State = cbChecked
+      TabOrder = 8
+    end
+    object chkLookInSetFlags: TCheckBox
+      Left = 106
+      Top = 70
+      Width = 88
+      Height = 17
+      Cursor = crHandPoint
+      Caption = 'SetFlags'
+      Checked = True
+      State = cbChecked
+      TabOrder = 9
     end
   end
 end

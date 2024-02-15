@@ -31,6 +31,8 @@ type
     chkLookInAddSkillPts: TCheckBox;
     btnCheckAll: TButton;
     btnCheckSpeechOnly: TButton;
+    chkLookInCheckFlags: TCheckBox;
+    chkLookInSetFlags: TCheckBox;
 
     // new functions
     function FindText(const WordToFind, TextToLookIn: string; ASearchOptions: TStringSearchOptions): Boolean;
@@ -46,6 +48,8 @@ type
     procedure LookInAddNote(con: TConversation; NoteEvent: TConEventAddNote; const TextToFind: string);
     procedure LookInAddSkillPts(con: TConversation; AddSkillPtsEvent: TConEventAddSkillPoints; const TextToFind: string);
     procedure LookInComment(con: TConversation; comment: TConEventComment; const TextToFind: string);
+    procedure LookInCheckFlag(con: TConversation; checkFlag: TConEventCheckFlag; const TextToFind: string);
+    procedure LookInSetFlag(con: TConversation; setFlag: TConEventSetFlag; const TextToFind: string);
 
     procedure btnCloseClick(Sender: TObject);
     procedure btnFindClick(Sender: TObject);
@@ -213,13 +217,33 @@ begin
                     end;
                 end;
 
-                if Event is TConEventComment  then // comment
+                if Event is TConEventComment then // comment
                 begin
                     if chkLookInComments.Checked = True then
                     begin
                         var CommentEvent := TConEventComment(Event);
 
                         LookInComment(con, CommentEvent, TextToFind);
+                    end;
+                end;
+
+                if Event is TConEventCheckFlag then // Check flag(s)
+                begin
+                    if chkLookInCheckFlags.Checked = True then
+                    begin
+                        var checkFlagEvent := TConEventCheckFlag(Event);
+
+                        LookInCheckFlag(con, checkFlagEvent, TextToFind);
+                    end;
+                end;
+
+                if Event is TConEventSetFlag then // Set flag(s)
+                begin
+                    if chkLookInSetFlags.Checked = True then
+                    begin
+                        var setFlagEvent := TConEventSetFlag(Event);
+
+                        LookInSetFlag(con, setFlagEvent, TextToFind);
                     end;
                 end;
             end;
@@ -465,6 +489,84 @@ begin
     end;
 end;
 
+procedure TfrmFind.LookInCheckFlag(con: TConversation; checkFlag: TConEventCheckFlag; const TextToFind: string);
+begin
+    var tempSO: TStringSearchOptions;
+
+    if chkFindWholeWordOnly.Checked = True then
+    begin
+        tempSO := [soDown, soWholeWord];
+
+        if chkMatchCase.Checked = true then
+            tempSO := [soDown, soWholeWord, soMatchCase];
+
+        for var i:= 0 to High(checkFlag.FlagsToCheck) do
+        begin
+            if FindText(TextToFind, checkFlag.FlagsToCheck[i].flagName, tempSO) = true then
+            begin
+                lbSearchResults.items.AddObject(con.conOwnerName + ' > ' + con.conName + ' > ' + checkFlag.ClassName + ' > ' + TextToFind, checkFlag);
+                Break;
+            end;
+        end;
+    end;
+
+    if chkFindWholeWordOnly.Checked = False then
+    begin
+        tempSO := [soDown];
+
+        if chkMatchCase.Checked = true then
+            tempSO := [soDown, soMatchCase];
+
+        for var d:= 0 to High(checkFlag.FlagsToCheck) do
+        begin
+            if FindText(TextToFind, checkFlag.FlagsToCheck[d].flagName, tempSO) = true then
+            begin
+                lbSearchResults.items.AddObject(con.conOwnerName + ' > ' + con.conName + ' > ' + checkFlag.ClassName + ' > ' + TextToFind, checkFlag);
+                Break;
+            end;
+        end;
+    end;
+end;
+
+procedure TfrmFind.LookInSetFlag(con: TConversation; setFlag: TConEventSetFlag; const TextToFind: string);
+begin
+    var tempSO: TStringSearchOptions;
+
+    if chkFindWholeWordOnly.Checked = True then
+    begin
+        tempSO := [soDown, soWholeWord];
+
+        if chkMatchCase.Checked = true then
+            tempSO := [soDown, soWholeWord, soMatchCase];
+
+        for var i:= 0 to High(setFlag.SetFlags) do
+        begin
+            if FindText(TextToFind, setFlag.SetFlags[i].flagName, tempSO) = true then
+            begin
+                lbSearchResults.items.AddObject(con.conOwnerName + ' > ' + con.conName + ' > ' + setFlag.ClassName + ' > ' + TextToFind, setFlag);
+                Break;
+            end;
+        end;
+    end;
+
+    if chkFindWholeWordOnly.Checked = False then
+    begin
+        tempSO := [soDown];
+
+        if chkMatchCase.Checked = true then
+            tempSO := [soDown, soMatchCase];
+
+        for var d:= 0 to High(setFlag.SetFlags) do
+        begin
+            if FindText(TextToFind, setFlag.SetFlags[d].flagName, tempSO) = true then
+            begin
+                lbSearchResults.items.AddObject(con.conOwnerName + ' > ' + con.conName + ' > ' + setFlag.ClassName + ' > ' + TextToFind, setFlag);
+                Break;
+            end;
+        end;
+    end;
+end;
+
 procedure TfrmFind.btnCheckAllClick(Sender: TObject);
 begin
     chkLookInComments.checked := True;
@@ -473,6 +575,8 @@ begin
     chkLookInSpeech.checked := True;
     chkLookInChoices.checked := True;
     chkLookInGoals.checked := True;
+    chkLookInCheckFlags.checked := True;
+    chkLookInSetFlags.checked := True;
 end;
 
 procedure TfrmFind.btnCheckSpeechOnlyClick(Sender: TObject);
@@ -483,6 +587,8 @@ begin
     chkLookInSpeech.checked := True;
     chkLookInChoices.checked := False;
     chkLookInGoals.checked := False;
+    chkLookInCheckFlags.checked := False;
+    chkLookInSetFlags.checked := False;
 end;
 
 procedure TfrmFind.btnCloseClick(Sender: TObject);
