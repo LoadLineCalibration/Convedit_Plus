@@ -4,7 +4,7 @@ An attempt to recreate Deus Ex conversation editor (ConEdit or ConvEdit) in Delp
 
 what in __NOT__ implemented yet:
 * Insert event
-* text wrap
+* ~text wrap~ also make it dynamic
 * ~search functions~
 * ~label checking~
 * ~deletion of unused tables entries~
