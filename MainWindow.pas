@@ -582,17 +582,13 @@ end;
 
 function TfrmMain.CountLineBreaks(str: string): Integer;
 begin
-    var counter: Integer := 0;
-    var Parts := str.Split([#13]);
-    //var Parts := str.Split([#10]);
+    var TextMetric: TTextMetric;
+    var RealWidth := ConEventList.Width - HeaderControl1.Sections[0].Width; // I'ts important to take into account witdh of first column!
 
-    for var Part in Parts do
-    begin
-        if Part <> '' then
-           Inc(counter);
-    end;
+    Canvas.Font.Assign(ConEventList.Font);
+    GetTextMetrics(Canvas.Handle, TextMetric);
 
-    Result := counter;
+    Result := Canvas.TextWidth(str) div (RealWidth - TextMetric.tmOverhang) + 1;
 end;
 
 function TfrmMain.GetSpeechEventItemHeight(events: array of TConEvent): Integer;

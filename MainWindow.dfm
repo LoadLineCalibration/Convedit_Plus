@@ -76,9 +76,9 @@ object frmMain: TfrmMain
   TextHeight = 15
   object Splitter1: TSplitter
     Left = 300
-    Top = 32
+    Top = 35
     Width = 5
-    Height = 589
+    Height = 586
     Cursor = crSizeWE
     Margins.Left = 5
     Margins.Top = 5
@@ -94,20 +94,22 @@ object frmMain: TfrmMain
   end
   object pnlConvoTree: TPanel
     Left = 0
-    Top = 32
+    Top = 35
     Width = 300
-    Height = 589
+    Height = 586
     Align = alLeft
     Color = 3947580
     DoubleBuffered = True
     ParentBackground = False
     ParentDoubleBuffered = False
     TabOrder = 0
+    ExplicitTop = 32
+    ExplicitHeight = 589
     object ConvoTree: TTreeView
       Left = 1
       Top = 1
       Width = 298
-      Height = 587
+      Height = 584
       Margins.Left = 0
       Margins.Top = 0
       Margins.Right = 0
@@ -134,6 +136,7 @@ object frmMain: TfrmMain
       OnChange = ConvoTreeChange
       OnEdited = ConvoTreeEdited
       OnEditing = ConvoTreeEditing
+      ExplicitHeight = 587
     end
   end
   object StatusBar: TStatusBar
@@ -159,9 +162,9 @@ object frmMain: TfrmMain
   end
   object pnlEventList: TEsPanel
     Left = 305
-    Top = 32
+    Top = 35
     Width = 713
-    Height = 589
+    Height = 586
     Align = alClient
     Color = 3947580
     ParentBackground = False
@@ -169,19 +172,27 @@ object frmMain: TfrmMain
     TabOrder = 2
     CaptionVisible = False
     FrameStyle = Bump
+    ExplicitTop = 32
+    ExplicitHeight = 589
     DesignSize = (
       713
-      589)
+      586)
     object ConEventList: TListBox
       Left = 2
       Top = 22
       Width = 709
-      Height = 279
+      Height = 276
       Style = lbOwnerDrawVariable
       Align = alClient
       BorderStyle = bsNone
       ExtendedSelect = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBtnText
+      Font.Height = -13
+      Font.Name = 'Verdana'
+      Font.Style = []
       ItemHeight = 14
+      ParentFont = False
       PopupMenu = PopupConvoEventList
       TabOrder = 0
       StyleName = 'Windows'
@@ -192,6 +203,8 @@ object frmMain: TfrmMain
       OnDrawItem = ConEventListDrawItem
       OnMeasureItem = ConEventListMeasureItem
       OnMouseUp = ConEventListMouseUp
+      ExplicitLeft = 1
+      ExplicitTop = 28
     end
     object HeaderControl1: THeaderControl
       Left = 2
@@ -244,7 +257,7 @@ object frmMain: TfrmMain
     end
     object mmoOutput: TMemo
       Left = 2
-      Top = 301
+      Top = 298
       Width = 709
       Height = 286
       Align = alBottom
@@ -270,10 +283,11 @@ object frmMain: TfrmMain
       Visible = False
       WordWrap = False
       StyleName = 'Windows'
+      ExplicitTop = 301
     end
     object btnCloseLog: TButton
       Left = 694
-      Top = 283
+      Top = 262
       Width = 20
       Height = 20
       Hint = 'Close Log'
@@ -293,14 +307,13 @@ object frmMain: TfrmMain
       Visible = False
       StyleName = 'Windows'
       OnClick = ViewoutputTMemo1Click
-      ExplicitTop = 286
+      ExplicitTop = 265
     end
   end
   object mainToolBar: TToolBar
     Left = 0
     Top = 0
     Width = 1018
-    Height = 29
     AutoSize = True
     ButtonHeight = 30
     ButtonWidth = 32
@@ -551,7 +564,13 @@ object frmMain: TfrmMain
           'TER'
         HelpType = htKeyword
         AutoSize = False
+        Font.Charset = RUSSIAN_CHARSET
+        Font.Color = clBtnText
+        Font.Height = -13
+        Font.Name = 'Lucida Console'
+        Font.Style = []
         HideSelection = False
+        ParentFont = False
         TabOrder = 0
         OnKeyPress = edtSearchBoxKeyPress
       end
@@ -559,7 +578,7 @@ object frmMain: TfrmMain
   end
   object StaticText1: TStaticText
     Left = 0
-    Top = 29
+    Top = 32
     Width = 1018
     Height = 3
     Align = alTop
@@ -568,7 +587,6 @@ object frmMain: TfrmMain
     Color = clBtnFace
     ParentColor = False
     TabOrder = 4
-    ExplicitTop = 32
   end
   object PopupTree: TPopupMenu
     OnPopup = PopupTreePopup
