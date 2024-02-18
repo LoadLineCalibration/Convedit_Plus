@@ -558,7 +558,7 @@ begin
     frmMain.AddLog('choice bClearScreen = ' + BoolToStr(choiceEvent.bClearScreen, True));
 
     choiceEvent.NumChoices := ConRead.ReadInteger();
-    choiceEvent.NumFlagsStrings := choiceEvent.NumChoices; // for event item height
+    choiceEvent.NumFlagsRefs := choiceEvent.NumChoices; // for event item height
     frmMain.AddLog('choice NumChoices = ' + choiceEvent.NumChoices.ToString);
 
     SetLength(choiceEvent.Choices, choiceEvent.NumChoices);
@@ -600,10 +600,10 @@ begin
 
         if skillNameId >= 0 then // Requires skill. Did anyone ever used this feature?
         begin
-                choiceEvent.Choices[cl].Skill := GetConString(ConRead);
-                choiceEvent.Choices[cl].SkillLevel := ConRead.ReadInteger();
-                choiceEvent.Choices[cl].GoToLabel := GetConString(ConRead);
-                choiceEvent.Choices[cl].mp3 := GetConString(ConRead);
+            choiceEvent.Choices[cl].Skill := GetConString(ConRead);
+            choiceEvent.Choices[cl].SkillLevel := ConRead.ReadInteger();
+            choiceEvent.Choices[cl].GoToLabel := GetConString(ConRead);
+            choiceEvent.Choices[cl].mp3 := GetConString(ConRead);
 
             var numFlagRefList1 := ConRead.ReadInteger();
             SetLength(choiceEvent.Choices[cl].RequiredFlags, numFlagRefList1);

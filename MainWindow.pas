@@ -289,6 +289,7 @@ type
     procedure LoadConXMLFile(aFileName: string);
     procedure BuildConvoTree();
 
+    procedure ProcessCommandline(const cmdLine: string);
 
     procedure AddLog(msg: string);
 
@@ -552,18 +553,30 @@ end;
 
 function TfrmMain.GetNumChoiceLines(events: array of TConEvent): Integer;
 begin
-    var aLength, dResult: Integer;
-
-    aLength := 0;
+    var dResult: Integer;
+    var fLength := 0;
+    var tLength := 0;
 
     for var L:= 0 to Length(events) -1 do
     begin
-        if events[L] is TConEventChoice then begin
-           aLength := TConEventChoice(events[L]).NumChoices + TConEventChoice(events[L]).NumFlagsStrings;
+        if events[L] is TConEventChoice then
+        begin
+            var choiceEvent := TConEventChoice(events[L]);
+
+            for var chi in choiceEvent.Choices do
+            begin
+                if Length(chi.RequiredFlags) > 0 then
+                Inc(fLength);
+            end;
+
+            var cLength := choiceEvent.NumChoices;
+
+            tLength := cLength + fLength;
+            Break;
         end;
     end;
 
-    dResult := 20 + (17 * aLength); // 20 for name and 17 for each Choice Item + space for flags
+    dResult := 20 + (17 * tLength); // 20 for name and 17 for each Choice Item + space for flags
     Result := dResult;
 end;
 
@@ -838,6 +851,15 @@ end;
 procedure TfrmMain.AddLog(msg: string);
 begin
 //    mmoOutput.Lines.Add(msg);
+end;
+
+procedure TfrmMain.ProcessCommandline(const cmdLine: string);
+begin
+    if ExtractFileExt(cmdLine) = LowerCase('.con') then
+        ShowMessage('Load .con file');
+
+    if ExtractFileExt(cmdLine) = LowerCase('.xml') then
+        ShowMessage('Load .xml file');
 end;
 
 function TfrmMain.GetReorderButtonHint(): string;
@@ -2891,7 +2913,7 @@ begin
 
             for var i:= 0 to ConEventList.Count -1 do
             begin
-                var Event:= ConEventList.Items.Objects[i];
+                //var Event:= ConEventList.Items.Objects[i];
 
                 if TConEvent(ConEventList.Items.Objects[i]).EventLabel = EventJump.gotoLabel then
                 begin
@@ -3172,6 +3194,9 @@ begin
     tbSettings.Hint := tbSettingsHint;
     tbStickyWindow.Hint := tbStickyWindowHint;
     btnViewLog.hint := tbShowLogHint;
+
+    if ParamStr(1).IsEmpty = False then // open file from commandline
+        ProcessCommandline(ParamStr(1));
 end;
 
 procedure TfrmMain.CreateObjectLists();

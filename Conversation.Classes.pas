@@ -156,7 +156,7 @@ TConEventChoice = class(TConEvent) // 01
     bClearScreen: boolean;
     Choices: array of TChoiceItemObject; //TChoiceItem;
     NumChoices: Integer; // for height of this item in the events list
-    NumFlagsStrings: Integer; // same
+    NumFlagsRefs: Integer; // same
 
     public
     constructor Create();
