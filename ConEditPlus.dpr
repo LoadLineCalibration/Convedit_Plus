@@ -1,3 +1,14 @@
+{
+    ConEditPlus project.
+
+    Created by Veronika Afanasyeva (Andrievskaya) aka LoadLine Calibration.
+
+    Built in Delphi 11.3
+
+    Open-source. Feel free to modify...
+
+}
+
 program ConEditPlus;
 
 uses
@@ -9,7 +20,7 @@ uses
   ConFileProperties in 'ConFileProperties.pas' {frmConvoFileProperties},
   ConvEditPlus.Consts in 'ConvEditPlus.Consts.pas',
   ConvEditPlus.Enums in 'ConvEditPlus.Enums.pas',
-  ConvEditPlus_Util in 'ConvEditPlus_Util.pas',
+  ConEditPlus.Helpers in 'ConEditPlus.Helpers.pas',
   Conversation.Classes in 'Conversation.Classes.pas',
   ConvoProperties in 'ConvoProperties.pas' {frmConvoProperties},
   ConXML.Reader in 'ConXML.Reader.pas',
