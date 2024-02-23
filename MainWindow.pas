@@ -8,7 +8,7 @@ uses
   system.UITypes, Vcl.ComCtrls, System.Types, Vcl.Buttons, Vcl.ToolWin, System.IniFiles, System.IOUtils,
   Conversation.Classes, System.ImageList, Vcl.ImgList, Table, Vcl.GraphUtil, ES.BaseControls, ES.Layouts,
   System.Actions, Vcl.ActnList, System.Generics.Collections, System.TypInfo, xml.VerySimple, System.StrUtils,
-  Vcl.MPlayer, ConvEditPlus.Enums, Winapi.ShellAPI;
+  system.Math, Vcl.MPlayer, ConvEditPlus.Enums, Winapi.ShellAPI, ConEditPlus.Helpers;
 
 
 type
@@ -246,7 +246,7 @@ type
 
     function GetFlagsSize(events: array of TConEvent): Integer;
     function GetChkFlagsSize(events: array of TConEvent): Integer;
-    function CountLineBreaks(str: string): Integer;
+    function CountLineWraps(str: string): Integer;
     function GetSpeechEventItemHeight(events: array of TConEvent): Integer;
     function GetRandomEventItemHeight(events: array of TConEvent): Integer;
     function GetNumChoiceLines(events: array of TConEvent): Integer;
@@ -580,15 +580,23 @@ begin
     Result := dResult;
 end;
 
-function TfrmMain.CountLineBreaks(str: string): Integer;
+function TfrmMain.CountLineWraps(str: string): Integer;
 begin
     var TextMetric: TTextMetric;
-    var RealWidth := ConEventList.Width - HeaderControl1.Sections[0].Width; // I'ts important to take into account witdh of first column!
+    var SysScrollBarWidth := GetSystemMetrics(SM_CXVSCROLL);
+    var RealWidth := ConEventList.ClientWidth - (HeaderControl1.Sections[0].Width + SysScrollBarWidth); // Width of first column + scrollbar width for easier reading
 
-    Canvas.Font.Assign(ConEventList.Font);
+    Canvas.Font.Name := CEP_SPEECH_EVENT_FONT;
+    Canvas.Font.Size := CEP_SPEECH_EVENT_FONT_SIZE;
+
     GetTextMetrics(Canvas.Handle, TextMetric);
 
-    Result := Canvas.TextWidth(str) div (RealWidth - TextMetric.tmOverhang) + 1;
+    var WrapWidth := RealWidth - TextMetric.tmOverhang;
+
+    Result := Ceil(Canvas.TextWidth(str) / WrapWidth) + 1;
+
+    //Result := (Canvas.TextWidth(str) + (RealWidth - TextMetric.tmOverhang) - 1) div RealWidth;
+
 end;
 
 function TfrmMain.GetSpeechEventItemHeight(events: array of TConEvent): Integer;
@@ -599,12 +607,13 @@ begin
 
     for var L:= 0 to Length(events) -1 do
     begin
-        if events[L] is TConEventSpeech then begin
+        if events[L] is TConEventSpeech then
+        begin
            aLength := TConEventSpeech(events[L]).LineBreaksCount;
         end;
     end;
 
-    dResult := 20 + (17 * aLength); // 20 for name and 17 for each speech string
+    dResult := 18 + (16 * aLength); // 20 for name and 17 for each speech string
 
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
 
