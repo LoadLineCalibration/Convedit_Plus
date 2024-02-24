@@ -17,8 +17,6 @@ type
     PopupTree: TPopupMenu;
     MenuMain: TMainMenu;
     File1: TMenuItem;
-    ConversationMenu: TMenuItem;
-    EventsMenu: TMenuItem;
     TablesMenu: TMenuItem;
     View1: TMenuItem;
     mnuHelp: TMenuItem;
@@ -35,34 +33,13 @@ type
     N3: TMenuItem;
     N4: TMenuItem;
     Exit1: TMenuItem;
-    AddConversation1: TMenuItem;
-    DeleteConversation1: TMenuItem;
-    N5: TMenuItem;
-    Cut1: TMenuItem;
-    Copy1: TMenuItem;
-    Paste1: TMenuItem;
-    N6: TMenuItem;
-    Checklabels1: TMenuItem;
-    Properties3: TMenuItem;
-    Find1: TMenuItem;
-    N7: TMenuItem;
-    Expandall1: TMenuItem;
-    Collapseall1: TMenuItem;
-    Add1: TMenuItem;
-    Insert1: TMenuItem;
-    N8: TMenuItem;
-    Cut2: TMenuItem;
-    Copy2: TMenuItem;
-    PasteEvent: TMenuItem;
-    N9: TMenuItem;
-    N10: TMenuItem;
     ActorsPawns1: TMenuItem;
     Flags1: TMenuItem;
     Skills1: TMenuItem;
     Objects1: TMenuItem;
     mnuToggleMainToolBar: TMenuItem;
     mnuStatusbar: TMenuItem;
-    mnuExpandedEventList1: TMenuItem;
+    mnuEventIndex: TMenuItem;
     mnuShowAudioFiles1: TMenuItem;
     PopupConvoEventList: TPopupMenu;
     pnlConvoTree: TPanel;
@@ -386,7 +363,6 @@ type
     procedure tbSearchClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure mnuShowAudioFiles1Click(Sender: TObject);
-    procedure mnuExpandedEventList1Click(Sender: TObject);
     procedure RecentFile0Click(Sender: TObject);
     procedure ConEventListDblClick(Sender: TObject);
     procedure Splitter1CanResize(Sender: TObject; var NewSize: Integer; var Accept: Boolean);
@@ -400,7 +376,6 @@ type
     procedure ConFileParameters1Click(Sender: TObject);
     procedure Clear1Click(Sender: TObject);
     procedure ConversationsListCount1Click(Sender: TObject);
-    procedure MeasureItems1Click(Sender: TObject);
     procedure Event_DeleteExecute(Sender: TObject);
     procedure AddConversationExecute(Sender: TObject);
     procedure DeleteConversationExecute(Sender: TObject);
@@ -429,6 +404,7 @@ type
       State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure mnuGithubClick(Sender: TObject);
     procedure edtSearchBoxKeyPress(Sender: TObject; var Key: Char);
+    procedure mnuEventIndexClick(Sender: TObject);
   private
     { Private declarations }
     procedure WMEnterSizeMove(var Msg: TMessage); message WM_ENTERSIZEMOVE;
@@ -457,7 +433,7 @@ type
     bExpandFlagsOnExpandAll,
     bAskForConvoDelete, bAskForEventDelete, bHglEventWithNoAudio,
     bHglEventsGradient, bFlatToolbar, bAutoSaveEnabled,
-    bUse3DSelectionFrame, bUseWhiteSelectedText: Boolean;
+    bUse3DSelectionFrame, bUseWhiteSelectedText, bDrawEventIdx: Boolean;
 
     // strings
     var ConversationUserName,
@@ -482,6 +458,8 @@ type
 
     var eventsFormLeft: Integer;
     var eventsFormTop: Integer;
+
+    var SysScrollBarWidth: Integer;
   end;
 
 var
@@ -583,8 +561,9 @@ end;
 function TfrmMain.CountLineWraps(str: string): Integer;
 begin
     var TextMetric: TTextMetric;
-    var SysScrollBarWidth := GetSystemMetrics(SM_CXVSCROLL);
     var RealWidth := ConEventList.ClientWidth - (HeaderControl1.Sections[0].Width + SysScrollBarWidth); // Width of first column + scrollbar width for easier reading
+
+    if RealWidth < 1 then RealWidth := 1; // division by zero fix
 
     Canvas.Font.Name := CEP_SPEECH_EVENT_FONT;
     Canvas.Font.Size := CEP_SPEECH_EVENT_FONT_SIZE;
@@ -594,9 +573,7 @@ begin
     var WrapWidth := RealWidth - TextMetric.tmOverhang;
 
     Result := Ceil(Canvas.TextWidth(str) / WrapWidth) + 1;
-
     //Result := (Canvas.TextWidth(str) + (RealWidth - TextMetric.tmOverhang) - 1) div RealWidth;
-
 end;
 
 function TfrmMain.GetSpeechEventItemHeight(events: array of TConEvent): Integer;
@@ -628,7 +605,8 @@ begin
 
     for var L:= 0 to Length(events) -1 do
     begin
-        if events[L] is TConEventRandom then begin
+        if events[L] is TConEventRandom then
+        begin
            aLength := Length(TConEventRandom(events[L]).GoToLabels);
         end;
     end;
@@ -1330,11 +1308,13 @@ begin
        MainToolBar.Visible := bShowToolbar;
        mnuToggleMainToolBar.Checked := bShowToolbar;
 
-       bExpandedEventList := ReadBool('frmMain', 'bExpandedEventList', true);
+       //bExpandedEventList := ReadBool('frmMain', 'bExpandedEventList', true);
+       bDrawEventIdx := ReadBool('frmMain', 'bDrawEventIdx', true);
+       mnuEventIndex.Checked := bDrawEventIdx;
 
 
       // Settings form
-       ConversationUserName := ReadString('frmMain', 'UserName', 'ConvEdit+');
+       ConversationUserName := ReadString('frmMain', 'UserName', strAppTitle);
        ConFilePath := ReadString('frmMain', 'ConFilePath', '');
        ConFileBakPath := ReadString('frmMain', 'ConFileBakPath', '');
        ConFileAudioPath := ReadString('frmMain', 'ConFileAudioPath', '');
@@ -1389,6 +1369,7 @@ begin
            WriteBool('frmMain', 'bShowAudioFiles', bShowAudioFiles);
            WriteBool('frmMain', 'bShowStatusBar', bShowStatusBar);
            WriteBool('frmMain', 'bShowToolbar', bShowToolbar);
+           WriteBool('frmMain', 'bDrawEventIdx', bDrawEventIdx);
 
            // Settings form
            WriteString('frmMain', 'UserName', ConversationUserName);
@@ -1479,6 +1460,7 @@ begin
         tempRect := Rect;
         tempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width;
         tempRect.Top := Rect.Top + 16;
+        tempRect.Right := Rect.Right - SysScrollBarWidth; // right offset
 
         Font.Style := [];
 
@@ -2783,7 +2765,7 @@ begin
         Pen.Style := psInsideFrame;
         Frame3D(TListBox(Control).Canvas, Rect, clWhite, clrGrid, 1); // разделитель
 
-        if CurrentConversation <> nil then
+        if CurrentConversation <> nil then // Hide Event Index when needed
         begin
             if TConEvent(ConEventList.Items.Objects[Index]) <> nil then
             begin
@@ -2817,11 +2799,12 @@ begin
             if Items[Index] = ET_End_Caption then               DrawET_End(Control, Index, Rect, State);
         end;
 
-        Font.Size := CEP_EVENT_LIST_FONT_SIZE;
-        Font.Name := CEP_EVENT_LIST_FONT_NAME;
+        Font.Size := CEP_EVENT_LABEL_FONT_SIZE; //CEP_EVENT_LIST_FONT_SIZE;
+        Font.Name := CEP_EVENT_LABEL_FONT; //CEP_EVENT_LIST_FONT_NAME;
         Font.Style := [fsBold];
 
-        if labelStr <> '' then begin
+        if labelStr <> '' then
+        begin
             tempRect := Rect;
 
             tempRect.Left := Rect.Left;
@@ -2834,14 +2817,19 @@ begin
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then
            Font.Color := clWhite else Font.Color := clMaroon;
 
-        //TextOut(Rect.Left + 4, Rect.Top + 4, labelStr);
-        TextOut(Rect.Left + 20, Rect.Top + 4, labelStr);
+        if bDrawEventIdx = True then
+            TextOut(Rect.Left + 20, Rect.Top + 4, labelStr)
+        else
+            TextOut(Rect.Left + 2, Rect.Top + 2, labelStr);
 
         // draw event index here (set color and draw text)
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then
-           Font.Color := clYellow else Font.Color := clBlue;
+        if bDrawEventIdx = True then
+        begin
+            if ((odSelected in State) and (bUseWhiteSelectedText = true)) then
+               Font.Color := clYellow else Font.Color := clBlue;
 
-        TextOut(Rect.Left, Rect.Top + 4, idxStr);
+            TextOut(Rect.Left, Rect.Top + 4, idxStr);
+        end;
     end;
 end;
 
@@ -3160,10 +3148,10 @@ begin
 //    mainToolBar.
 end;
 
-procedure TfrmMain.mnuExpandedEventList1Click(Sender: TObject);
+procedure TfrmMain.mnuEventIndexClick(Sender: TObject);
 begin
-    bExpandedEventList := mnuExpandedEventList1.Checked;
-    ConEventList.Invalidate(); // Refresh the event list
+    bDrawEventIdx := mnuEventIndex.Checked;
+    ConEventList.Invalidate();
 end;
 
 procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -3173,6 +3161,8 @@ end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
+    SysScrollBarWidth := GetSystemMetrics(SM_CXVSCROLL);
+
     Application.Title := strAppTitle;
     frmMain.Caption := Application.Title;
 
@@ -3223,8 +3213,8 @@ begin
         pnlEventList.Show();
         Splitter1.Show();
         pnlConvoTree.Show();
-        ConversationMenu.Visible:= False;
-        EventsMenu.Visible      := False;
+//        ConversationMenu.Visible:= False;
+//        EventsMenu.Visible      := False;
         TablesMenu.Visible      := True;
 
         Close1.Visible          := True;
@@ -3239,8 +3229,8 @@ begin
         pnlEventList.Hide();
         pnlConvoTree.Hide();
         Splitter1.Hide();
-        ConversationMenu.Visible:= False;
-        EventsMenu.Visible      := False;
+//        ConversationMenu.Visible:= False;
+//        EventsMenu.Visible      := False;
         TablesMenu.Visible      := False;
 
         Close1.Visible          := False;
@@ -3396,7 +3386,22 @@ end;
 
 procedure TfrmMain.FormResize(Sender: TObject);
 begin
-    ConEventList.Invalidate();
+    for var i:= 0 to ConEventList.Count -1 do
+    begin
+        if ConEventList.Items.Objects[i] <> nil then
+        begin
+            if ConEventList.Items.Objects[i] is TConEventSpeech then
+            begin
+                var SpeechEvent := TConEventSpeech(ConEventList.Items.Objects[i]);
+
+                SpeechEvent.LineBreaksCount := CountLineWraps(SpeechEvent.TextLine);
+                ConEventList.Perform(LB_SETITEMHEIGHT, i, GetSpeechEventItemHeight([SpeechEvent]));
+            end;
+        end;
+    end;
+
+//    ConEventList.Invalidate();
+//    ConEventList.Refresh();
 end;
 
 procedure TfrmMain.FormShow(Sender: TObject);
@@ -3911,27 +3916,10 @@ begin
     InsertEvent(Jump2.Tag);
 end;
 
-procedure TfrmMain.MeasureItems1Click(Sender: TObject);
-var
-  H: Integer;
-  I: Integer;
-  MeasureItemEvent: TMeasureItemEvent;
-begin
-  ConEventList.OnMeasureItem := ConEventListMeasureItem;
-  MeasureItemEvent := ConEventList.OnMeasureItem;
-  if not Assigned(MeasureItemEvent) then
-    Exit;
-  for I := 0 to ConEventList.Count - 1 do
-  begin
-    MeasureItemEvent(TWinControl(ConEventList), I, H);
-    ConEventList.ItemHeight := H;
-  end;
-end;
-
 procedure TfrmMain.MenuMainChange(Sender: TObject; Source: TMenuItem; Rebuild: Boolean);
 var i: Integer;
 begin
-    PasteEvent.Enabled := HasConvoEventToPaste();
+//    PasteEvent.Enabled := HasConvoEventToPaste();
 
     for i := 0 to 7 do
         mniRecent.Items[i].Visible := mniRecent.Items[i].Caption <> '';

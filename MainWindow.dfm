@@ -3,7 +3,7 @@ object frmMain: TfrmMain
   Top = 0
   AlphaBlendValue = 250
   BorderWidth = 1
-  Caption = 'ConvEdit+'
+  Caption = 'ConEditPlus'
   ClientHeight = 641
   ClientWidth = 1018
   Color = clAppWorkSpace
@@ -21,6 +21,8 @@ object frmMain: TfrmMain
   CustomTitleBar.ButtonPressedBackgroundColor = 15395562
   CustomTitleBar.ButtonInactiveForegroundColor = 10066329
   CustomTitleBar.ButtonInactiveBackgroundColor = clWhite
+  Constraints.MinHeight = 300
+  Constraints.MinWidth = 500
   DragMode = dmAutomatic
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clBtnText
@@ -184,14 +186,16 @@ object frmMain: TfrmMain
       Height = 276
       Style = lbOwnerDrawVariable
       Align = alClient
-      BorderStyle = bsNone
+      BevelWidth = 5
+      Ctl3D = True
       ExtendedSelect = False
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBtnText
       Font.Height = -13
-      Font.Name = 'Verdana'
+      Font.Name = 'Lucida Console'
       Font.Style = []
       ItemHeight = 14
+      ParentCtl3D = False
       ParentFont = False
       PopupMenu = PopupConvoEventList
       TabOrder = 0
@@ -203,8 +207,7 @@ object frmMain: TfrmMain
       OnDrawItem = ConEventListDrawItem
       OnMeasureItem = ConEventListMeasureItem
       OnMouseUp = ConEventListMouseUp
-      ExplicitLeft = 1
-      ExplicitTop = 28
+      ExplicitHeight = 279
     end
     object HeaderControl1: THeaderControl
       Left = 2
@@ -283,11 +286,12 @@ object frmMain: TfrmMain
       Visible = False
       WordWrap = False
       StyleName = 'Windows'
-      ExplicitTop = 301
+      ExplicitLeft = 1
+      ExplicitTop = 294
     end
     object btnCloseLog: TButton
       Left = 694
-      Top = 262
+      Top = 238
       Width = 20
       Height = 20
       Hint = 'Close Log'
@@ -307,7 +311,7 @@ object frmMain: TfrmMain
       Visible = False
       StyleName = 'Windows'
       OnClick = ViewoutputTMemo1Click
-      ExplicitTop = 265
+      ExplicitTop = 241
     end
   end
   object mainToolBar: TToolBar
@@ -723,86 +727,6 @@ object frmMain: TfrmMain
         OnClick = Exit1Click
       end
     end
-    object ConversationMenu: TMenuItem
-      Caption = 'Conversation [Tree]'
-      Enabled = False
-      object AddConversation1: TMenuItem
-        Caption = 'Add Conversation'
-        ImageIndex = 3
-      end
-      object DeleteConversation1: TMenuItem
-        Caption = 'Delete Conversation'
-      end
-      object N5: TMenuItem
-        Caption = '-'
-      end
-      object Cut1: TMenuItem
-        Caption = 'Cut'
-        ImageIndex = 1
-      end
-      object Copy1: TMenuItem
-        Caption = 'Copy'
-        ImageIndex = 0
-      end
-      object Paste1: TMenuItem
-        Caption = 'Paste'
-        ImageIndex = 2
-      end
-      object N6: TMenuItem
-        Caption = '-'
-      end
-      object Checklabels1: TMenuItem
-        Caption = 'Check labels'
-      end
-      object Properties3: TMenuItem
-        Caption = 'Properties'
-      end
-      object Find1: TMenuItem
-        Caption = 'Find'
-      end
-      object N7: TMenuItem
-        Caption = '-'
-      end
-      object Expandall1: TMenuItem
-        Caption = 'Expand all'
-      end
-      object Collapseall1: TMenuItem
-        Caption = 'Collapse all'
-      end
-    end
-    object EventsMenu: TMenuItem
-      Caption = 'Events [List]'
-      Enabled = False
-      object Add1: TMenuItem
-        Caption = 'Add'
-        ImageIndex = 3
-      end
-      object Insert1: TMenuItem
-        Caption = 'Insert'
-      end
-      object N8: TMenuItem
-        Caption = '-'
-      end
-      object Cut2: TMenuItem
-        Caption = 'Cut'
-        ImageIndex = 1
-      end
-      object Copy2: TMenuItem
-        Caption = 'Copy'
-        ImageIndex = 0
-      end
-      object PasteEvent: TMenuItem
-        Caption = 'Paste'
-        ImageIndex = 2
-      end
-      object N9: TMenuItem
-        Caption = '-'
-      end
-      object N10: TMenuItem
-        Caption = 'Delete'
-        ImageIndex = 4
-      end
-    end
     object TablesMenu: TMenuItem
       Caption = 'Tables'
       object ActorsPawns1: TMenuItem
@@ -836,12 +760,10 @@ object frmMain: TfrmMain
         Caption = 'Status bar'
         OnClick = mnuStatusbarClick
       end
-      object mnuExpandedEventList1: TMenuItem
+      object mnuEventIndex: TMenuItem
         AutoCheck = True
-        Caption = 'Expanded event list (Always enabled for now)'
-        Checked = True
-        Enabled = False
-        OnClick = mnuExpandedEventList1Click
+        Caption = 'Show Events Index'
+        OnClick = mnuEventIndexClick
       end
       object mnuShowAudioFiles1: TMenuItem
         AutoCheck = True
@@ -3101,7 +3023,6 @@ object frmMain: TfrmMain
     end
     object MeasureItems1: TMenuItem
       Caption = 'MeasureItems'
-      OnClick = MeasureItems1Click
     end
     object N19: TMenuItem
       Caption = '-'
