@@ -7,6 +7,7 @@ object frmMain: TfrmMain
   ClientHeight = 641
   ClientWidth = 1018
   Color = clAppWorkSpace
+  CustomTitleBar.Height = 8
   CustomTitleBar.SystemColors = False
   CustomTitleBar.SystemButtons = False
   CustomTitleBar.BackgroundColor = clWhite
@@ -21,6 +22,7 @@ object frmMain: TfrmMain
   CustomTitleBar.ButtonPressedBackgroundColor = 15395562
   CustomTitleBar.ButtonInactiveForegroundColor = 10066329
   CustomTitleBar.ButtonInactiveBackgroundColor = clWhite
+  TransparentColorValue = clBtnFace
   Constraints.MinHeight = 300
   Constraints.MinWidth = 500
   DragMode = dmAutomatic
@@ -29,6 +31,10 @@ object frmMain: TfrmMain
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
+  GlassFrame.Left = 8
+  GlassFrame.Top = 8
+  GlassFrame.Right = 8
+  GlassFrame.Bottom = 8
   Icon.Data = {
     0000010001001010000001002000680400001600000028000000100000002000
     0000010020000000000000000000000000000000000000000000000000000000
@@ -253,7 +259,7 @@ object frmMain: TfrmMain
           ImageIndex = -1
           MinWidth = 100
           Style = hsOwnerDraw
-          Width = 500
+          Width = 10000
         end>
       OnDrawSection = HeaderControl1DrawSection
       OnSectionResize = HeaderControl1SectionResize
@@ -286,12 +292,11 @@ object frmMain: TfrmMain
       Visible = False
       WordWrap = False
       StyleName = 'Windows'
-      ExplicitLeft = 1
-      ExplicitTop = 294
+      ExplicitTop = 301
     end
     object btnCloseLog: TButton
       Left = 694
-      Top = 238
+      Top = 226
       Width = 20
       Height = 20
       Hint = 'Close Log'
@@ -311,7 +316,7 @@ object frmMain: TfrmMain
       Visible = False
       StyleName = 'Windows'
       OnClick = ViewoutputTMemo1Click
-      ExplicitTop = 241
+      ExplicitTop = 229
     end
   end
   object mainToolBar: TToolBar

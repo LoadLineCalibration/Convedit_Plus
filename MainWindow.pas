@@ -4,11 +4,11 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.ExtCtrls, Vcl.StdCtrls, ConvEditPlus.Consts,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.ExtCtrls, Vcl.StdCtrls, ConEditPlus.Consts,
   system.UITypes, Vcl.ComCtrls, System.Types, Vcl.Buttons, Vcl.ToolWin, System.IniFiles, System.IOUtils,
   Conversation.Classes, System.ImageList, Vcl.ImgList, Table, Vcl.GraphUtil, ES.BaseControls, ES.Layouts,
   System.Actions, Vcl.ActnList, System.Generics.Collections, System.TypInfo, xml.VerySimple, System.StrUtils,
-  system.Math, Vcl.MPlayer, ConvEditPlus.Enums, Winapi.ShellAPI, ConEditPlus.Helpers;
+  system.Math, Vcl.MPlayer, ConEditPlus.Enums, Winapi.ShellAPI, ConEditPlus.Helpers;
 
 
 type
@@ -712,8 +712,8 @@ begin
         begin
             if ConEventList.Items.Objects[i] = Obj then
             begin
-                //ConEventList.Selected[i] := True;
                 ConEventList.ItemIndex := i;
+                ConEventListClick(self); // select event
                 Break;
             end;
         end;
@@ -2034,16 +2034,19 @@ begin
 
         DrawText(Handle,CombinedJumpToStr, -1, TempRect, DT_END_ELLIPSIS);
 
-        if {(odSelected in State) and} (CurrentConversationId <> JumpToConversationId) then
-        begin
+        //if {(odSelected in State) and} (CurrentConversationId <> JumpToConversationId) then
+        //begin
             ButtonRect := Rect;
             ButtonRect.Left := Rect.Left + 5;
-            ButtonRect.Width := 135;
+            ButtonRect.Width := HeaderControl1.Sections[0].Width - 10; //135;
             ButtonRect.Top:= Rect.Top + 20;
             ButtonRect.Bottom:= Rect.Bottom - 5;
             Font.Style := [TFontStyle.fsUnderline];
-            TextOut(ButtonRect.Left + 3, ButtonRect.Top + 1, 'Goto this conversation');
-        end;
+
+            if (CurrentConversationId <> JumpToConversationId) then
+                DrawText(Handle,strJumpToConversation, -1, ButtonRect,DT_END_ELLIPSIS)
+            else
+                DrawText(Handle,strJumpToEvent, -1, ButtonRect, DT_END_ELLIPSIS)
     end;
 end;
 
@@ -2911,6 +2914,7 @@ begin
                 if TConEvent(ConEventList.Items.Objects[i]).EventLabel = EventJump.gotoLabel then
                 begin
                     ConEventList.ItemIndex := i;
+                    ConEventListClick(self); // select event
                     Break;
                 end;
             end;
@@ -3042,6 +3046,8 @@ begin
                 ET_End: ConEventList.Items.AddObject(ET_End_Caption, CurrentConversation.Events[F]);
             end;
         end;
+
+        FormResize(self);
     end;
 end;
 
@@ -3213,8 +3219,6 @@ begin
         pnlEventList.Show();
         Splitter1.Show();
         pnlConvoTree.Show();
-//        ConversationMenu.Visible:= False;
-//        EventsMenu.Visible      := False;
         TablesMenu.Visible      := True;
 
         Close1.Visible          := True;
@@ -3229,8 +3233,6 @@ begin
         pnlEventList.Hide();
         pnlConvoTree.Hide();
         Splitter1.Hide();
-//        ConversationMenu.Visible:= False;
-//        EventsMenu.Visible      := False;
         TablesMenu.Visible      := False;
 
         Close1.Visible          := False;
