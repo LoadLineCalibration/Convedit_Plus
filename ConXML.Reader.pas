@@ -466,7 +466,7 @@ begin
         if UpperCase(currNode.Name) = UpperCase('TextLine') then
         begin
            speechEvent.TextLine := currNode.NodeValue;
-           speechEvent.LineBreaksCount := frmMain.CountLineBreaks(currNode.NodeValue);
+           speechEvent.LineWrapCount := frmMain.CountLineWraps(currNode.NodeValue);
         end;
 
         if UpperCase(currNode.Name) = UpperCase('mp3') then
@@ -569,7 +569,7 @@ begin
                     if UpperCase(ChoiceField.ChildNodes[ci].Name) = UpperCase('Flags') then
                     begin
                         SetLength(choiceEvent.Choices[J].RequiredFlags, ChoiceField.ChildNodes[ci].ChildNodes.Count);
-                        Inc(choiceEvent.NumFlagsStrings, 1); // add extra 1 so choices and flags will fit into list item
+                        Inc(choiceEvent.NumFlagsRefs, 1); // add extra 1 so choices and flags will fit into list item
 
                         for var RF:=0 to High(choiceEvent.Choices[J].RequiredFlags) do
                         begin

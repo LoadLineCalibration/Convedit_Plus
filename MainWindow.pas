@@ -303,6 +303,11 @@ type
     procedure DrawET_Comment(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
     procedure DrawET_End(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
 
+    // to highlight events
+    procedure HighlightEvent(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
+    procedure HighLightRelatedEvents(labelStr: string);
+    procedure UnhighlightRelatedEvents();
+
     procedure FormResize(Sender: TObject);
     procedure ExpandAll2Click(Sender: TObject);
     procedure CollapseAll2Click(Sender: TObject);
@@ -586,7 +591,7 @@ begin
     begin
         if events[L] is TConEventSpeech then
         begin
-           aLength := TConEventSpeech(events[L]).LineBreaksCount;
+           aLength := TConEventSpeech(events[L]).LineWrapCount;
         end;
     end;
 
@@ -1879,9 +1884,9 @@ begin
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width + HeaderControl1.Sections[1].Width + HeaderControl1.Sections[2].Width;
 
         if camTypeStr = strRandomCam then
-        DrawText(Handle, camTypeStr, -1, tempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL)
+            DrawText(Handle, camTypeStr, -1, tempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL)
         else
-        DrawText(Handle, camTypeStr + ' ' + camAngleStr, -1, tempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
+            DrawText(Handle, camTypeStr + ' ' + camAngleStr, -1, tempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
     end;
 end;
 
@@ -1948,7 +1953,8 @@ begin
         Inc(tempRect.Top, 16);
         DrawText(Handle, 'Wait Anim to finish: ' + BoolToStr(bPlayAnimWaitToFinish, true) + '', -1, tempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
 
-        if PlayAnimDurationSec > 0 then begin
+        if PlayAnimDurationSec > 0 then
+        begin
            Inc(tempRect.Top, 16);
            DrawText(Handle, 'Play duration: ' + PlayAnimDurationSec.ToString + ' seconds', -1, tempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
         end;
@@ -1990,7 +1996,8 @@ begin
         if CurrentConversationId = JumpToConversationId then
         begin
            CombinedJumpToStr := strJumpInCurrentConversation + JumpToLabelStr;
-        end else begin
+        end else
+        begin
            CombinedJumpToStr := Format(strJumpInAnotherConversation, [JumpToConversation,  JumpToLabelStr]);
         end;
     end;
@@ -2034,19 +2041,17 @@ begin
 
         DrawText(Handle,CombinedJumpToStr, -1, TempRect, DT_END_ELLIPSIS);
 
-        //if {(odSelected in State) and} (CurrentConversationId <> JumpToConversationId) then
-        //begin
-            ButtonRect := Rect;
-            ButtonRect.Left := Rect.Left + 5;
-            ButtonRect.Width := HeaderControl1.Sections[0].Width - 10; //135;
-            ButtonRect.Top:= Rect.Top + 20;
-            ButtonRect.Bottom:= Rect.Bottom - 5;
-            Font.Style := [TFontStyle.fsUnderline];
+        ButtonRect := Rect;
+        ButtonRect.Left := Rect.Left + 5;
+        ButtonRect.Width := HeaderControl1.Sections[0].Width - 10; //135;
+        ButtonRect.Top:= Rect.Top + 20;
+        ButtonRect.Bottom:= Rect.Bottom - 5;
+        Font.Style := [TFontStyle.fsUnderline];
 
-            if (CurrentConversationId <> JumpToConversationId) then
-                DrawText(Handle,strJumpToConversation, -1, ButtonRect,DT_END_ELLIPSIS)
-            else
-                DrawText(Handle,strJumpToEvent, -1, ButtonRect, DT_END_ELLIPSIS)
+        if (CurrentConversationId <> JumpToConversationId) then
+            DrawText(Handle,strJumpToConversation, -1, ButtonRect,DT_END_ELLIPSIS)
+        else
+            DrawText(Handle,strJumpToEvent, -1, ButtonRect, DT_END_ELLIPSIS)
     end;
 end;
 
@@ -2224,9 +2229,9 @@ begin
         Inc(tempRect.Top, 16);
 
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
-        DrawText(Handle,strGoalName + GoalName, -1, TempRect, DT_END_ELLIPSIS);
+        DrawText(Handle,strGoalName + GoalName, -1, TempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
         Inc(tempRect.Top, 16);
-        DrawText(Handle,strGoalText + GoalText, -1, TempRect, DT_END_ELLIPSIS);
+        DrawText(Handle,strGoalText + GoalText, -1, TempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
 
         if bPrimaryGoal = true then
         begin
@@ -2287,7 +2292,7 @@ begin
         Inc(tempRect.Top, 16);
 
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
-        DrawText(Handle,NoteText, -1, TempRect, DT_END_ELLIPSIS);
+        DrawText(Handle,NoteText, -1, TempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
     end;
 end;
 
@@ -2564,6 +2569,82 @@ begin
     end;
 end;
 
+procedure TfrmMain.HighlightEvent(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
+var
+    labelStr, idxStr: String;
+    tempRect: TRect;
+    Event: TConEvent;
+begin
+    with (Control as TListBox).Canvas do
+    begin
+        if CurrentConversation <> nil then
+        begin
+            Event := TConEvent(ConEventList.Items.Objects[Index]);
+            if Event <> nil then
+            begin
+               labelStr:= TConEvent(ConEventList.Items.Objects[Index]).EventLabel;
+               idxStr := TConEvent(ConEventList.Items.Objects[Index]).EventIdx.toString;
+            end;
+        end;
+
+        Font.Size := CEP_EVENT_LABEL_FONT_SIZE; //CEP_EVENT_LIST_FONT_SIZE;
+        Font.Name := CEP_EVENT_LABEL_FONT; //CEP_EVENT_LIST_FONT_NAME;
+        Font.Style := [fsBold];
+
+        if labelStr <> '' then
+        begin
+            tempRect := Rect;
+
+            tempRect.Left := Rect.Left;
+            tempRect.Right := HeaderControl1.Sections[0].Width - 1;
+            tempRect.Top := Rect.Top;
+            Brush.Style := bsClear;
+
+            if Event.bHighlightAsRelated = true then
+                GradientFillCanvas(TListBox(Control).Canvas, clYellow, clCream, tempRect, gdHorizontal)
+                else
+                FillRectAlpha(TListBox(Control).Canvas, tempRect, clLime, 64);
+        end;
+
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then
+           Font.Color := clWhite else Font.Color := clMaroon;
+
+        if bDrawEventIdx = True then
+            TextOut(Rect.Left + 20, Rect.Top + 4, labelStr)
+        else
+            TextOut(Rect.Left + 2, Rect.Top + 2, labelStr);
+
+        // draw event index here (set color and draw text)
+        if bDrawEventIdx = True then  // Hide Event Index when needed
+        begin
+            if ((odSelected in State) and (bUseWhiteSelectedText = true)) then
+               Font.Color := clYellow else Font.Color := clBlue;
+
+            TextOut(Rect.Left, Rect.Top + 4, idxStr);
+        end;
+    end;
+end;
+
+procedure TfrmMain.UnhighlightRelatedEvents();
+begin
+    if CurrentConversation = nil then Exit();
+
+    for var unhglEvent in CurrentConversation.Events do
+    begin
+        if unhglEvent.bHighlightAsRelated = True then
+            unhglEvent.bHighlightAsRelated := False;
+    end;
+end;
+
+procedure TfrmMain.HighLightRelatedEvents(labelStr: string);
+begin
+    if CurrentConversation = nil then  Exit();
+
+    for var Event in CurrentConversation.Events do
+        if LowerCase(Event.EventLabel) = LowerCase(labelStr) then
+            Event.bHighlightAsRelated := true;
+end;
+
 procedure TfrmMain.PickTableObject(newTableMode: TTableMode; control: TControl);
 begin
     frmTableEdit.TableMode := newTableMode;
@@ -2680,6 +2761,8 @@ end;
 procedure TfrmMain.ConEventListClick(Sender: TObject);
     var objStr: string;
 begin
+    UnhighlightRelatedEvents();
+
     if frmEventInsAdd.mp1.Mode = mpPlaying then // if we are playing some speech, stop it.
        frmEventInsAdd.mp1.Stop();
 
@@ -2691,8 +2774,65 @@ begin
     Statusbar.Panels[0].Text := 'ItemIndex=' + ConEventList.ItemIndex.ToString + objStr +
     ' Value=' + ConEventList.Items.ValueFromIndex[ConEventList.ItemIndex];
 
+    if CurrentEvent is TConEventChoice then
+    begin
+        var TempChoice := TConEventChoice(CurrentEvent);
+
+        for var i:= 0 to High(TempChoice.Choices) do
+        begin
+            var tempLabel:= TempChoice.Choices[i].GoToLabel;
+
+            HighLightRelatedEvents(tempLabel);
+        end;
+    end;
+
+    if CurrentEvent is TConEventCheckFlag then
+    begin
+        var TempChkFlag:= TConEventCheckFlag(CurrentEvent);
+
+        HighLightRelatedEvents(TempChkFlag.GotoLabel);
+    end;
+
+    if CurrentEvent is TConEventCheckObject then
+    begin
+        var TempChkObj := TConEventCheckObject(CurrentEvent);
+
+        HighLightRelatedEvents(TempChkObj.GotoLabel);
+    end;
+
+    if CurrentEvent is TConEventTransferObject then
+    begin
+        var TempTransObj:= TConEventTransferObject(CurrentEvent);
+
+        HighLightRelatedEvents(TempTransObj.GotoLabel);
+    end;
+
+    if CurrentEvent is TConEventJump then
+    begin
+        var TempJump:= TConEventJump(CurrentEvent);
+
+        HighLightRelatedEvents(TempJump.gotoLabel);
+    end;
+
+    if CurrentEvent is TConEventRandom then
+    begin
+        var TempRandom:= TConEventRandom(CurrentEvent);
+
+        for var i:= 0 to High(TempRandom.GoToLabels) do
+            HighLightRelatedEvents(TempRandom.GoToLabels[i]);
+    end;
+
+    if CurrentEvent is TConEventCheckPersona then
+    begin
+        var TempCheckPersona:= TConEventCheckPersona(CurrentEvent);
+
+        HighLightRelatedEvents(TempCheckPersona.CheckGoToLabel);
+    end;
+
     if frmEventInsAdd.Visible = true then
        ConEventListDblClick(Sender);
+
+    ConEventList.Repaint();
 end;
 
 procedure TfrmMain.ConEventListDblClick(Sender: TObject);
@@ -2700,7 +2840,8 @@ begin
     if ConEventList.ItemIndex <> -1 then
        CurrentEvent:= TConEvent(ConEventList.Items.Objects[ConEventList.ItemIndex]);
 
-    if CurrentEvent <> nil then begin
+    if CurrentEvent <> nil then
+    begin
        case CurrentEvent.EventType of
          ET_Speech:       EditCurrentEvent(TConEventSpeech(CurrentEvent));
          ET_Choice:       EditCurrentEvent(TConEventChoice(CurrentEvent));
@@ -2749,9 +2890,9 @@ begin
 end;
 
 procedure TfrmMain.ConEventListDrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
-var
-    labelStr, idxStr: string;
-    tempRect: TRect;
+//var
+//    labelStr, idxStr: string;
+//    tempRect: TRect;
 begin
 //    if ConEventList.Items.Count < 1 then
 //        Exit();
@@ -2759,6 +2900,7 @@ begin
 //    if Assigned(ConEventList.Items.Objects[Index]) = false then
 //        Exit();
 
+    // ToDo: если событие содержит ссылки на события, подсветить их.
 
     with (Control as TListBox).Canvas do
     begin
@@ -2768,14 +2910,14 @@ begin
         Pen.Style := psInsideFrame;
         Frame3D(TListBox(Control).Canvas, Rect, clWhite, clrGrid, 1); // разделитель
 
-        if CurrentConversation <> nil then // Hide Event Index when needed
+{        if CurrentConversation <> nil then // Hide Event Index when needed
         begin
             if TConEvent(ConEventList.Items.Objects[Index]) <> nil then
             begin
                labelStr:= TConEvent(ConEventList.Items.Objects[Index]).EventLabel;
                idxStr := TConEvent(ConEventList.Items.Objects[Index]).EventIdx.toString;
             end;
-        end;
+        end; }
 
         // Turns out, original ConEdit highlights events with non-empty label with green color!
         // But I will implement that feature differently...
@@ -2802,7 +2944,9 @@ begin
             if Items[Index] = ET_End_Caption then               DrawET_End(Control, Index, Rect, State);
         end;
 
-        Font.Size := CEP_EVENT_LABEL_FONT_SIZE; //CEP_EVENT_LIST_FONT_SIZE;
+        HighlightEvent(Control, Index, Rect, State);
+
+{        Font.Size := CEP_EVENT_LABEL_FONT_SIZE; //CEP_EVENT_LIST_FONT_SIZE;
         Font.Name := CEP_EVENT_LABEL_FONT; //CEP_EVENT_LIST_FONT_NAME;
         Font.Style := [fsBold];
 
@@ -2814,8 +2958,11 @@ begin
             tempRect.Right := HeaderControl1.Sections[0].Width - 1;
             tempRect.Top := Rect.Top;
             Brush.Style := bsClear;
-            FillRectAlpha(TListBox(Control).Canvas, tempRect, clLime, 48);
+            FillRectAlpha(TListBox(Control).Canvas, tempRect, clLime, 64);
+            //FillRectAlpha(TListBox(Control).Canvas, tempRect, clLime, 48);
         end;
+
+        HighlightEvent(Control, Index, Rect, State);
 
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then
            Font.Color := clWhite else Font.Color := clMaroon;
@@ -2832,7 +2979,7 @@ begin
                Font.Color := clYellow else Font.Color := clBlue;
 
             TextOut(Rect.Left, Rect.Top + 4, idxStr);
-        end;
+        end;}
     end;
 end;
 
@@ -3048,12 +3195,13 @@ begin
         end;
 
         FormResize(self);
+        UnhighlightRelatedEvents();
     end;
 end;
 
 procedure TfrmMain.ConvoTreeEdited(Sender: TObject; Node: TTreeNode; var S: string);
 begin
-    TConversation(Node.data).conName := S;
+    //TConversation(Node.data).conName := S;
 end;
 
 procedure TfrmMain.ConvoTreeEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
@@ -3396,7 +3544,7 @@ begin
             begin
                 var SpeechEvent := TConEventSpeech(ConEventList.Items.Objects[i]);
 
-                SpeechEvent.LineBreaksCount := CountLineWraps(SpeechEvent.TextLine);
+                SpeechEvent.LineWrapCount := CountLineWraps(SpeechEvent.TextLine);
                 ConEventList.Perform(LB_SETITEMHEIGHT, i, GetSpeechEventItemHeight([SpeechEvent]));
             end;
         end;

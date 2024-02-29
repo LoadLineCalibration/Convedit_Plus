@@ -8,7 +8,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
-  Vcl.Dialogs, winapi.ActiveX, ConvEditPlus.Consts, Conversation.Classes, system.TypInfo,
+  Vcl.Dialogs, winapi.ActiveX, ConEditPlus.Consts, Conversation.Classes, system.TypInfo,
   vcl.ComCtrls;
 
 procedure LoadConFile(conFile: string);
@@ -528,7 +528,7 @@ begin
     frmMain.AddLog('SpeakingTo: '+ speechEvent.ActorToValue + ' id: ' + speechEvent.ActorToIndex.ToString);
 
     speechEvent.TextLine := GetConString(ConRead); // speech text
-    speechEvent.LineBreaksCount := frmMain.CountLineBreaks(speechEvent.TextLine);
+    speechEvent.LineWrapCount := frmMain.CountLineWraps(speechEvent.TextLine);
     frmMain.AddLog('Speech Text: "' + speechEvent.TextLine + '"');
 
     speechEvent.mp3File := GetConString(ConRead); // sound path
@@ -543,7 +543,7 @@ begin
     speechEvent.SpeechFont := ConRead.ReadInteger();
     frmMain.AddLog('SpeechFont = ' + speechEvent.SpeechFont.ToString);
 
-    speechEvent.LineBreaksCount := frmMain.CountLineBreaks(speechEvent.TextLine);
+    speechEvent.LineWrapCount := frmMain.CountLineWraps(speechEvent.TextLine);
 end;
 
 procedure FillChoice(ConRead: TBinaryReader; choiceEvent: TConEventChoice; eventLabel: string);

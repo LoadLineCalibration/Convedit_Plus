@@ -5,8 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Conversation.Classes, AddInsertEvent,
-  ConvEditPlus.Consts, ConvoProperties, EditValueDialog, Vcl.Menus, system.Types, convEditPlus.Enums,
-  system.UITypes;
+  ConEditPlus.Consts, ConvoProperties, EditValueDialog, Vcl.Menus, system.Types, ConEditPlus.Enums,
+  system.UITypes, ConEditPlus.Helpers;
 
 type
   TfrmTableEdit = class(TForm)
@@ -82,7 +82,7 @@ implementation
 
 {$R *.dfm}
 
-uses MainWindow, frmFlagList1, ConvEditPlus_Util;
+uses MainWindow, frmFlagList1;
 
 
 function TfrmTableEdit.CheckFlagIsUsed(flagName: String): Boolean; // return True if flag has been found in conversations or/and events
@@ -343,8 +343,7 @@ end;
 
 procedure TfrmTableEdit.btnAddDefGrenadesClick(Sender: TObject);
 begin
-    if Application.MessageBox(PChar(strAddDefaultGrenadesQuestion), '', MB_OKCANCEL +
-       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then
+    if MessageDlg(strAddDefaultGrenadesQuestion,  mtConfirmation, mbOKCancel, 0) = mrOk then
     begin
        for var i:= 0 to Length(Default_DeusEx_Grenades) -1 do
            lstTableContents.items.Add(Default_DeusEx_Grenades[i]);
@@ -355,8 +354,7 @@ end;
 
 procedure TfrmTableEdit.btnAddDefInfolinkNamesClick(Sender: TObject);
 begin
-    if Application.MessageBox(PChar(strAddDefInfoLinkNamesQuestion), '', MB_OKCANCEL +
-       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then
+    if MessageDlg(strAddDefInfoLinkNamesQuestion,  mtConfirmation, mbOKCancel, 0) = mrOk then
     begin
        for var i:= 0 to Length(Default_DeusEx_Infolink_Names) -1 do
            lstTableContents.items.Add(Default_DeusEx_Infolink_Names[i]);
@@ -367,10 +365,8 @@ end;
 
 procedure TfrmTableEdit.btnAddDefMiscItemsClick(Sender: TObject);
 begin
-    if Application.MessageBox(PChar(strAddDefaultMiscItemsQuestion), '', MB_OKCANCEL +
-       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then
+    if MessageDlg(strAddDefaultMiscItemsQuestion,  mtConfirmation, mbOKCancel, 0) = mrOk then
     begin
-
        for var i:= 0 to Length(Default_DeusEx_MiscItems) -1 do
            lstTableContents.items.Add(Default_DeusEx_MiscItems[i]);
 
@@ -380,8 +376,7 @@ end;
 
 procedure TfrmTableEdit.btnAddDefSkillsClick(Sender: TObject);
 begin
-    if Application.MessageBox(PChar(strAddDefaultSkillsQuestion), '', MB_OKCANCEL +
-       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then
+    if MessageDlg(strAddDefaultSkillsQuestion,  mtConfirmation, mbOKCancel, 0) = mrOk then
     begin
        for var i:= 0 to Length(Default_DeusEx_Skills) -1 do
            lstTableContents.items.Add(Default_DeusEx_Skills[i]);
@@ -392,9 +387,8 @@ end;
 
 procedure TfrmTableEdit.btnAddDef_CR_weaponsClick(Sender: TObject);
 begin
-    if Application.MessageBox(PChar(strAddDefaultCloseRangeWeapons), '', MB_OKCANCEL +
-       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then begin
-
+    if MessageDlg(strAddDefaultCloseRangeWeapons,  mtConfirmation, mbOKCancel, 0) = mrOk then
+    begin
        for var i:= 0 to Length(Default_DeusEx_CloseRange) -1 do
            lstTableContents.items.Add(Default_DeusEx_CloseRange[i]);
 
@@ -404,10 +398,8 @@ end;
 
 procedure TfrmTableEdit.btnAddDef_LR_WeaponsClick(Sender: TObject);
 begin
-    if Application.MessageBox(PChar(strAddDefaultFirearmsQuestion), '', MB_OKCANCEL +
-       MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDOK then
+    if MessageDlg(strAddDefaultFirearmsQuestion,  mtConfirmation, mbOKCancel, 0) = mrOk then
     begin
-
        for var i:= 0 to Length(Default_DeusEx_LongRange) -1 do
            lstTableContents.items.Add(Default_DeusEx_LongRange[i]);
 

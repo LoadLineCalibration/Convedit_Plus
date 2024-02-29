@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Samples.Spin, Vcl.ComCtrls, Vcl.ExtCtrls,
-  Conversation.Classes, vcl.GraphUtil, system.Types, ConvEditPlus.Consts, system.Generics.Collections,
+  Conversation.Classes, vcl.GraphUtil, system.Types, ConEditPlus.Consts, system.Generics.Collections,
   system.UITypes;
 
 type

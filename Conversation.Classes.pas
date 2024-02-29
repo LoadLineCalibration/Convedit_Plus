@@ -8,7 +8,7 @@ interface
 
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, ConvEditPlus.Consts,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, ConEditPlus.Consts,
   System.Types, System.Generics.Collections;
 
 function conXMLDateTime(): string;
@@ -128,6 +128,8 @@ TConEvent = class(TConBaseObject)
     unknown1: Integer; //
     EventLabel: string; // can't use "Label"...
     EventType: TEventType; // speech, choice, etc...
+
+    bHighlightAsRelated: Boolean; // to highlight related events
 end;
 
 // Speech event
@@ -145,7 +147,7 @@ TConEventSpeech = class(TConEvent) // 00
     bBold: Boolean;      // not used
     SpeechFont: Integer; // not used
 
-    LineBreaksCount: Integer;  // To adjust height
+    LineWrapCount: Integer;  // To adjust height
 
     public
     constructor Create();

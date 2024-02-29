@@ -6,8 +6,8 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.StdActns, Conversation.Classes,
   System.Actions, Vcl.ActnList, Vcl.Menus, Vcl.Samples.Spin, WinApi.ActiveX, Vcl.Buttons, Vcl.Imaging.pngimage,
-  ConvEditPlus_Util, System.ImageList, Vcl.ImgList, Vcl.MPlayer, Winapi.MMSystem, system.UITypes, ES.BaseControls,
-  ES.Layouts, ConvEditPlus.Enums, ConvEditPlus.Consts;
+  ConEditPlus.Helpers, System.ImageList, Vcl.ImgList, Vcl.MPlayer, Winapi.MMSystem, system.UITypes, ES.BaseControls,
+  ES.Layouts, ConEditPlus.Enums, ConEditPlus.Consts;
 
 type
   TfrmEventInsAdd = class(TForm)
@@ -399,6 +399,7 @@ type
     procedure memoNoteTextChange(Sender: TObject);
     procedure cmbCheckLabelJumpChange(Sender: TObject);
     procedure memoCommentTextChange(Sender: TObject);
+    procedure btnDeleteChoiceFlagClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -860,7 +861,7 @@ begin
     speech.ActorToIndex := frmMain.FindTableIdByName(tmActorsPawns, cmbSpeakingTo.Items[cmbSpeakingTo.ItemIndex]);
 
     speech.TextLine     := memoSpeech.Text;
-    speech.LineBreaksCount := frmMain.CountLineBreaks(memoSpeech.Text);
+    speech.LineWrapCount:= frmMain.CountLineWraps(memoSpeech.Text);
 
 
     // update value so ItemHeight will be updated as well
@@ -884,7 +885,7 @@ begin
     begin
         choice.Choices[ch] := TChoiceItemObject(lvChoiceList.Items[ch].data);
         choice.NumChoices := Length(choice.Choices);
-        choice.NumFlagsStrings := choice.NumChoices;
+        choice.NumFlagsRefs := choice.NumChoices;
     end;
 
     frmMain.ConEventList.Items.ValueFromIndex[frmMain.ConEventList.ItemIndex] := frmMain.GetNumChoiceLines([choice]).ToString;
@@ -1847,6 +1848,12 @@ begin
        lvChoiceList.Items.Delete(lvChoiceList.ItemIndex);
 
     FillChoiceItemIndexes();
+end;
+
+procedure TfrmEventInsAdd.btnDeleteChoiceFlagClick(Sender: TObject);
+begin
+    if (lvChoiceFlagList.GetCount() > 0) and (lvChoiceFlagList.ItemIndex <> -1) then
+        lvChoiceFlagList.Items[lvChoiceFlagList.ItemIndex].Delete();
 end;
 
 procedure TfrmEventInsAdd.FillChoiceItemIndexes();

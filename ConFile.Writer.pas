@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
-  Vcl.Dialogs, winapi.ActiveX, ConvEditPlus.Consts, Conversation.Classes, system.TypInfo,
+  Vcl.Dialogs, winapi.ActiveX, ConEditPlus.Consts, Conversation.Classes, system.TypInfo,
   vcl.ComCtrls, MainWindow;
 
 procedure SaveConFile(newFile: string);

@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, System.AnsiStrings, system.StrUtils,
-  Conversation.Classes, System.RegularExpressions, system.UITypes, ConvEditPlus.Consts;
+  Conversation.Classes, System.RegularExpressions, system.UITypes, ConEditPlus.Consts;
 
 type
   TfrmFind = class(TForm)
