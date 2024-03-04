@@ -95,6 +95,14 @@ type TPersonaTypes =
     EP_SkillPoints
 );
 
+type TClipboardDataType =
+(
+    CDT_Conversation, // We have conversation with events in clipboard
+    CDT_Event         // or event
+);
+
+
+
 // for use in TConversation and TConEventCheckFlag
 type TFlag = record
     flagIndex: Integer;
@@ -104,7 +112,10 @@ type TFlag = record
 end;
 
 TConBaseObject = class(TObject) // base class!
-destructor Destroy(); override;
+    public
+    DataType: TClipboardDataType;
+
+    destructor Destroy(); override;
 end;
 
 TChoiceItemObject = class(TConBaseObject) // for editing Choice Items, use as listview item.data
@@ -398,96 +409,115 @@ end;
 
 constructor TConEventSpeech.Create(); // 00
 begin
+    DataType := CDT_Event;
     EventType:= ET_Speech;
 end;
 
 constructor TConEventChoice.Create(); // 01
 begin
+    DataType := CDT_Event;
     EventType:= ET_Choice;
 end;
 
 constructor TConEventSetFlag.Create(); // 02
 begin
+    DataType := CDT_Event;
     EventType:= ET_SetFlag;
 end;
 
 constructor TConEventCheckFlag.Create(); // 03
 begin
+    DataType := CDT_Event;
     EventType := ET_CheckFlag;
 end;
 
 constructor TConEventCheckObject.Create(); // 04
 begin
+    DataType := CDT_Event;
     EventType := ET_CheckObject;
 end;
 
 constructor TConEventTransferObject.Create(); // 05
 begin
+    DataType := CDT_Event;
     EventType := ET_TransferObject;
 end;
 
 constructor TConEventMoveCamera.Create(); // 06
 begin
+    DataType := CDT_Event;
     EventType := ET_MoveCamera;
 end;
 
 constructor TConEventAnimation.Create(); // 07
 begin
+    DataType := CDT_Event;
     EventType := ET_Animation;
 end;
 
 constructor TConEventTrade.Create(); // 08
 begin
+    DataType := CDT_Event;
     EventType := ET_Trade;
 end;
 
 constructor TConEventJump.Create(); // 09
 begin
+    DataType := CDT_Event;
     EventType := ET_Jump;
 end;
 
 constructor TConEventRandom.Create(); // 10
 begin
+    DataType := CDT_Event;
     EventType := ET_Random;
 end;
 
 constructor TConEventTrigger.Create(); // 11
 begin
+    DataType := CDT_Event;
     EventType := ET_Trigger;
 end;
 
 constructor TConEventAddGoal.Create(); // 12
 begin
+    DataType := CDT_Event;
     EventType := ET_AddGoal;
 end;
 
 constructor TConEventAddNote.Create(); // 13
 begin
+    DataType := CDT_Event;
     EventType := ET_AddNote;
 end;
 
 constructor TConEventAddSkillPoints.Create(); // 14
 begin
+    DataType := CDT_Event;
     EventType := ET_AddSkillPoints;
 end;
 
 constructor TConEventAddCredits.Create(); // 15
 begin
+    DataType := CDT_Event;
     EventType := ET_AddCredits;
 end;
 
 constructor TConEventCheckPersona.Create(); // 16
 begin
+    DataType := CDT_Event;
     EventType := ET_CheckPersona;
 end;
 
 constructor TConEventComment.Create(); // 17
 begin
+    DataType := CDT_Event;
     EventType := ET_Comment;
 end;
 
 constructor TConEventEnd.Create(); // 18
 begin
+    DataType := CDT_Event;
     EventType:= ET_End;
 end;
 
@@ -495,6 +525,7 @@ constructor TConversation.Create();
 begin
     conCreatedByDate := conXMLDateTime();
     conModifiedByDate := conXMLDateTime();
+    DataType := CDT_Conversation;
 
     inherited;
 end;
