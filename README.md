@@ -2,7 +2,7 @@
 
 An attempt to recreate Deus Ex conversation editor (ConEdit or ConvEdit) in Delphi Language (Pascal). 
 
-what in __NOT__ implemented yet:
+what is __NOT__ implemented yet:
 * Insert event
 * copy/paste events/conversations to/from clipboard
 * ~text wrap~ ~also make it dynamic~ for other events?
