@@ -284,6 +284,7 @@ end;
 
 TConEventAddNote = class(TConEvent) // 13
     TextLine: string;
+    LineWrapCount: Integer;  // To adjust height
 
     public
     constructor Create();
@@ -292,6 +293,7 @@ end;
 TConEventAddSkillPoints = class(TConEvent) // 14
     Points: Integer;
     TextLine: string;
+    LineWrapCount: Integer;  // To adjust height
 
     public
     constructor Create();
@@ -315,6 +317,7 @@ end;
 
 TConEventComment = class(TConEvent) // 17
     TextLine: string;
+    LineWrapCount: Integer;  // To adjust height
 
     public
     constructor Create();
