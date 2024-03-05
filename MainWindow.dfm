@@ -4,7 +4,7 @@ object frmMain: TfrmMain
   AlphaBlendValue = 250
   BorderWidth = 1
   Caption = 'ConEditPlus'
-  ClientHeight = 641
+  ClientHeight = 645
   ClientWidth = 1018
   Color = clAppWorkSpace
   CustomTitleBar.Height = 8
@@ -84,9 +84,9 @@ object frmMain: TfrmMain
   TextHeight = 15
   object Splitter1: TSplitter
     Left = 300
-    Top = 32
+    Top = 35
     Width = 5
-    Height = 589
+    Height = 590
     Cursor = crSizeWE
     Margins.Left = 5
     Margins.Top = 5
@@ -102,20 +102,22 @@ object frmMain: TfrmMain
   end
   object pnlConvoTree: TPanel
     Left = 0
-    Top = 32
+    Top = 35
     Width = 300
-    Height = 589
+    Height = 590
     Align = alLeft
     Color = 3947580
     DoubleBuffered = True
     ParentBackground = False
     ParentDoubleBuffered = False
     TabOrder = 0
+    ExplicitTop = 32
+    ExplicitHeight = 593
     object ConvoTree: TTreeView
       Left = 1
       Top = 1
       Width = 298
-      Height = 587
+      Height = 588
       Margins.Left = 0
       Margins.Top = 0
       Margins.Right = 0
@@ -136,17 +138,19 @@ object frmMain: TfrmMain
       ParentDoubleBuffered = False
       ParentFont = False
       PopupMenu = PopupTree
+      RowSelect = True
       StateImages = TreeImages
       TabOrder = 0
       StyleName = 'Windows'
       OnChange = ConvoTreeChange
       OnEdited = ConvoTreeEdited
       OnEditing = ConvoTreeEditing
+      ExplicitHeight = 591
     end
   end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 621
+    Top = 625
     Width = 1018
     Height = 20
     Font.Charset = DEFAULT_CHARSET
@@ -167,9 +171,9 @@ object frmMain: TfrmMain
   end
   object pnlEventList: TEsPanel
     Left = 305
-    Top = 32
+    Top = 35
     Width = 713
-    Height = 589
+    Height = 590
     Align = alClient
     Color = 3947580
     ParentBackground = False
@@ -177,14 +181,16 @@ object frmMain: TfrmMain
     TabOrder = 2
     CaptionVisible = False
     FrameStyle = Bump
+    ExplicitTop = 32
+    ExplicitHeight = 593
     DesignSize = (
       713
-      589)
+      590)
     object ConEventList: TListBox
       Left = 2
       Top = 22
       Width = 709
-      Height = 279
+      Height = 280
       Style = lbOwnerDrawVariable
       Align = alClient
       BevelWidth = 5
@@ -208,6 +214,7 @@ object frmMain: TfrmMain
       OnDrawItem = ConEventListDrawItem
       OnMeasureItem = ConEventListMeasureItem
       OnMouseUp = ConEventListMouseUp
+      ExplicitHeight = 283
     end
     object HeaderControl1: THeaderControl
       Left = 2
@@ -260,7 +267,7 @@ object frmMain: TfrmMain
     end
     object mmoOutput: TMemo
       Left = 2
-      Top = 301
+      Top = 302
       Width = 709
       Height = 286
       Align = alBottom
@@ -286,10 +293,11 @@ object frmMain: TfrmMain
       Visible = False
       WordWrap = False
       StyleName = 'Windows'
+      ExplicitTop = 305
     end
     object btnCloseLog: TButton
       Left = 694
-      Top = 217
+      Top = 191
       Width = 20
       Height = 20
       Hint = 'Close Log'
@@ -309,14 +317,13 @@ object frmMain: TfrmMain
       Visible = False
       StyleName = 'Windows'
       OnClick = ViewoutputTMemo1Click
-      ExplicitTop = 220
+      ExplicitTop = 194
     end
   end
   object mainToolBar: TToolBar
     Left = 0
     Top = 0
     Width = 1018
-    Height = 29
     AutoSize = True
     ButtonHeight = 30
     ButtonWidth = 32
@@ -581,7 +588,7 @@ object frmMain: TfrmMain
   end
   object StaticText1: TStaticText
     Left = 0
-    Top = 29
+    Top = 32
     Width = 1018
     Height = 3
     Align = alTop
@@ -590,7 +597,6 @@ object frmMain: TfrmMain
     Color = clBtnFace
     ParentColor = False
     TabOrder = 4
-    ExplicitTop = 32
   end
   object PopupTree: TPopupMenu
     OnPopup = PopupTreePopup
@@ -1040,6 +1046,7 @@ object frmMain: TfrmMain
     object Copy3: TMenuItem
       Caption = 'Copy'
       ImageIndex = 0
+      OnClick = Copy3Click
     end
     object PasteConvoEvent: TMenuItem
       Caption = 'Paste'

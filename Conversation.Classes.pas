@@ -276,6 +276,7 @@ TConEventAddGoal = class(TConEvent) // 12
     GoalName: string;
     bComplete: Boolean;
     GoalText: string;
+    LineWrapCount: Integer;  // To adjust height
     bPrimaryGoal: Boolean;
 
     public
