@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, ConEditPlus.Helpers;
 
 type
   TfrmEditValue = class(TForm)
@@ -31,7 +31,7 @@ implementation
 
 {$R *.dfm}
 
-uses AddInsertEvent, ConvoProperties, MainWindow, Table, ConvEditPlus_Util;
+uses AddInsertEvent, ConvoProperties, MainWindow, Table;
 
 procedure TfrmEditValue.btnOkClick(Sender: TObject);
 begin
