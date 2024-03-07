@@ -221,12 +221,18 @@ type
     function HasConvoEventToPaste(): Boolean;
     function GetReorderButtonHint(): string;
 
+    function CountLineWraps(str: string): Integer;
+
     function GetFlagsSize(events: array of TConEvent): Integer;
     function GetChkFlagsSize(events: array of TConEvent): Integer;
-    function CountLineWraps(str: string): Integer;
     function GetSpeechEventItemHeight(events: array of TConEvent): Integer;
-    function GetRandomEventItemHeight(events: array of TConEvent): Integer;
     function GetNumChoiceLines(events: array of TConEvent): Integer;
+    function GetRandomEventItemHeight(events: array of TConEvent): Integer;
+
+    function GetAddGoalItemHeight(events: array of TConEvent): Integer;
+    function GetAddNoteItemHeight(events: array of TConEvent): Integer;
+    function GetAddSkillPtsItemHeight(events: array of TConEvent): Integer;
+    function GetCommentItemHeight(events: array of TConEvent): Integer;
 
     function FindConversationObjByString(conName: string): TConversation; // Find conversation by name return as TObject
     function FindConversationObjById(idToLookFor: Integer): TConversation; // Returns object
@@ -524,6 +530,9 @@ begin
     end;
 
     dResult := 20 + (17 * aLength); // 20 for name and 17 for each flag string
+
+    if dResult > 254 then dResult:= 254;  // We are reached the limit!
+
     Result := dResult;
 end;
 
@@ -540,6 +549,9 @@ begin
     end;
 
     dResult := 20 + (17 * aLength); // 20 for name and 17 for each flag string
+
+    if dResult > 254 then dResult:= 254;  // We are reached the limit!
+
     Result := dResult;
 end;
 
@@ -569,6 +581,9 @@ begin
     end;
 
     dResult := 20 + (17 * tLength); // 20 for name and 17 for each Choice Item + space for flags
+
+    if dResult > 254 then dResult:= 254;  // We are reached the limit!
+
     Result := dResult;
 end;
 
@@ -625,7 +640,94 @@ begin
         end;
     end;
 
-    dResult := 38 + (17 * aLength); // 20 for name and 17 for each flag string
+    dResult := 38 + (17 * aLength); // 38 for name and 17 for each flag string
+
+    if dResult > 254 then dResult:= 254;  // We are reached the limit!
+
+    Result := dResult;
+end;
+
+function TfrmMain.GetAddGoalItemHeight(events: array of TConEvent): Integer;
+begin
+    var aLength, dResult: Integer;
+
+    aLength := 0;
+
+    for var L:= 0 to Length(events) -1 do
+    begin
+        if events[L] is TConEventAddGoal then
+        begin
+           aLength := TConEventAddGoal(events[L]).LineWrapCount;
+        end;
+    end;
+
+    dResult := 20 + (16 * aLength); // 18 for event name and 17 for each comment string
+
+    if dResult > 254 then dResult:= 254;  // We are reached the limit!
+
+    Result := dResult;
+end;
+
+function TfrmMain.GetAddNoteItemHeight(events: array of TConEvent): Integer;
+begin
+    var aLength, dResult: Integer;
+
+    aLength := 0;
+
+    for var L:= 0 to Length(events) -1 do
+    begin
+        if events[L] is TConEventAddNote then
+        begin
+           aLength := TConEventAddNote(events[L]).LineWrapCount;
+        end;
+    end;
+
+    dResult := 5 + (16 * aLength); // 18 for event name and 17 for each comment string
+
+    if dResult > 254 then dResult:= 254;  // We are reached the limit!
+
+    Result := dResult;
+end;
+
+function TfrmMain.GetAddSkillPtsItemHeight(events: array of TConEvent): Integer;
+begin
+    var aLength, dResult: Integer;
+
+    aLength := 0;
+
+    for var L:= 0 to Length(events) -1 do
+    begin
+        if events[L] is TConEventAddSkillPoints then
+        begin
+           aLength := TConEventAddSkillPoints(events[L]).LineWrapCount;
+        end;
+    end;
+
+    dResult := 20 + (16 * aLength); // 18 for event name and 17 for each comment string
+
+    if dResult > 254 then dResult:= 254;  // We are reached the limit!
+
+    Result := dResult;
+end;
+
+function TfrmMain.GetCommentItemHeight(events: array of TConEvent): Integer;
+begin
+    var aLength, dResult: Integer;
+
+    aLength := 0;
+
+    for var L:= 0 to Length(events) -1 do
+    begin
+        if events[L] is TConEventComment then
+        begin
+           aLength := TConEventComment(events[L]).LineWrapCount;
+        end;
+    end;
+
+    dResult := 5 + (16 * aLength); // 18 for event name and 17 for each comment string
+
+    if dResult > 254 then dResult:= 254;  // We are reached the limit!
+
     Result := dResult;
 end;
 
@@ -2271,6 +2373,7 @@ begin
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
         DrawText(Handle,strGoalName + GoalName, -1, TempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
         Inc(tempRect.Top, 16);
+        TempRect.Right := Rect.Right - SysScrollBarWidth; // right offset
         DrawText(Handle,strGoalText + GoalText, -1, TempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
 
         if bPrimaryGoal = true then
@@ -2335,6 +2438,7 @@ begin
         Font.Size := CEP_EVENT_HEADER_LIST_FONT_SIZE;
 
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width;
+        tempRect.Right := Rect.Right - SysScrollBarWidth; // right offset
         Inc(tempRect.Top, 16);
 
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
@@ -2390,6 +2494,7 @@ begin
         Font.Size := CEP_EVENT_HEADER_LIST_FONT_SIZE;
 
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width;
+        tempRect.Right := Rect.Right - SysScrollBarWidth; // right offset
         Inc(tempRect.Top, 16);
 
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlue;
@@ -2571,10 +2676,11 @@ begin
         Font.Size := CEP_EVENT_HEADER_LIST_FONT_SIZE;
 
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width;
+        tempRect.Right := Rect.Right - SysScrollBarWidth; // right offset
         Inc(tempRect.Top, 16);
 
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlue;
-        DrawText(Handle,CommentString, -1, TempRect, DT_END_ELLIPSIS);
+        DrawText(Handle,CommentString, -1, TempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
     end;
 end;
 
@@ -2713,7 +2819,7 @@ begin
                 var AddGoalEvent := TConEventAddGoal(ConEventList.Items.Objects[i]);
 
                 AddGoalEvent.LineWrapCount := CountLineWraps(AddGoalEvent.GoalText);
-
+                ConEventList.Perform(LB_SETITEMHEIGHT, i, GetAddGoalItemHeight([AddGoalEvent]));
             end;
 
             if ConEventList.Items.Objects[i] is TConEventAddNote then
@@ -2721,7 +2827,7 @@ begin
                 var AddNoteEvent := TConEventAddNote(ConEventList.Items.Objects[i]);
 
                 AddNoteEvent.LineWrapCount := CountLineWraps(AddNoteEvent.TextLine);
-                ConEventList.Perform(LB_SETITEMHEIGHT, i, GetSpeechEventItemHeight([AddNoteEvent]));
+                ConEventList.Perform(LB_SETITEMHEIGHT, i, GetAddNoteItemHeight([AddNoteEvent]));
             end;
 
             if ConEventList.Items.Objects[i] is TConEventAddSkillPoints then
@@ -2729,7 +2835,7 @@ begin
                 var AddSkillPtsEvent := TConEventAddSkillPoints(ConEventList.Items.Objects[i]);
 
                 AddSkillPtsEvent.LineWrapCount := CountLineWraps(AddSkillPtsEvent.TextLine);
-                ConEventList.Perform(LB_SETITEMHEIGHT, i, GetSpeechEventItemHeight([AddSkillPtsEvent]));
+                ConEventList.Perform(LB_SETITEMHEIGHT, i, GetAddSkillPtsItemHeight([AddSkillPtsEvent]));
             end;
 
             if ConEventList.Items.Objects[i] is TConEventComment then
@@ -2737,7 +2843,7 @@ begin
                 var CommentEvent := TConEventComment(ConEventList.Items.Objects[i]);
 
                 CommentEvent.LineWrapCount := CountLineWraps(CommentEvent.TextLine);
-                ConEventList.Perform(LB_SETITEMHEIGHT, i, GetSpeechEventItemHeight([CommentEvent]));
+                ConEventList.Perform(LB_SETITEMHEIGHT, i, GetCommentItemHeight([CommentEvent]));
             end;
         end;
     end;
@@ -2894,6 +3000,8 @@ begin
     frmTableEdit.chkDoubleClickEditItem.Checked := False;
     frmTableEdit.ShowModal();
 end;
+
+
 
 function TfrmMain.GetAppVersionStr(): string;
 var
@@ -3327,10 +3435,13 @@ begin
     if ConEventList.Items[Index] = ET_AddGoal_Caption then Height := 75;  // variable
     if ConEventList.Items[Index] = ET_AddNote_Caption  then Height := 40;  // variable
 
-    if ConEventList.Items[Index] = ET_AddSkillPoints_Caption then Height := 58;  // fixed
+    if ConEventList.Items[Index] = ET_AddSkillPoints_Caption then Height := 58;  // variable
+
     if ConEventList.Items[Index] = ET_AddCredits_Caption then Height := 44;  // fixed
     if ConEventList.Items[Index] = ET_CheckPersona_Caption then Height := 42;  // fixed
+
     if ConEventList.Items[Index] = ET_Comment_Caption then Height := 40; // variable
+
     if ConEventList.Items[Index] = ET_End_Caption then Height := 25; // fixed
 end;
 
