@@ -171,7 +171,7 @@ object frmEventInsAdd: TfrmEventInsAdd
     Top = 114
     Width = 556
     Height = 406
-    ActivePage = TabSheet18
+    ActivePage = TabSheet2
     Anchors = [akLeft, akTop, akRight, akBottom]
     DoubleBuffered = True
     ParentDoubleBuffered = False
@@ -661,6 +661,7 @@ object frmEventInsAdd: TfrmEventInsAdd
                 Caption = 'Delete'
                 TabOrder = 2
                 StyleElements = []
+                OnClick = btnDeleteChoiceFlagClick
               end
             end
             object Skills: TTabSheet
