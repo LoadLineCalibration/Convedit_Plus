@@ -107,9 +107,6 @@ object frmMain: TfrmMain
     Height = 590
     Align = alLeft
     Color = 3947580
-    DoubleBuffered = True
-    ParentBackground = False
-    ParentDoubleBuffered = False
     TabOrder = 0
     ExplicitTop = 32
     ExplicitHeight = 593
@@ -176,8 +173,8 @@ object frmMain: TfrmMain
     Height = 590
     Align = alClient
     Color = 3947580
-    ParentBackground = False
     ParentColor = False
+    ParentDoubleBuffered = True
     TabOrder = 2
     CaptionVisible = False
     FrameStyle = Bump
@@ -297,7 +294,7 @@ object frmMain: TfrmMain
     end
     object btnCloseLog: TButton
       Left = 694
-      Top = 191
+      Top = 182
       Width = 20
       Height = 20
       Hint = 'Close Log'
@@ -317,7 +314,7 @@ object frmMain: TfrmMain
       Visible = False
       StyleName = 'Windows'
       OnClick = ViewoutputTMemo1Click
-      ExplicitTop = 194
+      ExplicitTop = 185
     end
   end
   object mainToolBar: TToolBar
