@@ -101,6 +101,13 @@ type TClipboardDataType =
     CDT_Event         // or event
 );
 
+type TEventHighlightType =
+(
+    EHT_None, // do not highlight
+    EHT_Related,  // Highlight as related (yellow gradient)
+    EHT_Error // Error, some labels are missing
+);
+
 
 
 // for use in TConversation and TConEventCheckFlag
@@ -139,6 +146,8 @@ TConEvent = class(TConBaseObject)
     unknown1: Integer; //
     EventLabel: string; // can't use "Label"...
     EventType: TEventType; // speech, choice, etc...
+
+    EventHighlightType: TEventHighlightType; // To highlight events (related/error)
 
     bHighlightAsRelated: Boolean; // to highlight related events
 end;

@@ -318,7 +318,7 @@ type
     procedure UnhighlightRelatedEvents();
 
     // To copy/paste evnts
-    procedure CopyEventToClipboard(Event: TConEvent);
+    procedure CopyEventToClipboard(var Event: TConEvent);
 
     procedure FormResize(Sender: TObject);
     procedure ExpandAll2Click(Sender: TObject);
@@ -479,8 +479,7 @@ type
 
     var SysScrollBarWidth: Integer;
 
-    var ConEventClipboardFormat: Word;
-    var ConversationClipboardFormat: Word;
+    var CF_ConEditPlus: Word;
   end;
 
 var
@@ -1330,19 +1329,58 @@ begin
         CopyEventToClipboard(CurrentEvent);
 end;
 
-procedure TfrmMain.CopyEventToClipboard(Event: TConEvent);
+procedure TfrmMain.CopyEventToClipboard(var Event: TConEvent);
 var
-    h: THandle;
-    FirstByte: Pointer;
+    hBuf: THandle;
+    BufPtr: Pointer;
+    mStream: TMemoryStream;
+    sWriter: TStreamWriter;
 begin
-    h:= GlobalAlloc(GMEM_MOVEABLE, SizeOf(TConEvent));
-    FirstByte := GlobalLock(h);
+    mStream := TMemoryStream.Create();
+    sWriter := TStreamWriter.Create(mStream, TEncoding.ANSI);
 
     try
-        Move(Event, FirstByte^, SizeOf(TConEvent));
-        Clipboard.SetAsHandle(ConEventClipboardFormat, h);
+        //mStream.Write(Event.EventIdx, 4);
+        //var aEventLabel := AnsiString(Event.EventLabel);
+        //mStream.Write(PAnsiChar(aEventLabel)^, Length(aEventLabel));
+
+        //mStream.Write(Event.EventLabel[1], Length(Event.EventLabel) * SizeOf(Char));
+
+        sWriter.Write(Event.EventLabel);
+        sWriter.Write(Event.EventIdx);
+
+
+
+        if Event is TConEventSpeech then
+        begin
+            var Speech := TConEventSpeech(Event);
+            //var SpeechText := AnsiString(Speech.TextLine);
+
+            //mStream.Write(PAnsiChar(SpeechText)^, Length(Speech.TextLine));
+
+            //mStream.Write(Speech.TextLine[1], Length(Speech.TextLine) * SizeOf(Char))
+
+            sWriter.Write(Speech.TextLine);
+        end;
+
+
+        hBuf := GlobalAlloc(GMEM_MOVEABLE, mStream.Size);
+        try
+            BufPtr := GlobalLock(hBuf);
+            try
+                Move(mStream.Memory^, BufPtr^, mStream.Size);
+                Clipboard.SetAsHandle(CF_ConEditPlus, hBuf);
+
+            finally
+                GlobalUnlock(hBuf);
+            end;
+        except
+            GlobalFree(hBuf);
+            raise;
+        end;
     finally
-        GlobalUnlock(h);
+        sWriter.Free();
+        mStream.Free();
     end;
 end;
 
@@ -2758,7 +2796,7 @@ begin
                 FillRectAlpha(TListBox(Control).Canvas, tempRect, clLime, 64);
         end;
 
-        if Event.bHighlightAsRelated = true then
+        if Event.EventHighlightType = EHT_Related then //Event.bHighlightAsRelated = true then
         begin
             tempRect := Rect;
 
@@ -2768,7 +2806,19 @@ begin
             Brush.Style := bsClear;
 
             GradientFillCanvas(TListBox(Control).Canvas, clYellow, clCream, tempRect, gdHorizontal);
+        end else
+        if Event.EventHighlightType = EHT_Error then
+        begin
+            tempRect := Rect;
+
+            tempRect.Left := Rect.Left;
+            tempRect.Right := HeaderControl1.Sections[0].Width - 1;
+            tempRect.Top := Rect.Top;
+            Brush.Style := bsClear;
+
+            GradientFillCanvas(TListBox(Control).Canvas, clRed, clWebOrange, tempRect, gdHorizontal);
         end;
+
 
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then
            Font.Color := clWhite else Font.Color := clMaroon;
@@ -2795,8 +2845,11 @@ begin
 
     for var unhglEvent in CurrentConversation.Events do
     begin
-        if unhglEvent.bHighlightAsRelated = True then
-            unhglEvent.bHighlightAsRelated := False;
+        if unhglEvent.EventHighlightType = EHT_Related then
+            unhglEvent.EventHighlightType := EHT_None;
+
+        //if unhglEvent.bHighlightAsRelated = True then
+        //    unhglEvent.bHighlightAsRelated := False;
     end;
 end;
 
@@ -2851,11 +2904,12 @@ end;
 
 procedure TfrmMain.HighlightEvents(labelStr: string);
 begin
-    if CurrentConversation = nil then  Exit();
+    if CurrentConversation = nil then Exit();
 
     for var Event in CurrentConversation.Events do
         if LowerCase(Event.EventLabel) = LowerCase(labelStr) then
-            Event.bHighlightAsRelated := true;
+            Event.EventHighlightType := EHT_Related;
+            //Event.bHighlightAsRelated := true;
 end;
 
 procedure TfrmMain.HighlightRelatedEvents();
@@ -2924,7 +2978,8 @@ begin
                 begin
                     if (ChoiceItem.GoToLabel <> '') and
                        (LowerCase(ChoiceItem.GoToLabel) = LowerCase(CurrentEvent.EventLabel)) then
-                        ChoiceEvent.bHighlightAsRelated := True;
+                        ChoiceEvent.EventHighlightType := EHT_Related;
+                        //ChoiceEvent.bHighlightAsRelated := True;
                 end;
             end;
 
@@ -2934,7 +2989,7 @@ begin
 
                 if (CheckFlagEvent.GotoLabel <> '') and
                    (LowerCase(CheckFlagEvent.GotoLabel) = LowerCase(CurrentEvent.EventLabel)) then
-                    CheckFlagEvent.bHighlightAsRelated := True;
+                    CheckFlagEvent.EventHighlightType := EHT_Related; //bHighlightAsRelated := True;
             end;
 
             if CurrentConversation.Events[i] is TConEventCheckObject then
@@ -2943,7 +2998,7 @@ begin
 
                 if (CheckObjEvent.GoToLabel <> '') and
                    (LowerCase(CheckObjEvent.GotoLabel) = LowerCase(CurrentEvent.EventLabel)) then
-                    CheckObjEvent.bHighlightAsRelated := True;
+                    CheckObjEvent.EventHighlightType := EHT_Related; //bHighlightAsRelated := True;
             end;
 
             if CurrentConversation.Events[i] is TConEventTransferObject then
@@ -2952,7 +3007,7 @@ begin
 
                 if (TransObjEvent.GotoLabel <> '') and
                    (LowerCase(TransObjEvent.GotoLabel) = LowerCase(CurrentEvent.EventLabel)) then
-                    TransObjEvent.bHighlightAsRelated := True;
+                    TransObjEvent.EventHighlightType := EHT_Related; //bHighlightAsRelated := True;
             end;
 
             if CurrentConversation.Events[i] is TConEventJump then
@@ -2961,7 +3016,7 @@ begin
 
                 if (JumpEvent.gotoLabel <> '') and
                    (LowerCase(JumpEvent.GotoLabel) = LowerCase(CurrentEvent.EventLabel)) then
-                    JumpEvent.bHighlightAsRelated := True;
+                    JumpEvent.EventHighlightType := EHT_Related; //bHighlightAsRelated := True;
             end;
 
             if CurrentConversation.Events[i] is TConEventRandom then
@@ -2970,7 +3025,7 @@ begin
 
                 for var RandItem in RandEvent.GoToLabels do
                     if LowerCase(RandItem) = LowerCase(CurrentEvent.EventLabel) then
-                        RandEvent.bHighlightAsRelated := True;
+                        RandEvent.EventHighlightType := EHT_Related; //bHighlightAsRelated := True;
             end;
 
             if CurrentConversation.Events[i] is TConEventCheckPersona then
@@ -2979,7 +3034,7 @@ begin
 
                 if (CheckPersonaEvent.CheckGoToLabel <> '') and
                    (LowerCase(CheckPersonaEvent.CheckGoToLabel) = LowerCase(CurrentEvent.EventLabel)) then
-                    CheckPersonaEvent.bHighlightAsRelated := True;
+                    CheckPersonaEvent.EventHighlightType := EHT_Related; //bHighlightAsRelated := True;
             end;
         end;
     end;
@@ -3001,28 +3056,30 @@ begin
     frmTableEdit.ShowModal();
 end;
 
-
-
 function TfrmMain.GetAppVersionStr(): string;
 var
-  Size, Handle: DWORD;
-  Buffer: TBytes;
-  FixedPtr: PVSFixedFileInfo;
+    Size, Handle: DWORD;
+    Buffer: TBytes;
+    FixedPtr: PVSFixedFileInfo;
 begin
-  var Exe := ParamStr(0);
-  Size := GetFileVersionInfoSize(PChar(Exe), Handle);
-  if Size = 0 then
-    RaiseLastOSError;
-  SetLength(Buffer, Size);
-  if not GetFileVersionInfo(PChar(Exe), Handle, Size, Buffer) then
-    RaiseLastOSError;
-  if not VerQueryValue(Buffer, '\', Pointer(FixedPtr), Size) then
-    RaiseLastOSError;
-  Result := Format('%d.%d.%d.%d',
-    [LongRec(FixedPtr.dwFileVersionMS).Hi,  //major
-     LongRec(FixedPtr.dwFileVersionMS).Lo,  //minor
-     LongRec(FixedPtr.dwFileVersionLS).Hi,  //release
-     LongRec(FixedPtr.dwFileVersionLS).Lo]) //build
+    var Exe := ParamStr(0);
+
+    Size := GetFileVersionInfoSize(PChar(Exe), Handle);
+    if Size = 0 then
+        RaiseLastOSError;
+
+    SetLength(Buffer, Size);
+    if not GetFileVersionInfo(PChar(Exe), Handle, Size, Buffer) then
+        RaiseLastOSError;
+
+    if not VerQueryValue(Buffer, '\', Pointer(FixedPtr), Size) then
+        RaiseLastOSError;
+
+    Result := Format('%d.%d.%d.%d',
+      [LongRec(FixedPtr.dwFileVersionMS).Hi,  //major
+       LongRec(FixedPtr.dwFileVersionMS).Lo,  //minor
+       LongRec(FixedPtr.dwFileVersionLS).Hi,  //release
+       LongRec(FixedPtr.dwFileVersionLS).Lo]) //build
 end;
 
 // to enable/disable "Paste" menu item
@@ -3120,137 +3177,6 @@ begin
     ' Value=' + ConEventList.Items.ValueFromIndex[ConEventList.ItemIndex];
 
     HighlightRelatedEvents();
-
-    // Find events with label(s) from selected event and highlight them
-    {if CurrentEvent is TConEventChoice then
-    begin
-        var TempChoice := TConEventChoice(CurrentEvent);
-
-        for var i:= 0 to High(TempChoice.Choices) do
-        begin
-            var tempLabel:= TempChoice.Choices[i].GoToLabel;
-
-            HighlightEvents(tempLabel);
-        end;
-    end;
-
-    if CurrentEvent is TConEventCheckFlag then
-    begin
-        var TempChkFlag:= TConEventCheckFlag(CurrentEvent);
-
-        HighlightEvents(TempChkFlag.GotoLabel);
-    end;
-
-    if CurrentEvent is TConEventCheckObject then
-    begin
-        var TempChkObj := TConEventCheckObject(CurrentEvent);
-
-        HighlightEvents(TempChkObj.GotoLabel);
-    end;
-
-    if CurrentEvent is TConEventTransferObject then
-    begin
-        var TempTransObj:= TConEventTransferObject(CurrentEvent);
-
-        HighlightEvents(TempTransObj.GotoLabel);
-    end;
-
-    if CurrentEvent is TConEventJump then
-    begin
-        var TempJump:= TConEventJump(CurrentEvent);
-
-        HighlightEvents(TempJump.gotoLabel);
-    end;
-
-    if CurrentEvent is TConEventRandom then
-    begin
-        var TempRandom:= TConEventRandom(CurrentEvent);
-
-        for var i:= 0 to High(TempRandom.GoToLabels) do
-            HighlightEvents(TempRandom.GoToLabels[i]);
-    end;
-
-    if CurrentEvent is TConEventCheckPersona then
-    begin
-        var TempCheckPersona:= TConEventCheckPersona(CurrentEvent);
-
-        HighlightEvents(TempCheckPersona.CheckGoToLabel);
-    end;
-
-    // we have selected event with some label, find and highlight events which use that label
-    if CurrentEvent.EventLabel <> '' then
-    begin
-        for var i:= 0 to High(CurrentConversation.Events) do
-        begin
-            if CurrentConversation.Events[i] is TConEventChoice then
-            begin
-                var ChoiceEvent := TConEventChoice(CurrentConversation.Events[i]);
-
-                for var ChoiceItem in ChoiceEvent.Choices do
-                begin
-                    if (ChoiceItem.GoToLabel <> '') and
-                       (LowerCase(ChoiceItem.GoToLabel) = LowerCase(CurrentEvent.EventLabel)) then
-                        ChoiceEvent.bHighlightAsRelated := True;
-                end;
-            end;
-
-            if CurrentConversation.Events[i] is TConEventCheckFlag then
-            begin
-                var CheckFlagEvent := TConEventCheckFlag(CurrentConversation.Events[i]);
-
-                if (CheckFlagEvent.GotoLabel <> '') and
-                   (LowerCase(CheckFlagEvent.GotoLabel) = LowerCase(CurrentEvent.EventLabel)) then
-                    CheckFlagEvent.bHighlightAsRelated := True;
-            end;
-
-            if CurrentConversation.Events[i] is TConEventCheckObject then
-            begin
-                var CheckObjEvent := TConEventCheckObject(CurrentConversation.Events[i]);
-
-                if (CheckObjEvent.GoToLabel <> '') and
-                   (LowerCase(CheckObjEvent.GotoLabel) = LowerCase(CurrentEvent.EventLabel)) then
-                    CheckObjEvent.bHighlightAsRelated := True;
-            end;
-
-            if CurrentConversation.Events[i] is TConEventTransferObject then
-            begin
-                var TransObjEvent := TConEventTransferObject(CurrentConversation.Events[i]);
-
-                if (TransObjEvent.GotoLabel <> '') and
-                   (LowerCase(TransObjEvent.GotoLabel) = LowerCase(CurrentEvent.EventLabel)) then
-                    TransObjEvent.bHighlightAsRelated := True;
-            end;
-
-            if CurrentConversation.Events[i] is TConEventJump then
-            begin
-                var JumpEvent := TConEventJump(CurrentConversation.Events[i]);
-
-                if (JumpEvent.gotoLabel <> '') and
-                   (LowerCase(JumpEvent.GotoLabel) = LowerCase(CurrentEvent.EventLabel)) then
-                    JumpEvent.bHighlightAsRelated := True;
-            end;
-
-            if CurrentConversation.Events[i] is TConEventRandom then
-            begin
-                var RandEvent := TConEventRandom(CurrentConversation.Events[i]);
-
-                for var RandItem in RandEvent.GoToLabels do
-                    if LowerCase(RandItem) = LowerCase(CurrentEvent.EventLabel) then
-                        RandEvent.bHighlightAsRelated := True;
-            end;
-
-            if CurrentConversation.Events[i] is TConEventCheckPersona then
-            begin
-                var CheckPersonaEvent := TConEventCheckPersona(CurrentConversation.Events[i]);
-
-                if (CheckPersonaEvent.CheckGoToLabel <> '') and
-                   (LowerCase(CheckPersonaEvent.CheckGoToLabel) = LowerCase(CurrentEvent.EventLabel)) then
-                    CheckPersonaEvent.bHighlightAsRelated := True;
-            end;
-        end;
-    end;       }
-
-
 
     if frmEventInsAdd.Visible = true then
        ConEventListDblClick(Sender);
@@ -3739,9 +3665,8 @@ end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
-    // register new clipboard formats
-    ConEventClipboardFormat := RegisterClipboardFormat('ConEventClipboardFormat');
-    ConversationClipboardFormat := RegisterClipboardFormat('ConversationClipboardFormat');
+    // register new clipboard format
+    CF_ConEditPlus := RegisterClipboardFormat('CF_ConEditPlus');
 
     SysScrollBarWidth := GetSystemMetrics(SM_CXVSCROLL);
 

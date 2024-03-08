@@ -294,7 +294,7 @@ object frmMain: TfrmMain
     end
     object btnCloseLog: TButton
       Left = 694
-      Top = 182
+      Top = 176
       Width = 20
       Height = 20
       Hint = 'Close Log'
@@ -314,7 +314,7 @@ object frmMain: TfrmMain
       Visible = False
       StyleName = 'Windows'
       OnClick = ViewoutputTMemo1Click
-      ExplicitTop = 185
+      ExplicitTop = 179
     end
   end
   object mainToolBar: TToolBar
