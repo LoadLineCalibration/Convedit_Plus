@@ -2906,10 +2906,11 @@ procedure TfrmMain.HighlightEvents(labelStr: string);
 begin
     if CurrentConversation = nil then Exit();
 
+    if labelStr = '' then Exit();
+
     for var Event in CurrentConversation.Events do
         if LowerCase(Event.EventLabel) = LowerCase(labelStr) then
             Event.EventHighlightType := EHT_Related;
-            //Event.bHighlightAsRelated := true;
 end;
 
 procedure TfrmMain.HighlightRelatedEvents();
@@ -2979,7 +2980,6 @@ begin
                     if (ChoiceItem.GoToLabel <> '') and
                        (LowerCase(ChoiceItem.GoToLabel) = LowerCase(CurrentEvent.EventLabel)) then
                         ChoiceEvent.EventHighlightType := EHT_Related;
-                        //ChoiceEvent.bHighlightAsRelated := True;
                 end;
             end;
 
@@ -2989,7 +2989,7 @@ begin
 
                 if (CheckFlagEvent.GotoLabel <> '') and
                    (LowerCase(CheckFlagEvent.GotoLabel) = LowerCase(CurrentEvent.EventLabel)) then
-                    CheckFlagEvent.EventHighlightType := EHT_Related; //bHighlightAsRelated := True;
+                    CheckFlagEvent.EventHighlightType := EHT_Related;
             end;
 
             if CurrentConversation.Events[i] is TConEventCheckObject then
@@ -2998,7 +2998,7 @@ begin
 
                 if (CheckObjEvent.GoToLabel <> '') and
                    (LowerCase(CheckObjEvent.GotoLabel) = LowerCase(CurrentEvent.EventLabel)) then
-                    CheckObjEvent.EventHighlightType := EHT_Related; //bHighlightAsRelated := True;
+                    CheckObjEvent.EventHighlightType := EHT_Related;
             end;
 
             if CurrentConversation.Events[i] is TConEventTransferObject then
@@ -3007,7 +3007,7 @@ begin
 
                 if (TransObjEvent.GotoLabel <> '') and
                    (LowerCase(TransObjEvent.GotoLabel) = LowerCase(CurrentEvent.EventLabel)) then
-                    TransObjEvent.EventHighlightType := EHT_Related; //bHighlightAsRelated := True;
+                    TransObjEvent.EventHighlightType := EHT_Related;
             end;
 
             if CurrentConversation.Events[i] is TConEventJump then
@@ -3016,7 +3016,7 @@ begin
 
                 if (JumpEvent.gotoLabel <> '') and
                    (LowerCase(JumpEvent.GotoLabel) = LowerCase(CurrentEvent.EventLabel)) then
-                    JumpEvent.EventHighlightType := EHT_Related; //bHighlightAsRelated := True;
+                    JumpEvent.EventHighlightType := EHT_Related;
             end;
 
             if CurrentConversation.Events[i] is TConEventRandom then
@@ -3025,7 +3025,7 @@ begin
 
                 for var RandItem in RandEvent.GoToLabels do
                     if LowerCase(RandItem) = LowerCase(CurrentEvent.EventLabel) then
-                        RandEvent.EventHighlightType := EHT_Related; //bHighlightAsRelated := True;
+                        RandEvent.EventHighlightType := EHT_Related;
             end;
 
             if CurrentConversation.Events[i] is TConEventCheckPersona then
@@ -3034,7 +3034,7 @@ begin
 
                 if (CheckPersonaEvent.CheckGoToLabel <> '') and
                    (LowerCase(CheckPersonaEvent.CheckGoToLabel) = LowerCase(CurrentEvent.EventLabel)) then
-                    CheckPersonaEvent.EventHighlightType := EHT_Related; //bHighlightAsRelated := True;
+                    CheckPersonaEvent.EventHighlightType := EHT_Related;
             end;
         end;
     end;
@@ -3177,6 +3177,8 @@ begin
     ' Value=' + ConEventList.Items.ValueFromIndex[ConEventList.ItemIndex];
 
     HighlightRelatedEvents();
+
+//    frmLabelErrors.VerifyLabels(True);
 
     if frmEventInsAdd.Visible = true then
        ConEventListDblClick(Sender);

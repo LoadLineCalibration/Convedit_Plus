@@ -84,9 +84,9 @@ object frmMain: TfrmMain
   TextHeight = 15
   object Splitter1: TSplitter
     Left = 300
-    Top = 35
+    Top = 32
     Width = 5
-    Height = 590
+    Height = 593
     Cursor = crSizeWE
     Margins.Left = 5
     Margins.Top = 5
@@ -102,19 +102,17 @@ object frmMain: TfrmMain
   end
   object pnlConvoTree: TPanel
     Left = 0
-    Top = 35
+    Top = 32
     Width = 300
-    Height = 590
+    Height = 593
     Align = alLeft
     Color = 3947580
     TabOrder = 0
-    ExplicitTop = 32
-    ExplicitHeight = 593
     object ConvoTree: TTreeView
       Left = 1
       Top = 1
       Width = 298
-      Height = 588
+      Height = 591
       Margins.Left = 0
       Margins.Top = 0
       Margins.Right = 0
@@ -142,7 +140,6 @@ object frmMain: TfrmMain
       OnChange = ConvoTreeChange
       OnEdited = ConvoTreeEdited
       OnEditing = ConvoTreeEditing
-      ExplicitHeight = 591
     end
   end
   object StatusBar: TStatusBar
@@ -168,9 +165,9 @@ object frmMain: TfrmMain
   end
   object pnlEventList: TEsPanel
     Left = 305
-    Top = 35
+    Top = 32
     Width = 713
-    Height = 590
+    Height = 593
     Align = alClient
     Color = 3947580
     ParentColor = False
@@ -178,16 +175,14 @@ object frmMain: TfrmMain
     TabOrder = 2
     CaptionVisible = False
     FrameStyle = Bump
-    ExplicitTop = 32
-    ExplicitHeight = 593
     DesignSize = (
       713
-      590)
+      593)
     object ConEventList: TListBox
       Left = 2
       Top = 22
       Width = 709
-      Height = 280
+      Height = 283
       Style = lbOwnerDrawVariable
       Align = alClient
       BevelWidth = 5
@@ -211,7 +206,6 @@ object frmMain: TfrmMain
       OnDrawItem = ConEventListDrawItem
       OnMeasureItem = ConEventListMeasureItem
       OnMouseUp = ConEventListMouseUp
-      ExplicitHeight = 283
     end
     object HeaderControl1: THeaderControl
       Left = 2
@@ -264,7 +258,7 @@ object frmMain: TfrmMain
     end
     object mmoOutput: TMemo
       Left = 2
-      Top = 302
+      Top = 305
       Width = 709
       Height = 286
       Align = alBottom
@@ -290,7 +284,6 @@ object frmMain: TfrmMain
       Visible = False
       WordWrap = False
       StyleName = 'Windows'
-      ExplicitTop = 305
     end
     object btnCloseLog: TButton
       Left = 694
@@ -321,6 +314,7 @@ object frmMain: TfrmMain
     Left = 0
     Top = 0
     Width = 1018
+    Height = 29
     AutoSize = True
     ButtonHeight = 30
     ButtonWidth = 32
@@ -585,7 +579,7 @@ object frmMain: TfrmMain
   end
   object StaticText1: TStaticText
     Left = 0
-    Top = 32
+    Top = 29
     Width = 1018
     Height = 3
     Align = alTop
@@ -594,6 +588,7 @@ object frmMain: TfrmMain
     Color = clBtnFace
     ParentColor = False
     TabOrder = 4
+    ExplicitTop = 32
   end
   object PopupTree: TPopupMenu
     OnPopup = PopupTreePopup

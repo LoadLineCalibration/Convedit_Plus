@@ -148,8 +148,6 @@ TConEvent = class(TConBaseObject)
     EventType: TEventType; // speech, choice, etc...
 
     EventHighlightType: TEventHighlightType; // To highlight events (related/error)
-
-    bHighlightAsRelated: Boolean; // to highlight related events
 end;
 
 // Speech event

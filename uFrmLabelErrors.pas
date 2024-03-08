@@ -19,7 +19,7 @@ type
 
 
     // new procedures
-    procedure VerifyLabels();
+    procedure VerifyLabels(bSilent: Boolean = False);
 
     procedure btnCloseClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -51,7 +51,7 @@ begin
     end;
 end;
 
-procedure TfrmLabelErrors.VerifyLabels();
+procedure TfrmLabelErrors.VerifyLabels(bSilent: Boolean = False);
 begin
     lvLabelErrors.Clear();
 { events which use labels to jump to:
@@ -80,12 +80,17 @@ begin
 
                 if LowerCase(EventCheckFlag.GotoLabel) <> LowerCase(CheckEventLabel(con, EventCheckFlag.GotoLabel)) then
                 begin
-                    with frmLabelErrors do
-                    begin
-                        var LErrorItem:= lvLabelErrors.Items.Add();
+                    Event.EventHighlightType := EHT_Error;
 
-                        LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
-                        LErrorItem.SubItems.AddObject(EventCheckFlag.GotoLabel, EventCheckFlag);
+                    if bSilent = False then
+                    begin
+                        with frmLabelErrors do
+                        begin
+                            var LErrorItem:= lvLabelErrors.Items.Add();
+
+                            LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
+                            LErrorItem.SubItems.AddObject(EventCheckFlag.GotoLabel, EventCheckFlag);
+                        end;
                     end;
                 end;
             end;
@@ -96,12 +101,17 @@ begin
 
                 if LowerCase(EventCheckObj.GoToLabel) <> LowerCase(CheckEventLabel(con, EventCheckObj.GoToLabel)) then
                 begin
-                    with frmLabelErrors do
-                    begin
-                        var LErrorItem:= lvLabelErrors.Items.Add();
+                    Event.EventHighlightType := EHT_Error;
 
-                        LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
-                        LErrorItem.SubItems.AddObject(EventCheckObj.GotoLabel, EventCheckObj);
+                    if bSilent = False then
+                    begin
+                        with frmLabelErrors do
+                        begin
+                            var LErrorItem:= lvLabelErrors.Items.Add();
+
+                            LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
+                            LErrorItem.SubItems.AddObject(EventCheckObj.GotoLabel, EventCheckObj);
+                        end;
                     end;
                 end;
             end;
@@ -112,12 +122,16 @@ begin
 
                 if LowerCase(EventTransObj.GotoLabel) <> LowerCase(CheckEventLabel(con, EventTransObj.GotoLabel)) then
                 begin
-                    with frmLabelErrors do
+                    Event.EventHighlightType := EHT_Error;
+                    if bSilent = False then
                     begin
-                        var LErrorItem:= lvLabelErrors.Items.Add();
+                        with frmLabelErrors do
+                        begin
+                            var LErrorItem:= lvLabelErrors.Items.Add();
 
-                        LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
-                        LErrorItem.SubItems.AddObject(EventTransObj.GotoLabel, EventTransObj);
+                            LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
+                            LErrorItem.SubItems.AddObject(EventTransObj.GotoLabel, EventTransObj);
+                        end;
                     end;
                 end;
             end;
@@ -129,12 +143,17 @@ begin
 
                 if LowerCase(EventJump.gotoLabel) <> LowerCase(CheckEventLabel(JumpCon, EventJump.gotoLabel)) then
                 begin
-                    with frmLabelErrors do
-                    begin
-                        var LErrorItem:= lvLabelErrors.Items.Add();
+                    Event.EventHighlightType := EHT_Error;
 
-                        LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
-                        LErrorItem.SubItems.AddObject(EventJump.GotoLabel, EventJump);
+                    if bSilent = False then
+                    begin
+                        with frmLabelErrors do
+                        begin
+                            var LErrorItem:= lvLabelErrors.Items.Add();
+
+                            LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
+                            LErrorItem.SubItems.AddObject(EventJump.GotoLabel, EventJump);
+                        end;
                     end;
                 end;
             end;
@@ -147,12 +166,17 @@ begin
                 begin
                     if LowerCase(EventRandom.GoToLabels[i]) <> LowerCase(CheckEventLabel(con, EventRandom.GoToLabels[i])) then
                     begin
-                        with frmLabelErrors do
-                        begin
-                            var LErrorItem:= lvLabelErrors.Items.Add();
+                        Event.EventHighlightType := EHT_Error;
 
-                            LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName + ' > ' + EventRandom.GoToLabels[i];
-                            LErrorItem.SubItems.AddObject(EventRandom.GoToLabels[i], EventRandom);
+                        if bSilent = False then
+                        begin
+                            with frmLabelErrors do
+                            begin
+                                var LErrorItem:= lvLabelErrors.Items.Add();
+
+                                LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName + ' > ' + EventRandom.GoToLabels[i];
+                                LErrorItem.SubItems.AddObject(EventRandom.GoToLabels[i], EventRandom);
+                            end;
                         end;
                     end;
                 end;
@@ -164,12 +188,17 @@ begin
 
                 if LowerCase(EventCheckPersona.CheckGoToLabel) <> LowerCase(CheckEventLabel(con, EventCheckPersona.CheckGoToLabel)) then
                 begin
-                    with frmLabelErrors do
-                    begin
-                        var LErrorItem:= lvLabelErrors.Items.Add();
+                    Event.EventHighlightType := EHT_Error;
 
-                        LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
-                        LErrorItem.SubItems.AddObject(EventCheckPersona.CheckGotoLabel, EventCheckPersona);
+                    if bSilent = False then
+                    begin
+                        with frmLabelErrors do
+                        begin
+                            var LErrorItem:= lvLabelErrors.Items.Add();
+
+                            LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
+                            LErrorItem.SubItems.AddObject(EventCheckPersona.CheckGotoLabel, EventCheckPersona);
+                        end;
                     end;
                 end;
             end;
@@ -182,12 +211,17 @@ begin
                 begin
                     if LowerCase(ChoiceEvent.Choices[k].GoToLabel) <> LowerCase(CheckEventLabel(con, ChoiceEvent.Choices[k].GoToLabel)) then
                     begin
-                        with frmLabelErrors do
-                        begin
-                            var LErrorItem:= lvLabelErrors.Items.Add();
+                        Event.EventHighlightType := EHT_Error;
 
-                            LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
-                            LErrorItem.SubItems.AddObject(ChoiceEvent.Choices[k].GoToLabel, ChoiceEvent);
+                        if bSilent = False then
+                        begin
+                            with frmLabelErrors do
+                            begin
+                                var LErrorItem:= lvLabelErrors.Items.Add();
+
+                                LErrorItem.Caption := con.conOwnerName + ' > ' + con.conName + ' > ' + event.ClassName;
+                                LErrorItem.SubItems.AddObject(ChoiceEvent.Choices[k].GoToLabel, ChoiceEvent);
+                            end;
                         end;
                     end;
                 end;
