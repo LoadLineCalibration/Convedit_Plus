@@ -157,7 +157,7 @@ type
     ConFileParameters1: TMenuItem;
     Clear1: TMenuItem;
     ConversationsListCount1: TMenuItem;
-    MeasureItems1: TMenuItem;
+    IndexEvents1: TMenuItem;
     btnCloseLog: TButton;
     N19: TMenuItem;
     ClearForNewFile1: TMenuItem;
@@ -323,7 +323,7 @@ type
     // To copy/paste evnts
     procedure CopyEventToClipboard(var Event: TConEvent);
 
-    procedure DuplicateEvent(var Source, Dest: TConEvent);
+    procedure DuplicateEvent(Source, Dest: TConEvent);
 
     procedure FormResize(Sender: TObject);
     procedure ExpandAll2Click(Sender: TObject);
@@ -428,6 +428,7 @@ type
     procedure mnuEventIndexClick(Sender: TObject);
     procedure Copy3Click(Sender: TObject);
     procedure Event_DuplicateExecute(Sender: TObject);
+    procedure IndexEvents1Click(Sender: TObject);
   private
     { Private declarations }
     procedure WMEnterSizeMove(var Msg: TMessage); message WM_ENTERSIZEMOVE;
@@ -456,7 +457,7 @@ type
     bExpandFlagsOnExpandAll,
     bAskForConvoDelete, bAskForEventDelete, bHglEventWithNoAudio,
     bHglEventsGradient, bFlatToolbar, bAutoSaveEnabled,
-    bUse3DSelectionFrame, bUseWhiteSelectedText, bDrawEventIdx: Boolean;
+    bUse3DSelectionFrame, bUseWhiteSelectedText, bDrawEventIdx, bUseLogging: Boolean;
 
     // strings
     var ConversationUserName,
@@ -953,7 +954,8 @@ end;
 
 procedure TfrmMain.AddLog(msg: string);
 begin
-//    mmoOutput.Lines.Add(msg);
+    if bUseLogging = True then
+        mmoOutput.Lines.Add(msg);
 end;
 
 procedure TfrmMain.ProcessCommandline(const cmdLine: string);
@@ -1277,11 +1279,20 @@ begin
 end;
 
 procedure TfrmMain.SetEventIndexes();
+var
+    NewIndex: Integer;
 begin
     for var con in ConversationsList do
     begin
-        for var i:= 0 to High(con.Events) do
-            con.Events[i].EventIdx := i;
+        NewIndex := 0;
+
+        //for var i:= 0 to High(con.Events) do
+        for var Event in con.Events do
+        begin
+            //con.Events[i].EventIdx := NewIndex; //i;
+            Event.EventIdx := NewIndex;
+            Inc(NewIndex);
+        end;
     end;
 end;
 
@@ -1528,6 +1539,8 @@ begin
        bUse3DSelectionFrame := ReadBool('frmMain', 'bUse3DSelectionFrame', true);
        bUseWhiteSelectedText := ReadBool('frmMain', 'bUseWhiteSelectedText', false);
 
+       bUseLogging := ReadBool('frmMain', 'bUseLogging', false);
+
        ReorderModKey := TReorderEventsModKey(ReadInteger('frmMain', 'ReorderModKey', 0));
 
        btnReorder.Hint := GetReorderButtonHint(); // Update button tooltip
@@ -1583,6 +1596,8 @@ begin
 
            WriteBool('frmMain', 'bUse3DSelectionFrame', bUse3DSelectionFrame);
            WriteBool('frmMain', 'bUseWhiteSelectedText', bUseWhiteSelectedText);
+
+           WriteBool('frmMain', 'bUseLogging', bUseLogging);
 
            WriteInteger('frmMain', 'ReorderModKey',Ord(ReorderModKey));
 
@@ -2357,16 +2372,16 @@ begin
     end;
 end;
 
-procedure TfrmMain.DuplicateEvent(var Source, Dest: TConEvent);
+procedure TfrmMain.DuplicateEvent(Source, Dest: TConEvent);
 begin
     var Ctx: TRttiContext;
-    var SourceType, DestType: TRttiType;
+    var SourceType{, DestType}: TRttiType;
     var Field: TRttiField;
 
     Ctx := TRttiContext.Create;
     try
         SourceType := Ctx.GetType(Source.ClassType);
-        DestType := Ctx.GetType(Dest.ClassType);
+//        DestType := Ctx.GetType(Dest.ClassType);
 
         for Field in SourceType.GetFields do
         begin
@@ -3664,25 +3679,47 @@ end;
 procedure TfrmMain.Event_DuplicateExecute(Sender: TObject);
 var
     EventToDuplicate: TConEvent;
+    NewEvent: TConEvent;
 begin
     var ItemIdx := ConEventList.ItemIndex;
     if ItemIdx = -1 then Exit();
 
     EventToDuplicate := TConEvent(ConEventList.Items.Objects[ItemIdx]);
-    var NewEvent := EventToDuplicate.Create();
+
+    case EventToDuplicate.EventType of
+        ET_Speech:        NewEvent := TConEventSpeech.Create();
+        ET_Choice:        NewEvent := TConEventChoice.Create();
+        ET_SetFlag:       NewEvent := TConEventSetFlag.Create();
+        ET_CheckFlag:     NewEvent := TConEventCheckFlag.Create();
+        ET_CheckObject:   NewEvent := TConEventCheckObject.Create();
+        ET_TransferObject:NewEvent := TConEventTransferObject.Create();
+        ET_MoveCamera:    NewEvent := TConEventMoveCamera.Create();
+        ET_Animation:     NewEvent := TConEventAnimation.Create();
+        ET_Trade:         NewEvent := TConEventTrade.Create();
+        ET_Jump:          NewEvent := TConEventJump.Create();
+        ET_Random:        NewEvent := TConEventRandom.Create();
+        ET_Trigger:       NewEvent := TConEventTrigger.Create();
+        ET_AddGoal:       NewEvent := TConEventAddGoal.Create();
+        ET_AddNote:       NewEvent := TConEventAddNote.Create();
+        ET_AddSkillPoints:NewEvent := TConEventAddSkillPoints.Create();
+        ET_AddCredits:    NewEvent := TConEventAddCredits.Create();
+        ET_CheckPersona:  NewEvent := TConEventCheckPersona.Create();
+        ET_Comment:       NewEvent := TConEventComment.Create();
+        ET_End:           NewEvent := TConEventEnd.Create();
+    end;
 
     if (EventToDuplicate is TConEvent) and (NewEvent is TConEvent) then
         DuplicateEvent(TConEvent(EventToDuplicate), TConEvent(NewEvent));
 
     NewEvent.EventLabel := ''; // clear EventLabel to avoid duplicates
+    NewEvent.EventIdx := -1; // Index will be set later
 
     Insert(NewEvent, CurrentConversation.Events, ItemIdx);
 
     SetEventIndexes();
 
-
-
-    ShowMessage(NewEvent.ClassName);
+    ConvoTreeChange(Self, ConvoTree.Selected);
+    ConEventList.ItemIndex := ItemIdx;
 end;
 
 procedure TfrmMain.Exit1Click(Sender: TObject);
@@ -4448,6 +4485,11 @@ end;
 procedure TfrmMain.Jump2Click(Sender: TObject);
 begin
     InsertEvent(Jump2.Tag);
+end;
+
+procedure TfrmMain.IndexEvents1Click(Sender: TObject);
+begin
+    SetEventIndexes();
 end;
 
 procedure TfrmMain.MenuMainChange(Sender: TObject; Source: TMenuItem; Rebuild: Boolean);

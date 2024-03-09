@@ -48,6 +48,7 @@ type
     Label5: TLabel;
     dlgSelectFolder: TFileOpenDialog;
     Label6: TLabel;
+    chkEnableLogging: TCheckBox;
 
     // new procedures
     procedure SaveChanges();
@@ -117,6 +118,8 @@ begin
         chkUseSelectionFrame.Checked := bUse3DSelectionFrame;
         chkSelectedTextIsWhite.Checked := bUseWhiteSelectedText;
 
+        chkEnableLogging.Checked := bUseLogging;
+
         cbbReorderEventsModKey.ItemIndex := Ord(ReorderModKey);
     end;
 end;
@@ -154,6 +157,8 @@ begin
 
      bUse3DSelectionFrame := chkUseSelectionFrame.Checked;
      bUseWhiteSelectedText := chkSelectedTextIsWhite.Checked;
+
+     bUseLogging := chkEnableLogging.Checked;
 
      ReorderModKey := TReorderEventsModKey(cbbReorderEventsModKey.ItemIndex);
      btnReorder.Hint := GetReorderButtonHint(); // Update hint

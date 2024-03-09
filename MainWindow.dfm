@@ -294,7 +294,7 @@ object frmMain: TfrmMain
     end
     object btnCloseLog: TButton
       Left = 694
-      Top = 170
+      Top = 431
       Width = 20
       Height = 20
       Hint = 'Close Log'
@@ -314,7 +314,7 @@ object frmMain: TfrmMain
       Visible = False
       StyleName = 'Windows'
       OnClick = ViewoutputTMemo1Click
-      ExplicitTop = 173
+      ExplicitTop = 434
     end
   end
   object mainToolBar: TToolBar
@@ -3035,8 +3035,9 @@ object frmMain: TfrmMain
       Caption = 'ConversationsList.Count'
       OnClick = ConversationsListCount1Click
     end
-    object MeasureItems1: TMenuItem
-      Caption = 'MeasureItems'
+    object IndexEvents1: TMenuItem
+      Caption = 'Index events'
+      OnClick = IndexEvents1Click
     end
     object N19: TMenuItem
       Caption = '-'

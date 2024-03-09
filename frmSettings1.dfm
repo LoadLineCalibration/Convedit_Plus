@@ -4,7 +4,7 @@ object frmSettings: TfrmSettings
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsDialog
   Caption = 'ConvEdit+ Settings'
-  ClientHeight = 490
+  ClientHeight = 500
   ClientWidth = 451
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -117,7 +117,7 @@ object frmSettings: TfrmSettings
   end
   object Label5: TLabel
     Left = 8
-    Top = 420
+    Top = 431
     Width = 114
     Height = 22
     AutoSize = False
@@ -256,7 +256,7 @@ object frmSettings: TfrmSettings
   end
   object txt1: TStaticText
     Left = 8
-    Top = 448
+    Top = 458
     Width = 434
     Height = 3
     AutoSize = False
@@ -266,7 +266,7 @@ object frmSettings: TfrmSettings
   end
   object btnOk: TButton
     Left = 368
-    Top = 457
+    Top = 467
     Width = 75
     Height = 25
     Caption = 'Ok'
@@ -276,7 +276,7 @@ object frmSettings: TfrmSettings
   end
   object btnCancel: TButton
     Left = 267
-    Top = 457
+    Top = 467
     Width = 75
     Height = 25
     Cancel = True
@@ -287,7 +287,7 @@ object frmSettings: TfrmSettings
   end
   object btnClearLastFiles: TButton
     Left = 8
-    Top = 457
+    Top = 467
     Width = 167
     Height = 25
     Caption = 'Clear recent files'
@@ -373,7 +373,7 @@ object frmSettings: TfrmSettings
   end
   object cbbReorderEventsModKey: TComboBox
     Left = 128
-    Top = 419
+    Top = 430
     Width = 69
     Height = 22
     Style = csOwnerDrawVariable
@@ -385,6 +385,19 @@ object frmSettings: TfrmSettings
       'Ctrl'
       'Shift'
       'Alt')
+  end
+  object chkEnableLogging: TCheckBox
+    Left = 8
+    Top = 404
+    Width = 114
+    Height = 17
+    Hint = 
+      'Enable logging of some events. Useful for debugging. '#13#10'Warning: ' +
+      'This will slow down most of operations.'
+    Caption = 'Enable logging'
+    TabOrder = 24
+    StyleName = 'Windows'
+    OnClick = chkSelectEventsGradientFillClick
   end
   object dlgColor1: TColorDialog
     Left = 208
