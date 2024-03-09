@@ -8,7 +8,7 @@ uses
   system.UITypes, Vcl.ComCtrls, System.Types, Vcl.Buttons, Vcl.ToolWin, System.IniFiles, System.IOUtils,
   Conversation.Classes, System.ImageList, Vcl.ImgList, Table, Vcl.GraphUtil, ES.BaseControls, ES.Layouts,
   System.Actions, Vcl.ActnList, System.Generics.Collections, System.TypInfo, xml.VerySimple, System.StrUtils,
-  system.Math, Vcl.MPlayer, ConEditPlus.Enums, Winapi.ShellAPI, ConEditPlus.Helpers, Vcl.Clipbrd;
+  system.Math, Vcl.MPlayer, ConEditPlus.Enums, Winapi.ShellAPI, ConEditPlus.Helpers, Vcl.Clipbrd, system.Rtti;
 
 
 type
@@ -202,6 +202,9 @@ type
     tbVerifyLabels: TToolButton;
     ToolButton12: TToolButton;
     Label1: TLabel;
+    N5: TMenuItem;
+    Duplicate1: TMenuItem;
+    Event_Duplicate: TAction;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -320,6 +323,8 @@ type
     // To copy/paste evnts
     procedure CopyEventToClipboard(var Event: TConEvent);
 
+    procedure DuplicateEvent(var Source, Dest: TConEvent);
+
     procedure FormResize(Sender: TObject);
     procedure ExpandAll2Click(Sender: TObject);
     procedure CollapseAll2Click(Sender: TObject);
@@ -414,7 +419,6 @@ type
     procedure EventListItems1Click(Sender: TObject);
     procedure CurrentConversationEvents1Click(Sender: TObject);
     procedure tbGenerateAudioDirsClick(Sender: TObject);
-    procedure mnuCustomizeToolbarClick(Sender: TObject);
     procedure Conversation_CheckLabelsExecute(Sender: TObject);
     procedure tbPrintClick(Sender: TObject);
     procedure mainToolBarCustomDrawButton(Sender: TToolBar; Button: TToolButton;
@@ -423,6 +427,7 @@ type
     procedure edtSearchBoxKeyPress(Sender: TObject; var Key: Char);
     procedure mnuEventIndexClick(Sender: TObject);
     procedure Copy3Click(Sender: TObject);
+    procedure Event_DuplicateExecute(Sender: TObject);
   private
     { Private declarations }
     procedure WMEnterSizeMove(var Msg: TMessage); message WM_ENTERSIZEMOVE;
@@ -2352,6 +2357,27 @@ begin
     end;
 end;
 
+procedure TfrmMain.DuplicateEvent(var Source, Dest: TConEvent);
+begin
+    var Ctx: TRttiContext;
+    var SourceType, DestType: TRttiType;
+    var Field: TRttiField;
+
+    Ctx := TRttiContext.Create;
+    try
+        SourceType := Ctx.GetType(Source.ClassType);
+        DestType := Ctx.GetType(Dest.ClassType);
+
+        for Field in SourceType.GetFields do
+        begin
+            Field.SetValue(Dest, Field.GetValue(Source));
+        end;
+
+    finally
+        Ctx.Free();
+    end;
+end;
+
 procedure TfrmMain.DrawET_AddGoal(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
 var
     TempRect: TRect;
@@ -2847,9 +2873,6 @@ begin
     begin
         if unhglEvent.EventHighlightType = EHT_Related then
             unhglEvent.EventHighlightType := EHT_None;
-
-        //if unhglEvent.bHighlightAsRelated = True then
-        //    unhglEvent.bHighlightAsRelated := False;
     end;
 end;
 
@@ -3638,6 +3661,30 @@ begin
         DeleteCurrentEvent();
 end;
 
+procedure TfrmMain.Event_DuplicateExecute(Sender: TObject);
+var
+    EventToDuplicate: TConEvent;
+begin
+    var ItemIdx := ConEventList.ItemIndex;
+    if ItemIdx = -1 then Exit();
+
+    EventToDuplicate := TConEvent(ConEventList.Items.Objects[ItemIdx]);
+    var NewEvent := EventToDuplicate.Create();
+
+    if (EventToDuplicate is TConEvent) and (NewEvent is TConEvent) then
+        DuplicateEvent(TConEvent(EventToDuplicate), TConEvent(NewEvent));
+
+    NewEvent.EventLabel := ''; // clear EventLabel to avoid duplicates
+
+    Insert(NewEvent, CurrentConversation.Events, ItemIdx);
+
+    SetEventIndexes();
+
+
+
+    ShowMessage(NewEvent.ClassName);
+end;
+
 procedure TfrmMain.Exit1Click(Sender: TObject);
 begin
     SaveCfg();
@@ -3647,11 +3694,6 @@ end;
 procedure TfrmMain.ExpandAll2Click(Sender: TObject);
 begin
     ConvoTree.FullExpand();
-end;
-
-procedure TfrmMain.mnuCustomizeToolbarClick(Sender: TObject);
-begin
-//    mainToolBar.
 end;
 
 procedure TfrmMain.mnuEventIndexClick(Sender: TObject);
@@ -4469,6 +4511,7 @@ begin
         Cut3.Enabled := false;
         Copy3.Enabled := false;
         PasteConvoEvent.Enabled := False;
+        Event_Duplicate.Enabled := False;
     end else
     if ConEventList.ItemIndex = -1 then
     begin
@@ -4479,6 +4522,7 @@ begin
         Cut3.Enabled := false;
         Copy3.Enabled := false;
         PasteConvoEvent.Enabled := False;
+        Event_Duplicate.Enabled := False;
     end else
     begin
         Add2.Enabled := true;
@@ -4488,6 +4532,7 @@ begin
         Cut3.Enabled := true;
         Copy3.Enabled := true;
         PasteConvoEvent.Enabled := HasConvoEventToPaste();
+        Event_Duplicate.Enabled := true;
     end;
 end;
 
