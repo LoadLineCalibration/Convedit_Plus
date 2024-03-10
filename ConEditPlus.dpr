@@ -33,7 +33,8 @@ uses
   HelpWindow in 'HelpWindow.pas' {frmHelp},
   MainWindow in 'MainWindow.pas' {frmMain},
   Table in 'Table.pas' {frmTableEdit},
-  uFrmLabelErrors in 'uFrmLabelErrors.pas' {frmLabelErrors};
+  uFrmLabelErrors in 'uFrmLabelErrors.pas' {frmLabelErrors},
+  ConEditPlus.Clipboard.Helper in 'ConEditPlus.Clipboard.Helper.pas';
 
 {$R *.res}
 
