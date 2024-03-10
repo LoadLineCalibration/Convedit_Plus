@@ -8,7 +8,8 @@ uses
   system.UITypes, Vcl.ComCtrls, System.Types, Vcl.Buttons, Vcl.ToolWin, System.IniFiles, System.IOUtils,
   Conversation.Classes, System.ImageList, Vcl.ImgList, Table, Vcl.GraphUtil, ES.BaseControls, ES.Layouts,
   System.Actions, Vcl.ActnList, System.Generics.Collections, System.TypInfo, xml.VerySimple, System.StrUtils,
-  system.Math, Vcl.MPlayer, ConEditPlus.Enums, Winapi.ShellAPI, ConEditPlus.Helpers, Vcl.Clipbrd, system.Rtti;
+  system.Math, Vcl.MPlayer, ConEditPlus.Enums, Winapi.ShellAPI, ConEditPlus.Helpers, Vcl.Clipbrd, system.Rtti,
+  ConEditPlus.Clipboard.Helper;
 
 
 type
@@ -1350,33 +1351,25 @@ var
     hBuf: THandle;
     BufPtr: Pointer;
     mStream: TMemoryStream;
-    sWriter: TStreamWriter;
+    //sWriter: TStreamWriter;
+    BinWriter: TBinaryWriter;
 begin
     mStream := TMemoryStream.Create();
-    sWriter := TStreamWriter.Create(mStream, TEncoding.ANSI);
+    BinWriter := TBinaryWriter.Create(mStream, TEncoding.ANSI);
+    //sWriter := TStreamWriter.Create(mStream, TEncoding.ANSI);
 
     try
-        //mStream.Write(Event.EventIdx, 4);
-        //var aEventLabel := AnsiString(Event.EventLabel);
-        //mStream.Write(PAnsiChar(aEventLabel)^, Length(aEventLabel));
-
-        //mStream.Write(Event.EventLabel[1], Length(Event.EventLabel) * SizeOf(Char));
-
-        sWriter.Write(Event.EventLabel);
-        sWriter.Write(Event.EventIdx);
-
-
-
         if Event is TConEventSpeech then
         begin
             var Speech := TConEventSpeech(Event);
-            //var SpeechText := AnsiString(Speech.TextLine);
 
-            //mStream.Write(PAnsiChar(SpeechText)^, Length(Speech.TextLine));
+            WriteSpeech(Speech, BinWriter);
+        end else
+        if Event is TConEventChoice then
+        begin
+            var Choice := TConEventChoice(Event);
 
-            //mStream.Write(Speech.TextLine[1], Length(Speech.TextLine) * SizeOf(Char))
-
-            sWriter.Write(Speech.TextLine);
+            WriteChoice(Choice, BinWriter);
         end;
 
 
@@ -1395,7 +1388,7 @@ begin
             raise;
         end;
     finally
-        sWriter.Free();
+        BinWriter.Free();
         mStream.Free();
     end;
 end;
