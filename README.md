@@ -4,7 +4,7 @@ An attempt to recreate Deus Ex conversation editor (ConEdit or ConvEdit) in Delp
 
 what is __NOT__ implemented yet:
 * Insert event
-* copy/paste events/conversations to/from clipboard
+* ~copy~/paste ~events~/conversations ~to~/from clipboard
 * ~text wrap~ ~also make it dynamic~ ~for other events?~
 * ~search functions~
 * ~label checking~
