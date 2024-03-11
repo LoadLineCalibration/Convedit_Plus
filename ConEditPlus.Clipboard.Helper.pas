@@ -13,9 +13,35 @@ procedure WriteDouble(var bw: TBinaryWriter; dbl: Double);
 procedure WriteInteger(var bw: TBinaryWriter; Int: Integer);
 procedure WriteLongBool(var bw: TBinaryWriter; LBool: LongBool);
 
-// to copy events into clipboard
+// to copy events into clipboard (see MainWindow.pas > procedure CopyEventToClipboard())
 procedure WriteSpeech(Speech: TConEventSpeech; var bw: TBinaryWriter);
 procedure WriteChoice(Choice: TConEventChoice; var bw: TBinaryWriter);
+
+procedure WriteSetFlag(SetFlag: TConEventSetFlag; var bw: TBinaryWriter);
+procedure WriteCheckFlag(CheckFlag: TConEventCheckFlag; var bw: TBinaryWriter);
+
+procedure WriteCheckObject(CheckObject: TConEventCheckObject; var bw: TBinaryWriter);
+procedure WriteTransObject(TransObject: TConEventTransferObject; var bw: TBinaryWriter);
+
+procedure WriteMoveCam(MoveCam: TConEventMoveCamera; var bw: TBinaryWriter);
+procedure WriteAnim(Anim: TConEventAnimation; var bw: TBinaryWriter);
+
+procedure WriteTrade(Trade: TConEventTrade; var bw: TBinaryWriter);
+procedure WriteJump(Jump: TConEventJump; var bw: TBinaryWriter);
+
+procedure WriteRandom(Rand: TConEventRandom; var bw: TBinaryWriter);
+procedure WriteTrigger(Trigger: TConEventTrigger; var bw: TBinaryWriter);
+
+procedure WriteAddGoal(AddGoal: TConEventAddGoal; var bw: TBinaryWriter);
+procedure WriteAddNote(Note: TConEventAddNote; var bw: TBinaryWriter);
+
+procedure WriteAddSkillPts(SkillPts: TConEventAddSkillPoints; var bw: TBinaryWriter);
+procedure WriteAddCredits(Credits: TConEventAddCredits; var bw: TBinaryWriter);
+
+procedure WriteCheckPersona(CheckPersona: TConEventCheckPersona; var bw: TBinaryWriter);
+procedure WriteComment(Comment: TConEventComment; var bw: TBinaryWriter);
+
+procedure WriteEnd(EventEnd: TConEventEnd; var bw: TBinaryWriter);
 
 procedure WriteFirst4Fields(Event: TConEvent; var bw: TBinaryWriter);
 
@@ -109,6 +135,218 @@ begin
         end;
     end;
 end;
+
+procedure WriteSetFlag(SetFlag: TConEventSetFlag; var bw: TBinaryWriter);
+begin
+    WriteString(bw, ET_SetFlag_Caption); // id for clipboard
+
+    WriteFirst4Fields(SetFlag, bw);
+
+    var numFlagRefListSF := Length(SetFlag.SetFlags);
+    WriteInteger(bw, numFlagRefListSF); // numFlagRefList
+
+    for var NFRSF := 0 to numFlagRefListSF -1 do
+    begin
+        WriteInteger(bw, SetFlag.SetFlags[NFRSF].flagIndex);
+         WriteString(bw, SetFlag.SetFlags[NFRSF].flagName);
+       WriteLongBool(bw, SetFlag.SetFlags[NFRSF].flagValue);
+        WriteInteger(bw, SetFlag.SetFlags[NFRSF].flagExpiration);
+    end;
+end;
+
+procedure WriteCheckFlag(CheckFlag: TConEventCheckFlag; var bw: TBinaryWriter);
+begin
+    WriteString(bw, ET_CheckFlag_Caption); // id for clipboard
+
+    WriteFirst4Fields(CheckFlag, bw);
+
+    var numFlagRefListCHF := Length(CheckFlag.FlagsToCheck);
+    WriteInteger(bw, numFlagRefListCHF); // numFlagRefList
+
+    for var NFRCHF := 0 to numFlagRefListCHF -1 do
+    begin
+        WriteInteger(bw, CheckFlag.FlagsToCheck[NFRCHF].flagIndex);
+         WriteString(bw, CheckFlag.FlagsToCheck[NFRCHF].flagName);
+       WriteLongBool(bw, CheckFlag.FlagsToCheck[NFRCHF].flagValue);
+        WriteInteger(bw, CheckFlag.FlagsToCheck[NFRCHF].flagExpiration);
+    end;
+
+    WriteString(bw, CheckFlag.GotoLabel); // setLabel
+end;
+
+procedure WriteCheckObject(CheckObject: TConEventCheckObject; var bw: TBinaryWriter);
+begin
+    WriteString(bw, ET_CheckObject_Caption); // id for clipboard
+
+    WriteFirst4Fields(CheckObject, bw);
+
+    WriteInteger(bw, CheckObject.ObjectIndex); // objectName.id
+    WriteString(bw, CheckObject.ObjectValue); // objectName.Name
+    WriteString(bw, CheckObject.GoToLabel); // failLabel
+end;
+
+procedure WriteTransObject(TransObject: TConEventTransferObject; var bw: TBinaryWriter);
+begin
+    WriteString(bw, ET_TransferObject_Caption); // id for clipboard
+
+    WriteFirst4Fields(TransObject, bw);
+
+    WriteInteger(bw, TransObject.ObjectIndex); // objectName.id
+    WriteString(bw, TransObject.ObjectValue); // objectName.Name
+    WriteInteger(bw, TransObject.Amount); // TransferCount
+
+    WriteInteger(bw, TransObject.ActorFromIndex);
+    WriteString(bw, TransObject.ActorFromValue);
+
+    WriteInteger(bw, TransObject.ActorToIndex);
+    WriteString(bw, TransObject.ActorToValue);
+
+    WriteString(bw, TransObject.GotoLabel); // failLabel
+end;
+
+procedure WriteMoveCam(MoveCam: TConEventMoveCamera; var bw: TBinaryWriter);
+begin
+    WriteString(bw, ET_MoveCamera_Caption); // id for clipboard
+
+    WriteFirst4Fields(MoveCam, bw);
+
+    WriteInteger(bw, Ord(MoveCam.CameraType)); // cameraType
+
+    if MoveCam.CameraType = CT_Random then
+        WriteInteger(bw, 0)
+    else
+        WriteInteger(bw, Ord(MoveCam.CameraAngle)); // cameraPosition
+
+    WriteInteger(bw, -1); // cameraTransition was not implemented anyway, so just write -1
+end;
+
+procedure WriteAnim(Anim: TConEventAnimation; var bw: TBinaryWriter);
+begin
+    WriteString(bw, ET_Animation_Caption); // id for clipboard
+
+    WriteFirst4Fields(Anim, bw);
+
+    WriteInteger(bw, Anim.ActorIndex); // eventOwnerName.id
+    WriteString(bw, Anim.ActorValue); // eventOwnerName.Name
+    WriteString(bw, Anim.AnimSequence); // seqStr
+    WriteLongBool(bw, Anim.bAnimPlayOnce); // playMode.
+    WriteInteger(bw, Anim.AnimPlayForSeconds); // This field is missing in ConEventAnimation.uc (by default)
+    WriteLongBool(bw, Anim.bAnimWaitToFinish); // bFinishAnim
+end;
+
+procedure WriteTrade(Trade: TConEventTrade; var bw: TBinaryWriter);
+begin
+    // not implemented...
+end;
+
+procedure WriteJump(Jump: TConEventJump; var bw: TBinaryWriter);
+begin
+    WriteString(bw, ET_Jump_Caption); // id for clipboard
+
+    WriteFirst4Fields(Jump, bw);
+
+    WriteString(bw, Jump.gotoLabel); // jumpLabel
+    WriteInteger(bw, Jump.conversationId); // conId
+end;
+
+procedure WriteRandom(Rand: TConEventRandom; var bw: TBinaryWriter);
+begin
+    WriteString(bw, ET_Random_Caption); // id for clipboard
+
+    WriteFirst4Fields(Rand, bw);
+
+    var numRandomLabels := Length(Rand.GoToLabels);
+    WriteInteger(bw, numRandomLabels);
+
+    for var NRL := 0 to numRandomLabels -1 do
+        WriteString(bw, Rand.GoToLabels[NRL]);
+
+    WriteLongBool(bw, Rand.bCycle); // cycle events
+    WriteLongBool(bw, Rand.bCycleOnce);
+    WriteLongBool(bw, Rand.bCycleRandom);
+end;
+
+procedure WriteTrigger(Trigger: TConEventTrigger; var bw: TBinaryWriter);
+begin
+    WriteString(bw, ET_Trigger_Caption); // id for clipboard
+
+    WriteFirst4Fields(Trigger, bw);
+
+    WriteString(bw, Trigger.TriggerTag);
+end;
+
+procedure WriteAddGoal(AddGoal: TConEventAddGoal; var bw: TBinaryWriter);
+begin
+    WriteString(bw, ET_AddGoal_Caption); // id for clipboard
+
+    WriteFirst4Fields(AddGoal, bw);
+
+    var bGoalCompleted := AddGoal.bComplete;
+    WriteLongBool(bw, bGoalCompleted);
+
+    if (bGoalCompleted = False) then
+    begin
+        WriteString(bw, AddGoal.GoalText);
+        WriteLongBool(bw, AddGoal.bPrimaryGoal);
+    end;
+end;
+
+procedure WriteAddNote(Note: TConEventAddNote; var bw: TBinaryWriter);
+begin
+    WriteString(bw, ET_AddNote_Caption); // id for clipboard
+
+    WriteFirst4Fields(Note, bw);
+
+    WriteString(bw, Note.TextLine); // noteText
+end;
+
+procedure WriteAddSkillPts(SkillPts: TConEventAddSkillPoints; var bw: TBinaryWriter);
+begin
+    WriteString(bw, ET_AddSkillPoints_Caption); // id for clipboard
+
+    WriteFirst4Fields(SkillPts, bw);
+
+    WriteInteger(bw, SkillPts.Points); // pointsToAdd
+    WriteString(bw, SkillPts.TextLine); // awardMessage
+end;
+
+procedure WriteAddCredits(Credits: TConEventAddCredits; var bw: TBinaryWriter);
+begin
+    WriteString(bw, ET_AddCredits_Caption); // id for clipboard
+
+    WriteFirst4Fields(Credits, bw);
+
+    WriteInteger(bw, Credits.Credits);
+end;
+
+procedure WriteCheckPersona(CheckPersona: TConEventCheckPersona; var bw: TBinaryWriter);
+begin
+    WriteString(bw, ET_CheckPersona_Caption); // id for clipboard
+
+    WriteFirst4Fields(CheckPersona, bw);
+
+    WriteInteger(bw, Ord(CheckPersona.AttrToCheck)); // personaType
+    WriteInteger(bw, Ord(CheckPersona.Condition));
+    WriteInteger(bw, CheckPersona.CheckValue);
+    WriteString(bw, CheckPersona.CheckGoToLabel); // JumpLabel
+end;
+
+procedure WriteComment(Comment: TConEventComment; var bw: TBinaryWriter);
+begin
+    WriteString(bw, ET_Comment_Caption); // id for clipboard
+
+    WriteFirst4Fields(Comment, bw);
+
+    WriteString(bw, Comment.TextLine); // comment
+end;
+
+procedure WriteEnd(EventEnd: TConEventEnd; var bw: TBinaryWriter);
+begin
+    WriteString(bw, ET_End_Caption); // id for clipboard
+
+    WriteFirst4Fields(EventEnd, bw);
+end;
+
 
 procedure WriteFirst4Fields(Event: TConEvent; var bw: TBinaryWriter);
 begin

@@ -1351,12 +1351,10 @@ var
     hBuf: THandle;
     BufPtr: Pointer;
     mStream: TMemoryStream;
-    //sWriter: TStreamWriter;
     BinWriter: TBinaryWriter;
 begin
     mStream := TMemoryStream.Create();
     BinWriter := TBinaryWriter.Create(mStream, TEncoding.ANSI);
-    //sWriter := TStreamWriter.Create(mStream, TEncoding.ANSI);
 
     try
         if Event is TConEventSpeech then
@@ -1364,12 +1362,132 @@ begin
             var Speech := TConEventSpeech(Event);
 
             WriteSpeech(Speech, BinWriter);
-        end else
+        end;
+
         if Event is TConEventChoice then
         begin
             var Choice := TConEventChoice(Event);
 
             WriteChoice(Choice, BinWriter);
+        end;
+
+        if Event is TConEventSetFlag then
+        begin
+            var SetFlag := TConEventSetFlag(Event);
+
+            WriteSetFlag(SetFlag, BinWriter);
+        end;
+
+        if Event is TConEventCheckFlag then
+        begin
+            var CheckFlag := TConEventCheckFlag(Event);
+
+            WriteCheckFlag(CheckFlag, BinWriter);
+        end;
+
+        if Event is TConEventCheckObject then
+        begin
+            var CheckObj := TConEventCheckObject(Event);
+
+            WriteCheckObject(CheckObj, BinWriter);
+        end;
+
+        if Event is TConEventTransferObject then
+        begin
+            var TransObj := TConEventTransferObject(Event);
+
+            WriteTransObject(TransObj, BinWriter);
+        end;
+
+        if Event is TConEventMoveCamera then
+        begin
+            var MoveCam := TConEventMoveCamera(Event);
+
+            WriteMoveCam(MoveCam, BinWriter);
+        end;
+
+        if Event is TConEventAnimation then
+        begin
+            var Anim := TConEventAnimation(Event);
+
+            WriteAnim(Anim, BinWriter);
+        end;
+
+        if Event is TConEventTrade then
+        begin
+            var Trade := TConEventTrade(Event);
+
+            WriteTrade(Trade, BinWriter);
+        end;
+
+        if Event is TConEventJump then
+        begin
+            var Jump := TConEventJump(Event);
+
+            WriteJump(Jump, BinWriter);
+        end;
+
+        if Event is TConEventRandom then
+        begin
+            var Rand := TConEventRandom(Event);
+
+            WriteRandom(Rand, BinWriter);
+        end;
+
+        if Event is TConEventTrigger then
+        begin
+            var Trigger := TConEventTrigger(Event);
+
+            WriteTrigger(Trigger, BinWriter);
+        end;
+
+        if Event is TConEventAddGoal then
+        begin
+            var AddGoal := TConEventAddGoal(Event);
+
+            WriteAddGoal(AddGoal, BinWriter);
+        end;
+
+        if Event is TConEventAddNote then
+        begin
+            var AddNote := TConEventAddNote(Event);
+
+            WriteAddNote(AddNote, BinWriter);
+        end;
+
+        if Event is TConEventAddSkillPoints then
+        begin
+            var AddSkillPts := TConEventAddSkillPoints(Event);
+
+            WriteAddSkillPts(AddSkillPts, BinWriter);
+        end;
+
+        if Event is TConEventAddCredits then
+        begin
+            var AddCredits := TConEventAddCredits(Event);
+
+            WriteAddCredits(AddCredits, BinWriter);
+        end;
+
+        if Event is TConEventCheckPersona then
+        begin
+            var CheckPersona := TConEventCheckPersona(Event);
+
+            WriteCheckPersona(CheckPersona, BinWriter);
+        end;
+
+        if Event is TConEventComment then
+        begin
+            var Comment := TConEventComment(Event);
+
+            WriteComment(Comment, BinWriter);
+        end;
+
+        if Event is TConEventEnd then
+        begin
+            var EventEnd := TConEventEnd(Event);
+
+            WriteEnd(EventEnd, BinWriter);
         end;
 
 
@@ -3113,9 +3231,42 @@ begin
        LongRec(FixedPtr.dwFileVersionLS).Lo]) //build
 end;
 
-// to enable/disable "Paste" menu item
-function TfrmMain.HasConvoEventToPaste(): Boolean;
+function TfrmMain.HasConvoEventToPaste(): Boolean; // to enable/disable "Paste" menu item
+var
+    hBuf: THandle;
+    BufPtr: Pointer;
+    mStream: TMemoryStream;
+    BinReader: TBinaryReader;
 begin
+    hBuf := Clipboard.GetAsHandle(CF_ConEditPlus);
+    if hBuf <> 0 then
+    begin
+        BufPtr := GlobalLock(hBuf);
+        if BufPtr <> nil then
+        begin
+            try
+                mStream := TMemoryStream.Create();
+                try
+                    mStream.WriteBuffer(bufPtr^, GlobalSize(hBuf));
+                    mStream.Position := 0;
+
+                    BinReader := TBinaryReader.Create(mStream, TEncoding.ANSI);
+
+                    // read here
+
+                    var tempInt := BinReader.ReadInteger();
+
+                finally
+                    mStream.Free();
+                    BinReader.Free();
+
+                end;
+            finally
+                GlobalUnlock(hBuf);
+            end;
+        end;
+    end;
+
     Result := False; // for now
 end;
 
@@ -4537,7 +4688,7 @@ end;
 
 procedure TfrmMain.PopupConvoEventListPopup(Sender: TObject); // Enable/disable some menu items...
 begin
-    if (ConvoTree.Items.Count < 1) or (ConvoTree.Selected.Level <> 1) then
+{    if (ConvoTree.Items.Count < 1) or (ConvoTree.Selected.Level <> 1) then
     begin
         Add2.Enabled := False;
         Insert2.Enabled := false;
@@ -4547,7 +4698,7 @@ begin
         Copy3.Enabled := false;
         PasteConvoEvent.Enabled := False;
         Event_Duplicate.Enabled := False;
-    end else
+    end else}
     if ConEventList.ItemIndex = -1 then
     begin
         Add2.Enabled := true;
