@@ -3238,6 +3238,8 @@ var
     mStream: TMemoryStream;
     BinReader: TBinaryReader;
 begin
+    Result := False;
+
     hBuf := Clipboard.GetAsHandle(CF_ConEditPlus);
     if hBuf <> 0 then
     begin
@@ -3252,22 +3254,53 @@ begin
 
                     BinReader := TBinaryReader.Create(mStream, TEncoding.ANSI);
 
-                    // read here
-
-                    var tempInt := BinReader.ReadInteger();
-
+                    if ReadContentHeader(BinReader, mStream) = ET_Speech_Caption then
+                        Result := True
+                    else if ReadContentHeader(BinReader, mStream) = ET_Choice_Caption then
+                        Result := True
+                    else if ReadContentHeader(BinReader, mStream) = ET_SetFlag_Caption then
+                        Result := True
+                    else if ReadContentHeader(BinReader, mStream) = ET_CheckFlag_Caption then
+                        Result := True
+                    else if ReadContentHeader(BinReader, mStream) = ET_CheckObject_Caption then
+                        Result := True
+                    else if ReadContentHeader(BinReader, mStream) = ET_TransferObject_Caption then
+                        Result := True
+                    else if ReadContentHeader(BinReader, mStream) = ET_MoveCamera_Caption then
+                        Result := True
+                    else if ReadContentHeader(BinReader, mStream) = ET_Animation_Caption then
+                        Result := True
+                    else if ReadContentHeader(BinReader, mStream) = ET_Trade_Caption then
+                        Result := True
+                    else if ReadContentHeader(BinReader, mStream) = ET_Jump_Caption then
+                        Result := True
+                    else if ReadContentHeader(BinReader, mStream) = ET_Random_Caption then
+                        Result := True
+                    else if ReadContentHeader(BinReader, mStream) = ET_Trigger_Caption then
+                        Result := True
+                    else if ReadContentHeader(BinReader, mStream) = ET_AddGoal_Caption then
+                        Result := True
+                    else if ReadContentHeader(BinReader, mStream) = ET_AddNote_Caption then
+                        Result := True
+                    else if ReadContentHeader(BinReader, mStream) = ET_AddSkillPoints_Caption then
+                        Result := True
+                    else if ReadContentHeader(BinReader, mStream) = ET_AddCredits_Caption then
+                        Result := True
+                    else if ReadContentHeader(BinReader, mStream) = ET_CheckPersona_Caption then
+                        Result := True
+                    else if ReadContentHeader(BinReader, mStream) = ET_Comment_Caption then
+                        Result := True
+                    else if ReadContentHeader(BinReader, mStream) = ET_End_Caption then
+                        Result := True;
                 finally
                     mStream.Free();
                     BinReader.Free();
-
                 end;
             finally
                 GlobalUnlock(hBuf);
             end;
         end;
     end;
-
-    Result := False; // for now
 end;
 
 procedure TfrmMain.HeaderControl1DrawSection(HeaderControl: THeaderControl; Section: THeaderSection; const Rect: TRect; Pressed: Boolean);

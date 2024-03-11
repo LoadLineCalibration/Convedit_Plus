@@ -13,7 +13,9 @@ procedure WriteDouble(var bw: TBinaryWriter; dbl: Double);
 procedure WriteInteger(var bw: TBinaryWriter; Int: Integer);
 procedure WriteLongBool(var bw: TBinaryWriter; LBool: LongBool);
 
-// to copy events into clipboard (see MainWindow.pas > procedure CopyEventToClipboard())
+function ReadContentHeader(var br: TBinaryReader; var ms: TMemoryStream): string;
+
+// to copy events to clipboard (see MainWindow.pas > procedure CopyEventToClipboard())
 procedure WriteSpeech(Speech: TConEventSpeech; var bw: TBinaryWriter);
 procedure WriteChoice(Choice: TConEventChoice; var bw: TBinaryWriter);
 
@@ -74,6 +76,26 @@ end;
 procedure WriteLongBool(var bw: TBinaryWriter; LBool: LongBool);
 begin
     bw.Write(Integer(LBool));
+end;
+
+function ReadContentHeader(var br: TBinaryReader; var ms: TMemoryStream): string;
+var
+    tempStr: string;
+    tempBytes: TBytes;
+begin
+try
+    var TempInt := br.ReadInteger();
+    TempBytes := br.ReadBytes(tempInt);
+    tempStr := TEncoding.ANSI.GetString(TempBytes);
+
+    ms.Position := 0; // reset position here
+
+    if tempStr <> '' then
+        Result := tempStr;
+except
+    Result := '';
+    raise Exception.Create('Error reading data from Clipboard!');
+end;
 end;
 
 procedure WriteSpeech(Speech: TConEventSpeech; var bw: TBinaryWriter);
