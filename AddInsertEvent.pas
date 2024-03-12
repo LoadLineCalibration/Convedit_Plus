@@ -855,10 +855,10 @@ begin
     end;
 
     speech.ActorValue   := cmbSpeakingFrom.Items[cmbSpeakingFrom.ItemIndex];
-    speech.ActorIndex   := frmMain.FindTableIdByName(tmActorsPawns, cmbSpeakingFrom.Items[cmbSpeakingFrom.ItemIndex]);
+    speech.ActorIndex   := frmMain.FindTableIdByName(TM_ActorsPawns, cmbSpeakingFrom.Items[cmbSpeakingFrom.ItemIndex]);
 
     speech.ActorToValue := cmbSpeakingTo.Items[cmbSpeakingTo.ItemIndex];
-    speech.ActorToIndex := frmMain.FindTableIdByName(tmActorsPawns, cmbSpeakingTo.Items[cmbSpeakingTo.ItemIndex]);
+    speech.ActorToIndex := frmMain.FindTableIdByName(TM_ActorsPawns, cmbSpeakingTo.Items[cmbSpeakingTo.ItemIndex]);
 
     speech.TextLine     := memoSpeech.Text;
     speech.LineWrapCount:= frmMain.CountLineWraps(memoSpeech.Text);
@@ -961,15 +961,15 @@ end;
 function TfrmEventInsAdd.ValidateTransferObject(transObj: TConEventTransferObject): Boolean;
 begin
     transObj.ObjectValue := cmbObjectToTransfer.Items[cmbObjectToTransfer.ItemIndex];
-    transObj.ObjectIndex := frmMain.FindTableIdByName(tmObjects, transObj.ObjectValue); // Use item id from Table, not from combobox
+    transObj.ObjectIndex := frmMain.FindTableIdByName(TM_Objects, transObj.ObjectValue); // Use item id from Table, not from combobox
 
     transObj.Amount := seAmountToTransfer.Value;
 
     transObj.ActorToValue := cmbTransferObjectTo.Items[cmbTransferObjectTo.ItemIndex];
-    transObj.ActorToIndex := frmMain.FindTableIdByName(tmActorsPawns, transObj.ActorToValue);
+    transObj.ActorToIndex := frmMain.FindTableIdByName(TM_ActorsPawns, transObj.ActorToValue);
 
     transObj.ActorFromValue := cmbTransferObjectFrom.Items[cmbTransferObjectFrom.ItemIndex];
-    transObj.ActorFromIndex := frmMain.FindTableIdByName(tmActorsPawns, transObj.ActorFromValue);
+    transObj.ActorFromIndex := frmMain.FindTableIdByName(TM_ActorsPawns, transObj.ActorFromValue);
 
     transObj.GotoLabel := cmbTransferObjectFailLabel.Items[cmbTransferObjectFailLabel.ItemIndex];
 
@@ -1019,7 +1019,7 @@ begin
     end;
 
     playAnim.ActorValue := cmbPawnToAnimate.Items[cmbPawnToAnimate.ItemIndex];
-    playAnim.ActorIndex := frmMain.FindTableIdByName(tmActorsPawns, playanim.ActorValue);
+    playAnim.ActorIndex := frmMain.FindTableIdByName(TM_ActorsPawns, playanim.ActorValue);
 
     playAnim.AnimSequence := cmbAnimSeq.Text;
 
@@ -1917,7 +1917,7 @@ end;
 
 procedure TfrmEventInsAdd.btnFindObjectClick(Sender: TObject);
 begin
-    frmMain.PickTableObject(tmObjects, cmbObjectToCheck);
+    frmMain.PickTableObject(TM_Objects, cmbObjectToCheck);
 end;
 
 procedure TfrmEventInsAdd.btnHelpClick(Sender: TObject);
@@ -1990,17 +1990,17 @@ end;
 
 procedure TfrmEventInsAdd.btnObjectToTransferClick(Sender: TObject);
 begin
-    frmMain.PickTableObject(tmObjects, cmbObjectToTransfer);
+    frmMain.PickTableObject(TM_Objects, cmbObjectToTransfer);
 end;
 
 procedure TfrmEventInsAdd.btnObjTransferToPawnClick(Sender: TObject);
 begin
-    frmMain.PickTableObject(tmActorsPawns, cmbTransferObjectTo);
+    frmMain.PickTableObject(TM_ActorsPawns, cmbTransferObjectTo);
 end;
 
 procedure TfrmEventInsAdd.btnPawnToAnimClick(Sender: TObject);
 begin
-    frmMain.PickTableObject(tmActorsPawns, cmbPawnToAnimate);
+    frmMain.PickTableObject(TM_ActorsPawns, cmbPawnToAnimate);
 end;
 
 procedure TfrmEventInsAdd.btnPlayAudioFileClick(Sender: TObject);
@@ -2066,17 +2066,17 @@ end;
 
 procedure TfrmEventInsAdd.btnSpeakingFromActorClick(Sender: TObject);
 begin
-    frmMain.PickTableObject(tmActorsPawns, cmbSpeakingFrom);
+    frmMain.PickTableObject(TM_ActorsPawns, cmbSpeakingFrom);
 end;
 
 procedure TfrmEventInsAdd.btnSpeakingToActorClick(Sender: TObject);
 begin
-    frmMain.PickTableObject(tmActorsPawns, cmbSpeakingTo);
+    frmMain.PickTableObject(TM_ActorsPawns, cmbSpeakingTo);
 end;
 
 procedure TfrmEventInsAdd.btnTransferObjFromClick(Sender: TObject);
 begin
-    frmMain.PickTableObject(tmActorsPawns, cmbTransferObjectFrom);
+    frmMain.PickTableObject(TM_ActorsPawns, cmbTransferObjectFrom);
 end;
 
 procedure TfrmEventInsAdd.btnUpdateClick(Sender: TObject);

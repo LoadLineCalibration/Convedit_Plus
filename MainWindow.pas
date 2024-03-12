@@ -324,7 +324,7 @@ type
     // To copy/paste evnts
     procedure CopyEventToClipboard(var Event: TConEvent);
 
-    procedure DuplicateEvent(Source, Dest: TConEvent);
+    procedure CopyEventFields(Source, Dest: TConEvent);
 
     procedure FormResize(Sender: TObject);
     procedure ExpandAll2Click(Sender: TObject);
@@ -430,6 +430,7 @@ type
     procedure Copy3Click(Sender: TObject);
     procedure Event_DuplicateExecute(Sender: TObject);
     procedure IndexEvents1Click(Sender: TObject);
+    procedure PasteConvoEventClick(Sender: TObject);
   private
     { Private declarations }
     procedure WMEnterSizeMove(var Msg: TMessage); message WM_ENTERSIZEMOVE;
@@ -892,28 +893,28 @@ begin
     result := -1;
 
     case tableMode of
-      tmActorsPawns:
+      TM_ActorsPawns:
                begin
                    tempInteger := listPawnsActors.IndexOf(NameToLookFor);
                    if tempInteger <> -1 then
                       result := tempInteger;
                end;
 
-      tmFlags:
+      TM_Flags:
                begin
                    tempInteger := listFlags.IndexOf(NameToLookFor);
                    if tempInteger <> -1 then
                       result := tempInteger;
                end;
 
-      tmSkills:
+      TM_Skills:
                begin
                    tempInteger := listSkills.IndexOf(NameToLookFor);
                    if tempInteger <> -1 then
                       result := tempInteger;
                end;
 
-      tmObjects:
+      TM_Objects:
                begin
                    tempInteger := listObjects.IndexOf(NameToLookFor);
                    if tempInteger <> -1 then
@@ -927,29 +928,29 @@ var
     tempStr: string;
 begin
     case tableMode of
-     tmActorsPawns:
-               begin
-                 tempStr:= listPawnsActors.Strings[idToLookFor];
-                 result := tempStr;
-               end;
+        TM_ActorsPawns:
+         begin
+           tempStr:= listPawnsActors.Strings[idToLookFor];
+           result := tempStr;
+         end;
 
-            tmFlags:
-               begin
-                 tempStr:= listFlags.Strings[idToLookFor];
-                 result := tempStr;
-               end;
+        TM_Flags:
+         begin
+           tempStr:= listFlags.Strings[idToLookFor];
+           result := tempStr;
+         end;
 
-           tmSkills:
-               begin
-                 tempStr:= listSkills.Strings[idToLookFor];
-                 result := tempStr;
-               end;
+        TM_Skills:
+         begin
+           tempStr:= listSkills.Strings[idToLookFor];
+           result := tempStr;
+         end;
 
-          tmObjects:
-               begin
-                 tempStr:= listObjects.Strings[idToLookFor];
-                 result := tempStr;
-               end;
+        TM_Objects:
+         begin
+           tempStr:= listObjects.Strings[idToLookFor];
+           result := tempStr;
+         end;
     end;
 end;
 
@@ -2483,16 +2484,15 @@ begin
     end;
 end;
 
-procedure TfrmMain.DuplicateEvent(Source, Dest: TConEvent);
+procedure TfrmMain.CopyEventFields(Source, Dest: TConEvent);
 begin
     var Ctx: TRttiContext;
-    var SourceType{, DestType}: TRttiType;
+    var SourceType: TRttiType;
     var Field: TRttiField;
 
     Ctx := TRttiContext.Create;
     try
         SourceType := Ctx.GetType(Source.ClassType);
-//        DestType := Ctx.GetType(Dest.ClassType);
 
         for Field in SourceType.GetFields do
         begin
@@ -3189,15 +3189,110 @@ begin
     end;
 end;
 
+procedure TfrmMain.PasteConvoEventClick(Sender: TObject);
+var
+    hBuf: THandle;
+    BufPtr: Pointer;
+    mStream: TMemoryStream;
+    BinReader: TBinaryReader;
+    EventToPaste: string;
+begin
+    hBuf := Clipboard.GetAsHandle(CF_ConEditPlus);
+    if hBuf <> 0 then
+    begin
+        BufPtr := GlobalLock(hBuf);
+        if BufPtr <> nil then
+        begin
+            try
+                mStream := TMemoryStream.Create();
+                try
+                    mStream.WriteBuffer(bufPtr^, GlobalSize(hBuf));
+                    mStream.Position := 0;
+
+                    BinReader := TBinaryReader.Create(mStream, TEncoding.ANSI);
+
+                    if ReadContentHeader(BinReader, mStream) = ET_Speech_Caption then
+                        EventToPaste := ET_Speech_Caption
+                    else if ReadContentHeader(BinReader, mStream) = ET_Choice_Caption then
+                        EventToPaste := ET_Choice_Caption
+                    else if ReadContentHeader(BinReader, mStream) = ET_SetFlag_Caption then
+                        EventToPaste := ET_SetFlag_Caption
+                    else if ReadContentHeader(BinReader, mStream) = ET_CheckFlag_Caption then
+                        EventToPaste := ET_CheckFlag_Caption
+                    else if ReadContentHeader(BinReader, mStream) = ET_CheckObject_Caption then
+                        EventToPaste := ET_CheckObject_Caption
+                    else if ReadContentHeader(BinReader, mStream) = ET_TransferObject_Caption then
+                        EventToPaste := ET_TransferObject_Caption
+                    else if ReadContentHeader(BinReader, mStream) = ET_MoveCamera_Caption then
+                        EventToPaste := ET_MoveCamera_Caption
+                    else if ReadContentHeader(BinReader, mStream) = ET_Animation_Caption then
+                        EventToPaste := ET_Animation_Caption
+                    else if ReadContentHeader(BinReader, mStream) = ET_Trade_Caption then
+                        EventToPaste := ET_Trade_Caption
+                    else if ReadContentHeader(BinReader, mStream) = ET_Jump_Caption then
+                        EventToPaste := ET_Jump_Caption
+                    else if ReadContentHeader(BinReader, mStream) = ET_Random_Caption then
+                        EventToPaste := ET_Random_Caption
+                    else if ReadContentHeader(BinReader, mStream) = ET_Trigger_Caption then
+                        EventToPaste := ET_Trigger_Caption
+                    else if ReadContentHeader(BinReader, mStream) = ET_AddGoal_Caption then
+                        EventToPaste := ET_AddGoal_Caption
+                    else if ReadContentHeader(BinReader, mStream) = ET_AddNote_Caption then
+                        EventToPaste := ET_AddNote_Caption
+                    else if ReadContentHeader(BinReader, mStream) = ET_AddSkillPoints_Caption then
+                        EventToPaste := ET_AddSkillPoints_Caption
+                    else if ReadContentHeader(BinReader, mStream) = ET_AddCredits_Caption then
+                        EventToPaste := ET_AddCredits_Caption
+                    else if ReadContentHeader(BinReader, mStream) = ET_CheckPersona_Caption then
+                        EventToPaste := ET_CheckPersona_Caption
+                    else if ReadContentHeader(BinReader, mStream) = ET_Comment_Caption then
+                        EventToPaste := ET_Comment_Caption
+                    else if ReadContentHeader(BinReader, mStream) = ET_End_Caption then
+                        EventToPaste := ET_Comment_Caption;
+
+                    if EventToPaste = ET_Speech_Caption then
+                    begin
+                        var NewSpeech := TConEventSpeech.Create(); // Create new event
+
+                        BuildSpeech(BinReader, NewSpeech); // fill fields here
+
+                        if FindTableIdByName(TM_ActorsPawns, NewSpeech.ActorValue) = -1 then
+                            listPawnsActors.Add(NewSpeech.ActorValue);
+                            //ShowMessage('Such ActorValue not found!');
+
+                        if FindTableIdByName(TM_ActorsPawns, NewSpeech.ActorToValue) = -1 then
+                            listPawnsActors.Add(NewSpeech.ActorToValue);
+                            //ShowMessage('Such ActorToValue not found!');
+
+
+                        ShowMessage('Label:' + NewSpeech.EventLabel);
+                    end;
+
+
+
+
+                finally
+                    mStream.Free();
+                    BinReader.Free();
+                end;
+            finally
+                GlobalUnlock(hBuf);
+            end;
+        end;
+    end;
+
+    ShowMessage('About to paste event from Clipboard: ' + EventToPaste);
+end;
+
 procedure TfrmMain.PickTableObject(newTableMode: TTableMode; control: TControl);
 begin
     frmTableEdit.TableMode := newTableMode;
 
     case newTableMode of
-      tmActorsPawns: frmTableEdit.lstTableContents.Items := frmMain.listPawnsActors;
-      tmFlags:       frmTableEdit.lstTableContents.Items := frmMain.listFlags;
-      tmSkills:      frmTableEdit.lstTableContents.Items := frmMain.listSkills;
-      tmObjects:     frmTableEdit.lstTableContents.Items := frmMain.listObjects;
+      TM_ActorsPawns: frmTableEdit.lstTableContents.Items := frmMain.listPawnsActors;
+      TM_Flags:       frmTableEdit.lstTableContents.Items := frmMain.listFlags;
+      TM_Skills:      frmTableEdit.lstTableContents.Items := frmMain.listSkills;
+      TM_Objects:     frmTableEdit.lstTableContents.Items := frmMain.listObjects;
     end;
 
     frmTableEdit.TableItemReceiver := control;
@@ -3886,7 +3981,7 @@ begin
     end;
 
     if (EventToDuplicate is TConEvent) and (NewEvent is TConEvent) then
-        DuplicateEvent(TConEvent(EventToDuplicate), TConEvent(NewEvent));
+        CopyEventFields(TConEvent(EventToDuplicate), TConEvent(NewEvent));
 
     NewEvent.EventLabel := ''; // clear EventLabel to avoid duplicates
     NewEvent.EventIdx := -1; // Index will be set later
@@ -4139,7 +4234,7 @@ end;
 
 procedure TfrmMain.Flags1Click(Sender: TObject);
 begin
-    frmTableEdit.TableMode := tmFlags;
+    frmTableEdit.TableMode := TM_Flags;
     frmTableEdit.lstTableContents.Items := frmMain.listFlags;
 
     frmTableEdit.ShowModal();
@@ -4254,7 +4349,7 @@ end;
 
 procedure TfrmMain.ActorsPawns1Click(Sender: TObject);
 begin
-    frmTableEdit.TableMode := tmActorsPawns;
+    frmTableEdit.TableMode := TM_ActorsPawns;
     frmTableEdit.lstTableContents.Items := frmMain.listPawnsActors;
 
     frmTableEdit.ShowModal();
@@ -4525,7 +4620,7 @@ end;
 
 procedure TfrmMain.Skills1Click(Sender: TObject);
 begin
-    frmTableEdit.TableMode := tmSkills;
+    frmTableEdit.TableMode := TM_Skills;
     frmTableEdit.lstTableContents.Items := frmMain.listSkills;
 
     frmTableEdit.ShowModal();
@@ -4692,7 +4787,7 @@ end;
 
 procedure TfrmMain.Objects1Click(Sender: TObject);
 begin
-    frmTableEdit.TableMode := tmObjects;
+    frmTableEdit.TableMode := TM_Objects;
     frmTableEdit.lstTableContents.Items := frmMain.listObjects;
 
     frmTableEdit.ShowModal();
@@ -4754,7 +4849,6 @@ begin
         Event_Duplicate.Enabled := true;
     end;
 end;
-
 
 procedure TfrmMain.PopupTreePopup(Sender: TObject); // block some menu items depending on selection
 begin

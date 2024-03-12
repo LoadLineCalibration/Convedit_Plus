@@ -145,7 +145,7 @@ begin
 
         // conversation has only one owner
         conOwnerName:= cmbConvoOwner.Items[cmbConvoOwner.ItemIndex];
-        conOwnerIndex := frmMain.FindTableIdByName(tmActorsPawns, conOwnerName);
+        conOwnerIndex := frmMain.FindTableIdByName(TM_ActorsPawns, conOwnerName);
 
         // How conversation is activated + options
         bInfoLink        := chkDataLinkConvo.Checked;
@@ -227,7 +227,7 @@ begin
         var tempConvoOwnerName := cmbConvoOwner.Items[cmbConvoOwner.ItemIndex];
 
         conOwnerName := tempConvoOwnerName; //cmbConvoOwner.Items[cmbConvoOwner.ItemIndex];
-        conOwnerIndex := frmMain.FindTableIdByName(tmActorsPawns, tempConvoOwnerName);
+        conOwnerIndex := frmMain.FindTableIdByName(TM_ActorsPawns, tempConvoOwnerName);
 
         // How conversation is activated + options
         bInfoLink        := chkDataLinkConvo.Checked;
@@ -409,7 +409,7 @@ end;
 
 procedure TfrmConvoProperties.btnPickConvoOwnerClick(Sender: TObject);
 begin
-    frmMain.PickTableObject(tmActorsPawns, cmbConvoOwner);
+    frmMain.PickTableObject(TM_ActorsPawns, cmbConvoOwner);
 end;
 
 procedure TfrmConvoProperties.chkDataLinkConvoClick(Sender: TObject);

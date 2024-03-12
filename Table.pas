@@ -297,7 +297,7 @@ end;
 procedure TfrmTableEdit.ApplyTableChanges();
 begin
     case TableMode of
-        tmActorsPawns:
+        TM_ActorsPawns:
         begin
             frmMain.listPawnsActors.Assign(lstTableContents.Items);
 
@@ -318,17 +318,17 @@ begin
             end;
         end;
 
-        tmFlags:
+        TM_Flags:
         begin
             frmMain.listFlags.Assign(lstTableContents.Items);
         end;
 
-        tmSkills:
+        TM_Skills:
         begin
             frmMain.listSkills.Assign(lstTableContents.Items);
         end;
 
-        tmObjects:
+        TM_Objects:
         begin
             frmMain.listObjects.Assign(lstTableContents.Items);
 
@@ -460,10 +460,10 @@ end;
 procedure TfrmTableEdit.btnEditClick(Sender: TObject);
 begin
     case TableMode of
-      tmActorsPawns: frmEditValue.lblText.Caption := strActorPawn;
-      tmFlags:       frmEditValue.lblText.Caption := strFlagName;
-      tmSkills:      frmEditValue.lblText.Caption := strSkillName;
-      tmObjects:     frmEditValue.lblText.Caption := strObjectName;
+      TM_ActorsPawns: frmEditValue.lblText.Caption := strActorPawn;
+      TM_Flags:       frmEditValue.lblText.Caption := strFlagName;
+      TM_Skills:      frmEditValue.lblText.Caption := strSkillName;
+      TM_Objects:     frmEditValue.lblText.Caption := strObjectName;
     end;
 
     frmMain.SendStringToEditValue(lstTableContents);
@@ -502,10 +502,10 @@ end;
 procedure TfrmTableEdit.FormShow(Sender: TObject); // присвоить заголовок
 begin
     case TableMode of
-      tmActorsPawns: Caption := strActorsPawns;
-      tmFlags:       Caption := strFlags;
-      tmSkills:      Caption := strSkills;
-      tmObjects:     Caption := strObjects;
+      TM_ActorsPawns: Caption := strActorsPawns;
+      TM_Flags:       Caption := strFlags;
+      TM_Skills:      Caption := strSkills;
+      TM_Objects:     Caption := strObjects;
     end;
 
     if TableItemReceiver <> nil then // На случай если окно открыто из меню.
@@ -540,23 +540,23 @@ begin
 
 
     btnAddDefSkills.Enabled := not ListBoxContainsItem(lstTableContents, Default_DeusEx_Skills);
-    btnAddDefSkills.Visible := TableMode = tmSkills;
+    btnAddDefSkills.Visible := TableMode = TM_Skills;
 
     // Objects (Weapons, food, etc.)
     btnAddDef_LR_Weapons.Enabled := not ListBoxContainsItem(lstTableContents, Default_DeusEx_LongRange);
-    btnAddDef_LR_Weapons.Visible := TableMode = tmObjects;
+    btnAddDef_LR_Weapons.Visible := TableMode = TM_Objects;
 
     btnAddDef_CR_weapons.Enabled := not ListBoxContainsItem(lstTableContents, Default_DeusEx_CloseRange);
-    btnAddDef_CR_weapons.Visible := TableMode = tmObjects;
+    btnAddDef_CR_weapons.Visible := TableMode = TM_Objects;
 
     btnAddDefGrenades.Enabled := not ListBoxContainsItem(lstTableContents, Default_DeusEx_Grenades);
-    btnAddDefGrenades.Visible := TableMode = tmObjects;
+    btnAddDefGrenades.Visible := TableMode = TM_Objects;
 
     btnAddDefMiscItems.Enabled := not ListBoxContainsItem(lstTableContents, Default_DeusEx_MiscItems);
-    btnAddDefMiscItems.Visible := TableMode = tmObjects;
+    btnAddDefMiscItems.Visible := TableMode = TM_Objects;
 
     btnAddDefInfolinkNames.Enabled := not ListBoxContainsItem(lstTableContents, Default_DeusEx_Infolink_Names);
-    btnAddDefInfolinkNames.Visible := TableMode = tmActorsPawns;
+    btnAddDefInfolinkNames.Visible := TableMode = TM_ActorsPawns;
 end;
 
 procedure TfrmTableEdit.lstTableContentsClick(Sender: TObject);
@@ -597,7 +597,7 @@ end;
 function TfrmTableEdit.CanDeleteItem(item: String): boolean;
 begin
     case TableMode of
-        tmActorsPawns:
+        TM_ActorsPawns:
         begin
             if CheckActorIsUsed(item) = True then
             begin
@@ -608,7 +608,7 @@ begin
                 Exit(True);
         end;
 
-        tmFlags:
+        TM_Flags:
         begin
             if CheckFlagIsUsed(item) = True then
             begin
@@ -619,7 +619,7 @@ begin
                 Exit(True);
         end;
 
-        tmSkills:
+        TM_Skills:
         begin
             if CheckSkillIsUsed(item) = True then
             begin
@@ -630,7 +630,7 @@ begin
                 Exit(True);
         end;
 
-        tmObjects:
+        TM_Objects:
         begin
             if CheckObjectIsUsed(item) = True then
             begin
@@ -692,10 +692,10 @@ begin
     CustomClasses := TStringList.Create();
 try
     case TableMode of
-        tmActorsPawns: CustomClasses.LoadFromFile(CUSTOM_CLASSES_ACTORS);
-        tmFlags:       CustomClasses.LoadFromFile(CUSTOM_CLASSES_FLAGS);
-        tmSkills:      CustomClasses.LoadFromFile(CUSTOM_CLASSES_SKILLS);
-        tmObjects:     CustomClasses.LoadFromFile(CUSTOM_CLASSES_OBJECTS);
+        TM_ActorsPawns: CustomClasses.LoadFromFile(CUSTOM_CLASSES_ACTORS);
+        TM_Flags:       CustomClasses.LoadFromFile(CUSTOM_CLASSES_FLAGS);
+        TM_Skills:      CustomClasses.LoadFromFile(CUSTOM_CLASSES_SKILLS);
+        TM_Objects:     CustomClasses.LoadFromFile(CUSTOM_CLASSES_OBJECTS);
     end;
 
     for var i:= 0 to CustomClasses.Count -1 do
@@ -745,7 +745,7 @@ begin
     var tempList := TStringList.Create();
 
     case aTableMode of
-      tmActorsPawns:
+      TM_ActorsPawns:
         begin
             for var i:= 0 to lstTableContents.Items.Count -1 do
                 if CheckActorIsUsed(lstTableContents.Items[i]) = False then
@@ -768,7 +768,7 @@ begin
                   lstTableContents.Items.Delete(lstTableContents.Items.IndexOf(tempList[e]));
         end;
 
-      tmFlags:
+      TM_Flags:
         begin
             for var i:= 0 to lstTableContents.Items.Count -1 do
                 if CheckFlagIsUsed(lstTableContents.Items[i]) = False then
@@ -791,7 +791,7 @@ begin
                   lstTableContents.Items.Delete(lstTableContents.Items.IndexOf(tempList[e]));
         end;
 
-      tmSkills:
+      TM_Skills:
         begin
             for var i:= 0 to lstTableContents.Items.Count -1 do
                 if CheckSkillIsUsed(lstTableContents.Items[i]) = False then
@@ -814,7 +814,7 @@ begin
                   lstTableContents.Items.Delete(lstTableContents.Items.IndexOf(tempList[e]));
         end;
 
-      tmObjects:
+      TM_Objects:
         begin
             for var i:= 0 to lstTableContents.Items.Count -1 do
                 if CheckObjectIsUsed(lstTableContents.Items[i]) = False then

@@ -106,7 +106,7 @@ begin
                     item := Items.Add();
                     item.Caption := lstFlags.Items[i];
                     Item.SubItems.Add(cbbFlagValue.Text);
-                    Item.SubItems.Add(frmMain.FindTableIdByName(tmFlags,lstFlags.Items[i]).ToString);
+                    Item.SubItems.Add(frmMain.FindTableIdByName(TM_Flags,lstFlags.Items[i]).ToString);
                 end;
 
                 if (Receiver.Name = 'lvSetFlags') then begin
@@ -114,21 +114,21 @@ begin
                     item.Caption := lstFlags.Items[i];
                     Item.SubItems.Add(cbbFlagValue.Text);
                     item.SubItems.Add(cbbFlagExp.Text);
-                    Item.SubItems.Add(frmMain.FindTableIdByName(tmFlags,lstFlags.Items[i]).ToString);
+                    Item.SubItems.Add(frmMain.FindTableIdByName(TM_Flags,lstFlags.Items[i]).ToString);
                 end;
 
                 if (Receiver.Name = 'lvConvoDependsOnFlags') then begin
                     item := Items.Add();
                     item.Caption := lstFlags.Items[i];
                     Item.SubItems.Add(cbbFlagValue.Text);
-                    Item.SubItems.Add(frmMain.FindTableIdByName(tmFlags,lstFlags.Items[i]).ToString);
+                    Item.SubItems.Add(frmMain.FindTableIdByName(TM_Flags,lstFlags.Items[i]).ToString);
                 end;
 
                 if (Receiver.Name = 'lvChoiceFlagList') then begin
                     item := Items.Add();
                     item.Caption := lstFlags.Items[i];
                     Item.SubItems.Add(cbbFlagValue.Text);
-                    Item.SubItems.Add(frmMain.FindTableIdByName(tmFlags,lstFlags.Items[i]).ToString);
+                    Item.SubItems.Add(frmMain.FindTableIdByName(TM_Flags,lstFlags.Items[i]).ToString);
                 end;
             end;
         end;

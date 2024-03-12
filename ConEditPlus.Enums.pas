@@ -11,10 +11,10 @@ type TReorderEventsModKey =  // hold xxx key to reorder events
 
 type TTableMode =
 (
-    tmActorsPawns,
-    tmFlags,
-    tmSkills,
-    tmObjects
+    TM_ActorsPawns,
+    TM_Flags,
+    TM_Skills,
+    TM_Objects
 );
 
 type TConversationEditMode =
