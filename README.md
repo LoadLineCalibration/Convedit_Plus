@@ -51,7 +51,9 @@ Enhanced 'Tables' window:
 
 ![изображение](https://github.com/LoadLineCalibration/Convedit_Plus/assets/44388228/d512c738-6c02-41aa-804f-99909df3d93a)
 
+Duplicate Event:
 
+![изображение](https://github.com/LoadLineCalibration/Convedit_Plus/assets/44388228/4905b818-cc86-4417-b29c-f4f4ed13cb03)
 
 
 
