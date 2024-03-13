@@ -1036,18 +1036,13 @@ object frmMain: TfrmMain
       Caption = '-'
     end
     object Cut3: TMenuItem
-      Caption = 'Cut'
-      ImageIndex = 1
+      Action = Event_Cut
     end
     object Copy3: TMenuItem
-      Caption = 'Copy'
-      ImageIndex = 0
-      OnClick = Copy3Click
+      Action = Event_Copy
     end
     object PasteConvoEvent: TMenuItem
-      Caption = 'Paste'
-      ImageIndex = 2
-      OnClick = PasteConvoEventClick
+      Action = Event_Paste
     end
     object N5: TMenuItem
       Caption = '-'
@@ -2969,18 +2964,21 @@ object frmMain: TfrmMain
       Caption = 'Cut Event'
       Hint = 'Cut selected event into Clipboard'
       ImageIndex = 1
+      OnExecute = Event_CutExecute
     end
     object Event_Copy: TAction
       Category = 'Events'
       Caption = 'Copy Event'
       Hint = 'Copy selected event into Clipboard'
       ImageIndex = 0
+      OnExecute = Event_CopyExecute
     end
     object Event_Paste: TAction
       Category = 'Events'
       Caption = 'Paste Event'
       Hint = 'Paste selected event from Clipboard'
       ImageIndex = 2
+      OnExecute = Event_PasteExecute
     end
     object Event_Delete: TAction
       Category = 'Events'

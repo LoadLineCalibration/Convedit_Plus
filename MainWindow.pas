@@ -429,10 +429,11 @@ type
     procedure mnuGithubClick(Sender: TObject);
     procedure edtSearchBoxKeyPress(Sender: TObject; var Key: Char);
     procedure mnuEventIndexClick(Sender: TObject);
-    procedure Copy3Click(Sender: TObject);
     procedure Event_DuplicateExecute(Sender: TObject);
     procedure IndexEvents1Click(Sender: TObject);
-    procedure PasteConvoEventClick(Sender: TObject);
+    procedure Event_CutExecute(Sender: TObject);
+    procedure Event_CopyExecute(Sender: TObject);
+    procedure Event_PasteExecute(Sender: TObject);
   private
     { Private declarations }
     procedure WMEnterSizeMove(var Msg: TMessage); message WM_ENTERSIZEMOVE;
@@ -1281,12 +1282,6 @@ begin
             end;
         end;
     end;
-end;
-
-procedure TfrmMain.Copy3Click(Sender: TObject);
-begin
-    if CurrentEvent <> nil then
-        CopyEventToClipboard(CurrentEvent);
 end;
 
 procedure TfrmMain.CopyEventToClipboard(var Event: TConEvent);
@@ -3233,11 +3228,6 @@ begin
     end;
 end;
 
-procedure TfrmMain.PasteConvoEventClick(Sender: TObject);
-begin
-    PasteEventFromClipboard();
-end;
-
 procedure TfrmMain.PickTableObject(newTableMode: TTableMode; control: TControl);
 begin
     frmTableEdit.TableMode := newTableMode;
@@ -3892,6 +3882,21 @@ begin
 
 end;
 
+procedure TfrmMain.Event_CopyExecute(Sender: TObject);
+begin
+    if CurrentEvent <> nil then
+        CopyEventToClipboard(CurrentEvent);
+end;
+
+procedure TfrmMain.Event_CutExecute(Sender: TObject);
+begin
+    if CurrentEvent <> nil then
+    begin
+        CopyEventToClipboard(CurrentEvent);
+        DeleteCurrentEvent();
+    end;
+end;
+
 procedure TfrmMain.Event_DeleteExecute(Sender: TObject);
 begin
     if bAskForEventDelete = true then
@@ -3946,6 +3951,11 @@ begin
 
     ConvoTreeChange(Self, ConvoTree.Selected);
     ConEventList.ItemIndex := ItemIdx;
+end;
+
+procedure TfrmMain.Event_PasteExecute(Sender: TObject);
+begin
+    PasteEventFromClipboard();
 end;
 
 procedure TfrmMain.Exit1Click(Sender: TObject);
