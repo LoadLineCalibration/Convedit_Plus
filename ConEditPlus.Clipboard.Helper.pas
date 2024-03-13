@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Vcl.Clipbrd, System.Classes, Conversation.Classes, ConEditPlus.Consts,
-  System.SysUtils;
+  System.SysUtils, ConFile.Reader;
 
 
 // To make things simpler
@@ -14,6 +14,7 @@ procedure WriteInteger(var bw: TBinaryWriter; Int: Integer);
 procedure WriteLongBool(var bw: TBinaryWriter; LBool: LongBool);
 
 function ReadContentHeader(var br: TBinaryReader; var ms: TMemoryStream): string;
+function GetEventTypeInClipboard(var BinReader: TBinaryReader; var mStream: TMemoryStream): string;
 
 // to copy events to clipboard (see MainWindow.pas > procedure CopyEventToClipboard())
 procedure WriteSpeech(Speech: TConEventSpeech; var bw: TBinaryWriter);
@@ -46,6 +47,13 @@ procedure WriteComment(Comment: TConEventComment; var bw: TBinaryWriter);
 procedure WriteEnd(EventEnd: TConEventEnd; var bw: TBinaryWriter);
 
 procedure WriteFirst4Fields(Event: TConEvent; var bw: TBinaryWriter);
+
+// to paste events from clipboard
+procedure BuildSpeech(var br: TBinaryReader; var Speech: TConEventSpeech); // build event from binary data
+procedure BuildChoice(var br: TBinaryReader; var Choice: TConEventChoice);
+
+
+
 
 implementation
 
@@ -98,6 +106,52 @@ except
 end;
 end;
 
+function GetEventTypeInClipboard(var BinReader: TBinaryReader; var mStream: TMemoryStream): string;
+begin
+    var EventToPaste: string;
+
+    if ReadContentHeader(BinReader, mStream) = ET_Speech_Caption then
+        EventToPaste := ET_Speech_Caption
+    else if ReadContentHeader(BinReader, mStream) = ET_Choice_Caption then
+        EventToPaste := ET_Choice_Caption
+    else if ReadContentHeader(BinReader, mStream) = ET_SetFlag_Caption then
+        EventToPaste := ET_SetFlag_Caption
+    else if ReadContentHeader(BinReader, mStream) = ET_CheckFlag_Caption then
+        EventToPaste := ET_CheckFlag_Caption
+    else if ReadContentHeader(BinReader, mStream) = ET_CheckObject_Caption then
+        EventToPaste := ET_CheckObject_Caption
+    else if ReadContentHeader(BinReader, mStream) = ET_TransferObject_Caption then
+        EventToPaste := ET_TransferObject_Caption
+    else if ReadContentHeader(BinReader, mStream) = ET_MoveCamera_Caption then
+        EventToPaste := ET_MoveCamera_Caption
+    else if ReadContentHeader(BinReader, mStream) = ET_Animation_Caption then
+        EventToPaste := ET_Animation_Caption
+    else if ReadContentHeader(BinReader, mStream) = ET_Trade_Caption then
+        EventToPaste := ET_Trade_Caption
+    else if ReadContentHeader(BinReader, mStream) = ET_Jump_Caption then
+        EventToPaste := ET_Jump_Caption
+    else if ReadContentHeader(BinReader, mStream) = ET_Random_Caption then
+        EventToPaste := ET_Random_Caption
+    else if ReadContentHeader(BinReader, mStream) = ET_Trigger_Caption then
+        EventToPaste := ET_Trigger_Caption
+    else if ReadContentHeader(BinReader, mStream) = ET_AddGoal_Caption then
+        EventToPaste := ET_AddGoal_Caption
+    else if ReadContentHeader(BinReader, mStream) = ET_AddNote_Caption then
+        EventToPaste := ET_AddNote_Caption
+    else if ReadContentHeader(BinReader, mStream) = ET_AddSkillPoints_Caption then
+        EventToPaste := ET_AddSkillPoints_Caption
+    else if ReadContentHeader(BinReader, mStream) = ET_AddCredits_Caption then
+        EventToPaste := ET_AddCredits_Caption
+    else if ReadContentHeader(BinReader, mStream) = ET_CheckPersona_Caption then
+        EventToPaste := ET_CheckPersona_Caption
+    else if ReadContentHeader(BinReader, mStream) = ET_Comment_Caption then
+        EventToPaste := ET_Comment_Caption
+    else if ReadContentHeader(BinReader, mStream) = ET_End_Caption then
+        EventToPaste := ET_Comment_Caption;
+
+    Result:= EventToPaste;
+end;
+
 procedure WriteSpeech(Speech: TConEventSpeech; var bw: TBinaryWriter);
 begin
     WriteString(bw, ET_Speech_Caption); // id for clipboard
@@ -123,6 +177,10 @@ begin
     WriteString(bw, ET_Choice_Caption); // id for clipboard
 
     WriteFirst4Fields(Choice, bw);
+
+    WriteInteger(bw, Choice.unk0); // unk0
+    WriteLongBool(bw, Choice.bClearScreen); // bClearScreen
+    WriteInteger(bw, Choice.NumChoices); // numChoiceList
 
     for var chi := 0 to Choice.NumChoices -1 do
     begin
@@ -369,13 +427,106 @@ begin
     WriteFirst4Fields(EventEnd, bw);
 end;
 
-
 procedure WriteFirst4Fields(Event: TConEvent; var bw: TBinaryWriter);
 begin
     WriteInteger(bw, Event.EventIdx);
     WriteInteger(bw, Event.unknown1);
     WriteInteger(bw, Ord(Event.EventType));
     WriteString(bw, Event.EventLabel);
+end;
+
+procedure BuildSpeech(var br: TBinaryReader; var Speech: TConEventSpeech); // build event from binary data
+begin
+    GetConString(br); // skip the header for clipboard
+
+    // first 4
+    Speech.EventIdx := br.ReadInteger();
+    Speech.unknown1 := br.ReadInteger();
+    Speech.EventType := TEventType(br.ReadInteger());
+    Speech.EventLabel := GetConString(br);
+
+    // ET_Speech
+    Speech.ActorIndex := br.ReadInteger(); // speaker id
+    Speech.ActorValue := GetConString(br);  // speaker Name
+
+    Speech.ActorToIndex := br.ReadInteger();  // speaking to id
+    Speech.ActorToValue := GetConString(br); // speaking to name
+
+    Speech.TextLine := GetConString(br); // speech text
+    Speech.mp3File := GetConString(br); // Sound
+
+    Speech.bContinued := GetConLongBool(br); // not implemented in game
+    Speech.bBold := GetConLongBool(br);
+    Speech.SpeechFont := br.ReadInteger();
+end;
+
+procedure BuildChoice(var br: TBinaryReader; var Choice: TConEventChoice);
+begin
+    var Temp := GetConString(br); // skip the header for clipboard
+
+    // first 4
+    Choice.EventIdx := br.ReadInteger();
+    Choice.unknown1 := br.ReadInteger();
+    Choice.EventType := TEventType(br.ReadInteger());
+    Choice.EventLabel := GetConString(br);
+
+    // ET_Choice
+    Choice.unk0 := br.ReadInteger(); // unk0
+    Choice.bClearScreen := GetConLongBool(br);
+    Choice.NumChoices := br.ReadInteger();
+    Choice.NumFlagsRefs := Choice.NumChoices; // for event item height
+
+    SetLength(Choice.Choices, Choice.NumChoices);
+
+    for var cl := 0 to Choice.NumChoices -1 do
+    begin
+        Choice.Choices[cl] := TChoiceItemObject.Create(); // create choice item object
+        Choice.Choices[cl].Index := br.ReadInteger();
+
+        Choice.Choices[cl].textline := GetConString(br);
+
+        Choice.Choices[cl].bDisplayAsSpeech := GetConLongBool(br);
+
+        var skillNameId := br.ReadInteger();
+
+        if skillNameId = -1 then  // Skill is NOT required
+        begin
+            Choice.Choices[cl].bSkillNeeded := skillNameId; // for XML version
+
+            Choice.Choices[cl].GoToLabel := GetConString(br); //choice Label
+            Choice.Choices[cl].mp3 := GetConString(br); // soundPath
+
+            var numFlagRefList := br.ReadInteger(); // numFlagRefList
+            SetLength(Choice.Choices[cl].RequiredFlags, numFlagRefList); // Set array size
+
+            for var FLR := 0 to numFlagRefList -1 do // flags, required by this choice
+            begin
+                Choice.Choices[cl].RequiredFlags[FLR].flagIndex := br.ReadInteger();
+                Choice.Choices[cl].RequiredFlags[FLR].flagName := GetConString(br);
+                Choice.Choices[cl].RequiredFlags[FLR].flagValue := GetConLongBool(br);
+                Choice.Choices[cl].RequiredFlags[FLR].flagExpiration := br.ReadInteger();
+            end;
+        end;
+
+        if skillNameId >= 0 then // Requires skill. Did anyone ever used this feature?
+        begin
+            Choice.Choices[cl].Skill := GetConString(br);
+            Choice.Choices[cl].SkillLevel := br.ReadInteger();
+            Choice.Choices[cl].GoToLabel := GetConString(br);
+            Choice.Choices[cl].mp3 := GetConString(br);
+
+            var numFlagRefList1 := br.ReadInteger();
+            SetLength(Choice.Choices[cl].RequiredFlags, numFlagRefList1);
+
+            for var FLR1 := 0 to numFlagRefList1 -1 do // flags, required by this choice
+            begin
+                Choice.Choices[cl].RequiredFlags[FLR1].flagIndex := br.ReadInteger();
+                Choice.Choices[cl].RequiredFlags[FLR1].flagName := GetConString(br);
+                Choice.Choices[cl].RequiredFlags[FLR1].flagValue := GetConLongBool(br);
+                Choice.Choices[cl].RequiredFlags[FLR1].flagExpiration := br.ReadInteger();
+            end;
+        end;
+    end;
 end;
 
 end.

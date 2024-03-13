@@ -323,7 +323,9 @@ type
 
     // To copy/paste evnts
     procedure CopyEventToClipboard(var Event: TConEvent);
+    procedure PasteEventFromClipboard();
 
+    // To duplicate selected event
     procedure CopyEventFields(Source, Dest: TConEvent);
 
     procedure FormResize(Sender: TObject);
@@ -894,32 +896,32 @@ begin
 
     case tableMode of
       TM_ActorsPawns:
-               begin
-                   tempInteger := listPawnsActors.IndexOf(NameToLookFor);
-                   if tempInteger <> -1 then
-                      result := tempInteger;
-               end;
+        begin
+           tempInteger := listPawnsActors.IndexOf(NameToLookFor);
+           if tempInteger <> -1 then
+              result := tempInteger;
+        end;
 
       TM_Flags:
-               begin
-                   tempInteger := listFlags.IndexOf(NameToLookFor);
-                   if tempInteger <> -1 then
-                      result := tempInteger;
-               end;
+        begin
+           tempInteger := listFlags.IndexOf(NameToLookFor);
+           if tempInteger <> -1 then
+              result := tempInteger;
+        end;
 
       TM_Skills:
-               begin
-                   tempInteger := listSkills.IndexOf(NameToLookFor);
-                   if tempInteger <> -1 then
-                      result := tempInteger;
-               end;
+        begin
+           tempInteger := listSkills.IndexOf(NameToLookFor);
+           if tempInteger <> -1 then
+              result := tempInteger;
+        end;
 
       TM_Objects:
-               begin
-                   tempInteger := listObjects.IndexOf(NameToLookFor);
-                   if tempInteger <> -1 then
-                      result := tempInteger;
-               end;
+        begin
+           tempInteger := listObjects.IndexOf(NameToLookFor);
+           if tempInteger <> -1 then
+              result := tempInteger;
+        end;
     end;
 end;
 
@@ -928,36 +930,36 @@ var
     tempStr: string;
 begin
     case tableMode of
-        TM_ActorsPawns:
+       TM_ActorsPawns:
          begin
-           tempStr:= listPawnsActors.Strings[idToLookFor];
-           result := tempStr;
+             tempStr:= listPawnsActors.Strings[idToLookFor];
+             result := tempStr;
          end;
 
-        TM_Flags:
+       TM_Flags:
          begin
-           tempStr:= listFlags.Strings[idToLookFor];
-           result := tempStr;
+             tempStr:= listFlags.Strings[idToLookFor];
+             result := tempStr;
          end;
 
         TM_Skills:
          begin
-           tempStr:= listSkills.Strings[idToLookFor];
-           result := tempStr;
+             tempStr:= listSkills.Strings[idToLookFor];
+             result := tempStr;
          end;
 
         TM_Objects:
-         begin
-           tempStr:= listObjects.Strings[idToLookFor];
-           result := tempStr;
-         end;
+        begin
+             tempStr:= listObjects.Strings[idToLookFor];
+             result := tempStr;
+        end;
     end;
 end;
 
 procedure TfrmMain.AddLog(msg: string);
 begin
     if bUseLogging = True then
-        mmoOutput.Lines.Add(msg);
+        mmoOutput.Lines.Add(TimeToStr(Now()) + ': '+ msg);
 end;
 
 procedure TfrmMain.ProcessCommandline(const cmdLine: string);
@@ -1064,66 +1066,6 @@ begin
 
     SetEventIndexes();
 end;
-
-{procedure TfrmMain.BuildConvoTree();
-begin
-    for var cList := 0 to ConversationsList.Count -1 do
-    begin
-        var NodeConName, NodeConOwnerName, NodeDependsOnFlags: TTreeNode;
-        var tempConvo := ConversationsList.Items[cList];
-
-        NodeConOwnerName := nil; // Initialize the variable
-
-        // Check if the owner's name node already exists
-        for var i := 0 to ConvoTree.Items.Count - 1 do
-        begin
-            if ConvoTree.Items[i].Text = tempConvo.conOwnerName then
-            begin
-                NodeConOwnerName := ConvoTree.Items[i];
-                Break; // Exit the loop if the node is found
-            end;
-        end;
-
-        // If the owner's name node doesn't exist, create it
-        if NodeConOwnerName = nil then
-        begin
-            NodeConOwnerName := ConvoTree.Items.Add(nil, tempConvo.conOwnerName);
-            NodeConOwnerName.ImageIndex := 0;
-            NodeConOwnerName.ExpandedImageIndex := 0;
-            NodeConOwnerName.SelectedIndex := 0;
-        end;
-
-        // Add owner's conversations
-        NodeConName := ConvoTree.Items.AddChildObject(NodeConOwnerName, tempConvo.conName, tempConvo);
-        NodeConName.ImageIndex := 1;
-        NodeConName.ExpandedImageIndex := 1;
-        NodeConName.SelectedIndex := 1;
-
-        // Flags required by this conversation
-        for var DOF := 0 to Length(tempConvo.conDependsOnFlags) - 1 do
-        begin
-            NodeDependsOnFlags := ConvoTree.Items.AddChild(NodeConName,
-            tempConvo.conDependsOnFlags[DOF].flagName + ' = '
-            + BoolToStr(tempConvo.conDependsOnFlags[DOF].flagValue, true));
-
-            // red icon = false, green icon = true
-            if NodeDependsOnFlags.Text.EndsWith('true') then
-            begin
-                NodeDependsOnFlags.ImageIndex := 2;
-                NodeDependsOnFlags.ExpandedImageIndex := 2;
-                NodeDependsOnFlags.SelectedIndex := 2;
-            end
-            else
-            begin
-                NodeDependsOnFlags.ImageIndex := 3;
-                NodeDependsOnFlags.ExpandedImageIndex := 3;
-                NodeDependsOnFlags.SelectedIndex := 3;
-            end;
-        end;
-    end;
-
-    SetEventIndexes();
-end;}
 
 procedure TfrmMain.FirstTimeLaunch();// First launch?
 var iniName, aPath: string;
@@ -1509,6 +1451,108 @@ begin
     finally
         BinWriter.Free();
         mStream.Free();
+    end;
+end;
+
+procedure TfrmMain.PasteEventFromClipboard();
+var
+    hBuf: THandle;
+    BufPtr: Pointer;
+    mStream: TMemoryStream;
+    BinReader: TBinaryReader;
+    EventToPaste: string;
+    ItemIdx: Integer;
+begin
+    ItemIdx := ConEventList.ItemIndex;
+    if ItemIdx = -1 then ItemIdx := 0;
+
+    hBuf := Clipboard.GetAsHandle(CF_ConEditPlus);
+    if hBuf <> 0 then
+    begin
+        BufPtr := GlobalLock(hBuf);
+        if BufPtr <> nil then
+        begin
+            try
+                mStream := TMemoryStream.Create();
+                try
+                    mStream.WriteBuffer(bufPtr^, GlobalSize(hBuf));
+                    mStream.Position := 0;
+
+                    BinReader := TBinaryReader.Create(mStream, TEncoding.ANSI);
+                    EventToPaste := GetEventTypeInClipboard(BinReader, mStream);
+
+                    if EventToPaste = ET_Speech_Caption then
+                    begin
+                        var NewSpeech := TConEventSpeech.Create(); // Create new event
+
+                        BuildSpeech(BinReader, NewSpeech); // fill fields here (ConEditPlus.Clipboard.Helper.pas)
+
+                        if FindTableIdByName(TM_ActorsPawns, NewSpeech.ActorValue) = -1 then
+                        begin
+                            listPawnsActors.Add(NewSpeech.ActorValue);
+                            AddLog('Added ' + NewSpeech.ActorValue + ' to the table');
+                        end;
+
+                        if FindTableIdByName(TM_ActorsPawns, NewSpeech.ActorToValue) = -1 then
+                        begin
+                            listPawnsActors.Add(NewSpeech.ActorToValue);
+                            AddLog('Added ' + NewSpeech.ActorToValue + ' to the table');
+                        end;
+
+                        Insert(NewSpeech, CurrentConversation.Events, ItemIdx +1); // and finally we can add it to array!
+                        ConvoTreeChange(Self, ConvoTree.Selected); // reload events list
+                        ConEventList.ItemIndex := ItemIdx +1;
+
+                        AddLog('Added event from Clipboard:' + NewSpeech.ClassName);
+                    end;
+
+                    if EventToPaste = ET_Choice_Caption then
+                    begin
+                        var NewChoice := TConEventChoice.Create();
+
+                        BuildChoice(BinReader, NewChoice);
+
+                        Insert(NewChoice, CurrentConversation.Events, ItemIdx + 1);
+
+                        for var choiceItem in NewChoice.Choices do // Choice in Clipboard can contain flags and skills
+                        begin                                       // (skills? Really?), so add them to corresponding tables
+                            for var ReqFlag in ChoiceItem.RequiredFlags do
+                            begin
+                                if FindTableIdByName(TM_Flags, ReqFlag.flagName) = -1 then
+                                begin
+                                    listFlags.Add(ReqFlag.flagName);
+                                    AddLog('Added flag ' + ReqFlag.flagName + ' to the table');
+                                end;
+                            end;
+
+                            if choiceItem.bSkillNeeded <> -1 then
+                            begin
+                                if FindTableIdByName(TM_Skills, choiceItem.Skill) = -1 then
+                                begin
+                                    listSkills.Add(choiceItem.Skill);
+                                    AddLog('Added skill ' + choiceItem.Skill + ' to the table');
+                                end;
+                            end;
+                        end;
+
+                        ConvoTreeChange(Self, ConvoTree.Selected); // reload events list
+                        ConEventList.ItemIndex := ItemIdx +1;
+
+                        AddLog('Added event from Clipboard:' + NewChoice.ClassName);
+                    end;
+                finally
+                    mStream.Free();
+                    BinReader.Free();
+                end;
+            finally
+                GlobalUnlock(hBuf);
+            end;
+        end;
+    end
+    else
+    begin
+        PasteConvoEvent.Enabled := False; // Just in case...
+        Exit();
     end;
 end;
 
@@ -3190,98 +3234,8 @@ begin
 end;
 
 procedure TfrmMain.PasteConvoEventClick(Sender: TObject);
-var
-    hBuf: THandle;
-    BufPtr: Pointer;
-    mStream: TMemoryStream;
-    BinReader: TBinaryReader;
-    EventToPaste: string;
 begin
-    hBuf := Clipboard.GetAsHandle(CF_ConEditPlus);
-    if hBuf <> 0 then
-    begin
-        BufPtr := GlobalLock(hBuf);
-        if BufPtr <> nil then
-        begin
-            try
-                mStream := TMemoryStream.Create();
-                try
-                    mStream.WriteBuffer(bufPtr^, GlobalSize(hBuf));
-                    mStream.Position := 0;
-
-                    BinReader := TBinaryReader.Create(mStream, TEncoding.ANSI);
-
-                    if ReadContentHeader(BinReader, mStream) = ET_Speech_Caption then
-                        EventToPaste := ET_Speech_Caption
-                    else if ReadContentHeader(BinReader, mStream) = ET_Choice_Caption then
-                        EventToPaste := ET_Choice_Caption
-                    else if ReadContentHeader(BinReader, mStream) = ET_SetFlag_Caption then
-                        EventToPaste := ET_SetFlag_Caption
-                    else if ReadContentHeader(BinReader, mStream) = ET_CheckFlag_Caption then
-                        EventToPaste := ET_CheckFlag_Caption
-                    else if ReadContentHeader(BinReader, mStream) = ET_CheckObject_Caption then
-                        EventToPaste := ET_CheckObject_Caption
-                    else if ReadContentHeader(BinReader, mStream) = ET_TransferObject_Caption then
-                        EventToPaste := ET_TransferObject_Caption
-                    else if ReadContentHeader(BinReader, mStream) = ET_MoveCamera_Caption then
-                        EventToPaste := ET_MoveCamera_Caption
-                    else if ReadContentHeader(BinReader, mStream) = ET_Animation_Caption then
-                        EventToPaste := ET_Animation_Caption
-                    else if ReadContentHeader(BinReader, mStream) = ET_Trade_Caption then
-                        EventToPaste := ET_Trade_Caption
-                    else if ReadContentHeader(BinReader, mStream) = ET_Jump_Caption then
-                        EventToPaste := ET_Jump_Caption
-                    else if ReadContentHeader(BinReader, mStream) = ET_Random_Caption then
-                        EventToPaste := ET_Random_Caption
-                    else if ReadContentHeader(BinReader, mStream) = ET_Trigger_Caption then
-                        EventToPaste := ET_Trigger_Caption
-                    else if ReadContentHeader(BinReader, mStream) = ET_AddGoal_Caption then
-                        EventToPaste := ET_AddGoal_Caption
-                    else if ReadContentHeader(BinReader, mStream) = ET_AddNote_Caption then
-                        EventToPaste := ET_AddNote_Caption
-                    else if ReadContentHeader(BinReader, mStream) = ET_AddSkillPoints_Caption then
-                        EventToPaste := ET_AddSkillPoints_Caption
-                    else if ReadContentHeader(BinReader, mStream) = ET_AddCredits_Caption then
-                        EventToPaste := ET_AddCredits_Caption
-                    else if ReadContentHeader(BinReader, mStream) = ET_CheckPersona_Caption then
-                        EventToPaste := ET_CheckPersona_Caption
-                    else if ReadContentHeader(BinReader, mStream) = ET_Comment_Caption then
-                        EventToPaste := ET_Comment_Caption
-                    else if ReadContentHeader(BinReader, mStream) = ET_End_Caption then
-                        EventToPaste := ET_Comment_Caption;
-
-                    if EventToPaste = ET_Speech_Caption then
-                    begin
-                        var NewSpeech := TConEventSpeech.Create(); // Create new event
-
-                        BuildSpeech(BinReader, NewSpeech); // fill fields here
-
-                        if FindTableIdByName(TM_ActorsPawns, NewSpeech.ActorValue) = -1 then
-                            listPawnsActors.Add(NewSpeech.ActorValue);
-                            //ShowMessage('Such ActorValue not found!');
-
-                        if FindTableIdByName(TM_ActorsPawns, NewSpeech.ActorToValue) = -1 then
-                            listPawnsActors.Add(NewSpeech.ActorToValue);
-                            //ShowMessage('Such ActorToValue not found!');
-
-
-                        ShowMessage('Label:' + NewSpeech.EventLabel);
-                    end;
-
-
-
-
-                finally
-                    mStream.Free();
-                    BinReader.Free();
-                end;
-            finally
-                GlobalUnlock(hBuf);
-            end;
-        end;
-    end;
-
-    ShowMessage('About to paste event from Clipboard: ' + EventToPaste);
+    PasteEventFromClipboard();
 end;
 
 procedure TfrmMain.PickTableObject(newTableMode: TTableMode; control: TControl);

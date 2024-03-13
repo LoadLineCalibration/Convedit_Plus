@@ -294,7 +294,7 @@ object frmMain: TfrmMain
     end
     object btnCloseLog: TButton
       Left = 694
-      Top = 419
+      Top = 410
       Width = 20
       Height = 20
       Hint = 'Close Log'
@@ -314,7 +314,7 @@ object frmMain: TfrmMain
       Visible = False
       StyleName = 'Windows'
       OnClick = ViewoutputTMemo1Click
-      ExplicitTop = 422
+      ExplicitTop = 413
     end
   end
   object mainToolBar: TToolBar
@@ -1047,6 +1047,7 @@ object frmMain: TfrmMain
     object PasteConvoEvent: TMenuItem
       Caption = 'Paste'
       ImageIndex = 2
+      OnClick = PasteConvoEventClick
     end
     object N5: TMenuItem
       Caption = '-'
