@@ -41,7 +41,8 @@ Screenshot of main window with loaded conversations file:
 
 Search:
 
-![изображение](https://github.com/LoadLineCalibration/Convedit_Plus/assets/44388228/5d6405d6-fcf6-4249-b6f3-c3d881c8d153)
+![изображение](https://github.com/LoadLineCalibration/Convedit_Plus/assets/44388228/2591cb79-8e34-46fe-9bba-259d3579c246)
+
 
 Label verification:
 
