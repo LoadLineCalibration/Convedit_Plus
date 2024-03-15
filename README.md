@@ -13,7 +13,7 @@ what is __NOT__ implemented yet:
   
 Also some bugs here and there. 
 
---
+___
 
 * Uses FreeEsVCLComponents: https://github.com/errorcalc/FreeEsVclComponents
 * Uses Xml.VerySimple: https://github.com/Dennis1000/verysimplexml
