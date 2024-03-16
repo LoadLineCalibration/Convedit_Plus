@@ -140,6 +140,7 @@ object frmMain: TfrmMain
       TabOrder = 0
       StyleName = 'Windows'
       OnChange = ConvoTreeChange
+      OnDblClick = ConvoTreeDblClick
       OnEdited = ConvoTreeEdited
       OnEditing = ConvoTreeEditing
       ExplicitHeight = 591
@@ -294,7 +295,7 @@ object frmMain: TfrmMain
     end
     object btnCloseLog: TButton
       Left = 694
-      Top = 410
+      Top = 392
       Width = 20
       Height = 20
       Hint = 'Close Log'
@@ -314,7 +315,7 @@ object frmMain: TfrmMain
       Visible = False
       StyleName = 'Windows'
       OnClick = ViewoutputTMemo1Click
-      ExplicitTop = 413
+      ExplicitTop = 395
     end
   end
   object mainToolBar: TToolBar

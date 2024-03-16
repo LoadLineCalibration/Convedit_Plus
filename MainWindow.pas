@@ -227,10 +227,10 @@ type
 
     function CountLineWraps(str: string): Integer;
 
-    function GetFlagsSize(events: array of TConEvent): Integer;
-    function GetChkFlagsSize(events: array of TConEvent): Integer;
+    function GetSetFlagsItemHeight(events: array of TConEvent): Integer;
+    function GetCheckFlagsItemHeight(events: array of TConEvent): Integer;
     function GetSpeechEventItemHeight(events: array of TConEvent): Integer;
-    function GetNumChoiceLines(events: array of TConEvent): Integer;
+    function GetChoiceItemHeight(events: array of TConEvent): Integer;
     function GetRandomEventItemHeight(events: array of TConEvent): Integer;
 
     function GetAddGoalItemHeight(events: array of TConEvent): Integer;
@@ -434,6 +434,7 @@ type
     procedure Event_CutExecute(Sender: TObject);
     procedure Event_CopyExecute(Sender: TObject);
     procedure Event_PasteExecute(Sender: TObject);
+    procedure ConvoTreeDblClick(Sender: TObject);
   private
     { Private declarations }
     procedure WMEnterSizeMove(var Msg: TMessage); message WM_ENTERSIZEMOVE;
@@ -527,7 +528,7 @@ begin
     inherited;
 end;
 
-function TfrmMain.GetFlagsSize(events: array of TConEvent): Integer;
+function TfrmMain.GetSetFlagsItemHeight(events: array of TConEvent): Integer;
 begin
     var aLength, dResult: Integer;
 
@@ -546,7 +547,7 @@ begin
     Result := dResult;
 end;
 
-function TfrmMain.GetChkFlagsSize(events: array of TConEvent): Integer;
+function TfrmMain.GetCheckFlagsItemHeight(events: array of TConEvent): Integer;
 begin
     var aLength, dResult: Integer;
 
@@ -565,7 +566,7 @@ begin
     Result := dResult;
 end;
 
-function TfrmMain.GetNumChoiceLines(events: array of TConEvent): Integer;
+function TfrmMain.GetChoiceItemHeight(events: array of TConEvent): Integer;
 begin
     var dResult: Integer;
     var fLength := 0;
@@ -1485,18 +1486,22 @@ begin
                         if FindTableIdByName(TM_ActorsPawns, NewSpeech.ActorValue) = -1 then
                         begin
                             listPawnsActors.Add(NewSpeech.ActorValue);
+                            NewSpeech.ActorIndex := FindTableIdByName(TM_ActorsPawns,NewSpeech.ActorValue); // set id from table
                             AddLog('Added ' + NewSpeech.ActorValue + ' to the table');
                         end;
 
                         if FindTableIdByName(TM_ActorsPawns, NewSpeech.ActorToValue) = -1 then
                         begin
                             listPawnsActors.Add(NewSpeech.ActorToValue);
+                            NewSpeech.ActorToIndex := FindTableIdByName(TM_ActorsPawns,NewSpeech.ActorToValue); // set id from table
                             AddLog('Added ' + NewSpeech.ActorToValue + ' to the table');
                         end;
 
-                        Insert(NewSpeech, CurrentConversation.Events, ItemIdx +1); // and finally we can add it to array!
-                        ConvoTreeChange(Self, ConvoTree.Selected); // reload events list
-                        ConEventList.ItemIndex := ItemIdx +1;
+                        Insert(NewSpeech, CurrentConversation.Events, ItemIdx); // and finally we can add it to array!
+
+                        var ListItemHeight := GetSpeechEventItemHeight([NewSpeech]);
+                        var HeightStr := '=' + ListItemHeight.ToString();
+                        ConEventList.Items.InsertObject(ItemIdx, ET_Speech_Caption+HeightStr, NewSpeech);
 
                         AddLog('Added event from Clipboard:' + NewSpeech.ClassName);
                     end;
@@ -1507,16 +1512,17 @@ begin
 
                         BuildChoice(BinReader, NewChoice);
 
-                        Insert(NewChoice, CurrentConversation.Events, ItemIdx + 1);
-
                         for var choiceItem in NewChoice.Choices do // Choice in Clipboard can contain flags and skills
                         begin                                       // (skills? Really?), so add them to corresponding tables
-                            for var ReqFlag in ChoiceItem.RequiredFlags do
+                            for var i := 0 to High(choiceItem.RequiredFlags) do
                             begin
-                                if FindTableIdByName(TM_Flags, ReqFlag.flagName) = -1 then
+                                if FindTableIdByName(TM_Flags, choiceItem.RequiredFlags[i].flagName) = -1 then
                                 begin
-                                    listFlags.Add(ReqFlag.flagName);
-                                    AddLog('Added flag ' + ReqFlag.flagName + ' to the table');
+                                    var flag := choiceItem.RequiredFlags[i];
+
+                                    listFlags.Add(flag.flagName);
+                                    flag.flagIndex := FindTableIdByName(TM_Flags, flag.flagName);
+                                    AddLog('Added flag ' + flag.flagName + ' to the table');
                                 end;
                             end;
 
@@ -1525,16 +1531,290 @@ begin
                                 if FindTableIdByName(TM_Skills, choiceItem.Skill) = -1 then
                                 begin
                                     listSkills.Add(choiceItem.Skill);
+                                    choiceItem.bSkillNeeded := FindTableIdByName(TM_Skills, choiceItem.Skill); // set id from table
                                     AddLog('Added skill ' + choiceItem.Skill + ' to the table');
                                 end;
                             end;
                         end;
 
-                        ConvoTreeChange(Self, ConvoTree.Selected); // reload events list
-                        ConEventList.ItemIndex := ItemIdx +1;
+                        Insert(NewChoice, CurrentConversation.Events, ItemIdx);
+
+                        var ListItemHeight := GetChoiceItemHeight([NewChoice]);
+                        var HeightStr := '=' + ListItemHeight.ToString();
+                        ConEventList.Items.InsertObject(ItemIdx, ET_Choice_Caption+HeightStr, NewChoice);
 
                         AddLog('Added event from Clipboard:' + NewChoice.ClassName);
                     end;
+
+                    if EventToPaste = ET_SetFlag_Caption then
+                    begin
+                        var NewSetFlag := TConEventSetFlag.Create();
+
+                        BuildSetFlag(BinReader, NewSetFlag);
+
+                        //for var Flag in NewSetFlag.SetFlags do
+                        for var i:= 0 to High(NewSetFlag.SetFlags) do
+                        begin
+                            if FindTableIdByName(TM_Flags, NewSetFlag.SetFlags[i].flagName) = -1 then
+                            begin
+                                var flag := NewSetFlag.SetFlags[i];
+
+                                listFlags.Add(flag.flagName);
+                                flag.flagIndex := FindTableIdByName(TM_Flags, flag.flagName); // set id from table
+                                AddLog('Added flag ' + flag.flagName + ' to the table');
+                            end;
+                        end;
+
+                        Insert(NewSetFlag, CurrentConversation.Events, ItemIdx);
+
+                        var ListItemHeight := GetSetFlagsItemHeight([NewSetFlag]);
+                        var HeightStr := '=' + ListItemHeight.ToString();
+                        ConEventList.Items.InsertObject(ItemIdx, ET_SetFlag_Caption+HeightStr, NewSetFlag);
+
+                        AddLog('Added event from Clipboard:' + NewSetFlag.ClassName);
+                    end;
+
+                    if EventToPaste = ET_CheckFlag_Caption then
+                    begin
+                        var NewCheckFlag := TConEventCheckFlag.Create();
+
+                        BuildCheckFlag(BinReader, NewCheckFlag);
+
+                        for var i:= 0 to High(NewCheckFlag.FlagsToCheck) do
+                        begin
+                            if FindTableIdByName(TM_Flags, NewCheckFlag.FlagsToCheck[i].flagName) = -1 then
+                            begin
+                                var flag := NewCheckFlag.FlagsToCheck[i];
+
+                                listFlags.Add(Flag.flagName);
+                                flag.flagIndex := FindTableIdByName(TM_Flags, flag.flagName); // set id from table
+                                AddLog('Added flag ' + Flag.flagName + ' to the table');
+                            end;
+                        end;
+
+                        Insert(NewCheckFlag, CurrentConversation.Events, ItemIdx);
+
+                        var ListItemHeight := GetCheckFlagsItemHeight([NewCheckFlag]);
+                        var HeightStr := '=' + ListItemHeight.ToString();
+                        ConEventList.Items.InsertObject(ItemIdx, ET_CheckFlag_Caption+HeightStr, NewCheckFlag);
+
+                        AddLog('Added event from Clipboard:' + NewCheckFlag.ClassName);
+                    end;
+
+                    if EventToPaste = ET_CheckObject_Caption then
+                    begin
+                        var NewCheckObj := TConEventCheckObject.Create();
+
+                        BuildCheckObject(BinReader, NewCheckObj);
+
+                        if FindTableIdByName(TM_Objects, NewCheckObj.ObjectValue) = -1 then
+                        begin
+                            listObjects.Add(NewCheckObj.ObjectValue);
+                            NewCheckObj.ObjectIndex := FindTableIdByName(TM_Objects, NewCheckObj.ObjectValue); // set id from table
+                            AddLog('Added Object ' + NewCheckObj.ObjectValue + ' to the table');
+                        end;
+
+                        // set new id from table
+                        NewCheckObj.ObjectIndex := FindTableIdByName(TM_Objects, NewCheckObj.ObjectValue);
+
+                        Insert(NewCheckObj, CurrentConversation.Events, ItemIdx);
+                        ConEventList.Items.InsertObject(ItemIdx, ET_CheckObject_Caption, NewCheckObj);
+
+                        AddLog('Added event from Clipboard:' + NewCheckObj.ClassName);
+                    end;
+
+                    if EventToPaste = ET_TransferObject_Caption then
+                    begin
+                        var NewTransObject := TConEventTransferObject.Create();
+
+                        BuildTransferObject(BinReader, NewTransObject);
+
+                        if FindTableIdByName(TM_Objects, NewTransObject.ObjectValue) = -1 then
+                        begin
+                            listObjects.Add(NewTransObject.ObjectValue);
+                            NewTransObject.ObjectIndex := FindTableIdByName(TM_Objects, NewTransObject.ObjectValue); // set id from table
+                            AddLog('Added Object ' + NewTransObject.ObjectValue + ' to the table');
+                        end;
+
+                        if FindTableIdByName(TM_ActorsPawns, NewTransObject.ActorFromValue) = -1 then
+                        begin
+                            listPawnsActors.Add(NewTransObject.ActorFromValue);
+                            NewTransObject.ActorFromIndex := FindTableIdByName(TM_ActorsPawns, NewTransObject.ActorFromValue); // set id from table
+                            AddLog('Added Actor/Pawn ' + NewTransObject.ActorFromValue + ' to the table');
+                        end;
+
+                        if FindTableIdByName(TM_ActorsPawns, NewTransObject.ActorToValue) = -1 then
+                        begin
+                            listPawnsActors.Add(NewTransObject.ActorToValue);
+                            NewTransObject.ActorToIndex := FindTableIdByName(TM_ActorsPawns, NewTransObject.ActorToValue); // set id from table
+                            AddLog('Added Actor/Pawn ' + NewTransObject.ActorToValue + ' to the table');
+                        end;
+
+                        Insert(NewTransObject, CurrentConversation.Events, ItemIdx);
+                        ConEventList.Items.InsertObject(ItemIdx, ET_TransferObject_Caption, NewTransObject);
+
+                        AddLog('Added event from Clipboard:' + NewTransObject.ClassName);
+                    end;
+
+                    if EventToPaste = ET_MoveCamera_Caption then
+                    begin
+                        var NewMoveCam := TConEventMoveCamera.Create();
+
+                        BuildMoveCamera(BinReader, NewMoveCam);
+
+                        Insert(NewMoveCam, CurrentConversation.Events, ItemIdx);
+                        ConEventList.Items.InsertObject(ItemIdx, ET_MoveCamera_Caption, NewMoveCam);
+                    end;
+
+                    if EventToPaste = ET_Animation_Caption then
+                    begin
+                        var NewAnim := TConEventAnimation.Create();
+
+                        BuildAnimation(BinReader, NewAnim);
+
+                        if FindTableIdByName(TM_ActorsPawns, NewAnim.ActorValue) = -1 then
+                        begin
+                            listPawnsActors.Add(NewAnim.ActorValue);
+                            NewAnim.ActorIndex := FindTableIdByName(TM_ActorsPawns, NewAnim.ActorValue); // set id from table
+                            AddLog('Added Actor/Pawn ' + NewAnim.ActorValue + ' to the table');
+                        end;
+
+                        Insert(NewAnim, CurrentConversation.Events, ItemIdx);
+                        ConEventList.Items.InsertObject(ItemIdx, ET_Animation_Caption, NewAnim);
+                    end;
+
+                    if EventToPaste = ET_Trade_Caption then
+                    begin
+                        var NewTrade := TConEventTrade.Create();
+
+                        BuildTrade(BinReader, NewTrade);
+
+                        if FindTableIdByName(TM_ActorsPawns, NewTrade.TradeActorValue) = -1 then
+                        begin
+                            listPawnsActors.Add(NewTrade.TradeActorValue);
+                            NewTrade.TradeActorIndex := FindTableIdByName(TM_ActorsPawns, NewTrade.TradeActorValue); // set id from table
+                            AddLog('Added Actor/Pawn ' + NewTrade.TradeActorValue + ' to the table');
+                        end;
+
+                        Insert(NewTrade, CurrentConversation.Events, ItemIdx);
+                        ConEventList.Items.InsertObject(ItemIdx, ET_Trade_Caption, NewTrade);
+                    end;
+
+                    if EventToPaste = ET_Jump_Caption then
+                    begin
+                        var NewJump := TConEventJump.Create();
+
+                        BuildJump(BinReader, NewJump);
+
+                        Insert(NewJump, CurrentConversation.Events, ItemIdx);
+                        ConEventList.Items.InsertObject(ItemIdx, ET_Jump_Caption, NewJump);
+                    end;
+
+                    if EventToPaste = ET_Random_Caption then
+                    begin
+                        var NewRandom := TConEventRandom.Create();
+
+                        BuildRandom(BinReader, NewRandom);
+
+                        Insert(NewRandom, CurrentConversation.Events, ItemIdx);
+
+                        var ListItemHeight := GetRandomEventItemHeight([NewRandom]);
+                        var HeightStr := '=' + ListItemHeight.ToString();
+                        ConEventList.Items.InsertObject(ItemIdx, ET_Random_Caption+HeightStr, NewRandom);
+                    end;
+
+                    if EventToPaste = ET_Trigger_Caption then
+                    begin
+                        var NewTrigger := TConEventTrigger.Create();
+
+                        BuildTrigger(BinReader, NewTrigger);
+
+                        Insert(NewTrigger, CurrentConversation.Events, ItemIdx);
+                        ConEventList.Items.InsertObject(ItemIdx, ET_Trigger_Caption, NewTrigger);
+                    end;
+
+                    if EventToPaste = ET_AddGoal_Caption then
+                    begin
+                        var NewAddGoal := TConEventAddGoal.Create();
+
+                        BuildAddGoal(BinReader, NewAddGoal);
+
+                        Insert(NewAddGoal, CurrentConversation.Events, ItemIdx);
+
+                        var ListItemHeight := GetAddGoalItemHeight([NewAddGoal]);
+                        var HeightStr := '=' + ListItemHeight.ToString();
+                        ConEventList.Items.InsertObject(ItemIdx, ET_AddGoal_Caption+HeightStr, NewAddGoal);
+                    end;
+
+                    if EventToPaste = ET_AddNote_Caption then
+                    begin
+                        var NewAddNote := TConEventAddNote.Create();
+
+                        BuildAddNote(BinReader, NewAddNote);
+
+                        Insert(NewAddNote, CurrentConversation.Events, ItemIdx);
+
+                        var ListItemHeight := GetAddNoteItemHeight([NewAddNote]);
+                        var HeightStr := '=' + ListItemHeight.ToString();
+                        ConEventList.Items.InsertObject(ItemIdx, ET_AddNote_Caption+HeightStr, NewAddNote);
+                    end;
+
+                    if EventToPaste = ET_AddSkillPoints_Caption then
+                    begin
+                        var NewAddSkillPts := TConEventAddSkillPoints.Create();
+
+                        BuildAddSkillPts(BinReader, NewAddSkillPts);
+
+                        Insert(NewAddSkillPts, CurrentConversation.Events, ItemIdx);
+
+                        var ListItemHeight := GetAddSkillPtsItemHeight([NewAddSkillPts]);
+                        var HeightStr := '=' + ListItemHeight.ToString();
+                        ConEventList.Items.InsertObject(ItemIdx, ET_AddSkillPoints_Caption+HeightStr, NewAddSkillPts);
+                    end;
+
+                    if EventToPaste = ET_AddCredits_Caption then
+                    begin
+                        var NewAddCredits := TConEventAddCredits.Create();
+
+                        BuildAddCredits(BinReader, NewAddCredits);
+
+                        Insert(NewAddCredits, CurrentConversation.Events, ItemIdx);
+                        ConEventList.Items.InsertObject(ItemIdx, ET_AddCredits_Caption, NewAddCredits);
+                    end;
+
+                    if EventToPaste = ET_CheckPersona_Caption then
+                    begin
+                        var NewCheckPersona := TConEventCheckPersona.Create();
+
+                        BuildCheckPersona(BinReader, NewCheckPersona);
+
+                        Insert(NewCheckPersona, CurrentConversation.Events, ItemIdx);
+                        ConEventList.Items.InsertObject(ItemIdx, ET_CheckPersona_Caption, NewCheckPersona);
+                    end;
+
+                    if EventToPaste = ET_Comment_Caption then
+                    begin
+                        var NewComment := TConEventComment.Create();
+
+                        BuildComment(BinReader, NewComment);
+
+                        Insert(NewComment, CurrentConversation.Events, ItemIdx);
+
+                        var ListItemHeight := GetCommentItemHeight([NewComment]);
+                        var HeightStr := '=' + ListItemHeight.ToString();
+                        ConEventList.Items.InsertObject(ItemIdx, ET_Comment_Caption+HeightStr, NewComment);
+                    end;
+
+                    if EventToPaste = ET_End_Caption then
+                    begin
+                        var NewEnd := TConEventEnd.Create();
+
+                        BuildEnd(BinReader, NewEnd);
+
+                        Insert(NewEnd, CurrentConversation.Events, ItemIdx);
+                        ConEventList.Items.InsertObject(ItemIdx, ET_End_Caption, NewEnd);
+                    end;
+
                 finally
                     mStream.Free();
                     BinReader.Free();
@@ -1542,6 +1822,7 @@ begin
             finally
                 GlobalUnlock(hBuf);
             end;
+            UpdateEventListHeights();
         end;
     end
     else
@@ -3425,7 +3706,7 @@ begin
     if TConEvent(ConEventList.Items.Objects[ConEventList.ItemIndex]) <> nil then
        CurrentEvent := TConEvent(ConEventList.Items.Objects[ConEventList.ItemIndex]);
 
-    objStr:= '  EventType = ' + CurrentEvent.ClassName;
+    objStr:= ' EventType = ' + CurrentEvent.ClassName;
 
     Statusbar.Panels[0].Text := 'ItemIndex=' + ConEventList.ItemIndex.ToString + objStr +
     ' Value=' + ConEventList.Items.ValueFromIndex[ConEventList.ItemIndex];
@@ -3528,25 +3809,25 @@ begin
         // But I will implement that feature differently...
         with ConEventList do
         begin
-            if Items[Index].Contains(ET_Speech_Caption) then    DrawET_Speech(Control, Index, Rect, State) else
-            if Items[Index].Contains(ET_Choice_Caption) then    DrawET_Choice(Control, Index, Rect, State) else
-            if Items[Index].Contains(ET_SetFlag_Caption) then   DrawET_SetFlag(Control, Index, Rect, State) else
-            if Items[Index].Contains(ET_CheckFlag_Caption) then DrawET_CheckFlag(Control, Index, Rect, State) else
-            if Items[Index] = ET_CheckObject_Caption then       DrawET_CheckObject(Control, Index, Rect, State) else
-            if Items[Index] = ET_TransferObject_Caption then    DrawET_TransferObject(Control, Index, Rect, State) else
-            if Items[Index] = ET_MoveCamera_Caption then        DrawET_MoveCamera(Control, Index, Rect, State) else
-            if Items[Index] = ET_Animation_Caption then         DrawET_Animation(Control, Index, Rect, State) else
-            if Items[Index] = ET_Trade_Caption then             DrawET_Trade(Control, Index, Rect, State) else
-            if Items[Index] = ET_Jump_Caption then              DrawET_Jump(Control, Index, Rect, State) else
-            if Items[Index].Contains(ET_Random_Caption) then    DrawET_Random(Control, Index, Rect, State) else
-            if Items[Index] = ET_Trigger_Caption then           DrawET_Trigger(Control, Index, Rect, State) else
-            if Items[Index] = ET_AddGoal_Caption then           DrawET_AddGoal(Control, Index, Rect, State) else
-            if Items[Index] = ET_AddNote_Caption then           DrawET_AddNote(Control, Index, Rect, State) else
-            if Items[Index] = ET_AddSkillPoints_Caption then    DrawET_AddSkillPoints(Control, Index, Rect, State) else
-            if Items[Index] = ET_AddCredits_Caption then        DrawET_AddCredits(Control, Index, Rect, State) else
-            if Items[Index] = ET_CheckPersona_Caption then      DrawET_CheckPersona(Control, Index, Rect, State) else
-            if Items[Index] = ET_Comment_Caption then           DrawET_Comment(Control, Index, Rect, State) else
-            if Items[Index] = ET_End_Caption then               DrawET_End(Control, Index, Rect, State);
+            if Items[Index].Contains(ET_Speech_Caption) then          DrawET_Speech(Control, Index, Rect, State) else
+            if Items[Index].Contains(ET_Choice_Caption) then          DrawET_Choice(Control, Index, Rect, State) else
+            if Items[Index].Contains(ET_SetFlag_Caption) then         DrawET_SetFlag(Control, Index, Rect, State) else
+            if Items[Index].Contains(ET_CheckFlag_Caption) then       DrawET_CheckFlag(Control, Index, Rect, State) else
+            if Items[Index] = ET_CheckObject_Caption then             DrawET_CheckObject(Control, Index, Rect, State) else
+            if Items[Index] = ET_TransferObject_Caption then          DrawET_TransferObject(Control, Index, Rect, State) else
+            if Items[Index] = ET_MoveCamera_Caption then              DrawET_MoveCamera(Control, Index, Rect, State) else
+            if Items[Index] = ET_Animation_Caption then               DrawET_Animation(Control, Index, Rect, State) else
+            if Items[Index] = ET_Trade_Caption then                   DrawET_Trade(Control, Index, Rect, State) else
+            if Items[Index] = ET_Jump_Caption then                    DrawET_Jump(Control, Index, Rect, State) else
+            if Items[Index].Contains(ET_Random_Caption) then          DrawET_Random(Control, Index, Rect, State) else
+            if Items[Index] = ET_Trigger_Caption then                 DrawET_Trigger(Control, Index, Rect, State) else
+            if Items[Index].Contains(ET_AddGoal_Caption) then         DrawET_AddGoal(Control, Index, Rect, State) else
+            if Items[Index].Contains(ET_AddNote_Caption) then         DrawET_AddNote(Control, Index, Rect, State) else
+            if Items[Index].Contains(ET_AddSkillPoints_Caption) then  DrawET_AddSkillPoints(Control, Index, Rect, State) else
+            if Items[Index] = ET_AddCredits_Caption then              DrawET_AddCredits(Control, Index, Rect, State) else
+            if Items[Index] = ET_CheckPersona_Caption then            DrawET_CheckPersona(Control, Index, Rect, State) else
+            if Items[Index].Contains(ET_Comment_Caption) then         DrawET_Comment(Control, Index, Rect, State) else
+            if Items[Index] = ET_End_Caption then                     DrawET_End(Control, Index, Rect, State);
         end;
 
         HighlightSelectedEvent(Control, Index, Rect, State);
@@ -3590,16 +3871,16 @@ end;
 
 procedure TfrmMain.ConEventListMeasureItem(Control: TWinControl; Index: Integer; var Height: Integer);
 begin
-    if ConEventList.Items[Index].Contains(ET_Speech_Caption) then
+    if ConEventList.Items[Index].Contains(ET_Speech_Caption) = True then
        Height := ConEventList.Items.ValueFromIndex[Index].ToInteger;
 
-    if ConEventList.Items[Index].Contains(ET_Choice_Caption) then
+    if ConEventList.Items[Index].Contains(ET_Choice_Caption) = True then
         Height := ConEventList.Items.ValueFromIndex[Index].ToInteger;
 
     if ConEventList.Items[Index].Contains(ET_SetFlag_Caption) = true then
         Height := ConEventList.Items.ValueFromIndex[Index].ToInteger;
 
-    if ConEventList.Items[Index].Contains(ET_CheckFlag_Caption) = true then
+    if ConEventList.Items[Index].Contains(ET_CheckFlag_Caption) = True then
         Height := ConEventList.Items.ValueFromIndex[Index].ToInteger;
 
     if ConEventList.Items[Index] = ET_CheckObject_Caption then Height := 25; // fixed
@@ -3609,20 +3890,29 @@ begin
     if ConEventList.Items[Index] = ET_Trade_Caption then Height := 44;  // fixed, also not implemented
     if ConEventList.Items[Index] = ET_Jump_Caption then Height := 50; // fixed
 
-    if ConEventList.Items[Index].Contains(ET_Random_Caption) then
-       Height := ConEventList.Items.ValueFromIndex[Index].ToInteger; // variable
+    if ConEventList.Items[Index].Contains(ET_Random_Caption) = True then
+        Height := ConEventList.Items.ValueFromIndex[Index].ToInteger; // variable
 
     if ConEventList.Items[Index] = ET_Trigger_Caption then Height := 42;  // fixed
 
-    if ConEventList.Items[Index] = ET_AddGoal_Caption then Height := 75;  // variable
-    if ConEventList.Items[Index] = ET_AddNote_Caption  then Height := 40;  // variable
+    //if ConEventList.Items[Index] = ET_AddGoal_Caption then Height := 75;  // variable
+    if ConEventList.Items[Index].Contains(ET_AddGoal_Caption) = True then
+        Height := ConEventList.Items.ValueFromIndex[Index].ToInteger; // variable
 
-    if ConEventList.Items[Index] = ET_AddSkillPoints_Caption then Height := 58;  // variable
+    //if ConEventList.Items[Index] = ET_AddNote_Caption then Height := 40;  // variable
+    if ConEventList.Items[Index].Contains(ET_AddNote_Caption) = True then
+        Height := ConEventList.Items.ValueFromIndex[Index].ToInteger; // variable
+
+    //if ConEventList.Items[Index] = ET_AddSkillPoints_Caption then Height := 58;  // variable
+    if ConEventList.Items[Index].Contains(ET_AddSkillPoints_Caption) then
+        Height := ConEventList.Items.ValueFromIndex[Index].ToInteger; // variable
 
     if ConEventList.Items[Index] = ET_AddCredits_Caption then Height := 44;  // fixed
     if ConEventList.Items[Index] = ET_CheckPersona_Caption then Height := 42;  // fixed
 
-    if ConEventList.Items[Index] = ET_Comment_Caption then Height := 40; // variable
+    //if ConEventList.Items[Index] = ET_Comment_Caption then Height := 40; // variable
+    if ConEventList.Items[Index].Contains(ET_Comment_Caption) then
+        Height := ConEventList.Items.ValueFromIndex[Index].ToInteger; // variable
 
     if ConEventList.Items[Index] = ET_End_Caption then Height := 25; // fixed
 end;
@@ -3765,13 +4055,13 @@ begin
                 ET_Speech: ConEventList.Items.AddPair(ET_Speech_Caption, GetSpeechEventItemHeight(CurrentConversation.Events[F]).ToString,
                                                       CurrentConversation.Events[F]);
 
-                ET_Choice: ConEventList.Items.AddPair(ET_Choice_Caption, GetNumChoiceLines(CurrentConversation.Events[F]).ToString,
+                ET_Choice: ConEventList.Items.AddPair(ET_Choice_Caption, GetChoiceItemHeight(CurrentConversation.Events[F]).ToString,
                                                       CurrentConversation.Events[F]);
 
-                ET_SetFlag: ConEventList.Items.AddPair(ET_SetFlag_Caption,GetFlagsSize(CurrentConversation.Events[F]).ToString,
+                ET_SetFlag: ConEventList.Items.AddPair(ET_SetFlag_Caption,GetSetFlagsItemHeight(CurrentConversation.Events[F]).ToString,
                                                        CurrentConversation.Events[F]);
 
-                ET_CheckFlag: ConEventList.Items.AddPair(ET_CheckFlag_Caption,GetChkFlagsSize(CurrentConversation.Events[F]).ToString,
+                ET_CheckFlag: ConEventList.Items.AddPair(ET_CheckFlag_Caption,GetCheckFlagsItemHeight(CurrentConversation.Events[F]).ToString,
                                                          CurrentConversation.Events[F]);
 
                 ET_CheckObject: ConEventList.Items.AddObject(ET_CheckObject_Caption, CurrentConversation.Events[F]);
@@ -3786,14 +4076,21 @@ begin
 
                 ET_Trigger: ConEventList.Items.AddObject(ET_Trigger_Caption, CurrentConversation.Events[F]);
 
-                ET_AddGoal: ConEventList.Items.AddObject(ET_AddGoal_Caption, CurrentConversation.Events[F]);
-                ET_AddNote: ConEventList.Items.AddObject(ET_AddNote_Caption, CurrentConversation.Events[F]);
-                ET_AddSkillPoints: ConEventList.Items.AddObject(ET_AddSkillPoints_Caption, CurrentConversation.Events[F]);
+                //ET_AddGoal: ConEventList.Items.AddObject(ET_AddGoal_Caption, CurrentConversation.Events[F]);
+                ET_AddGoal: ConEventList.Items.AddPair(ET_AddGoal_Caption, GetAddGoalItemHeight([CurrentConversation.Events[F]]).ToString,
+                                                       CurrentConversation.Events[F]);
+
+                ET_AddNote: ConEventList.Items.AddPair(ET_AddNote_Caption, GetAddNoteItemHeight([CurrentConversation.Events[F]]).ToString,
+                                                       CurrentConversation.Events[F]);
+
+                ET_AddSkillPoints: ConEventList.Items.AddPair(ET_AddSkillPoints_Caption, GetAddSkillPtsItemHeight([CurrentConversation.Events[F]]).ToString,
+                                                              CurrentConversation.Events[F]);
 
                 ET_AddCredits: ConEventList.Items.AddObject(ET_AddCredits_Caption, CurrentConversation.Events[F]);
                 ET_CheckPersona: ConEventList.Items.AddObject(ET_CheckPersona_Caption, CurrentConversation.Events[F]);
 
-                ET_Comment: ConEventList.Items.AddObject(ET_Comment_Caption, CurrentConversation.Events[F]);
+                ET_Comment: ConEventList.Items.AddPair(ET_Comment_Caption, GetCommentItemHeight([CurrentConversation.Events[F]]).ToString,
+                                                       CurrentConversation.Events[F]);
 
                 ET_End: ConEventList.Items.AddObject(ET_End_Caption, CurrentConversation.Events[F]);
             end;
@@ -3802,6 +4099,11 @@ begin
         FormResize(self);
         UnhighlightRelatedEvents();
     end;
+end;
+
+procedure TfrmMain.ConvoTreeDblClick(Sender: TObject);
+begin
+    // todo: toggle flag value here!
 end;
 
 procedure TfrmMain.ConvoTreeEdited(Sender: TObject; Node: TTreeNode; var S: string);
