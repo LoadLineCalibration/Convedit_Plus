@@ -4102,8 +4102,41 @@ begin
 end;
 
 procedure TfrmMain.ConvoTreeDblClick(Sender: TObject);
+var
+    FlagNode: TTreeNode;
+    FlagName: string;
+    CurrentConvo: TConversation;
+    flag: TFlag;
 begin
-    // todo: toggle flag value here!
+    if (ConvoTree.Selected <> nil) and (ConvoTree.Selected.Level = 2) then
+    begin
+        CurrentConvo := TConversation(ConvoTree.Selected.Parent.Data);
+
+        FlagNode := ConvoTree.Selected;
+        FlagName := Copy(FlagNode.Text, 1, Pos(' =', FlagNode.Text) -1); // extract the FlagName first
+
+        if CurrentConvo <> nil then
+        begin
+            for var i:= 0 to High(CurrentConvo.conDependsOnFlags) do
+            begin
+                flag := CurrentConvo.conDependsOnFlags[i];
+
+                if flag.flagName = FlagName then
+                begin
+                    flag.flagValue := not flag.flagValue;
+                    FlagNode.Text := flag.flagName + ' = ' + BoolToStr(flag.flagValue, True);
+
+                    if flag.flagValue = True then
+                        FlagNode.ImageIndex := 2 else FlagNode.ImageIndex := 3;
+
+                    FlagNode.SelectedIndex := FlagNode.ImageIndex;
+
+                    CurrentConvo.conDependsOnFlags[i] := flag;
+                    Break;
+                end;
+            end;
+        end;
+    end;
 end;
 
 procedure TfrmMain.ConvoTreeEdited(Sender: TObject; Node: TTreeNode; var S: string);
