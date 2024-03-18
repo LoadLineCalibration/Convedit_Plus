@@ -5927,8 +5927,7 @@ object frmMain: TfrmMain
         Caption = '-'
       end
       object Save1: TMenuItem
-        Caption = 'Save'
-        ImageIndex = 14
+        Action = FileSave
       end
       object SaveAs1: TMenuItem
         Action = FileSaveAs

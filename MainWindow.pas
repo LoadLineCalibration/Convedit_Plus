@@ -3290,6 +3290,8 @@ begin
             end;
         end;
 
+        if Event = nil then Exit();
+
         Font.Size := CEP_EVENT_LABEL_FONT_SIZE;
         Font.Name := CEP_EVENT_LABEL_FONT;
         Font.Style := [fsBold];
@@ -3358,7 +3360,7 @@ begin
 
     for var unhglEvent in CurrentConversation.Events do
     begin
-        if unhglEvent.EventHighlightType = EHT_Related then
+        //if unhglEvent.EventHighlightType = EHT_Related then
             unhglEvent.EventHighlightType := EHT_None;
     end;
 end;

@@ -64,6 +64,7 @@ object frmTableEdit: TfrmTableEdit
     Height = 223
     Anchors = [akLeft, akTop, akRight, akBottom]
     ItemHeight = 15
+    PopupMenu = ListContentsPopup
     TabOrder = 0
     StyleName = 'Windows'
     OnClick = lstTableContentsClick
@@ -266,6 +267,16 @@ object frmTableEdit: TfrmTableEdit
     object CustomItem1: TMenuItem
       Caption = 'CustomItem'
       OnClick = CustomItem1Click
+    end
+  end
+  object ListContentsPopup: TPopupMenu
+    OnPopup = ListContentsPopupPopup
+    Left = 168
+    Top = 192
+    object Copytoclipboard1: TMenuItem
+      Caption = 'Copy to clipboard'
+      Enabled = False
+      OnClick = Copytoclipboard1Click
     end
   end
 end

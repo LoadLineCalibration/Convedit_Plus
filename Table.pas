@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Conversation.Classes, AddInsertEvent,
   ConEditPlus.Consts, ConvoProperties, EditValueDialog, Vcl.Menus, system.Types, ConEditPlus.Enums,
-  system.UITypes, ConEditPlus.Helpers;
+  system.UITypes, ConEditPlus.Helpers, Vcl.Clipbrd;
 
 type
   TfrmTableEdit = class(TForm)
@@ -29,6 +29,8 @@ type
     btnAddDefInfolinkNames: TButton;
     StaticText2: TStaticText;
     CustomItem1: TMenuItem;
+    ListContentsPopup: TPopupMenu;
+    Copytoclipboard1: TMenuItem;
 
     // new procedures
     procedure UpdateButtonsState();
@@ -66,6 +68,8 @@ type
     procedure btn_CustomClassListClick(Sender: TObject);
     procedure btnAddDefInfolinkNamesClick(Sender: TObject);
     procedure CustomItem1Click(Sender: TObject);
+    procedure ListContentsPopupPopup(Sender: TObject);
+    procedure Copytoclipboard1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -532,6 +536,12 @@ begin
     UpdateButtonsState();
 end;
 
+procedure TfrmTableEdit.ListContentsPopupPopup(Sender: TObject);
+begin
+    if lstTableContents.ItemIndex <> -1 then
+        Copytoclipboard1.Enabled := True;
+end;
+
 procedure TfrmTableEdit.UpdateButtonsState(); // блокировать/разблокировать кнопки в зависимости от...
 begin
     btnDeleteUnused.Enabled := lstTableContents.Count > 0;
@@ -842,5 +852,10 @@ begin
     tempList.Free();
 end;
 
+
+procedure TfrmTableEdit.Copytoclipboard1Click(Sender: TObject);
+begin
+    ClipBoard.AsText := lstTableContents.Items[lstTableContents.ItemIndex];
+end;
 
 end.
