@@ -101,7 +101,7 @@ type
     N13: TMenuItem;
     menuConvoProperties: TMenuItem;
     N14: TMenuItem;
-    ExpandAll2: TMenuItem;
+    TreeExpandAll: TMenuItem;
     CollapseAll2: TMenuItem;
     ImageListToolbar: TImageList;
     N15: TMenuItem;
@@ -141,8 +141,6 @@ type
     Conversation_Paste: TAction;
     Conversation_Properties: TAction;
     Conversation_Find: TAction;
-    ConTree_ExpandAll: TAction;
-    ConTree_CollapseAll: TAction;
     Event_Add: TAction;
     Event_Insert: TAction;
     Event_Cut: TAction;
@@ -206,6 +204,8 @@ type
     N5: TMenuItem;
     Duplicate1: TMenuItem;
     Event_Duplicate: TAction;
+    N6: TMenuItem;
+    ExpandTreeWithoutFlags: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -328,8 +328,10 @@ type
     // To duplicate selected event
     procedure CopyEventFields(Source, Dest: TConEvent);
 
+    // To expand tree without flags
+    procedure ExpandTreeViewToLevel(TreeView: TTreeView; Level: Integer);
+
     procedure FormResize(Sender: TObject);
-    procedure ExpandAll2Click(Sender: TObject);
     procedure CollapseAll2Click(Sender: TObject);
     procedure ConvoTreeEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
     procedure Speech1Click(Sender: TObject);
@@ -435,6 +437,9 @@ type
     procedure Event_CopyExecute(Sender: TObject);
     procedure Event_PasteExecute(Sender: TObject);
     procedure ConvoTreeDblClick(Sender: TObject);
+    procedure ExpandTreeWithoutFlagsClick(Sender: TObject);
+    procedure TreeExpandAllClick(Sender: TObject);
+    procedure FileOpenDialogTypeChange(Sender: TObject);
   private
     { Private declarations }
     procedure WMEnterSizeMove(var Msg: TMessage); message WM_ENTERSIZEMOVE;
@@ -471,12 +476,13 @@ type
 
     // Integer values
     var AutoSaveMinutes: Integer;
+    var OpenFileFilterIndex, SaveFileFilterIndex: Integer; // save last selected file filter when opening/saving file.
 
     // to store recent files!
     var RecentFiles: array[0..CEP_MAX_RECENT_FILES] of string;
 
     var ReorderModKey: TReorderEventsModKey; // Hold xxx key to reorder events
-    var OpenFileFilterIndex, SaveFileFilterIndex: Integer; // save last selected file filter when opening/saving file. Also to save some of my time :D
+
 
     // end of configuration file variables
 
@@ -491,7 +497,7 @@ type
 
     var SysScrollBarWidth: Integer;
 
-    var CF_ConEditPlus: Word;
+    var CF_ConEditPlus: Word; // Custom clipboard format
   end;
 
 var
@@ -740,6 +746,11 @@ begin
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
 
     Result := dResult;
+end;
+
+procedure TfrmMain.TreeExpandAllClick(Sender: TObject);
+begin
+    ConvoTree.FullExpand();
 end;
 
 function TfrmMain.TreeHasItemsOfLevel(Tree: TTreeView; LevelToCheck: Integer): Boolean;
@@ -1126,6 +1137,31 @@ begin
         edtConFileLastModifiedOn.Text := conFileParameters.fpModifiedByDate; // add text to editbox
         edtConFileLastModifiedBy.Text := conFileParameters.fpModifiedByName;
         // Примечание: даты не заполняем, они подставляются автоматически в конструкторе или в методе Clear()
+    end;
+
+    with frmConvoProperties do
+    begin
+        editConvoName.Clear();
+        editConvoDescription.Clear();
+        cmbConvoOwner.Clear();
+        memoConversationNotes.Clear();
+
+        lvConvoDependsOnFlags.Clear();
+
+        chkPCfrobsNPC.Checked := True;
+        chkPCbumpsNPC.Checked := True;
+        chkNPCseesPlayer.Checked := False;
+        chkNPCentersPCRadius.Checked := False;
+        editDistFromPlayer.Value := 0;
+
+        chkDisplayConvoOnlyOnce.Checked := True;
+        chkAdd_PlayedFlag.Checked := False;
+        chkDataLinkConvo.Checked := False;
+        chkNonInteractive.Checked := False;
+        chkFPMode.Checked := False;
+        chkRandomCameraPlacement.Checked := False;
+        chkCanBeInterruptedByAnotherConvo.Checked := False;
+        chkAbsolutelyCannotInterrupt.Checked := False;
     end;
 
     bFileModified := False;
@@ -1983,6 +2019,8 @@ begin
            RecentFiles[i] := ReadString('RecentFiles', 'RecentFile'+i.ToString , '');
            mniRecent.Items[i].Caption := RecentFiles[i];
        end;
+
+       OpenFileFilterIndex := ReadInteger('OpenFileDialog', 'OpenFileFilterIndex', 1);
     end;
 
     finally
@@ -2033,10 +2071,13 @@ begin
 
            WriteInteger('frmMain', 'ReorderModKey',Ord(ReorderModKey));
 
-       // up to 8 recent files
-       for var i := 0 to CEP_MAX_RECENT_FILES do
-           WriteString('RecentFiles', 'RecentFile'+i.ToString, RecentFiles[i]);
+           // up to 8 recent files
+           for var i := 0 to CEP_MAX_RECENT_FILES do
+               WriteString('RecentFiles', 'RecentFile'+i.ToString, RecentFiles[i]);
+
+           WriteInteger('OpenFileDialog', 'OpenFileFilterIndex', OpenFileFilterIndex);
        end;
+
     finally
        MainFormIni.Free();
     end;
@@ -4112,6 +4153,12 @@ begin
     begin
         CurrentConvo := TConversation(ConvoTree.Selected.Parent.Data);
 
+        if CurrentConvo = nil then
+        begin
+            MessageDlg('Cannot find TConversation object in parent TTreeNode!',  mtError, [mbOK], 0);
+            Exit();
+        end;
+
         FlagNode := ConvoTree.Selected;
         FlagName := Copy(FlagNode.Text, 1, Pos(' =', FlagNode.Text) -1); // extract the FlagName first
 
@@ -4299,9 +4346,28 @@ begin
     Application.Terminate();
 end;
 
-procedure TfrmMain.ExpandAll2Click(Sender: TObject);
+procedure TfrmMain.ExpandTreeViewToLevel(TreeView: TTreeView; Level: Integer);
+var
+    Node: TTreeNode;
 begin
-    ConvoTree.FullExpand();
+    TreeView.Items.BeginUpdate();
+    try
+        Node := TreeView.Items.GetFirstNode;
+        while Node <> nil do
+        begin
+            if Node.Level < Level then
+                Node.Expand(False);
+
+            Node := Node.GetNext();
+        end;
+    finally
+        TreeView.Items.EndUpdate();
+    end;
+end;
+
+procedure TfrmMain.ExpandTreeWithoutFlagsClick(Sender: TObject);
+begin
+    ExpandTreeViewToLevel(ConvoTree, 1);
 end;
 
 procedure TfrmMain.mnuEventIndexClick(Sender: TObject);
@@ -4424,6 +4490,11 @@ begin
     CreateConFile(True);
 end;
 
+procedure TfrmMain.FileOpenDialogTypeChange(Sender: TObject);
+begin
+    OpenFileFilterIndex := FileOpenDialog.FileTypeIndex;
+end;
+
 procedure TfrmMain.FileOpenExecute(Sender: TObject);
 begin
     ClearForNewFile(); // free memory before loading new file
@@ -4439,15 +4510,15 @@ begin
         begin
             LoadConXMLFile(currentConFile);
             BuildConvoTree();
-        end
-        else if UpperCase(ExtractFileExt(currentConFile)) = '.CON' then
+        end else
+        if UpperCase(ExtractFileExt(currentConFile)) = '.CON' then
         begin
             LoadConFile(currentConFile);
             BuildConvoTree();
-        end
-        else begin
-                MessageDlg(strSelectConXML,  mtError, [mbOK], 0);
-                Exit();
+        end else
+        begin
+            MessageDlg(strSelectConXML,  mtError, [mbOK], 0);
+            Exit();
         end;
 
         StatusBar.Panels[1].Text := currentConFile; // filename in StatusBar
@@ -4477,18 +4548,36 @@ begin
             if ExtractFileExt(savefileName) = '' then
                 savefileName := savefileName + '.xml';
 
-            BuildConXMLFile(savefileName);
+            try
+                StatusBar.Panels[1].Text := strSavingFile + savefileName;
+                BuildConXMLFile(savefileName);
+                StatusBar.Panels[1].Text := strSavedFile + savefileName;
+            except
+                StatusBar.Panels[1].Text := strSaveErrorStatus + savefileName;
+                raise Exception.Create(Format(strSaveError, [SysErrorMessage(GetLastError), savefileName]));
+            end;
+
+            currentConFile := savefileName;
+
         end;
 
         if FileSaveDialog.FileTypeIndex = 2 then
         begin
             savefileName := FileSaveDialog.FileName;
 
-            var FileExt := ExtractFileExt(savefileName);
-            if FileExt = '' then
+            if ExtractFileExt(savefileName) = '' then
                 savefileName := savefileName + '.con';
 
-            SaveConFile(savefileName);
+            try
+                StatusBar.Panels[1].Text := strSavingFile + savefileName;
+                SaveConFile(savefileName);
+                StatusBar.Panels[1].Text := strSavedFile + savefileName;
+            except
+                StatusBar.Panels[1].Text := strSaveErrorStatus + savefileName;
+                raise Exception.Create(Format(strSaveError, [SysErrorMessage(GetLastError), savefileName]));
+            end;
+
+            currentConFile := savefileName;
         end;
     end;
 end;
@@ -4500,30 +4589,24 @@ begin
         if LowerCase(ExtractFileExt(currentConFile)) = '.xml' then
         begin
             try
-                StatusBar.Panels[1].Text := 'Saving file: ' + currentConFile;
+                StatusBar.Panels[1].Text := strSavingFile + currentConFile;
                 BuildConXMLFile(currentConFile);
-                StatusBar.Panels[1].Text := 'Saved: ' + currentConFile;
+                StatusBar.Panels[1].Text := strSavedFile + currentConFile;
             except
-                on EFCreateError do
-                begin
-                    StatusBar.Panels[1].Text := 'Error saving file: ' + currentConFile;
-                    raise Exception.Create(Format(strSaveError, [SysErrorMessage(GetLastError), currentConFile]));
-                end;
+                StatusBar.Panels[1].Text := strSaveErrorStatus + currentConFile;
+                raise Exception.Create(Format(strSaveError, [SysErrorMessage(GetLastError), currentConFile]));
             end;
         end;
 
         if LowerCase(ExtractFileExt(currentConFile)) = '.con' then
         begin
             try
-                StatusBar.Panels[1].Text := 'Saving file: ' + currentConFile;
+                StatusBar.Panels[1].Text := strSavingFile + currentConFile;
                 SaveConFile(currentConFile);
-                StatusBar.Panels[1].Text := 'Saved: ' + currentConFile;
+                StatusBar.Panels[1].Text := strSavedFile + currentConFile;
             except
-                on EFCreateError do
-                begin
-                    StatusBar.Panels[1].Text := 'Error saving file: ' + currentConFile;
-                    raise Exception.Create(Format(strSaveError, [SysErrorMessage(GetLastError), currentConFile]));
-                end;
+                StatusBar.Panels[1].Text := strSaveErrorStatus + currentConFile;
+                raise Exception.Create(Format(strSaveError, [SysErrorMessage(GetLastError), currentConFile]));
             end;
         end;
     end

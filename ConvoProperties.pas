@@ -57,7 +57,7 @@ type
     Label11: TLabel;
     btnHelp: TBitBtn;
     lblTypeName: TLabel;
-    chkAdd_PLayedFlag: TCheckBox;
+    chkAdd_PlayedFlag: TCheckBox;
     Label12: TLabel;
     procedure btnCancelClick(Sender: TObject);
     procedure chkDataLinkConvoClick(Sender: TObject);
@@ -250,7 +250,7 @@ begin
         begin
             conDependsOnFlags[cdof].flagName := lvConvoDependsOnFlags.Items[cdof].Caption; // and fill it
             conDependsOnFlags[cdof].flagValue := StrToBool(lvConvoDependsOnFlags.Items[cdof].SubItems[0]);
-            conDependsOnFlags[cdof].flagIndex := lvConvoDependsOnFlags.Items[cdof].SubItems[1].ToInteger;
+            conDependsOnFlags[cdof].flagIndex := frmMain.FindTableIdByName(TM_Flags, lvConvoDependsOnFlags.Items[cdof].Caption); //lvConvoDependsOnFlags.Items[cdof].SubItems[1].ToInteger;
         end;
     end;
 
@@ -282,7 +282,7 @@ begin
         cdFlag.SubItems.Add(convoToEdit.conDependsOnFlags[i].flagIndex.ToString);
     end;
 
-    chkPCfrobsNPC.Checked        := convoToEdit.bPCBumps;
+    chkPCfrobsNPC.Checked        := convoToEdit.bPCFrobs;
     chkNPCentersPCRadius.Checked := convoToEdit.bNPCEnters;
     chkPCbumpsNPC.Checked        := convoToEdit.bPCBumps; // pointless?
     chkNPCseesPlayer.Checked     := convoToEdit.bNPCSees; // same?

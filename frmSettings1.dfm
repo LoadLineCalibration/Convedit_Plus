@@ -180,16 +180,16 @@ object frmSettings: TfrmSettings
   object chkExpandFlagsOnExpandAll: TCheckBox
     Left = 8
     Top = 220
-    Width = 353
+    Width = 201
     Height = 17
-    Caption = 'Expand Flags On Expand All'
+    Caption = 'Reserved'
     TabOrder = 4
     StyleName = 'Windows'
   end
   object chkAskConversationDelete: TCheckBox
     Left = 8
     Top = 243
-    Width = 353
+    Width = 185
     Height = 17
     Caption = 'Ask for Conversation deletion'
     TabOrder = 5
@@ -298,7 +298,7 @@ object frmSettings: TfrmSettings
   object chkFlatControlsMainWin: TCheckBox
     Left = 8
     Top = 312
-    Width = 353
+    Width = 201
     Height = 17
     Caption = 'Flat toolbar/event list header'
     TabOrder = 16
@@ -329,7 +329,7 @@ object frmSettings: TfrmSettings
     Value = 5
   end
   object btnPickUserName: TButton
-    Left = 214
+    Left = 215
     Top = 33
     Width = 228
     Height = 25

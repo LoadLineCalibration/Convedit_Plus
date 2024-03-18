@@ -116,7 +116,7 @@ const INFOLINK_PREFIX = 'DL_';
 
 const conFileHeader: array[0..25] of Byte =
 (
-68, 101, 117, 115, 32, 69, 120, 32, 67, 111, 110, 118, 101, 114, 115, 97, 116, 105, 111, 110, 32, 70, 105, 108, 101, 26
+    68, 101, 117, 115, 32, 69, 120, 32, 67, 111, 110, 118, 101, 114, 115, 97, 116, 105, 111, 110, 32, 70, 105, 108, 101, 26
 );
 
 
@@ -262,7 +262,7 @@ ResourceString
     strSkillName = 'Skill Name:';
     strObjectName = 'Object Name:';
 
-    strCustomClassesNotFound = 'The "%s" file does not exists! If you want to use custom classes, create it and place into ConvEdit Plus directory.' + #13#10 +
+    strCustomClassesNotFound = 'The "%s" file does not exists! If you want to use custom classes, create it and place into ConEditPlus directory.' + #13#10 +
                                'The syntax is simple: className;description in each line.' + #13#10 +
                                'Use - for separator (as usually in Delphi IDE).';
 
@@ -329,6 +329,10 @@ ResourceString
 
     // Error messages when trying to save file
     strSaveError = 'Error saving file (%s):' + #13#10 +'%s';
+    strSaveErrorStatus = 'Error saving file: ';
+
+    strSavingFile = 'Saving file: ';
+    strSavedFile = 'Saved: ';
 
     strJumpToEvent = 'Jump to this Event';
     strJumpToConversation = 'Jump to this Conversation';

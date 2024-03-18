@@ -216,8 +216,7 @@ begin
     else Exit();
 end;
 
-// Use event selection colors from original ConEdit app.
-procedure TfrmSettings.btnResetToDefaultsClick(Sender: TObject);
+procedure TfrmSettings.btnResetToDefaultsClick(Sender: TObject); // Use event selection colors from original ConEdit app.
 begin
     chkUseSelectionFrame.Checked := False;
 

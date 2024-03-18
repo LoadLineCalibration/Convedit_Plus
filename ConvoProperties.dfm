@@ -11,43 +11,6 @@ object frmConvoProperties: TfrmConvoProperties
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
-  Icon.Data = {
-    0000010001001010000001002000680400001600000028000000100000002000
-    0000010020000000000000000000000000000000000000000000000000000000
-    0000467F1C7B1A300A1F00000000000000000000000000000000000000000000
-    0000000000000000000000000000000000000000000000000000000000000000
-    0000579E23AA65B729EA2A4D113E000000000000000000000000000000000000
-    0000000000000000000000000000000000000000000000000000000000001424
-    081860AE27C570CB2DFF69BE2AF93F7219782B4E11552B4E11552B4E11552B4E
-    11552B4E1155223E0E33000000000000000000000000000000000000000062B1
-    27DB6FC82DFF71CC2EFF71CC2EFF6DC52CFF6BC22BFF6BC22BFF6BC22BFF6BC2
-    2BFF6BC22BFF68BD2AFD23400E330000000000000000000000000000000070CA
-    2DFF71CC2EFF71CC2EFF71CC2EFF71CC2EFF71CC2EFF71CC2EFF71CC2EFF71CC
-    2EFF71CC2EFF71CC2EFF335C14550000000031220A1F8A5F1E7B0000000071CC
-    2EFF71CC2EFF69BE2AFF69BE2AFF6FC92DFF66B929FF6CC42CFF6CC42CFF66B9
-    29FF6FC92DFF71CC2EFF345E15554F37113EC3872CEAAC7828AA0000000071CC
-    2EFF71CC2EFFD2E2C1FFD2E2C1FF84CD4DFFE8ECE0FFA8D683FFA8D683FFE8EC
-    E0FF84CD4DFF71CC2EFF889226B1CB8D2FF9DA9733FFBD832CC5281B081871CC
-    2EFF71CC2EFFD5E8C2FFD5E8C2FF86D24EFFE9EDE0FFABDC84FFABDC84FFE9ED
-    E0FF86D24EFF71CC2EFFB4A730FFDB9834FFDB9834FFD79532FFBE842BDB71CC
-    2EFF71CC2EFF71CC2EFF71CC2EFF71CC2EFF71CC2EFF71CC2EFF71CC2EFF71CC
-    2EFF71CC2EFF71CC2EFFB7A931FFDB9834FFDB9834FFDB9834FFD99733FF71CC
-    2EFF71CC2EFF71CC2EFF71CC2EFF71CC2EFF71CC2EFF71CC2EFF71CC2EFF71CC
-    2EFF71CC2EFF71CC2EFFB7A931FFDB9834FFDB9834FFDB9834FFDB9834FF6DC5
-    2CDB71CC2EFF71CC2EFF71CC2EFF71CC2EFF71CC2EFF71CC2EFF71CC2EFF71CC
-    2EFF71CC2EFF71CB2EFFC5A232FFDB9834FFDB9834FFDB9834FFDB9834FF192D
-    0A18345F1553345F1555345F15556E81228EB7A932FFB7A932FFB7A932FFB7A9
-    32FFB7A932FFC5A232FFDB9834FFDB9834FFDB9834FFDB9834FFDB9834FF0000
-    000000000000000000000000000062441755DB9834FFDB9834FFDB9834FFDB98
-    34FFDB9834FFDB9834FFDB9834FFDB9834FFDB9834FFDB9834FFDB9834FF0000
-    000000000000000000000000000062441755DB9834FFDB9834FFDB9834FFDB98
-    34FFDB9834FFDB9834FFDB9834FFDB9834FFDB9834FFDB9834FFDB9834FF0000
-    00000000000000000000000000004E361233DB9834FDDB9834FFDB9834FFDB98
-    34FFDB9834FFDB9834FFDB9834FFDB9834FFDB9834FFDB9834FFD59432DB0000
-    0000000000000000000000000000000000005138133366471855664718556647
-    185566471855664718556647185566471855664718556646185332230B189FFF
-    00008FFF0000001F0000000F0000000900000001000000000000000000000000
-    0000000000000000000000000000F0000000F0000000F0000000F8000000}
   Position = poMainFormCenter
   ShowHint = True
   StyleElements = []
@@ -108,7 +71,7 @@ object frmConvoProperties: TfrmConvoProperties
       Top = 3
       Width = 394
       Height = 404
-      ActivePage = TabSheet1
+      ActivePage = tsinfo
       Align = alClient
       DoubleBuffered = False
       ParentDoubleBuffered = False
@@ -282,8 +245,8 @@ object frmConvoProperties: TfrmConvoProperties
           StyleElements = []
         end
         object lblDistFromPlayer: TLabel
-          Left = 51
-          Top = 114
+          Left = 24
+          Top = 186
           Width = 109
           Height = 14
           AutoSize = False
@@ -293,38 +256,40 @@ object frmConvoProperties: TfrmConvoProperties
         end
         object chkPCfrobsNPC: TCheckBox
           Left = 24
-          Top = 44
+          Top = 45
           Width = 314
           Height = 17
           Cursor = crHandPoint
           Caption = 'Player (PC) Frobs NPC'
+          Checked = True
+          State = cbChecked
           TabOrder = 0
           StyleElements = []
         end
         object chkPCbumpsNPC: TCheckBox
           Left = 24
-          Top = 152
+          Top = 76
           Width = 314
           Height = 17
           Caption = 'Player (PC) Bumps NPC'
-          Enabled = False
+          Checked = True
+          State = cbChecked
           TabOrder = 1
           StyleElements = []
           OnClick = chkDataLinkConvoClick
         end
         object chkNPCseesPlayer: TCheckBox
           Left = 24
-          Top = 192
+          Top = 112
           Width = 314
           Height = 17
           Caption = 'NPC Sees Player'
-          Enabled = False
           TabOrder = 2
           StyleElements = []
         end
         object chkNPCentersPCRadius: TCheckBox
           Left = 24
-          Top = 80
+          Top = 149
           Width = 314
           Height = 17
           Cursor = crHandPoint
@@ -334,8 +299,8 @@ object frmConvoProperties: TfrmConvoProperties
           OnClick = chkNPCentersPCRadiusClick
         end
         object editDistFromPlayer: TSpinEdit
-          Left = 166
-          Top = 111
+          Left = 139
+          Top = 183
           Width = 121
           Height = 24
           AutoSize = False
@@ -366,6 +331,8 @@ object frmConvoProperties: TfrmConvoProperties
           Height = 17
           Cursor = crHandPoint
           Caption = 'Display Conversation Only Once'
+          Checked = True
+          State = cbChecked
           TabOrder = 0
           StyleElements = []
           OnClick = chkDisplayConvoOnlyOnceClick
@@ -437,7 +404,7 @@ object frmConvoProperties: TfrmConvoProperties
           WordWrap = True
           StyleElements = []
         end
-        object chkAdd_PLayedFlag: TCheckBox
+        object chkAdd_PlayedFlag: TCheckBox
           Left = 65
           Top = 95
           Width = 169

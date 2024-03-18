@@ -510,6 +510,11 @@ begin
     conCreatedByDate := conXMLDateTime();
     conModifiedByDate := conXMLDateTime();
 
+    // defaults from OG ConEdit
+    bOnlyOnce := True;
+    bPCFrobs := True;
+    bPCBumps := True;
+
     inherited;
 end;
 
