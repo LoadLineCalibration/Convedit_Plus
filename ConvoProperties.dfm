@@ -3,7 +3,7 @@ object frmConvoProperties: TfrmConvoProperties
   Top = 0
   BorderStyle = bsDialog
   Caption = 'Conversation Properties'
-  ClientHeight = 471
+  ClientHeight = 467
   ClientWidth = 416
   Color = 13160660
   Font.Charset = DEFAULT_CHARSET
@@ -463,7 +463,7 @@ object frmConvoProperties: TfrmConvoProperties
           Text = 'editConvoLastModifiedOn'
           StyleElements = []
         end
-        object editLastModifiedBy: TEdit
+        object editConvoLastModifiedBy: TEdit
           Left = 132
           Top = 261
           Width = 245

@@ -47,7 +47,7 @@ type
     Label8: TLabel;
     Label9: TLabel;
     editConvoLastModifiedOn: TEdit;
-    editLastModifiedBy: TEdit;
+    editConvoLastModifiedBy: TEdit;
     editConvoCreatedOn: TEdit;
     editConvoCreatedBy: TEdit;
     lvConvoDependsOnFlags: TListView;
@@ -301,7 +301,7 @@ begin
     editConvoCreatedBy.Text := convoToEdit.conCreatedByName;
 
     editConvoLastModifiedOn.Text := convoToEdit.conModifiedByDate;
-    editLastModifiedBy.Text      := convoToEdit.conModifiedByName;
+    editConvoLastModifiedBy.Text      := convoToEdit.conModifiedByName;
 
     editConvoNameChange(self);
 
