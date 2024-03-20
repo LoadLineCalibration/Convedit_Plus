@@ -171,7 +171,7 @@ object frmEventInsAdd: TfrmEventInsAdd
     Top = 114
     Width = 556
     Height = 406
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Anchors = [akLeft, akTop, akRight, akBottom]
     DoubleBuffered = True
     ParentDoubleBuffered = False
@@ -2460,7 +2460,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   object mp1: TMediaPlayer
     Left = 216
     Top = 238
-    Width = -1
+    Width = 57
     Height = 30
     VisibleButtons = [btPlay, btPause]
     DoubleBuffered = True

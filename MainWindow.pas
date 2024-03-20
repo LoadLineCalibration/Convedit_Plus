@@ -321,9 +321,13 @@ type
     procedure HighlightRelatedEvents();
     procedure UnhighlightRelatedEvents();
 
-    // To copy/paste evnts
+    // To copy/paste events
     procedure CopyEventToClipboard(var Event: TConEvent);
     procedure PasteEventFromClipboard();
+
+    // to copy/paste conversations
+    procedure CopyConversationToClipboard(var Convo: TConversation);
+    procedure PasteConversationFromClipboard();
 
     // To duplicate selected event
     procedure CopyEventFields(Source, Dest: TConEvent);
@@ -1868,6 +1872,17 @@ begin
     end;
 end;
 
+procedure TfrmMain.CopyConversationToClipboard(var Convo: TConversation);
+begin
+    // ToDo: ...
+end;
+
+procedure TfrmMain.PasteConversationFromClipboard();
+begin
+//
+end;
+
+
 procedure TfrmMain.CopyFinalMp3(CopyTo, FileName: String);
 var
     ResStream: TResourceStream;
@@ -2844,6 +2859,8 @@ begin
         DrawText(Handle,'Trigger ' + TriggerTag, -1, TempRect, DT_END_ELLIPSIS);
     end;
 end;
+
+
 
 procedure TfrmMain.CopyEventFields(Source, Dest: TConEvent);
 begin
@@ -4078,7 +4095,7 @@ end;
 
 procedure TfrmMain.ConvoTreeChange(Sender: TObject; Node: TTreeNode);
 begin
-    ConEventList.Enabled := Node.Level <> 2;
+    ConEventList.Enabled := Node.Level = 1;
 
     //if Node.Level >= 1 then
     if Node.Level = 1 then
@@ -4756,8 +4773,17 @@ end;
 
 procedure TfrmMain.AddConversationExecute(Sender: TObject);
 begin
-    frmConvoProperties.EditMode := em_Create;
-    frmConvoProperties.ShowModal();
+    with frmConvoProperties do
+    begin
+        EditMode := em_Create;
+        editConvoCreatedOn.Text := conXMLDateTime();
+        editConvoCreatedBy.Text := ConversationUserName;
+
+        editConvoLastModifiedOn.Text := conXMLDateTime();
+        editConvoLastModifiedBy.Text := ConversationUserName;
+
+        ShowModal();
+    end;
 end;
 
 procedure TfrmMain.AddCredits1Click(Sender: TObject);
@@ -4772,6 +4798,8 @@ end;
 
 procedure TfrmMain.AddEvent(TargetPage: Integer); // Add event to end
 begin
+    frmEventInsAdd.cmbEventType.Enabled := True;
+
     frmEventInsAdd.editEventLabel.Clear();
 
     case TargetPage of
@@ -5079,7 +5107,8 @@ begin
         frmEventInsAdd.FillEnd(TConEventEnd(EventToEdit));
     end;
 
-    if frmEventInsAdd.Visible = false then begin
+    if frmEventInsAdd.Visible = false then
+    begin
         frmEventInsAdd.cmbEventType.Enabled := False;
         frmEventInsAdd.Show();
     end;

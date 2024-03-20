@@ -888,7 +888,7 @@ begin
         choice.NumFlagsRefs := choice.NumChoices;
     end;
 
-    frmMain.ConEventList.Items.ValueFromIndex[frmMain.ConEventList.ItemIndex] := frmMain.GetNumChoiceLines([choice]).ToString;
+    frmMain.ConEventList.Items.ValueFromIndex[frmMain.ConEventList.ItemIndex] := frmMain.GetChoiceItemHeight([choice]).ToString;
     RepaintCurrentEvent();
     EventWarning(false);
 
@@ -914,7 +914,7 @@ begin
         setFlags.SetFlags[newsetflg].flagIndex      := lvSetFlags.Items[newsetflg].SubItems[2].ToInteger; // index
     end;
 
-    frmMain.ConEventList.Items.ValueFromIndex[frmMain.ConEventList.ItemIndex] := frmMain.GetFlagsSize([setFlags]).ToString;
+    frmMain.ConEventList.Items.ValueFromIndex[frmMain.ConEventList.ItemIndex] := frmMain.GetSetFlagsItemHeight([setFlags]).ToString;
     RepaintCurrentEvent();
     EventWarning(False);
 
@@ -939,7 +939,7 @@ begin
         checkFlags.FlagsToCheck[newCheckFlg].flagIndex:= lvCheckFlags.Items[newCheckFlg].SubItems[1].ToInteger; // index
     end;
 
-    frmMain.ConEventList.Items.ValueFromIndex[frmMain.ConEventList.ItemIndex] := frmMain.GetChkFlagsSize([checkFlags]).ToString;
+    frmMain.ConEventList.Items.ValueFromIndex[frmMain.ConEventList.ItemIndex] := frmMain.GetCheckFlagsItemHeight([checkFlags]).ToString;
     RepaintCurrentEvent();
     EventWarning(False);
 
@@ -1149,7 +1149,7 @@ function TfrmEventInsAdd.ValidateAddCredits(credits: TConEventAddCredits): Boole
 begin
     credits.Credits := seAddCredits.Value;
 
-    RepaintCurrentEvent();
+    //RepaintCurrentEvent();
     EventWarning(False);
 
     Exit(True);
@@ -1201,7 +1201,7 @@ begin
     Exit(True);
 end;
 
-procedure TfrmEventInsAdd.NewSpeech(bInsert: Boolean = False);
+procedure TfrmEventInsAdd.NewSpeech(bInsert: Boolean = False); // toDo: Переделать с учетом высоты item
 begin
     KillPhantoms();
 
@@ -1217,7 +1217,9 @@ begin
     SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
     frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
     frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
-    frmMain.ConEventList.Items.AddPair(ET_Speech_Caption,'50', frmMain.CurrentEvent);
+
+    var NewHeight := frmMain.GetSpeechEventItemHeight([newEvent]);
+    frmMain.ConEventList.Items.AddPair(ET_Speech_Caption,NewHeight.ToString(), frmMain.CurrentEvent);
 
     var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
 
@@ -1225,6 +1227,7 @@ begin
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
     RepaintCurrentEvent();
+    frmMain.UpdateEventListHeights();
     bCreatingNewEvent := False;
     KillPhantoms();
 
@@ -1247,14 +1250,17 @@ begin
     SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
     frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
     frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
-    frmMain.ConEventList.Items.AddObject(ET_Choice_Caption, frmMain.CurrentEvent);
+
+    var NewHeight := frmMain.GetChoiceItemHeight([NewEvent]);
+    frmMain.ConEventList.Items.AddPair(ET_Choice_Caption, NewHeight.ToString(), frmMain.CurrentEvent);
 
     var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    RepaintCurrentEvent();
+    //RepaintCurrentEvent();
+    frmMain.UpdateEventListHeights();
     bCreatingNewEvent := False;
     KillPhantoms();
 
@@ -1265,7 +1271,7 @@ procedure TfrmEventInsAdd.NewSetFlags(bInsert: Boolean = False);
 begin
     KillPhantoms();
 
-    var newEvent := TConEventSetFlag.Create();
+    var NewEvent := TConEventSetFlag.Create();
 
     if ValidateSetFlags(newEvent) = False then
     begin
@@ -1277,14 +1283,17 @@ begin
     SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
     frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
     frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
-    frmMain.ConEventList.Items.AddObject(ET_SetFlag_Caption, frmMain.CurrentEvent);
+
+    var NewHeight := frmMain.GetSetFlagsItemHeight([NewEvent]);
+    frmMain.ConEventList.Items.AddPair(ET_SetFlag_Caption, NewHeight.ToString(), frmMain.CurrentEvent);
 
     var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    RepaintCurrentEvent();
+    //RepaintCurrentEvent();
+    frmMain.UpdateEventListHeights();
     bCreatingNewEvent := False;
     KillPhantoms();
 
@@ -1307,14 +1316,17 @@ begin
     SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
     frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
     frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
-    frmMain.ConEventList.Items.AddObject(ET_CheckFlag_Caption, frmMain.CurrentEvent);
+
+    var NewHeight := frmMain.GetCheckFlagsItemHeight([NewEvent]);
+    frmMain.ConEventList.Items.AddPair(ET_CheckFlag_Caption, NewHeight.ToString(), frmMain.CurrentEvent);
 
     var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    RepaintCurrentEvent();
+    //RepaintCurrentEvent();
+    frmMain.UpdateEventListHeights();
     bCreatingNewEvent := False;
     KillPhantoms();
 
@@ -1344,7 +1356,8 @@ begin
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    RepaintCurrentEvent();
+    //RepaintCurrentEvent();
+    frmMain.UpdateEventListHeights();
     bCreatingNewEvent := False;
     KillPhantoms();
 end;
@@ -1372,7 +1385,8 @@ begin
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    RepaintCurrentEvent();
+    //RepaintCurrentEvent();
+    frmMain.UpdateEventListHeights();
     bCreatingNewEvent := False;
     KillPhantoms();
 end;
@@ -1400,7 +1414,8 @@ begin
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    RepaintCurrentEvent();
+    //RepaintCurrentEvent();
+    frmMain.UpdateEventListHeights();
     bCreatingNewEvent := False;
     KillPhantoms();
 end;
@@ -1428,7 +1443,8 @@ begin
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    RepaintCurrentEvent();
+    //RepaintCurrentEvent();
+    frmMain.UpdateEventListHeights();
     bCreatingNewEvent := False;
     KillPhantoms();
 end;
@@ -1461,7 +1477,8 @@ begin
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    RepaintCurrentEvent();
+    //RepaintCurrentEvent();
+    frmMain.UpdateEventListHeights();
     bCreatingNewEvent := False;
     KillPhantoms();
 end;
@@ -1482,14 +1499,17 @@ begin
     SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
     frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
     frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
-    frmMain.ConEventList.Items.AddObject(ET_Random_Caption, frmMain.CurrentEvent);
 
-    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+    var NewHeight := frmMain.GetRandomEventItemHeight([NewEvent]);
+    frmMain.ConEventList.Items.AddPair(ET_Random_Caption, NewHeight.ToString(), frmMain.CurrentEvent);
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(NewEvent);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    RepaintCurrentEvent();
+    //RepaintCurrentEvent();
+    frmMain.UpdateEventListHeights();
     bCreatingNewEvent := False;
     KillPhantoms();
 end;
@@ -1517,7 +1537,8 @@ begin
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    RepaintCurrentEvent();
+    //RepaintCurrentEvent();
+    frmMain.UpdateEventListHeights();
     bCreatingNewEvent := False;
     KillPhantoms();
 end;
@@ -1538,14 +1559,17 @@ begin
     SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
     frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
     frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
-    frmMain.ConEventList.Items.AddObject(ET_AddGoal_Caption, frmMain.CurrentEvent);
+
+    var NewHeight := frmMain.GetAddGoalItemHeight([NewEvent]);
+    frmMain.ConEventList.Items.AddPair(ET_AddGoal_Caption, NewHeight.ToString(),frmMain.CurrentEvent);
 
     var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    RepaintCurrentEvent();
+    //RepaintCurrentEvent();
+    frmMain.UpdateEventListHeights();
     bCreatingNewEvent := False;
     KillPhantoms();
 end;
@@ -1564,16 +1588,19 @@ begin
 
     var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
     SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
-    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
+    frmMain.CurrentConversation.Events[currLength] := NewEvent;   // Добавить событие в массив
     frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
-    frmMain.ConEventList.Items.AddObject(ET_AddNote_Caption, frmMain.CurrentEvent);
 
-    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+    var NewHeight := frmMain.GetAddNoteItemHeight([NewEvent]);
+    frmMain.ConEventList.Items.AddPair(ET_AddNote_Caption, NewHeight.ToString(), frmMain.CurrentEvent);
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(NewEvent);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    RepaintCurrentEvent();
+    //RepaintCurrentEvent();
+    frmMain.UpdateEventListHeights();
     bCreatingNewEvent := False;
     KillPhantoms();
 end;
@@ -1601,7 +1628,8 @@ begin
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    RepaintCurrentEvent();
+    //RepaintCurrentEvent();
+    frmMain.UpdateEventListHeights();
     bCreatingNewEvent := False;
     KillPhantoms();
 end;
@@ -1629,7 +1657,8 @@ begin
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    RepaintCurrentEvent();
+    //RepaintCurrentEvent();
+    frmMain.UpdateEventListHeights();
     bCreatingNewEvent := False;
     KillPhantoms();
 end;
@@ -1657,7 +1686,8 @@ begin
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    RepaintCurrentEvent();
+    //RepaintCurrentEvent();
+    frmMain.UpdateEventListHeights();
     bCreatingNewEvent := False;
     KillPhantoms();
 end;
@@ -1676,16 +1706,19 @@ begin
 
     var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
     SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
-    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
+    frmMain.CurrentConversation.Events[currLength] := NewEvent;   // Добавить событие в массив
     frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
-    frmMain.ConEventList.Items.AddObject(ET_Comment_Caption, frmMain.CurrentEvent);
+
+    var NewHeight := frmMain.GetCommentItemHeight([NewEvent]);
+    frmMain.ConEventList.Items.AddPair(ET_Comment_Caption, NewHeight.ToString(), frmMain.CurrentEvent);
 
     var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    RepaintCurrentEvent();
+    //RepaintCurrentEvent();
+    frmMain.UpdateEventListHeights();
     bCreatingNewEvent := False;
     KillPhantoms();
 end;
@@ -1713,7 +1746,8 @@ begin
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    RepaintCurrentEvent();
+    //RepaintCurrentEvent();
+    frmMain.UpdateEventListHeights();
     bCreatingNewEvent := False;
     KillPhantoms();
 end;
@@ -1880,7 +1914,7 @@ begin
 
        cmbSpeakingFrom.ItemIndex := cmbSpeakingTo.ItemIndex;
        cmbSpeakingTo.ItemIndex := tempIndex;
-    end; }
+    end;}
 end;
 
 procedure TfrmEventInsAdd.btnAddSetFlagClick(Sender: TObject);

@@ -5558,7 +5558,7 @@ object frmMain: TfrmMain
     end
     object btnCloseLog: TButton
       Left = 678
-      Top = 321
+      Top = 401
       Width = 20
       Height = 20
       Hint = 'Close Log'
