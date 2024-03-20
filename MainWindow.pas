@@ -4805,12 +4805,14 @@ begin
     case TargetPage of
     0: // speech
     begin
-        frmEventInsAdd.cmbSpeakingFrom.Clear();
-        frmEventInsAdd.cmbSpeakingFrom.Items.Assign(frmMain.conFileParameters.fpActors);
+        //frmEventInsAdd.cmbSpeakingFrom.Clear();
+        //frmEventInsAdd.cmbSpeakingFrom.Items.Assign(frmMain.conFileParameters.fpActors);
+        frmEventInsAdd.cmbSpeakingFrom.Items := listPawnsActors;
 
         // Speaking To
-        frmEventInsAdd.cmbSpeakingTo.Clear();
-        frmEventInsAdd.cmbSpeakingTo.Items.Assign(frmMain.conFileParameters.fpActors);
+        //frmEventInsAdd.cmbSpeakingTo.Clear();
+        //frmEventInsAdd.cmbSpeakingTo.Items.Assign(frmMain.conFileParameters.fpActors);
+        frmEventInsAdd.cmbSpeakingTo.Items := listPawnsActors;
 
         frmEventInsAdd.memoSpeech.Clear();
 

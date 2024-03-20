@@ -5458,6 +5458,7 @@ object frmMain: TfrmMain
       Align = alClient
       BevelWidth = 5
       Ctl3D = True
+      Enabled = False
       ExtendedSelect = False
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBtnText

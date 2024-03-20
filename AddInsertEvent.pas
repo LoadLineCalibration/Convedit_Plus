@@ -1149,7 +1149,7 @@ function TfrmEventInsAdd.ValidateAddCredits(credits: TConEventAddCredits): Boole
 begin
     credits.Credits := seAddCredits.Value;
 
-    //RepaintCurrentEvent();
+    RepaintCurrentEvent();
     EventWarning(False);
 
     Exit(True);
@@ -1906,15 +1906,16 @@ end;
 
 procedure TfrmEventInsAdd.btnAddEventClick(Sender: TObject);
 begin
+    var SpeakFromIndex := cmbSpeakingFrom.ItemIndex; // to swap items in comboboxes
+    var SpeakToIndex := cmbSpeakingTo.ItemIndex;
+
     frmMain.AddEvent(cmbEventType.ItemIndex);
 
-{    if (chkAutoSwapSpeaker.Checked = true) and (cmbEventType.ItemIndex = Ord(ET_Speech)) then
-    begin
-       var tempIndex:= cmbSpeakingFrom.ItemIndex; // swap items in comboboxes
-
-       cmbSpeakingFrom.ItemIndex := cmbSpeakingTo.ItemIndex;
-       cmbSpeakingTo.ItemIndex := tempIndex;
-    end;}
+   if (chkAutoSwapSpeaker.Checked = true) and (cmbEventType.ItemIndex = Ord(ET_Speech)) then
+   begin
+       cmbSpeakingFrom.ItemIndex := SpeakToIndex;
+       cmbSpeakingTo.ItemIndex := SpeakFromIndex;
+   end;
 end;
 
 procedure TfrmEventInsAdd.btnAddSetFlagClick(Sender: TObject);
@@ -1938,7 +1939,8 @@ end;
 
 procedure TfrmEventInsAdd.btnDeleteSetFlagClick(Sender: TObject);
 begin
-    for var lst := lvSetFlags.Items.Count -1 downto 0 do begin
+    for var lst := lvSetFlags.Items.Count -1 downto 0 do
+    begin
         if lvSetFlags.Items[lst].Selected = True then
            lvSetFlags.Items[lst].Delete();
     end;
@@ -2252,6 +2254,9 @@ end;
 
 procedure TfrmEventInsAdd.cmbEventTypeChange(Sender: TObject);
 begin
+    // todo: fill and update comboboxes with items from tables
+
+
     EventsPages.ActivePageIndex := cmbEventType.ItemIndex;
     mp3Pos_pb.Visible := EventsPages.ActivePageIndex < 2;
     mp3VolumeControl.Visible := EventsPages.ActivePageIndex < 2;
@@ -2259,7 +2264,12 @@ begin
     EventWarning(False);
 
     case cmbEventType.ItemIndex of
-    0: memoSpeechChange(self);
+    0:
+    begin
+        memoSpeechChange(self);
+        cmbSpeakingFrom.Items := frmMain.listPawnsActors;
+        cmbSpeakingTo.Items := frmMain.listPawnsActors;
+    end;
     1: lvChoiceListChange(lvChoiceList, lvChoiceList.Selected, ctState);
     2: lvSetFlagsChange(lvSetFlags, lvSetFlags.Selected, ctState);
     3: lvCheckFlagsChange(lvCheckFlags, lvCheckFlags.Selected, ctState);
