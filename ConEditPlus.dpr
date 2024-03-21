@@ -37,6 +37,8 @@ uses
   ConEditPlus.Clipboard.Helper in 'ConEditPlus.Clipboard.Helper.pas';
 
 {$R *.res}
+{$SETPEOSVERSION 5.1} // Windows XP
+{$SETPESUBSYSVERSION 5.1}
 
 begin
   Application.Initialize;
