@@ -337,6 +337,11 @@ ResourceString
     strJumpToEvent = 'Jump to this Event';
     strJumpToConversation = 'Jump to this Conversation';
 
+    strAudioDirsSuccesful = 'Audio directories with placeholder .mp3 files has been succesfully generated!' + #13#10#13#10 +
+                            'Do you want to open directory with these files?';
+
+    strAudioDirsError = 'There is error when creating audio directories in "%s". %s';
+
 
 
 

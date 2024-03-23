@@ -174,10 +174,6 @@ type
     tbCloseFile: TToolButton;
     ToolButton8: TToolButton;
     tbPrint: TToolButton;
-    ToolButton5: TToolButton;
-    tbCut: TToolButton;
-    tbCopy: TToolButton;
-    tbPaste: TToolButton;
     ToolButton9: TToolButton;
     tbSearch: TToolButton;
     ToolButton11: TToolButton;
@@ -1286,42 +1282,53 @@ procedure TfrmMain.CreateAudioDirectories(const InitialPath: string);
 begin
     GenerateAudioFileNames(); // Generate filenames and paths first
 
-    for var con in ConversationsList do
-    begin
-        for var event in con.Events do
-        begin
-            if event is TConEventSpeech then
+    try
+        try
+            for var con in ConversationsList do
             begin
-                var speech := TConEventSpeech(event);
-                var dirStr := InitialPath + conFileParameters.fpAudioPackage + '\' + con.conOwnerName + '\' + con.conName + '\';
-
-                if DirectoryExists(DirStr) = False then
-                    ForceDirectories(dirStr); // create directory if required
-
-                var mp3FileStr := ExtractFileName(InitialPath + speech.mp3File);
-                CopyFinalMp3(dirStr, mp3FileStr); // Extract and copy placeholder .mp3 file
-            end;
-
-            if event is TConEventChoice then
-            begin
-                var ChoiceObj := TconEventChoice(event);
-
-                for var choiceItem in ChoiceObj.Choices do
+                for var event in con.Events do
                 begin
-                    if choiceItem.bDisplayAsSpeech = True then
+                    if event is TConEventSpeech then
                     begin
-                        var choicemMP3 := choiceItem.mp3;
-                        var cDirStr := InitialPath + conFileParameters.fpAudioPackage + '\' + con.conOwnerName + '\' + con.conName + '\';
+                        var speech := TConEventSpeech(event);
+                        var dirStr := InitialPath + conFileParameters.fpAudioPackage + '\' + con.conOwnerName + '\' + con.conName + '\';
 
-                        if DirectoryExists(cDirStr) = False then
-                            ForceDirectories(cDirStr); // create directory if required
+                        if DirectoryExists(DirStr) = False then
+                            ForceDirectories(dirStr); // create directory if required
 
-                        var cMP3FileStr := ExtractFileName(InitialPath + choiceItem.mp3);
-                        CopyFinalMp3(cDirStr, cMP3FileStr);  // Extract and copy placeholder .mp3 file
+                        var mp3FileStr := ExtractFileName(InitialPath + speech.mp3File);
+                        CopyFinalMp3(dirStr, mp3FileStr); // Extract and copy placeholder .mp3 file
+                    end;
+
+                    if event is TConEventChoice then
+                    begin
+                        var ChoiceObj := TconEventChoice(event);
+
+                        for var choiceItem in ChoiceObj.Choices do
+                        begin
+                            if choiceItem.bDisplayAsSpeech = True then
+                            begin
+                                var choicemMP3 := choiceItem.mp3;
+                                var cDirStr := InitialPath + conFileParameters.fpAudioPackage + '\' + con.conOwnerName + '\' + con.conName + '\';
+
+                                if DirectoryExists(cDirStr) = False then
+                                    ForceDirectories(cDirStr); // create directory if required
+
+                                var cMP3FileStr := ExtractFileName(InitialPath + choiceItem.mp3);
+                                CopyFinalMp3(cDirStr, cMP3FileStr);  // Extract and copy placeholder .mp3 file
+                            end;
+                        end;
                     end;
                 end;
             end;
+
+        except
+            raise Exception.Create(Format(strAudioDirsError, [InitialPath, SysErrorMessage(GetLastError)]));
         end;
+
+    finally
+        if MessageDlg(strAudioDirsSuccesful, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+            ShellExecute(0, 'open', PChar(InitialPath), nil, nil, SW_SHOWNORMAL);
     end;
 end;
 
@@ -3328,7 +3335,7 @@ begin
 //            if Event.bHighlightAsRelated = true then
 //                GradientFillCanvas(TListBox(Control).Canvas, clYellow, clCream, tempRect, gdHorizontal)
 //                else
-                FillRectAlpha(TListBox(Control).Canvas, tempRect, clLime, 64);
+            FillRectAlpha(TListBox(Control).Canvas, tempRect, clLime, 64);
         end;
 
         if Event.EventHighlightType = EHT_Related then //Event.bHighlightAsRelated = true then
@@ -4428,9 +4435,6 @@ begin
     tbCloseFile.Hint := tbCloseFileHint;
     tbPrint.Hint := tbPrintHint;
 
-    tbCut.Hint := tbCutHint;
-    tbCopy.Hint := tbCopyHint;
-    tbPaste.Hint := tbPasteHint;
     tbSearch.Hint := tbSearchHint;
     tbVerifyLabels.Hint := tbVerifyLabelsHint;
     tbProperties.Hint := tbPropertiesHint;
@@ -4468,6 +4472,8 @@ begin
         Close1.Visible          := True;
         Save1.Visible           := True;
         SaveAs1.Visible         := True;
+        tbSaveFile.Enabled      := True;
+        tbCloseFile.Enabled     := True;
         GenAudioNames.Visible   := True;
         ConvoProperties.Visible := True;
     end;
@@ -4482,6 +4488,8 @@ begin
         Close1.Visible          := False;
         Save1.Visible           := False;
         SaveAs1.Visible         := False;
+        tbSaveFile.Enabled      := False;
+        tbCloseFile.Enabled     := False;
         GenAudioNames.Visible   := False;
         ConvoProperties.Visible := False;
     end;

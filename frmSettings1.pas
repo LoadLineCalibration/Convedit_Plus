@@ -126,45 +126,45 @@ end;
 
 procedure TfrmSettings.SaveChanges();
 begin
-   with frmMain do
-   begin
-     mainToolBar.Flat := chkFlatControlsMainWin.Checked;
-     if chkFlatControlsMainWin.Checked then
-        HeaderControl1.Style := hsFlat else HeaderControl1.Style := hsButtons;
+    with frmMain do
+    begin
+        mainToolBar.Flat := chkFlatControlsMainWin.Checked;
+        if chkFlatControlsMainWin.Checked then
+          HeaderControl1.Style := hsFlat else HeaderControl1.Style := hsButtons;
 
-     ConversationUserName := edtUserName.Text;
-     ConFilePath := edtConFilePath.Text;
-     ConFileBakPath := edtConFileBakPath.Text;
-     ConFileAudioPath := edtAudioPath.Text;
+        ConversationUserName := edtUserName.Text;
+        ConFilePath := edtConFilePath.Text;
+        ConFileBakPath := edtConFileBakPath.Text;
+        ConFileAudioPath := edtAudioPath.Text;
 
-     bHighlightRelatedEvents := chkHighlightRelatedEvents.Checked;
-     bAskForConvoDelete := chkAskConversationDelete.Checked;
-     bAskForEventDelete := chkAskDeleteEvent.Checked;
-     bHglEventWithNoAudio := chkHighlightspeechChoiceEventsNoneAudio.Checked;
-     bHglEventsGradient := chkSelectEventsGradientFill.Checked;
+        bHighlightRelatedEvents := chkHighlightRelatedEvents.Checked;
+        bAskForConvoDelete := chkAskConversationDelete.Checked;
+        bAskForEventDelete := chkAskDeleteEvent.Checked;
+        bHglEventWithNoAudio := chkHighlightspeechChoiceEventsNoneAudio.Checked;
+        bHglEventsGradient := chkSelectEventsGradientFill.Checked;
 
-     clrHighlightEvent := shpHighlightColorSingle.Brush.Color;
-     clrHighlightEventFrom := shpHighlightColorFrom.Brush.Color;
-     clrHighlightEventTo := shpHighlightColorTo.Brush.Color;
-     clrGrid := shpGridColor.Brush.Color;
+        clrHighlightEvent := shpHighlightColorSingle.Brush.Color;
+        clrHighlightEventFrom := shpHighlightColorFrom.Brush.Color;
+        clrHighlightEventTo := shpHighlightColorTo.Brush.Color;
+        clrGrid := shpGridColor.Brush.Color;
 
-     bFlatToolbar := chkFlatControlsMainWin.Checked;
-      mainToolBar.Flat := bFlatToolbar;
-      if bFlatToolbar = true then HeaderControl1.Style := hsFlat else HeaderControl1.Style := hsButtons;
+        bFlatToolbar := chkFlatControlsMainWin.Checked;
+        mainToolBar.Flat := bFlatToolbar;
+        if bFlatToolbar = true then HeaderControl1.Style := hsFlat else HeaderControl1.Style := hsButtons;
 
-     bAutoSaveEnabled := chkAutoSaveEnabled.Checked;
-     AutoSaveMinutes := seAutoSaveMinutes.Value;
+        bAutoSaveEnabled := chkAutoSaveEnabled.Checked;
+        AutoSaveMinutes := seAutoSaveMinutes.Value;
 
-     bUse3DSelectionFrame := chkUseSelectionFrame.Checked;
-     bUseWhiteSelectedText := chkSelectedTextIsWhite.Checked;
+        bUse3DSelectionFrame := chkUseSelectionFrame.Checked;
+        bUseWhiteSelectedText := chkSelectedTextIsWhite.Checked;
 
-     bUseLogging := chkEnableLogging.Checked;
+        bUseLogging := chkEnableLogging.Checked;
 
-     ReorderModKey := TReorderEventsModKey(cbbReorderEventsModKey.ItemIndex);
-     btnReorder.Hint := GetReorderButtonHint(); // Update hint
+        ReorderModKey := TReorderEventsModKey(cbbReorderEventsModKey.ItemIndex);
+        btnReorder.Hint := GetReorderButtonHint(); // Update hint
 
-     ConEventList.Invalidate(); // Refresh the event list
-   end;
+        ConEventList.Invalidate(); // Refresh the event list
+    end;
 end;
 
 procedure TfrmSettings.btnBrowseBakConFilePathClick(Sender: TObject);
