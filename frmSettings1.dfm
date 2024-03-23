@@ -14,7 +14,6 @@ object frmSettings: TfrmSettings
   Font.Style = []
   Position = poScreenCenter
   ShowHint = True
-  StyleName = 'Windows'
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
   OnShow = FormShow
@@ -177,14 +176,13 @@ object frmSettings: TfrmSettings
     TabOrder = 3
     StyleName = 'Windows'
   end
-  object chkExpandFlagsOnExpandAll: TCheckBox
+  object chkHighlightRelatedEvents: TCheckBox
     Left = 8
     Top = 220
     Width = 201
     Height = 17
-    Caption = 'Reserved'
+    Caption = 'Highlight related events'
     TabOrder = 4
-    StyleName = 'Windows'
   end
   object chkAskConversationDelete: TCheckBox
     Left = 8
@@ -300,6 +298,7 @@ object frmSettings: TfrmSettings
     Top = 312
     Width = 201
     Height = 17
+    Hint = 'Adds slight 3D effect for toolbar buttons and Events list header'
     Caption = 'Flat toolbar/event list header'
     TabOrder = 16
     StyleName = 'Windows'
@@ -309,9 +308,9 @@ object frmSettings: TfrmSettings
     Top = 335
     Width = 114
     Height = 17
+    Hint = 'AutoSave is not implemented yet '
     Caption = 'AutoSave every'
     TabOrder = 17
-    StyleName = 'Windows'
   end
   object seAutoSaveMinutes: TSpinEdit
     Left = 128
@@ -343,6 +342,7 @@ object frmSettings: TfrmSettings
     Top = 299
     Width = 75
     Height = 59
+    Hint = 'Set selection colors like in original ConEdit'
     Caption = 'Set original ConEdit style'
     TabOrder = 20
     WordWrap = True
@@ -376,6 +376,7 @@ object frmSettings: TfrmSettings
     Top = 430
     Width = 69
     Height = 22
+    Hint = 'Hold this key and drag selected event with mouse to change order'
     Style = csOwnerDrawVariable
     ItemIndex = 0
     TabOrder = 23

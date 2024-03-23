@@ -17,7 +17,7 @@ type
     edtConFilePath: TEdit;
     edtConFileBakPath: TEdit;
     edtAudioPath: TEdit;
-    chkExpandFlagsOnExpandAll: TCheckBox;
+    chkHighlightRelatedEvents: TCheckBox;
     chkAskConversationDelete: TCheckBox;
     chkAskDeleteEvent: TCheckBox;
     chkHighlightspeechChoiceEventsNoneAudio: TCheckBox;
@@ -99,7 +99,7 @@ begin
         edtConFileBakPath.Text := ConFileBakPath;
         edtAudioPath.Text := ConFileAudioPath;
 
-        chkExpandFlagsOnExpandAll.Checked := bExpandFlagsOnExpandAll;
+        chkHighlightRelatedEvents.Checked := bHighlightRelatedEvents;
         chkAskConversationDelete.Checked := bAskForConvoDelete;
         chkAskDeleteEvent.Checked := bAskForEventDelete;
         chkHighlightspeechChoiceEventsNoneAudio.Checked := bHglEventWithNoAudio;
@@ -137,7 +137,7 @@ begin
      ConFileBakPath := edtConFileBakPath.Text;
      ConFileAudioPath := edtAudioPath.Text;
 
-     bExpandFlagsOnExpandAll := chkExpandFlagsOnExpandAll.Checked;
+     bHighlightRelatedEvents := chkHighlightRelatedEvents.Checked;
      bAskForConvoDelete := chkAskConversationDelete.Checked;
      bAskForEventDelete := chkAskDeleteEvent.Checked;
      bHglEventWithNoAudio := chkHighlightspeechChoiceEventsNoneAudio.Checked;
