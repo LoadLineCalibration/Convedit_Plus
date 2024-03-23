@@ -469,7 +469,7 @@ type
 
     // boolean variables for configuration file
     var bShowAudioFiles, bShowStatusBar, bShowToolbar, bExpandedEventList,
-    bExpandFlagsOnExpandAll,
+    bHighlightRelatedEvents,
     bAskForConvoDelete, bAskForEventDelete, bHglEventWithNoAudio,
     bHglEventsGradient, bFlatToolbar, bAutoSaveEnabled,
     bUse3DSelectionFrame, bUseWhiteSelectedText, bDrawEventIdx, bUseLogging: Boolean;
@@ -1956,7 +1956,8 @@ end;
 procedure TfrmMain.ClearRecentFiles();
 var i: Integer;
 begin
-    for i := 0 to CEP_MAX_RECENT_FILES do begin
+    for i := 0 to CEP_MAX_RECENT_FILES do
+    begin
         RecentFiles[i] := '';
         mniRecent.Items[i].Caption := RecentFiles[i];
     end;
@@ -1996,13 +1997,13 @@ begin
        mnuEventIndex.Checked := bDrawEventIdx;
 
 
-      // Settings form
+       // Settings form
        ConversationUserName := ReadString('frmMain', 'UserName', strAppTitle);
        ConFilePath := ReadString('frmMain', 'ConFilePath', '');
        ConFileBakPath := ReadString('frmMain', 'ConFileBakPath', '');
        ConFileAudioPath := ReadString('frmMain', 'ConFileAudioPath', '');
 
-       bExpandFlagsOnExpandAll := ReadBool('frmMain', 'bExpandFlagsOnExpandAll',true);
+       bHighlightRelatedEvents := ReadBool('frmMain', 'bHighlightRelatedEvents',true);
        bAskForConvoDelete := ReadBool('frmMain', 'bAskForConvoDelete', true);
        bAskForEventDelete := ReadBool('frmMain', 'bAskForEventDelete', true);
        bHglEventWithNoAudio := ReadBool('frmMain', 'bHglEventWithNoAudio', true);
@@ -2065,7 +2066,7 @@ begin
            WriteString('frmMain', 'ConFileBakPath', ConFileBakPath);
            WriteString('frmMain', 'ConFileAudioPath', ConFileAudioPath);
 
-           WriteBool('frmMain', 'bExpandFlagsOnExpandAll', bExpandFlagsOnExpandAll);
+           WriteBool('frmMain', 'bHighlightRelatedEvents', bHighlightRelatedEvents);
            WriteBool('frmMain', 'bAskForConvoDelete', bAskForConvoDelete);
            WriteBool('frmMain', 'bAskForEventDelete', bAskForEventDelete);
            WriteBool('frmMain', 'bHglEventWithNoAudio', bHglEventWithNoAudio);
@@ -3446,6 +3447,9 @@ end;
 
 procedure TfrmMain.HighlightRelatedEvents();
 begin
+    if bHighlightRelatedEvents = False then Exit();
+
+
     // Find events with label(s) from selected event and highlight them
     if CurrentEvent is TConEventChoice then
     begin
