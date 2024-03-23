@@ -3,7 +3,7 @@ object frmSettings: TfrmSettings
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsDialog
-  Caption = 'ConvEdit+ Settings'
+  Caption = 'ConEditPlus Settings'
   ClientHeight = 500
   ClientWidth = 451
   Color = clBtnFace
@@ -61,7 +61,7 @@ object frmSettings: TfrmSettings
   end
   object shpHighlightColorFrom: TShape
     Left = 215
-    Top = 358
+    Top = 266
     Width = 20
     Height = 20
     Cursor = crHandPoint
@@ -70,7 +70,7 @@ object frmSettings: TfrmSettings
   end
   object shpHighlightColorTo: TShape
     Left = 241
-    Top = 358
+    Top = 266
     Width = 20
     Height = 20
     Cursor = crHandPoint
@@ -79,7 +79,7 @@ object frmSettings: TfrmSettings
   end
   object shpHighlightColorSingle: TShape
     Left = 267
-    Top = 358
+    Top = 266
     Width = 20
     Height = 20
     Cursor = crHandPoint
@@ -87,17 +87,17 @@ object frmSettings: TfrmSettings
     OnMouseDown = shpHighlightColorSingleMouseDown
   end
   object shpOriginalStyle: TShape
-    Left = 363
-    Top = 295
-    Width = 82
-    Height = 66
+    Left = 272
+    Top = 308
+    Width = 164
+    Height = 25
     Brush.Style = bsClear
     Pen.Color = clRed
     Pen.Width = 4
   end
   object shpGridColor: TShape
     Left = 413
-    Top = 381
+    Top = 289
     Width = 20
     Height = 20
     Cursor = crHandPoint
@@ -106,7 +106,7 @@ object frmSettings: TfrmSettings
   end
   object Label4: TLabel
     Left = 343
-    Top = 381
+    Top = 289
     Width = 64
     Height = 17
     AutoSize = False
@@ -127,7 +127,7 @@ object frmSettings: TfrmSettings
   object Label6: TLabel
     Left = 189
     Top = 335
-    Width = 116
+    Width = 52
     Height = 17
     AutoSize = False
     Caption = 'minutes'
@@ -186,7 +186,7 @@ object frmSettings: TfrmSettings
   end
   object chkAskConversationDelete: TCheckBox
     Left = 8
-    Top = 243
+    Top = 358
     Width = 185
     Height = 17
     Caption = 'Ask for Conversation deletion'
@@ -195,8 +195,8 @@ object frmSettings: TfrmSettings
   end
   object chkAskDeleteEvent: TCheckBox
     Left = 8
-    Top = 266
-    Width = 353
+    Top = 381
+    Width = 185
     Height = 17
     Caption = 'Ask For Event Deletion'
     TabOrder = 6
@@ -204,8 +204,8 @@ object frmSettings: TfrmSettings
   end
   object chkHighlightspeechChoiceEventsNoneAudio: TCheckBox
     Left = 8
-    Top = 289
-    Width = 353
+    Top = 243
+    Width = 297
     Height = 17
     Caption = 'Highlight Speech/Choice events with missing audio'
     TabOrder = 7
@@ -213,7 +213,7 @@ object frmSettings: TfrmSettings
   end
   object chkSelectEventsGradientFill: TCheckBox
     Left = 8
-    Top = 358
+    Top = 266
     Width = 201
     Height = 17
     Hint = 'If not checked, use single color to highlight events.'
@@ -338,10 +338,10 @@ object frmSettings: TfrmSettings
     OnClick = btnPickUserNameClick
   end
   object btnResetToDefaults: TButton
-    Left = 367
-    Top = 299
-    Width = 75
-    Height = 59
+    Left = 276
+    Top = 312
+    Width = 157
+    Height = 17
     Hint = 'Set selection colors like in original ConEdit'
     Caption = 'Set original ConEdit style'
     TabOrder = 20
@@ -351,7 +351,7 @@ object frmSettings: TfrmSettings
   end
   object chkUseSelectionFrame: TCheckBox
     Left = 8
-    Top = 381
+    Top = 289
     Width = 114
     Height = 17
     Hint = 'Use 3D frame in addition to selection color(s).'
@@ -362,7 +362,7 @@ object frmSettings: TfrmSettings
   end
   object chkSelectedTextIsWhite: TCheckBox
     Left = 128
-    Top = 381
+    Top = 289
     Width = 209
     Height = 17
     Hint = 'Use this option if you want to use dark selection colors. '
