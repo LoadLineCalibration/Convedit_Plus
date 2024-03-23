@@ -219,7 +219,7 @@ type
 
     procedure SendStringToEditValue(control: TControl);
 
-    procedure FillEventLabels(con: TConversation; listToFill: TCustomListControl);
+    procedure FillEventLabels(const con: TConversation; listToFill: TCustomListControl);
 
     function GetAppVersionStr(): string; //https://delphihaven.wordpress.com/2012/12/08/retrieving-the-applications-version-string/
     function HasConvoEventToPaste(): Boolean;
@@ -2036,6 +2036,7 @@ begin
        end;
 
        OpenFileFilterIndex := ReadInteger('OpenFileDialog', 'OpenFileFilterIndex', 1);
+       SaveFileFilterIndex := ReadInteger('SaveFileDialog', 'SaveFileFilterIndex', 2);
     end;
 
     finally
@@ -2091,6 +2092,7 @@ begin
                WriteString('RecentFiles', 'RecentFile'+i.ToString, RecentFiles[i]);
 
            WriteInteger('OpenFileDialog', 'OpenFileFilterIndex', OpenFileFilterIndex);
+           WriteInteger('SaveFileDialog', 'SaveFileFilterIndex', SaveFileFilterIndex);
        end;
 
     finally
@@ -3726,11 +3728,11 @@ begin
     frmEditValue.ShowModal();
 end;
 
-procedure TfrmMain.FillEventLabels(con: TConversation; listToFill: TCustomListControl);
+procedure TfrmMain.FillEventLabels(const con: TConversation; listToFill: TCustomListControl);
 begin
     listToFill.Clear();
 
-    for var LBS := 0 to con.numEventList -1 do
+    for var LBS := 0 to High(con.Events) do
     begin
         if con.Events[LBS].EventLabel.IsEmpty = False then
             listToFill.AddItem(con.Events[LBS].EventLabel, nil);
@@ -4556,9 +4558,11 @@ procedure TfrmMain.FileSaveAsExecute(Sender: TObject);
 begin
     var savefileName: string;
 
+    FileSaveDialog.FileTypeIndex := SaveFileFilterIndex;
+
     if FileSaveDialog.Execute() = true then
     begin
-//        ShowMessage('FileSaveDialog.FileTypeIndex = ' + FileSaveDialog.FileTypeIndex.ToString);
+        SaveFileFilterIndex := FileSaveDialog.FileTypeIndex;
 
         if FileSaveDialog.FileTypeIndex = 1 then
         begin
@@ -4805,14 +4809,15 @@ begin
     case TargetPage of
     0: // speech
     begin
-        //frmEventInsAdd.cmbSpeakingFrom.Clear();
-        //frmEventInsAdd.cmbSpeakingFrom.Items.Assign(frmMain.conFileParameters.fpActors);
-        frmEventInsAdd.cmbSpeakingFrom.Items := listPawnsActors;
+        // Speaker
+        frmEventInsAdd.cmbSpeakingFrom.Clear();
+        frmEventInsAdd.cmbSpeakingFrom.Items.Assign(listPawnsActors);
+        //frmEventInsAdd.cmbSpeakingFrom.Items := listPawnsActors;
 
         // Speaking To
-        //frmEventInsAdd.cmbSpeakingTo.Clear();
-        //frmEventInsAdd.cmbSpeakingTo.Items.Assign(frmMain.conFileParameters.fpActors);
-        frmEventInsAdd.cmbSpeakingTo.Items := listPawnsActors;
+        frmEventInsAdd.cmbSpeakingTo.Clear();
+        frmEventInsAdd.cmbSpeakingTo.Items.Assign(listPawnsActors);
+        //frmEventInsAdd.cmbSpeakingTo.Items := listPawnsActors;
 
         frmEventInsAdd.memoSpeech.Clear();
 
