@@ -440,6 +440,7 @@ type
     procedure ExpandTreeWithoutFlagsClick(Sender: TObject);
     procedure TreeExpandAllClick(Sender: TObject);
     procedure FileOpenDialogTypeChange(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     { Private declarations }
     procedure WMEnterSizeMove(var Msg: TMessage); message WM_ENTERSIZEMOVE;
@@ -1092,24 +1093,6 @@ end;
 
 procedure TfrmMain.CreateConFile(bCreatingNew: Boolean);
 begin
-    if (currentConFile <> '') and (bFileModified = true) then
-    begin
-        case MessageDlg(strSaveConversationFileQuestion, mtConfirmation, mbYesNoCancel, 0) of
-          mrCancel:
-            begin
-                Exit();
-            end;
-          mrYes:
-            begin
-
-            end;
-          mrNo:
-            begin
-
-            end;
-        end;
-    end;
-
     ClearForNewFile();
 
     if (bCreatingNew = True) then
@@ -2870,8 +2853,6 @@ begin
     end;
 end;
 
-
-
 procedure TfrmMain.CopyEventFields(Source, Dest: TConEvent);
 begin
     var Ctx: TRttiContext;
@@ -3406,6 +3387,14 @@ begin
                 ConEventList.Perform(LB_SETITEMHEIGHT, i, GetSpeechEventItemHeight([SpeechEvent]));
             end;
 
+            if ConEventList.Items.Objects[i] is TConEventChoice then
+            begin
+                var ChoiceEvent := TConEventChoice(ConEventList.Items.Objects[i]);
+
+                ConEventList.Perform(LB_SETITEMHEIGHT, i, GetChoiceItemHeight([ChoiceEvent]));
+            end;
+
+
             if ConEventList.Items.Objects[i] is TConEventAddGoal then
             begin
                 var AddGoalEvent := TConEventAddGoal(ConEventList.Items.Objects[i]);
@@ -3757,12 +3746,12 @@ end;
 
 procedure TfrmMain.Comment1Click(Sender: TObject);
 begin
-    AddEvent(Comment1.Tag);
+    AddEvent(Ord(ET_Comment));
 end;
 
 procedure TfrmMain.Comment2Click(Sender: TObject);
 begin
-    InsertEvent(Comment2.Tag);
+    InsertEvent(Ord(ET_Comment));
 end;
 
 procedure TfrmMain.ConEventListClick(Sender: TObject);
@@ -3801,27 +3790,29 @@ begin
 
     if CurrentEvent <> nil then
     begin
-       case CurrentEvent.EventType of
-         ET_Speech:       EditCurrentEvent(TConEventSpeech(CurrentEvent));
-         ET_Choice:       EditCurrentEvent(TConEventChoice(CurrentEvent));
-         ET_SetFlag:      EditCurrentEvent(TConEventSetFlag(CurrentEvent));
-         ET_CheckFlag:    EditCurrentEvent(TConEventCheckFlag(CurrentEvent));
-         ET_CheckObject:  EditCurrentEvent(TConEventCheckObject(CurrentEvent));
-         ET_TransferObject: EditCurrentEvent(TConEventTransferObject(CurrentEvent));
-         ET_MoveCamera:   EditCurrentEvent(TConEventMoveCamera(CurrentEvent));
-         ET_Animation:    EditCurrentEvent(TConEventAnimation(CurrentEvent));
-         ET_Trade:        EditCurrentEvent(TConEventTrade(CurrentEvent));
-         ET_Jump:         EditCurrentEvent(TConEventJump(CurrentEvent));
-         ET_Random:       EditCurrentEvent(TConEventRandom(CurrentEvent));
-         ET_Trigger:      EditCurrentEvent(TConEventTrigger(CurrentEvent));
-         ET_AddGoal:      EditCurrentEvent(TConEventAddGoal(CurrentEvent));
-         ET_AddNote:      EditCurrentEvent(TConEventAddNote(CurrentEvent));
-         ET_AddSkillPoints: EditCurrentEvent(TConEventAddSkillPoints(CurrentEvent));
-         ET_AddCredits:   EditCurrentEvent(TConEventAddCredits(CurrentEvent));
-         ET_CheckPersona: EditCurrentEvent(TConEventCheckPersona(CurrentEvent));
-         ET_Comment:      EditCurrentEvent(TConEventComment(CurrentEvent));
-         ET_End:          EditCurrentEvent(TConEventEnd(CurrentEvent));
-       end;
+        case CurrentEvent.EventType of
+            ET_Speech:       EditCurrentEvent(TConEventSpeech(CurrentEvent));
+            ET_Choice:       EditCurrentEvent(TConEventChoice(CurrentEvent));
+            ET_SetFlag:      EditCurrentEvent(TConEventSetFlag(CurrentEvent));
+            ET_CheckFlag:    EditCurrentEvent(TConEventCheckFlag(CurrentEvent));
+            ET_CheckObject:  EditCurrentEvent(TConEventCheckObject(CurrentEvent));
+            ET_TransferObject: EditCurrentEvent(TConEventTransferObject(CurrentEvent));
+            ET_MoveCamera:   EditCurrentEvent(TConEventMoveCamera(CurrentEvent));
+            ET_Animation:    EditCurrentEvent(TConEventAnimation(CurrentEvent));
+            ET_Trade:        EditCurrentEvent(TConEventTrade(CurrentEvent));
+            ET_Jump:         EditCurrentEvent(TConEventJump(CurrentEvent));
+            ET_Random:       EditCurrentEvent(TConEventRandom(CurrentEvent));
+            ET_Trigger:      EditCurrentEvent(TConEventTrigger(CurrentEvent));
+            ET_AddGoal:      EditCurrentEvent(TConEventAddGoal(CurrentEvent));
+            ET_AddNote:      EditCurrentEvent(TConEventAddNote(CurrentEvent));
+            ET_AddSkillPoints: EditCurrentEvent(TConEventAddSkillPoints(CurrentEvent));
+            ET_AddCredits:   EditCurrentEvent(TConEventAddCredits(CurrentEvent));
+            ET_CheckPersona: EditCurrentEvent(TConEventCheckPersona(CurrentEvent));
+            ET_Comment:      EditCurrentEvent(TConEventComment(CurrentEvent));
+            ET_End:          EditCurrentEvent(TConEventEnd(CurrentEvent));
+        end;
+
+        bFileModified := True; // we're about to edit some event, so most likely file will be modified
     end;
 end;
 
@@ -4103,6 +4094,7 @@ procedure TfrmMain.Conversation_PropertiesExecute(Sender: TObject);
 begin
     if Assigned(CurrentConversation) = false then Exit();
 
+    frmConvoProperties.Caption := strEditConversation;
     frmConvoProperties.EditConversation(CurrentConversation);
 end;
 
@@ -4169,7 +4161,7 @@ begin
             end;
         end;
 
-        FormResize(self);
+        UpdateEventListHeights();
         UnhighlightRelatedEvents();
     end;
 end;
@@ -4214,6 +4206,8 @@ begin
                     Break;
                 end;
             end;
+
+            bFileModified := True;
         end;
     end;
 end;
@@ -4236,12 +4230,12 @@ end;
 
 procedure TfrmMain.End1Click(Sender: TObject);
 begin
-  AddEvent(End1.Tag);
+  AddEvent(Ord(ET_End));
 end;
 
 procedure TfrmMain.End2Click(Sender: TObject);
 begin
-  InsertEvent(End2.Tag);
+  InsertEvent(Ord(ET_End));
 end;
 
 procedure TfrmMain.DateTimeToDouble1Click(Sender: TObject);
@@ -4254,17 +4248,19 @@ end;
 procedure TfrmMain.DeleteConversationExecute(Sender: TObject);
 begin
     if bAskForConvoDelete = true then
-        if Application.MessageBox(PChar(strAskDeleteConvoText),PChar(strAskDeleteConvoTitle), MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2) = IDYES then
+        if MessageDlg(PChar(strAskDeleteConvoText),  mtConfirmation, [mbYes, mbNo], 0) = mrYes then
         begin
             DeleteCurrentConversation();
         end
-        else DeleteCurrentConversation();
+    else DeleteCurrentConversation();
 end;
 
 procedure TfrmMain.DeleteCurrentEvent();
 begin
     Delete(CurrentConversation.Events, ConEventList.ItemIndex, 1); // Delete from array
     ConEventList.DeleteSelected(); // also delete from list
+
+    frmMain.bFileModified := True;
 end;
 
 procedure TfrmMain.DeleteCurrentConversation();
@@ -4308,6 +4304,8 @@ begin
     begin
         CopyEventToClipboard(CurrentEvent);
         DeleteCurrentEvent();
+
+        frmMain.bFileModified := True;
     end;
 end;
 
@@ -4363,13 +4361,15 @@ begin
 
     SetEventIndexes();
 
-    ConvoTreeChange(Self, ConvoTree.Selected);
+    ConvoTreeChange(Self, ConvoTree.Selected); // todo: remove this and update only EventList.
     ConEventList.ItemIndex := ItemIdx;
 end;
 
 procedure TfrmMain.Event_PasteExecute(Sender: TObject);
 begin
     PasteEventFromClipboard();
+
+    frmMain.bFileModified := True;
 end;
 
 procedure TfrmMain.Exit1Click(Sender: TObject);
@@ -4411,6 +4411,14 @@ end;
 procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
     SaveCfg();
+//    ShowMessage('Close?');
+end;
+
+procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+//    ShowMessage('CloseQuery?');
+//    CanClose := False;
+    // This one called first. If CanClose := False, FormClose will not be callsed, also cannot close the form.
 end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
@@ -4508,6 +4516,20 @@ end;
 
 procedure TfrmMain.FileCloseExecute(Sender: TObject);
 begin
+    if (currentConFile <> '') and (bFileModified = true) then
+    begin
+        case MessageDlg(strSaveConversationFileQuestion, mtConfirmation, mbYesNoCancel, 0) of
+          mrCancel: // Cancel, just close the dialog and exit
+            begin
+                Exit();
+            end;
+          mrYes: // Save the file
+            begin
+                FileSaveExecute(self);
+            end;
+        end;
+    end;
+
     CreateConFile(False);
     ToggleMenusPanels(False);
 end;
@@ -4672,22 +4694,22 @@ end;
 
 procedure TfrmMain.Setflag1Click(Sender: TObject);
 begin
-    AddEvent(SetFlag1.Tag);
+    AddEvent(Ord(ET_SetFlag));
 end;
 
 procedure TfrmMain.Setflag2Click(Sender: TObject);
 begin
-    InsertEvent(SetFlag2.Tag);
+    InsertEvent(Ord(ET_SetFlag));
 end;
 
 procedure TfrmMain.Speech1Click(Sender: TObject);
 begin
-    AddEvent(Speech1.Tag);
+    AddEvent(Ord(ET_Speech));
 end;
 
 procedure TfrmMain.Speech2Click(Sender: TObject);
 begin
-    InsertEvent(Speech2.Tag);
+    InsertEvent(Ord(ET_Speech));
 end;
 
 procedure TfrmMain.Splitter1CanResize(Sender: TObject; var NewSize: Integer; var Accept: Boolean);
@@ -4711,52 +4733,52 @@ end;
 
 procedure TfrmMain.BuySellTrade1Click(Sender: TObject);
 begin
-    AddEvent(BuySellTrade1.Tag);
+    AddEvent(Ord(ET_Trade));
 end;
 
 procedure TfrmMain.BuySellTrade2Click(Sender: TObject);
 begin
-    InsertEvent(BuySellTrade2.Tag);
+    InsertEvent(Ord(ET_Trade));
 end;
 
 procedure TfrmMain.Checkflag1Click(Sender: TObject);
 begin
-    AddEvent(CheckFlag1.Tag);
+    AddEvent(Ord(ET_CheckFlag));
 end;
 
 procedure TfrmMain.Checkflag2Click(Sender: TObject);
 begin
-    InsertEvent(CheckFlag2.Tag);
+    InsertEvent(Ord(ET_CheckFlag));
 end;
 
 procedure TfrmMain.CheckObject1Click(Sender: TObject);
 begin
-    AddEvent(CheckObject1.Tag);
+    AddEvent(Ord(ET_CheckObject));
 end;
 
 procedure TfrmMain.CheckObject2Click(Sender: TObject);
 begin
-    InsertEvent(CheckObject2.Tag);
+    InsertEvent(Ord(ET_CheckObject));
 end;
 
 procedure TfrmMain.CheckPersona1Click(Sender: TObject);
 begin
-    AddEvent(CheckPersona1.Tag);
+    AddEvent(Ord(ET_CheckPersona));
 end;
 
 procedure TfrmMain.CheckPersona2Click(Sender: TObject);
 begin
-    InsertEvent(CheckPersona2.Tag);
+    InsertEvent(Ord(ET_CheckPersona));
 end;
 
 procedure TfrmMain.Choice1Click(Sender: TObject);
 begin
-    AddEvent(Choice1.Tag);
+    AddEvent(Ord(ET_Choice));
 end;
 
 procedure TfrmMain.Choice2Click(Sender: TObject);
 begin
-    InsertEvent(Choice2.Tag);
+    InsertEvent(Ord(ET_Choice));
 end;
 
 procedure TfrmMain.About1Click(Sender: TObject);
@@ -4779,12 +4801,12 @@ end;
 
 procedure TfrmMain.AddCompleteGoal1Click(Sender: TObject);
 begin
-    AddEvent(AddCompleteGoal1.Tag);
+    AddEvent(Ord(ET_AddGoal));
 end;
 
 procedure TfrmMain.AddCompleteGoal2Click(Sender: TObject);
 begin
-    InsertEvent(AddCompleteGoal2.Tag);
+    InsertEvent(Ord(ET_AddGoal));
 end;
 
 procedure TfrmMain.AddConversationExecute(Sender: TObject);
@@ -4798,217 +4820,215 @@ begin
         editConvoLastModifiedOn.Text := conXMLDateTime();
         editConvoLastModifiedBy.Text := ConversationUserName;
 
+        ClearFields();
+        Caption := strAddNewConversation;
         ShowModal();
     end;
 end;
 
 procedure TfrmMain.AddCredits1Click(Sender: TObject);
 begin
-    AddEvent(AddCredits1.Tag);
+    AddEvent(Ord(ET_AddCredits));
 end;
 
 procedure TfrmMain.AddCredits2Click(Sender: TObject);
 begin
-    InsertEvent(AddCredits2.Tag);
+    InsertEvent(Ord(ET_AddCredits));
 end;
 
 procedure TfrmMain.AddEvent(TargetPage: Integer); // Add event to end
 begin
     frmEventInsAdd.cmbEventType.Enabled := True;
-
     frmEventInsAdd.editEventLabel.Clear();
 
     case TargetPage of
     0: // speech
-    begin
-        // Speaker
-        frmEventInsAdd.cmbSpeakingFrom.Clear();
-        frmEventInsAdd.cmbSpeakingFrom.Items.Assign(listPawnsActors);
-        //frmEventInsAdd.cmbSpeakingFrom.Items := listPawnsActors;
+        begin
+            // Speaker
+            frmEventInsAdd.cmbSpeakingFrom.Clear();
+            frmEventInsAdd.cmbSpeakingFrom.Items.Assign(listPawnsActors);
 
-        // Speaking To
-        frmEventInsAdd.cmbSpeakingTo.Clear();
-        frmEventInsAdd.cmbSpeakingTo.Items.Assign(listPawnsActors);
-        //frmEventInsAdd.cmbSpeakingTo.Items := listPawnsActors;
+            // Speaking To
+            frmEventInsAdd.cmbSpeakingTo.Clear();
+            frmEventInsAdd.cmbSpeakingTo.Items.Assign(listPawnsActors);
 
-        frmEventInsAdd.memoSpeech.Clear();
+            frmEventInsAdd.memoSpeech.Clear();
 
-        frmEventInsAdd.bCreatingNewEvent := True;
-    end;
-    1: // Choice
-    begin
-        frmEventInsAdd.lvChoiceList.Clear();
-        frmEventInsAdd.mmoChoiceText.Clear();
-        frmEventInsAdd.lvChoiceFlagList.Clear();
-        frmEventInsAdd.cbbChoiceJumpToLabel.Clear();
+            frmEventInsAdd.bCreatingNewEvent := True;
+        end;
+        1: // Choice
+        begin
+            frmEventInsAdd.lvChoiceList.Clear();
+            frmEventInsAdd.mmoChoiceText.Clear();
+            frmEventInsAdd.lvChoiceFlagList.Clear();
+            frmEventInsAdd.cbbChoiceJumpToLabel.Clear();
 
-        FillEventLabels(frmMain.CurrentConversation, frmEventInsAdd.cbbChoiceJumpToLabel);
+            FillEventLabels(frmMain.CurrentConversation, frmEventInsAdd.cbbChoiceJumpToLabel);
 
-        frmEventInsAdd.bCreatingNewEvent := True;
-    end;
-    2: // SetFlags
-    begin
-        frmEventInsAdd.lvSetFlags.Clear();
+            frmEventInsAdd.bCreatingNewEvent := True;
+        end;
+        2: // SetFlags
+        begin
+            frmEventInsAdd.lvSetFlags.Clear();
 
-        frmEventInsAdd.bCreatingNewEvent := True;
-    end;
-    3: // CheckFlags
-    begin
-        frmEventInsAdd.lvCheckFlags.Clear();
-        frmEventInsAdd.cmbChkFlgJumpToLabel.Clear();
+            frmEventInsAdd.bCreatingNewEvent := True;
+        end;
+        3: // CheckFlags
+        begin
+            frmEventInsAdd.lvCheckFlags.Clear();
+            frmEventInsAdd.cmbChkFlgJumpToLabel.Clear();
 
-        FillEventLabels(frmMain.CurrentConversation, frmEventInsAdd.cmbChkFlgJumpToLabel);
+            FillEventLabels(frmMain.CurrentConversation, frmEventInsAdd.cmbChkFlgJumpToLabel);
 
-        frmEventInsAdd.bCreatingNewEvent := True;
-    end;
-    4: // CheckObject
-    begin
-        frmEventInsAdd.cmbObjectToCheck.Clear();
-        frmEventInsAdd.cmbObjectToCheck.Items.Assign(listObjects);
+            frmEventInsAdd.bCreatingNewEvent := True;
+        end;
+        4: // CheckObject
+        begin
+            frmEventInsAdd.cmbObjectToCheck.Clear();
+            frmEventInsAdd.cmbObjectToCheck.Items.Assign(listObjects);
 
-        frmEventInsAdd.cmbObjNotFoundJumpTo.Clear();
-        FillEventLabels(frmMain.CurrentConversation, frmEventInsAdd.cmbObjNotFoundJumpTo);
+            frmEventInsAdd.cmbObjNotFoundJumpTo.Clear();
+            FillEventLabels(frmMain.CurrentConversation, frmEventInsAdd.cmbObjNotFoundJumpTo);
 
-        frmEventInsAdd.bCreatingNewEvent := True;
-    end;
-    5: // TransferObject
-    begin
-        frmEventInsAdd.cmbObjectToTransfer.Clear();
-        frmEventInsAdd.cmbObjectToTransfer.Items.Assign(listObjects);
+            frmEventInsAdd.bCreatingNewEvent := True;
+        end;
+        5: // TransferObject
+        begin
+            frmEventInsAdd.cmbObjectToTransfer.Clear();
+            frmEventInsAdd.cmbObjectToTransfer.Items.Assign(listObjects);
 
-        frmEventInsAdd.seAmountToTransfer.Value := 1;
+            frmEventInsAdd.seAmountToTransfer.Value := 1;
 
-        frmEventInsAdd.cmbTransferObjectTo.Clear();
-        frmEventInsAdd.cmbTransferObjectTo.Items.Assign(listPawnsActors);
+            frmEventInsAdd.cmbTransferObjectTo.Clear();
+            frmEventInsAdd.cmbTransferObjectTo.Items.Assign(listPawnsActors);
 
-        frmEventInsAdd.cmbTransferObjectFrom.Clear();
-        frmEventInsAdd.cmbTransferObjectFrom.Items.Assign(listPawnsActors);
+            frmEventInsAdd.cmbTransferObjectFrom.Clear();
+            frmEventInsAdd.cmbTransferObjectFrom.Items.Assign(listPawnsActors);
 
-        frmEventInsAdd.cmbTransferObjectFailLabel.Clear();
-        FillEventLabels(frmMain.CurrentConversation, frmEventInsAdd.cmbTransferObjectFailLabel);
+            frmEventInsAdd.cmbTransferObjectFailLabel.Clear();
+            FillEventLabels(frmMain.CurrentConversation, frmEventInsAdd.cmbTransferObjectFailLabel);
 
-        frmEventInsAdd.bCreatingNewEvent := True;
-    end;
-    6: // MoveCamera
-    begin
-        frmEventInsAdd.rbPredefinedCameraPos.Checked := True;
-        frmEventInsAdd.rbPredefinedCameraPosClick(self);
+            frmEventInsAdd.bCreatingNewEvent := True;
+        end;
+        6: // MoveCamera
+        begin
+            frmEventInsAdd.rbPredefinedCameraPos.Checked := True;
+            frmEventInsAdd.rbPredefinedCameraPosClick(self);
 
-        frmEventInsAdd.bCreatingNewEvent := True;
-    end;
-    7: // PlayAnimation
-    begin
-        frmEventInsAdd.cmbPawnToAnimate.Clear();
-        frmEventInsAdd.cmbPawnToAnimate.Items.Assign(listPawnsActors);
+            frmEventInsAdd.bCreatingNewEvent := True;
+        end;
+        7: // PlayAnimation
+        begin
+            frmEventInsAdd.cmbPawnToAnimate.Clear();
+            frmEventInsAdd.cmbPawnToAnimate.Items.Assign(listPawnsActors);
 
-        frmEventInsAdd.rbPlayAnimOnce.Checked := True;
-        frmEventInsAdd.rbPlayAnimOnceClick(self);
+            frmEventInsAdd.rbPlayAnimOnce.Checked := True;
+            frmEventInsAdd.rbPlayAnimOnceClick(self);
 
-        frmEventInsAdd.bCreatingNewEvent := True;
-    end;
-    8: // BuySellTrade -- skip
-    begin
-        //
-    end;
-    9: // Jump
-    begin
-        frmEventInsAdd.cboJumpConv.Clear();
-        for var co := 0 to ConversationsList.Count -1 do
-            frmEventInsAdd.cboJumpConv.Items.Add(ConversationsList.Items[co].conName);
+            frmEventInsAdd.bCreatingNewEvent := True;
+        end;
+        8: // BuySellTrade -- skip
+        begin
+            //
+        end;
+        9: // Jump
+        begin
+            frmEventInsAdd.cboJumpConv.Clear();
+            for var co := 0 to ConversationsList.Count -1 do
+                frmEventInsAdd.cboJumpConv.Items.Add(ConversationsList.Items[co].conName);
 
-        frmEventInsAdd.cboJumpLabel.Clear();
-        FillEventLabels(frmMain.CurrentConversation, frmEventInsAdd.cboJumpLabel);
+            frmEventInsAdd.cboJumpLabel.Clear();
+            FillEventLabels(frmMain.CurrentConversation, frmEventInsAdd.cboJumpLabel);
 
-        frmEventInsAdd.bCreatingNewEvent := True;
-    end;
-    10:// Random
-    begin
-        frmEventInsAdd.lstRandomLabels.Clear();
+            frmEventInsAdd.bCreatingNewEvent := True;
+        end;
+        10:// Random
+        begin
+            frmEventInsAdd.lstRandomLabels.Clear();
 
-        frmEventInsAdd.cmbEventRandomLabels.Clear();
-        FillEventLabels(frmMain.CurrentConversation, frmEventInsAdd.cmbEventRandomLabels);
+            frmEventInsAdd.cmbEventRandomLabels.Clear();
+            FillEventLabels(frmMain.CurrentConversation, frmEventInsAdd.cmbEventRandomLabels);
 
-        frmEventInsAdd.chkCycleEvents.Checked := False;
-        frmEventInsAdd.chkCycleOnce.Checked := False;
-        frmEventInsAdd.chkRandomAfterCycle.Checked := False;
+            frmEventInsAdd.chkCycleEvents.Checked := False;
+            frmEventInsAdd.chkCycleOnce.Checked := False;
+            frmEventInsAdd.chkRandomAfterCycle.Checked := False;
 
-        frmEventInsAdd.bCreatingNewEvent := True;
-    end;
-    11:// Trigger
-    begin
-        frmEventInsAdd.editTriggerTag.Clear();
+            frmEventInsAdd.bCreatingNewEvent := True;
+        end;
+        11:// Trigger
+        begin
+            frmEventInsAdd.editTriggerTag.Clear();
 
-        frmEventInsAdd.bCreatingNewEvent := True;
-    end;
-    12://AddGoal
-    begin
-        frmEventInsAdd.editGoalName.Clear();
-        frmEventInsAdd.memoGoalText.Clear();
+            frmEventInsAdd.bCreatingNewEvent := True;
+        end;
+        12://AddGoal
+        begin
+            frmEventInsAdd.editGoalName.Clear();
+            frmEventInsAdd.memoGoalText.Clear();
 
-        frmEventInsAdd.rbAddGoal.Checked := True;
-        frmEventInsAdd.chkPrimaryGoal.Checked := False;
+            frmEventInsAdd.rbAddGoal.Checked := True;
+            frmEventInsAdd.chkPrimaryGoal.Checked := False;
 
-        frmEventInsAdd.bCreatingNewEvent := True;
-    end;
-    13:// AddNote
-    begin
-        frmEventInsAdd.memoNoteText.Clear();
+            frmEventInsAdd.bCreatingNewEvent := True;
+        end;
+        13:// AddNote
+        begin
+            frmEventInsAdd.memoNoteText.Clear();
 
-        frmEventInsAdd.bCreatingNewEvent := True;
-    end;
-    14:// AddSkillPoints
-    begin
-        frmEventInsAdd.editSkillPointsAmount.Value := 0;
-        frmEventInsAdd.memoSkillPointMessage.Clear();
+            frmEventInsAdd.bCreatingNewEvent := True;
+        end;
+        14:// AddSkillPoints
+        begin
+            frmEventInsAdd.editSkillPointsAmount.Value := 0;
+            frmEventInsAdd.memoSkillPointMessage.Clear();
 
-        frmEventInsAdd.bCreatingNewEvent := True;
-    end;
-    15:// AddCredits
-    begin
-        frmEventInsAdd.seAddCredits.Value := 0;
+            frmEventInsAdd.bCreatingNewEvent := True;
+        end;
+        15:// AddCredits
+        begin
+            frmEventInsAdd.seAddCredits.Value := 0;
 
-        frmEventInsAdd.bCreatingNewEvent := True;
-    end;
-    16:// CheckPersona
-    begin
-        frmEventInsAdd.rbCreditsCheck.Checked := True;
+            frmEventInsAdd.bCreatingNewEvent := True;
+        end;
+        16:// CheckPersona
+        begin
+            frmEventInsAdd.rbCreditsCheck.Checked := True;
 
-        frmEventInsAdd.cmbCheckCondition.ItemIndex := 0;
+            frmEventInsAdd.cmbCheckCondition.ItemIndex := 0;
 
-        frmEventInsAdd.editConditionValue.Value := 0;
+            frmEventInsAdd.editConditionValue.Value := 0;
 
-        FillEventLabels(frmMain.CurrentConversation, frmEventInsAdd.cmbCheckLabelJump);
+            FillEventLabels(frmMain.CurrentConversation, frmEventInsAdd.cmbCheckLabelJump);
 
-        frmEventInsAdd.bCreatingNewEvent := True;
-    end;
-    17:// Comment
-    begin
-        frmEventInsAdd.memoCommentText.Clear();
+            frmEventInsAdd.bCreatingNewEvent := True;
+        end;
+        17:// Comment
+        begin
+            frmEventInsAdd.memoCommentText.Clear();
 
-        frmEventInsAdd.bCreatingNewEvent := True;
-    end;
-    18:// End
-    begin
-        frmEventInsAdd.bCreatingNewEvent := True;
-    end;
+            frmEventInsAdd.bCreatingNewEvent := True;
+        end;
+        18:// End
+        begin
+            frmEventInsAdd.bCreatingNewEvent := True;
+        end;
     end;
 
-    if (frmEventInsAdd.Visible = false) then
-    frmEventInsAdd.Show();
+    if (frmEventInsAdd.Visible = False) then
+        frmEventInsAdd.Show();
 
     frmEventInsAdd.cmbEventType.ItemIndex := TargetPage;
     frmEventInsAdd.EventsPages.TabIndex := TargetPage;
     frmEventInsAdd.cmbEventTypeChange(Self);
+
+    frmEventInsAdd.bInsertEvent := False;
 end;
 
 procedure TfrmMain.InsertEvent(TargetPage: Integer); // Insert event at current position (in the event list)
 begin
-    if (frmEventInsAdd.Visible = false) then
-    frmEventInsAdd.Show();
+    AddEvent(TargetPage);
 
-    frmEventInsAdd.cmbEventType.ItemIndex := TargetPage;
-    frmEventInsAdd.EventsPages.TabIndex := TargetPage;
-    frmEventInsAdd.cmbEventTypeChange(Self);
+    frmEventInsAdd.bInsertEvent := True;
 end;
 
 procedure TfrmMain.SetMemoFont(FontSize: Integer;  FontName: string);
@@ -5071,60 +5091,96 @@ end;
 
 procedure TfrmMain.EditCurrentEvent(EventToEdit: TConEvent);
 begin
-    if (EventToEdit is TConEventSpeech) then begin
+    if (EventToEdit is TConEventSpeech) then
+    begin
         frmEventInsAdd.FillSpeech(TConEventSpeech(EventToEdit));
-    end else
-    if (EventToEdit is TConEventChoice) then begin
+    end
+    else
+    if (EventToEdit is TConEventChoice) then
+    begin
         frmEventInsAdd.FillChoice(TConEventChoice(EventToEdit));
-    end else
-    if (EventToEdit is TConEventSetFlag) then begin
+    end
+    else
+    if (EventToEdit is TConEventSetFlag) then
+    begin
         frmEventInsAdd.FillSetFlags(TConEventSetFlag(EventToEdit));
-    end else
-    if (EventToEdit is TConEventCheckFlag) then begin
+    end
+    else
+    if (EventToEdit is TConEventCheckFlag) then
+    begin
         frmEventInsAdd.FillCheckFlag(TConEventCheckFlag(EventToEdit));
-    end else
-    if (EventToEdit is TConEventCheckObject) then begin
+    end
+    else
+    if (EventToEdit is TConEventCheckObject) then
+    begin
         frmEventInsAdd.FillCheckObject(TConEventCheckObject(EventToEdit));
-    end else
-    if (EventToEdit is TConEventTransferObject) then begin
+    end
+    else
+    if (EventToEdit is TConEventTransferObject) then
+    begin
         frmEventInsAdd.FillTransferObject(TConEventTransferObject(EventToEdit));
-    end else
-    if (EventToEdit is TConEventMoveCamera) then begin
+    end
+    else
+    if (EventToEdit is TConEventMoveCamera) then
+    begin
         frmEventInsAdd.FillMoveCamera(TConEventMoveCamera(EventToEdit));
-    end else
-    if (EventToEdit is TConEventAnimation) then begin
+    end
+    else
+    if (EventToEdit is TConEventAnimation) then
+    begin
         frmEventInsAdd.FillPlayAnim(TConEventAnimation(EventToEdit));
-    end else     // Trade has been skipped
-    if (EventToEdit is TConEventJump) then begin
+    end
+    else     // Trade has been skipped
+    if (EventToEdit is TConEventJump) then
+    begin
         frmEventInsAdd.FillJump(TConEventJump(EventToEdit));
-    end else
-    if (EventToEdit is TConEventRandom) then begin
+    end
+    else
+    if (EventToEdit is TConEventRandom) then
+    begin
         frmEventInsAdd.FillRandom(TConEventRandom(EventToEdit));
-    end else
-    if (EventToEdit is TConEventTrigger) then begin
+    end
+    else
+    if (EventToEdit is TConEventTrigger) then
+    begin
         frmEventInsAdd.FillTrigger(TConEventTrigger(EventToEdit));
-    end else
-    if (EventToEdit is TConEventAddGoal) then begin
+    end
+    else
+    if (EventToEdit is TConEventAddGoal) then
+    begin
         frmEventInsAdd.FillGoal(TConEventAddGoal(EventToEdit));
-    end else
-    if (EventToEdit is TConEventAddNote) then begin
+    end
+    else
+    if (EventToEdit is TConEventAddNote) then
+    begin
         frmEventInsAdd.FillNote(TConEventAddNote(EventToEdit));
-    end else
-    if (EventToEdit is TConEventAddSkillPoints) then begin
+    end
+    else
+    if (EventToEdit is TConEventAddSkillPoints) then
+    begin
         frmEventInsAdd.FillSkillPoints(TConEventAddSkillPoints(EventToEdit));
-    end else
-    if (EventToEdit is TConEventAddCredits) then begin
+    end
+    else
+    if (EventToEdit is TConEventAddCredits) then
+    begin
         frmEventInsAdd.FillCredits(TConEventAddCredits(EventToEdit));
-    end else
-    if (EventToEdit is TConEventCheckPersona) then begin
+    end
+    else
+    if (EventToEdit is TConEventCheckPersona) then
+    begin
         frmEventInsAdd.FillCheckPersona(TConEventCheckPersona(EventToEdit));
-    end else
-    if (EventToEdit is TConEventComment) then begin
+    end
+    else
+    if (EventToEdit is TConEventComment) then
+    begin
         frmEventInsAdd.FillComment(TConEventComment(EventToEdit));
-    end else
-    if (EventToEdit is TConEventEnd) then begin
+    end
+    else
+    if (EventToEdit is TConEventEnd) then
+    begin
         frmEventInsAdd.FillEnd(TConEventEnd(EventToEdit));
     end;
+
 
     if frmEventInsAdd.Visible = false then
     begin
@@ -5144,22 +5200,22 @@ end;
 
 procedure TfrmMain.AddNote1Click(Sender: TObject);
 begin
-    AddEvent(AddNote1.Tag);
+    AddEvent(Ord(ET_AddNote));
 end;
 
 procedure TfrmMain.AddNote2Click(Sender: TObject);
 begin
-    InsertEvent(AddNote2.Tag);
+    InsertEvent(Ord(ET_AddNote));
 end;
 
 procedure TfrmMain.AddSkillPoints1Click(Sender: TObject);
 begin
-    AddEvent(AddSkillPoints1.Tag);
+    AddEvent(Ord(ET_AddSkillPoints));
 end;
 
 procedure TfrmMain.AddSkillPoints2Click(Sender: TObject);
 begin
-    InsertEvent(AddSkillPoints2.Tag);
+    InsertEvent(Ord(ET_AddSkillPoints));
 end;
 
 procedure TfrmMain.tbGenerateAudioDirsClick(Sender: TObject);
@@ -5183,12 +5239,12 @@ end;
 
 procedure TfrmMain.Jump1Click(Sender: TObject);
 begin
-    AddEvent(Jump1.Tag);
+    AddEvent(Ord(ET_Jump));
 end;
 
 procedure TfrmMain.Jump2Click(Sender: TObject);
 begin
-    InsertEvent(Jump2.Tag);
+    InsertEvent(Ord(ET_Jump));
 end;
 
 procedure TfrmMain.IndexEvents1Click(Sender: TObject);
@@ -5209,12 +5265,12 @@ end;
 
 procedure TfrmMain.MoveCamera1Click(Sender: TObject);
 begin
-    AddEvent(MoveCamera1.Tag);
+    AddEvent(Ord(ET_MoveCamera));
 end;
 
 procedure TfrmMain.MoveCamera2Click(Sender: TObject);
 begin
-    InsertEvent(MoveCamera2.Tag);
+    InsertEvent(Ord(ET_MoveCamera));
 end;
 
 procedure TfrmMain.Objects1Click(Sender: TObject);
@@ -5238,12 +5294,12 @@ end;
 
 procedure TfrmMain.PlayAnimation1Click(Sender: TObject);
 begin
-    AddEvent(PlayAnimation1.Tag);
+    AddEvent(Ord(ET_Animation));
 end;
 
 procedure TfrmMain.PlayAnimation2Click(Sender: TObject);
 begin
-    InsertEvent(PlayAnimation2.Tag);
+    InsertEvent(Ord(ET_Animation));
 end;
 
 procedure TfrmMain.PopupConvoEventListPopup(Sender: TObject); // Enable/disable some menu items...
@@ -5299,12 +5355,12 @@ end;
 
 procedure TfrmMain.Random1Click(Sender: TObject);
 begin
-    AddEvent(Random1.Tag);
+    AddEvent(Ord(ET_Random));
 end;
 
 procedure TfrmMain.Random2Click(Sender: TObject);
 begin
-    InsertEvent(Random2.Tag);
+    InsertEvent(Ord(ET_Random));
 end;
 
 procedure TfrmMain.RecentFile0Click(Sender: TObject);
@@ -5338,22 +5394,22 @@ end;
 
 procedure TfrmMain.TransferObject1Click(Sender: TObject);
 begin
-    AddEvent(TransferObject1.Tag);
+    AddEvent(Ord(ET_TransferObject));
 end;
 
 procedure TfrmMain.TransferObject2Click(Sender: TObject);
 begin
-    InsertEvent(TransferObject2.Tag);
+    InsertEvent(Ord(ET_TransferObject));
 end;
 
 procedure TfrmMain.Trigger1Click(Sender: TObject);
 begin
-    AddEvent(Trigger1.Tag);
+    AddEvent(Ord(ET_Trigger));
 end;
 
 procedure TfrmMain.Trigger2Click(Sender: TObject);
 begin
-    InsertEvent(Trigger2.Tag);
+    InsertEvent(Ord(ET_Trigger));
 end;
 
 procedure TfrmMain.ViewoutputTMemo1Click(Sender: TObject);
