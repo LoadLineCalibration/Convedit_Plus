@@ -3819,6 +3819,7 @@ end;
 procedure TfrmMain.ConEventListDragDrop(Sender, Source: TObject; X, Y: Integer);
 var
     DragIndex, DropIndex: Integer;
+    TempEvent: TConEvent;
 begin
     DragIndex := ConEventList.ItemIndex;
     DropIndex := ConEventList.ItemAtPos(Point(X, Y), True);
@@ -3827,6 +3828,14 @@ begin
     begin
         ConEventList.Items.Move(DragIndex, DropIndex);
         ConEventList.ItemIndex := DropIndex;
+
+        // Move object within CurrentConversation.Events
+        if (DragIndex < Length(CurrentConversation.Events)) and (DropIndex < Length(CurrentConversation.Events)) then
+        begin
+            TempEvent := CurrentConversation.Events[DragIndex];
+            CurrentConversation.Events[DragIndex] := CurrentConversation.Events[DropIndex];
+            CurrentConversation.Events[DropIndex] := TempEvent;
+        end;
     end;
 end;
 
