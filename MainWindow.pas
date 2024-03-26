@@ -441,6 +441,7 @@ type
     procedure TreeExpandAllClick(Sender: TObject);
     procedure FileOpenDialogTypeChange(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure ConEventListEndDrag(Sender, Target: TObject; X, Y: Integer);
   private
     { Private declarations }
     procedure WMEnterSizeMove(var Msg: TMessage); message WM_ENTERSIZEMOVE;
@@ -1532,6 +1533,7 @@ begin
                         var ListItemHeight := GetSpeechEventItemHeight([NewSpeech]);
                         var HeightStr := '=' + ListItemHeight.ToString();
                         ConEventList.Items.InsertObject(ItemIdx, ET_Speech_Caption+HeightStr, NewSpeech);
+                        ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewSpeech);
 
                         AddLog('Added event from Clipboard:' + NewSpeech.ClassName);
                     end;
@@ -1572,6 +1574,7 @@ begin
                         var ListItemHeight := GetChoiceItemHeight([NewChoice]);
                         var HeightStr := '=' + ListItemHeight.ToString();
                         ConEventList.Items.InsertObject(ItemIdx, ET_Choice_Caption+HeightStr, NewChoice);
+                        ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewChoice);
 
                         AddLog('Added event from Clipboard:' + NewChoice.ClassName);
                     end;
@@ -1600,6 +1603,7 @@ begin
                         var ListItemHeight := GetSetFlagsItemHeight([NewSetFlag]);
                         var HeightStr := '=' + ListItemHeight.ToString();
                         ConEventList.Items.InsertObject(ItemIdx, ET_SetFlag_Caption+HeightStr, NewSetFlag);
+                        ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewSetFlag);
 
                         AddLog('Added event from Clipboard:' + NewSetFlag.ClassName);
                     end;
@@ -1627,6 +1631,7 @@ begin
                         var ListItemHeight := GetCheckFlagsItemHeight([NewCheckFlag]);
                         var HeightStr := '=' + ListItemHeight.ToString();
                         ConEventList.Items.InsertObject(ItemIdx, ET_CheckFlag_Caption+HeightStr, NewCheckFlag);
+                        ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewCheckFlag);
 
                         AddLog('Added event from Clipboard:' + NewCheckFlag.ClassName);
                     end;
@@ -1649,6 +1654,7 @@ begin
 
                         Insert(NewCheckObj, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_CheckObject_Caption, NewCheckObj);
+                        ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewCheckObj);
 
                         AddLog('Added event from Clipboard:' + NewCheckObj.ClassName);
                     end;
@@ -1682,6 +1688,7 @@ begin
 
                         Insert(NewTransObject, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_TransferObject_Caption, NewTransObject);
+                        ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewTransObject);
 
                         AddLog('Added event from Clipboard:' + NewTransObject.ClassName);
                     end;
@@ -1694,6 +1701,7 @@ begin
 
                         Insert(NewMoveCam, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_MoveCamera_Caption, NewMoveCam);
+                        ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewMoveCam);
                     end;
 
                     if EventToPaste = ET_Animation_Caption then
@@ -1711,6 +1719,7 @@ begin
 
                         Insert(NewAnim, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_Animation_Caption, NewAnim);
+                        ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewAnim);
                     end;
 
                     if EventToPaste = ET_Trade_Caption then
@@ -1728,6 +1737,7 @@ begin
 
                         Insert(NewTrade, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_Trade_Caption, NewTrade);
+                        ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewTrade);
                     end;
 
                     if EventToPaste = ET_Jump_Caption then
@@ -1738,6 +1748,7 @@ begin
 
                         Insert(NewJump, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_Jump_Caption, NewJump);
+                        ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewJump);
                     end;
 
                     if EventToPaste = ET_Random_Caption then
@@ -1751,6 +1762,7 @@ begin
                         var ListItemHeight := GetRandomEventItemHeight([NewRandom]);
                         var HeightStr := '=' + ListItemHeight.ToString();
                         ConEventList.Items.InsertObject(ItemIdx, ET_Random_Caption+HeightStr, NewRandom);
+                        ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewRandom);
                     end;
 
                     if EventToPaste = ET_Trigger_Caption then
@@ -1761,6 +1773,7 @@ begin
 
                         Insert(NewTrigger, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_Trigger_Caption, NewTrigger);
+                        ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewTrigger);
                     end;
 
                     if EventToPaste = ET_AddGoal_Caption then
@@ -1774,6 +1787,7 @@ begin
                         var ListItemHeight := GetAddGoalItemHeight([NewAddGoal]);
                         var HeightStr := '=' + ListItemHeight.ToString();
                         ConEventList.Items.InsertObject(ItemIdx, ET_AddGoal_Caption+HeightStr, NewAddGoal);
+                        ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewAddGoal);
                     end;
 
                     if EventToPaste = ET_AddNote_Caption then
@@ -1787,6 +1801,7 @@ begin
                         var ListItemHeight := GetAddNoteItemHeight([NewAddNote]);
                         var HeightStr := '=' + ListItemHeight.ToString();
                         ConEventList.Items.InsertObject(ItemIdx, ET_AddNote_Caption+HeightStr, NewAddNote);
+                        ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewAddNote);
                     end;
 
                     if EventToPaste = ET_AddSkillPoints_Caption then
@@ -1800,6 +1815,7 @@ begin
                         var ListItemHeight := GetAddSkillPtsItemHeight([NewAddSkillPts]);
                         var HeightStr := '=' + ListItemHeight.ToString();
                         ConEventList.Items.InsertObject(ItemIdx, ET_AddSkillPoints_Caption+HeightStr, NewAddSkillPts);
+                        ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewAddSkillPts);
                     end;
 
                     if EventToPaste = ET_AddCredits_Caption then
@@ -1810,6 +1826,7 @@ begin
 
                         Insert(NewAddCredits, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_AddCredits_Caption, NewAddCredits);
+                        ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewAddCredits);
                     end;
 
                     if EventToPaste = ET_CheckPersona_Caption then
@@ -1820,6 +1837,7 @@ begin
 
                         Insert(NewCheckPersona, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_CheckPersona_Caption, NewCheckPersona);
+                        ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewCheckPersona);
                     end;
 
                     if EventToPaste = ET_Comment_Caption then
@@ -1833,6 +1851,7 @@ begin
                         var ListItemHeight := GetCommentItemHeight([NewComment]);
                         var HeightStr := '=' + ListItemHeight.ToString();
                         ConEventList.Items.InsertObject(ItemIdx, ET_Comment_Caption+HeightStr, NewComment);
+                        ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewComment);
                     end;
 
                     if EventToPaste = ET_End_Caption then
@@ -1843,6 +1862,7 @@ begin
 
                         Insert(NewEnd, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_End_Caption, NewEnd);
+                        ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewEnd);
                     end;
 
                 finally
@@ -1853,6 +1873,7 @@ begin
                 GlobalUnlock(hBuf);
             end;
             UpdateEventListHeights();
+            SetEventIndexes();
         end;
     end
     else
@@ -3942,6 +3963,13 @@ begin
     end;
 end;
 
+procedure TfrmMain.ConEventListEndDrag(Sender, Target: TObject; X, Y: Integer);
+begin
+    SetEventIndexes();
+    UpdateEventListHeights();
+    ConEventList.Repaint();
+end;
+
 procedure TfrmMain.ConEventListMeasureItem(Control: TWinControl; Index: Integer; var Height: Integer);
 begin
     if ConEventList.Items[Index].Contains(ET_Speech_Caption) = True then
@@ -5332,7 +5360,7 @@ begin
         Delete1.Enabled := false;
         Cut3.Enabled := false;
         Copy3.Enabled := false;
-        PasteConvoEvent.Enabled := False;
+        PasteConvoEvent.Enabled := HasConvoEventToPaste();
         Event_Duplicate.Enabled := False;
     end else
     begin
