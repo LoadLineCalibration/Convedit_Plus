@@ -243,7 +243,7 @@ type
 
     procedure KillPhantoms();
     procedure SaveChoiceItem();
-    procedure UpdateEvent(var bInsert: Boolean);
+    procedure UpdateEvent();
 
     //https://engineertips.wordpress.com/2019/10/06/delphi-exchange-listview-items-move-listview-items/
     procedure ExchangeListViewItems(lv: TListView; const i, j: Integer);
@@ -401,7 +401,6 @@ type
     procedure cmbCheckLabelJumpChange(Sender: TObject);
     procedure memoCommentTextChange(Sender: TObject);
     procedure btnDeleteChoiceFlagClick(Sender: TObject);
-    procedure chkClearScreenClick(Sender: TObject);
     procedure btnSaveChoiceItemClick(Sender: TObject);
   private
     { Private declarations }
@@ -1249,7 +1248,6 @@ begin
 
     frmMain.SetEventIndexes();
     frmMain.UpdateEventListHeights();
-
     bCreatingNewEvent := False;
 end;
 
@@ -1300,488 +1298,765 @@ begin
 end;
 
 procedure TfrmEventInsAdd.NewSetFlags();
+var
+    NewSetFlags: TConEventSetFlag;
+    ItemIdx: Integer;
 begin
-    KillPhantoms();
+    NewSetFlags := TConEventSetFlag.Create();
+    ItemIdx := frmMain.ConEventList.ItemIndex;
 
-    var NewEvent := TConEventSetFlag.Create();
-
-    if ValidateSetFlags(newEvent) = False then
+    if ValidateSetFlags(NewSetFlags) = False then
     begin
-        newEvent.Free();
+        NewSetFlags.Free();
         Abort();
     end;
 
-    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
-    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
-    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
-    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    case bInsertEvent of
+        False: // Add event
+        begin
+            var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+            SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+            frmMain.CurrentConversation.Events[currLength] := NewSetFlags;   // Добавить событие в массив
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
 
-    var NewHeight := frmMain.GetSetFlagsItemHeight([NewEvent]);
-    frmMain.ConEventList.Items.AddPair(ET_SetFlag_Caption, NewHeight.ToString(), frmMain.CurrentEvent);
+            var NewHeight := frmMain.GetSetFlagsItemHeight([NewSetFlags]);
+            frmMain.ConEventList.Items.AddPair(ET_SetFlag_Caption, NewHeight.ToString(), frmMain.CurrentEvent);
+        end;
 
-    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+        True:
+        begin
+            Insert(NewSetFlags, frmMain.CurrentConversation.Events, ItemIdx);
+
+            var NewHeight := frmMain.GetSetFlagsItemHeight([NewSetFlags]);
+            var TempString := ET_SetFlag_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewSetFlags);
+        end;
+    end;
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(NewSetFlags);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    //RepaintCurrentEvent();
     frmMain.UpdateEventListHeights();
+    frmMain.SetEventIndexes();
     bCreatingNewEvent := False;
-    KillPhantoms();
-
-    Exit();
 end;
 
 procedure TfrmEventInsAdd.NewCheckFlags();
+var
+    NewCheckFlags: TConEventCheckFlag;
+    ItemIdx: Integer;
 begin
-    KillPhantoms();
+    NewCheckFlags := TConEventCheckFlag.Create();
+    ItemIdx := frmMain.ConEventList.ItemIndex;
 
-    var NewEvent := TConEventCheckFlag.Create();
-
-    if ValidateCheckFlags(NewEvent) = False then
+    if ValidateCheckFlags(NewCheckFlags) = False then
     begin
-        newEvent.Free();
+        NewCheckFlags.Free();
         Abort();
     end;
 
-    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
-    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
-    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
-    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    case bInsertEvent of
+        False: // Add event
+        begin
+            var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+            SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+            frmMain.CurrentConversation.Events[currLength] := NewCheckFlags;   // Добавить событие в массив
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
 
-    var NewHeight := frmMain.GetCheckFlagsItemHeight([NewEvent]);
-    frmMain.ConEventList.Items.AddPair(ET_CheckFlag_Caption, NewHeight.ToString(), frmMain.CurrentEvent);
+            var NewHeight := frmMain.GetCheckFlagsItemHeight([NewCheckFlags]);
+            frmMain.ConEventList.Items.AddPair(ET_CheckFlag_Caption, NewHeight.ToString(), frmMain.CurrentEvent);
+        end;
 
-    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+        True:
+        begin
+            Insert(NewCheckFlags, frmMain.CurrentConversation.Events, ItemIdx);
+
+            var NewHeight := frmMain.GetCheckFlagsItemHeight([NewCheckFlags]);
+            var TempString := ET_CheckFlag_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewCheckFlags);
+        end;
+    end;
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(NewCheckFlags);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    //RepaintCurrentEvent();
     frmMain.UpdateEventListHeights();
+    frmMain.SetEventIndexes();
     bCreatingNewEvent := False;
-    KillPhantoms();
-
-    Exit();
 end;
 
 procedure TfrmEventInsAdd.NewCheckObject();
+var
+    NewCheckObj: TConEventCheckObject;
+    ItemIdx: Integer;
 begin
-    KillPhantoms();
+    NewCheckObj := TConEventCheckObject.Create();
+    ItemIdx := frmMain.ConEventList.ItemIndex;
 
-    var NewEvent := TConEventCheckObject.Create();
-
-    if ValidateCheckObject(NewEvent) = False then
+    if ValidateCheckObject(NewCheckObj) = False then
     begin
-        NewEvent.Free();
+        NewCheckObj.Free();
         Abort();
     end;
 
-    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
-    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
-    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
-    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
-    frmMain.ConEventList.Items.AddObject(ET_CheckObject_Caption, frmMain.CurrentEvent);
+    case bInsertEvent of
+        False: // Add event
+        begin
+            var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+            SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+            frmMain.CurrentConversation.Events[currLength] := NewCheckObj;   // Добавить событие в массив
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+            frmMain.ConEventList.Items.AddObject(ET_CheckObject_Caption, frmMain.CurrentEvent);
+        end;
 
-    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+        True:
+        begin
+            Insert(NewCheckObj, frmMain.CurrentConversation.Events, ItemIdx);
+
+            var NewHeight := 25;
+            var TempString := ET_CheckObject_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewCheckObj);
+        end;
+    end;
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(NewCheckObj);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    //RepaintCurrentEvent();
     frmMain.UpdateEventListHeights();
+    frmMain.SetEventIndexes();
     bCreatingNewEvent := False;
-    KillPhantoms();
 end;
 
 procedure TfrmEventInsAdd.NewTransferObject();
+var
+    NewTransObj: TConEventTransferObject;
+    ItemIdx: Integer;
 begin
-    KillPhantoms();
+    NewTransObj := TConEventTransferObject.Create();
+    ItemIdx := frmMain.ConEventList.ItemIndex;
 
-    var NewEvent := TConEventTransferObject.Create();
-
-    if ValidateTransferObject(NewEvent) = false then
+    if ValidateTransferObject(NewTransObj) = false then
     begin
-        NewEvent.Free();
+        NewTransObj.Free();
         Abort();
     end;
 
-    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
-    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
-    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
-    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
-    frmMain.ConEventList.Items.AddObject(ET_TransferObject_Caption, frmMain.CurrentEvent);
+    case bInsertEvent of
+        False: // Add event
+        begin
+            var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+            SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+            frmMain.CurrentConversation.Events[currLength] := NewTransObj;   // Добавить событие в массив
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+            frmMain.ConEventList.Items.AddObject(ET_TransferObject_Caption, frmMain.CurrentEvent);
+        end;
 
-    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+        True:
+        begin
+            Insert(NewTransObj, frmMain.CurrentConversation.Events, ItemIdx);
+
+            var NewHeight := 35;
+            var TempString := ET_TransferObject_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewTransObj);
+        end;
+    end;
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(NewTransObj);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    //RepaintCurrentEvent();
     frmMain.UpdateEventListHeights();
+    frmMain.SetEventIndexes();
     bCreatingNewEvent := False;
-    KillPhantoms();
 end;
 
 procedure TfrmEventInsAdd.NewMoveCamera();
+var
+    NewMoveCam: TConEventMoveCamera;
+    ItemIdx: Integer;
 begin
-    KillPhantoms();
+    NewMoveCam := TConEventMoveCamera.Create();
+    ItemIdx := frmMain.ConEventList.ItemIndex;
 
-    var NewEvent := TConEventMoveCamera.Create();
-
-    if ValidateMoveCamera(NewEvent) = false then
+    if ValidateMoveCamera(NewMoveCam) = false then
     begin
-        NewEvent.Free();
+        NewMoveCam.Free();
         Abort();
     end;
 
-    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
-    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
-    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
-    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
-    frmMain.ConEventList.Items.AddObject(ET_MoveCamera_Caption, frmMain.CurrentEvent);
+    case bInsertEvent of
+        False: // Add event
+        begin
+            var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+            SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+            frmMain.CurrentConversation.Events[currLength] := NewMoveCam;   // Добавить событие в массив
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+            frmMain.ConEventList.Items.AddObject(ET_MoveCamera_Caption, frmMain.CurrentEvent);
+        end;
 
-    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+        True:
+        begin
+            Insert(NewMoveCam, frmMain.CurrentConversation.Events, ItemIdx);
+
+            var NewHeight := 25;
+            var TempString := ET_MoveCamera_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewMoveCam);
+        end;
+    end;
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(NewMoveCam);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    //RepaintCurrentEvent();
     frmMain.UpdateEventListHeights();
+    frmMain.SetEventIndexes();
     bCreatingNewEvent := False;
-    KillPhantoms();
 end;
 
 procedure TfrmEventInsAdd.NewPlayAnim();
+var
+    NewAnim: TConEventAnimation;
+    ItemIdx: Integer;
 begin
-    KillPhantoms();
+    NewAnim := TConEventAnimation.Create();
+    ItemIdx := frmMain.ConEventList.ItemIndex;
 
-    var NewEvent := TConEventAnimation.Create();
-
-    if ValidatePlayAnim(NewEvent) = false then
+    if ValidatePlayAnim(NewAnim) = false then
     begin
-        NewEvent.Free();
+        NewAnim.Free();
         Abort();
     end;
 
-    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
-    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
-    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
-    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
-    frmMain.ConEventList.Items.AddObject(ET_Animation_Caption, frmMain.CurrentEvent);
+    case bInsertEvent of
+        False: // Add event
+        begin
+            var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+            SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+            frmMain.CurrentConversation.Events[currLength] := NewAnim;   // Добавить событие в массив
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+            frmMain.ConEventList.Items.AddObject(ET_Animation_Caption, frmMain.CurrentEvent);
+        end;
 
-    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+        True:
+        begin
+            Insert(NewAnim, frmMain.CurrentConversation.Events, ItemIdx);
+
+            var NewHeight := 70;
+            var TempString := ET_Animation_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewAnim);
+        end;
+    end;
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(NewAnim);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    //RepaintCurrentEvent();
     frmMain.UpdateEventListHeights();
+    frmMain.SetEventIndexes();
     bCreatingNewEvent := False;
-    KillPhantoms();
 end;
 
 procedure TfrmEventInsAdd.NewBuySellTrade();
+var
+    NewTrade: TConEventTrade;
+    ItemIdx: Integer;
 begin
-  // Not implemented
+    NewTrade := TConEventTrade.Create();
+    ItemIdx := frmMain.ConEventList.ItemIndex;
+
+    if ValidateBuySellTrade(NewTrade) = false then
+    begin
+        NewTrade.Free();
+        Abort();
+    end;
+
+    case bInsertEvent of
+        False: // Add event
+        begin
+            var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+            SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+            frmMain.CurrentConversation.Events[currLength] := NewTrade;   // Добавить событие в массив
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+            frmMain.ConEventList.Items.AddObject(ET_Trade_Caption, frmMain.CurrentEvent);
+        end;
+
+        True:
+        begin
+            Insert(NewTrade, frmMain.CurrentConversation.Events, ItemIdx);
+
+            var NewHeight := 44;
+            var TempString := ET_Trade_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewTrade);
+        end;
+    end;
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(NewTrade);
+
+    if tempItemIndex <> -1 then
+        frmMain.ConEventList.ItemIndex := tempItemIndex;
+
+    frmMain.UpdateEventListHeights();
+    frmMain.SetEventIndexes();
+    bCreatingNewEvent := False;
 end;
 
 procedure TfrmEventInsAdd.NewJump();
+var
+    NewEventJump: TConEventJump;
+    ItemIdx: Integer;
 begin
-    KillPhantoms();
+    NewEventJump := TConEventJump.Create();
+    ItemIdx := frmMain.ConEventList.ItemIndex;
 
-    var NewEvent := TConEventJump.Create();
-
-    if ValidateJump(NewEvent) = false then
+    if ValidateJump(NewEventJump) = false then
     begin
-        NewEvent.Free();
+        NewEventJump.Free();
         Abort();
     end;
 
-    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
-    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
-    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
-    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
-    frmMain.ConEventList.Items.AddObject(ET_Jump_Caption, frmMain.CurrentEvent);
+    case bInsertEvent of
+        False: // Add event
+        begin
+            var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+            SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+            frmMain.CurrentConversation.Events[currLength] := NewEventJump;   // Добавить событие в массив
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+            frmMain.ConEventList.Items.AddObject(ET_Jump_Caption, frmMain.CurrentEvent);
+        end;
 
-    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+        True:
+        begin
+            Insert(NewEventJump, frmMain.CurrentConversation.Events, ItemIdx);
+
+            var NewHeight := 50;
+            var TempString := ET_Jump_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewEventJump);
+        end;
+    end;
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(NewEventJump);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    //RepaintCurrentEvent();
     frmMain.UpdateEventListHeights();
+    frmMain.SetEventIndexes();
     bCreatingNewEvent := False;
-    KillPhantoms();
 end;
 
 procedure TfrmEventInsAdd.NewRandom();
+var
+    NewEventRandom: TConEventRandom;
+    ItemIdx: Integer;
 begin
-    KillPhantoms();
+    NewEventRandom := TConEventRandom.Create();
+    ItemIdx := frmMain.ConEventList.ItemIndex;
 
-    var NewEvent := TConEventRandom.Create();
-
-    if ValidateRandom(NewEvent) = false then
+    if ValidateRandom(NewEventRandom) = false then
     begin
-        NewEvent.Free();
+        NewEventRandom.Free();
         Abort();
     end;
 
-    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
-    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
-    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
-    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    case bInsertEvent of
+        False: // Add event
+        begin
+            var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+            SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+            frmMain.CurrentConversation.Events[currLength] := NewEventRandom;   // Добавить событие в массив
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
 
-    var NewHeight := frmMain.GetRandomEventItemHeight([NewEvent]);
-    frmMain.ConEventList.Items.AddPair(ET_Random_Caption, NewHeight.ToString(), frmMain.CurrentEvent);
+            var NewHeight := frmMain.GetRandomEventItemHeight([NewEventRandom]);
+            frmMain.ConEventList.Items.AddPair(ET_Random_Caption, NewHeight.ToString(), frmMain.CurrentEvent);
+        end;
 
-    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(NewEvent);
+        True:
+        begin
+            Insert(NewEventRandom, frmMain.CurrentConversation.Events, ItemIdx);
+
+            var NewHeight := frmMain.GetRandomEventItemHeight([NewEventRandom]);
+            var TempString := ET_Random_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewEventRandom);
+        end;
+    end;
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(NewEventRandom);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    //RepaintCurrentEvent();
     frmMain.UpdateEventListHeights();
+    frmMain.SetEventIndexes();
     bCreatingNewEvent := False;
-    KillPhantoms();
 end;
 
 procedure TfrmEventInsAdd.NewTrigger();
+var
+    NewEventTrigger: TConEventTrigger;
+    ItemIdx: Integer;
 begin
-    KillPhantoms();
+    NewEventTrigger := TConEventTrigger.Create();
+    ItemIdx := frmMain.ConEventList.ItemIndex;
 
-    var NewEvent := TConEventTrigger.Create();
-
-    if ValidateTrigger(NewEvent) = false then
+    if ValidateTrigger(NewEventTrigger) = false then
     begin
-        NewEvent.Free();
+        NewEventTrigger.Free();
         Abort();
     end;
 
-    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
-    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
-    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
-    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
-    frmMain.ConEventList.Items.AddObject(ET_Trigger_Caption, frmMain.CurrentEvent);
+    case bInsertEvent of
+        False: // Add event
+        begin
+            var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+            SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+            frmMain.CurrentConversation.Events[currLength] := NewEventTrigger;   // Добавить событие в массив
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+            frmMain.ConEventList.Items.AddObject(ET_Trigger_Caption, frmMain.CurrentEvent);
+        end;
 
-    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+        True:
+        begin
+            Insert(NewEventTrigger, frmMain.CurrentConversation.Events, ItemIdx);
+
+            var NewHeight := 42;
+            var TempString := ET_Trigger_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewEventTrigger);
+        end;
+    end;
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(NewEventTrigger);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    //RepaintCurrentEvent();
     frmMain.UpdateEventListHeights();
+    frmMain.SetEventIndexes();
     bCreatingNewEvent := False;
-    KillPhantoms();
 end;
 
 procedure TfrmEventInsAdd.NewAddCompGoal();
+var
+    NewEventAddGoal: TConEventAddGoal;
+    ItemIdx: Integer;
 begin
-    KillPhantoms();
+    NewEventAddGoal := TConEventAddGoal.Create();
+    ItemIdx := frmMain.ConEventList.ItemIndex;
 
-    var NewEvent := TConEventAddGoal.Create();
-
-    if ValidateAddCompGoal(NewEvent) = false then
+    if ValidateAddCompGoal(NewEventAddGoal) = false then
     begin
-        NewEvent.Free();
+        NewEventAddGoal.Free();
         Abort();
     end;
 
-    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
-    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
-    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
-    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    case bInsertEvent of
+        False: // Add event
+        begin
+            var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+            SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+            frmMain.CurrentConversation.Events[currLength] := NewEventAddGoal;   // Добавить событие в массив
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
 
-    var NewHeight := frmMain.GetAddGoalItemHeight([NewEvent]);
-    frmMain.ConEventList.Items.AddPair(ET_AddGoal_Caption, NewHeight.ToString(),frmMain.CurrentEvent);
+            var NewHeight := frmMain.GetAddGoalItemHeight([NewEventAddGoal]);
+            frmMain.ConEventList.Items.AddPair(ET_AddGoal_Caption, NewHeight.ToString(),frmMain.CurrentEvent);
+        end;
 
-    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+        True:
+        begin
+            Insert(NewEventAddGoal, frmMain.CurrentConversation.Events, ItemIdx);
+
+            var NewHeight := frmMain.GetAddGoalItemHeight([NewEventAddGoal]);
+            var TempString := ET_AddGoal_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewEventAddGoal);
+        end;
+    end;
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(NewEventAddGoal);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    //RepaintCurrentEvent();
     frmMain.UpdateEventListHeights();
+    frmMain.SetEventIndexes();
     bCreatingNewEvent := False;
-    KillPhantoms();
 end;
 
 procedure TfrmEventInsAdd.NewAddNote();
+var
+    NewEventAddNote: TConEventAddNote;
+    ItemIdx: Integer;
 begin
-    KillPhantoms();
+    NewEventAddNote := TConEventAddNote.Create();
+    ItemIdx := frmMain.ConEventList.ItemIndex;
 
-    var NewEvent := TConEventAddNote.Create();
-
-    if ValidateAddNote(NewEvent) = false then
+    if ValidateAddNote(NewEventAddNote) = false then
     begin
-        NewEvent.Free();
+        NewEventAddNote.Free();
         Abort();
     end;
 
-    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
-    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
-    frmMain.CurrentConversation.Events[currLength] := NewEvent;   // Добавить событие в массив
-    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    case bInsertEvent of
+        False: // Add event
+        begin
+            var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+            SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+            frmMain.CurrentConversation.Events[currLength] := NewEventAddNote;   // Добавить событие в массив
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
 
-    var NewHeight := frmMain.GetAddNoteItemHeight([NewEvent]);
-    frmMain.ConEventList.Items.AddPair(ET_AddNote_Caption, NewHeight.ToString(), frmMain.CurrentEvent);
+            var NewHeight := frmMain.GetAddNoteItemHeight([NewEventAddNote]);
+            frmMain.ConEventList.Items.AddPair(ET_AddNote_Caption, NewHeight.ToString(), frmMain.CurrentEvent);
+        end;
 
-    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(NewEvent);
+        True:
+        begin
+            Insert(NewEventAddNote, frmMain.CurrentConversation.Events, ItemIdx);
+
+            var NewHeight := frmMain.GetAddNoteItemHeight([NewEventAddNote]);
+            var TempString := ET_AddNote_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewEventAddNote);
+        end;
+    end;
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(NewEventAddNote);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    //RepaintCurrentEvent();
     frmMain.UpdateEventListHeights();
+    frmMain.SetEventIndexes();
     bCreatingNewEvent := False;
-    KillPhantoms();
 end;
 
 procedure TfrmEventInsAdd.NewAddSkillPoints();
+var
+    NewEventAddSkillPts: TConEventAddSkillPoints;
+    ItemIdx: Integer;
 begin
-    KillPhantoms();
+    NewEventAddSkillPts := TConEventAddSkillPoints.Create();
+    ItemIdx := frmMain.ConEventList.ItemIndex;
 
-    var NewEvent := TConEventAddSkillPoints.Create();
-
-    if ValidateAddSkillPoints(NewEvent) = false then
+    if ValidateAddSkillPoints(NewEventAddSkillPts) = false then
     begin
-        NewEvent.Free();
+        NewEventAddSkillPts.Free();
         Abort();
     end;
 
-    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
-    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
-    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
-    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
-    frmMain.ConEventList.Items.AddObject(ET_AddSkillPoints_Caption, frmMain.CurrentEvent);
+    case bInsertEvent of
+        False: // Add event
+        begin
+            var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+            SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+            frmMain.CurrentConversation.Events[currLength] := NewEventAddSkillPts;   // Добавить событие в массив
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
 
-    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+            var NewHeight := frmMain.GetAddSkillPtsItemHeight([NewEventAddSkillPts]);
+            frmMain.ConEventList.Items.AddPair(ET_AddSkillPoints_Caption, NewHeight.ToString(), frmMain.CurrentEvent);
+        end;
+
+        True:
+        begin
+            Insert(NewEventAddSkillPts, frmMain.CurrentConversation.Events, ItemIdx);
+
+            var NewHeight := frmMain.GetAddNoteItemHeight([NewEventAddSkillPts]);
+            var TempString := ET_AddSkillPoints_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewEventAddSkillPts);
+        end;
+    end;
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(NewEventAddSkillPts);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    //RepaintCurrentEvent();
     frmMain.UpdateEventListHeights();
+    frmMain.SetEventIndexes();
     bCreatingNewEvent := False;
-    KillPhantoms();
 end;
 
 procedure TfrmEventInsAdd.NewAddCredits();
+var
+    NewEventAddCredits: TConEventAddCredits;
+    ItemIdx: Integer;
 begin
-    KillPhantoms();
+    NewEventAddCredits := TConEventAddCredits.Create();
+    ItemIdx := frmMain.ConEventList.ItemIndex;
 
-    var NewEvent := TConEventAddCredits.Create();
-
-    if ValidateAddCredits(NewEvent) = false then
+    if ValidateAddCredits(NewEventAddCredits) = false then
     begin
-        NewEvent.Free();
+        NewEventAddCredits.Free();
         Abort();
     end;
 
-    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
-    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
-    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
-    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
-    frmMain.ConEventList.Items.AddObject(ET_AddCredits_Caption, frmMain.CurrentEvent);
+    case bInsertEvent of
+        False: // Add event
+        begin
+            var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+            SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+            frmMain.CurrentConversation.Events[currLength] := NewEventAddCredits;   // Добавить событие в массив
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+            frmMain.ConEventList.Items.AddObject(ET_AddCredits_Caption, frmMain.CurrentEvent);
+        end;
 
-    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+        True:
+        begin
+            Insert(NewEventAddCredits, frmMain.CurrentConversation.Events, ItemIdx);
+
+            var NewHeight := 44;
+            var TempString := ET_AddCredits_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewEventAddCredits);
+        end;
+    end;
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(NewEventAddCredits);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    //RepaintCurrentEvent();
     frmMain.UpdateEventListHeights();
+    frmMain.SetEventIndexes();
     bCreatingNewEvent := False;
-    KillPhantoms();
 end;
 
 procedure TfrmEventInsAdd.NewCheckPersona();
+var
+    NewEventCheckPersona: TConEventCheckPersona;
+    ItemIdx: Integer;
 begin
-    KillPhantoms();
+    NewEventCheckPersona := TConEventCheckPersona.Create();
+    ItemIdx := frmMain.ConEventList.ItemIndex;
 
-    var NewEvent := TConEventCheckPersona.Create();
-
-    if ValidateCheckPersona(NewEvent) = false then
+    if ValidateCheckPersona(NewEventCheckPersona) = false then
     begin
-        NewEvent.Free();
+        NewEventCheckPersona.Free();
         Abort();
     end;
 
-    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
-    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
-    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
-    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
-    frmMain.ConEventList.Items.AddObject(ET_CheckPersona_Caption, frmMain.CurrentEvent);
+    case bInsertEvent of
+        False: // Add event
+        begin
+            var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+            SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+            frmMain.CurrentConversation.Events[currLength] := NewEventCheckPersona;   // Добавить событие в массив
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+            frmMain.ConEventList.Items.AddObject(ET_CheckPersona_Caption, frmMain.CurrentEvent);
+        end;
 
-    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+        True:
+        begin
+            Insert(NewEventCheckPersona, frmMain.CurrentConversation.Events, ItemIdx);
+
+            var NewHeight := 42;
+            var TempString := ET_CheckPersona_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewEventCheckPersona);
+        end;
+    end;
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(NewEventCheckPersona);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    //RepaintCurrentEvent();
     frmMain.UpdateEventListHeights();
+    frmMain.SetEventIndexes();
     bCreatingNewEvent := False;
-    KillPhantoms();
 end;
 
 procedure TfrmEventInsAdd.NewComment();
+var
+    NewEventComment: TConEventComment;
+    ItemIdx: Integer;
 begin
-    KillPhantoms();
+    NewEventComment := TConEventComment.Create();
+    ItemIdx := frmMain.ConEventList.ItemIndex;
 
-    var NewEvent := TConEventComment.Create();
-
-    if ValidateComment(NewEvent) = false then
+    if ValidateComment(NewEventComment) = false then
     begin
-        NewEvent.Free();
+        NewEventComment.Free();
         Abort();
     end;
 
-    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
-    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
-    frmMain.CurrentConversation.Events[currLength] := NewEvent;   // Добавить событие в массив
-    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+    case bInsertEvent of
+        False: // Add event
+        begin
+            var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+            SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+            frmMain.CurrentConversation.Events[currLength] := NewEventComment;   // Добавить событие в массив
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
 
-    var NewHeight := frmMain.GetCommentItemHeight([NewEvent]);
-    frmMain.ConEventList.Items.AddPair(ET_Comment_Caption, NewHeight.ToString(), frmMain.CurrentEvent);
+            var NewHeight := frmMain.GetCommentItemHeight([NewEventComment]);
+            frmMain.ConEventList.Items.AddPair(ET_Comment_Caption, NewHeight.ToString(), frmMain.CurrentEvent);
+        end;
 
-    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+        True:
+        begin
+            Insert(NewEventComment, frmMain.CurrentConversation.Events, ItemIdx);
+
+            var NewHeight := frmMain.GetCommentItemHeight([NewEventComment]);
+            var TempString := ET_Comment_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewEventComment);
+        end;
+    end;
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(NewEventComment);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    //RepaintCurrentEvent();
     frmMain.UpdateEventListHeights();
+    frmMain.SetEventIndexes();
     bCreatingNewEvent := False;
-    KillPhantoms();
 end;
 
 procedure TfrmEventInsAdd.NewEnd();
+var
+    NewEventEnd: TConEventEnd;
+    ItemIdx: Integer;
 begin
-    KillPhantoms();
+    NewEventEnd := TConEventEnd.Create();
+    ItemIdx := frmMain.ConEventList.ItemIndex;
 
-    var NewEvent := TConEventEnd.Create();
-
-    if ValidateEnd(NewEvent) = false then
+    if ValidateEnd(NewEventEnd) = false then
     begin
-        NewEvent.Free();
+        NewEventEnd.Free();
         Abort();
     end;
 
-    var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
-    SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
-    frmMain.CurrentConversation.Events[currLength] := newEvent;   // Добавить событие в массив
-    frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
-    frmMain.ConEventList.Items.AddObject(ET_End_Caption, frmMain.CurrentEvent);
+    case bInsertEvent of
+        False: // Add event
+        begin
+            var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+            SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
+            frmMain.CurrentConversation.Events[currLength] := NewEventEnd;   // Добавить событие в массив
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
+            frmMain.ConEventList.Items.AddObject(ET_End_Caption, frmMain.CurrentEvent);
+        end;
 
-    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(newEvent);
+        True:
+        begin
+            Insert(NewEventEnd, frmMain.CurrentConversation.Events, ItemIdx);
+
+            var NewHeight := 25;
+            var TempString := ET_End_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewEventEnd);
+        end;
+    end;
+
+    var tempItemIndex := frmMain.ConEventList.Items.IndexOfObject(NewEventEnd);
 
     if tempItemIndex <> -1 then
         frmMain.ConEventList.ItemIndex := tempItemIndex;
 
-    //RepaintCurrentEvent();
     frmMain.UpdateEventListHeights();
+    frmMain.SetEventIndexes();
     bCreatingNewEvent := False;
-    KillPhantoms();
 end;
 
 
@@ -2137,7 +2412,7 @@ end;
 
 procedure TfrmEventInsAdd.btnUpdateClick(Sender: TObject);
 begin
-    UpdateEvent(bInsertEvent);
+    UpdateEvent();
 end;
 
 procedure TfrmEventInsAdd.btnDeleteCheckFlagClick(Sender: TObject);
@@ -2181,11 +2456,6 @@ procedure TfrmEventInsAdd.chkAnimTimedClick(Sender: TObject); // Заблокировать в
 begin
     for var i := 0 to grpAnimTimed.ControlCount -1  do
         grpAnimTimed.Controls[i].Enabled := chkAnimTimed.Checked;
-end;
-
-procedure TfrmEventInsAdd.chkClearScreenClick(Sender: TObject);
-begin
-    SaveChoiceItem();
 end;
 
 procedure TfrmEventInsAdd.chkCycleEventsClick(Sender: TObject);
@@ -2635,7 +2905,7 @@ end;
 
 procedure TfrmEventInsAdd.mmoChoiceTextChange(Sender: TObject);
 begin
-    btnSaveChoiceItem.Enabled := (Length(Trim(mmoChoiceText.Text)) > 0) and (cbbChoiceJumpToLabel.ItemIndex <> -1);
+    btnSaveChoiceItem.Enabled := (Length(Trim(mmoChoiceText.Text)) > 0);// and (cbbChoiceJumpToLabel.ItemIndex <> -1);
 end;
 
 procedure TfrmEventInsAdd.mp1Notify(Sender: TObject);
@@ -2788,7 +3058,7 @@ begin
     chkAnimTimedClick(self);
 end;
 
-procedure TfrmEventInsAdd.UpdateEvent(var bInsert: Boolean);
+procedure TfrmEventInsAdd.UpdateEvent();
 begin
     cmbEventType.Enabled := False;
 
@@ -2818,7 +3088,7 @@ begin
     end;
 
     ValidateEvents(frmMain.CurrentEvent);
-    //KillPhantoms();
+    frmMain.bFileModified := True;
 end;
 
 procedure TfrmEventInsAdd.UpdateAddRandomLabelButtonState();
