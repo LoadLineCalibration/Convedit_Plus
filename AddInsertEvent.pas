@@ -2311,7 +2311,16 @@ end;
 
 procedure TfrmEventInsAdd.btnInsertEventClick(Sender: TObject);
 begin
+    var SpeakFromIndex := cmbSpeakingFrom.ItemIndex; // to swap items in comboboxes
+    var SpeakToIndex := cmbSpeakingTo.ItemIndex;
+
     frmMain.InsertEvent(cmbEventType.ItemIndex);
+
+    if (chkAutoSwapSpeaker.Checked = true) and (cmbEventType.ItemIndex = Ord(ET_Speech)) then
+    begin
+        cmbSpeakingFrom.ItemIndex := SpeakToIndex;
+        cmbSpeakingTo.ItemIndex := SpeakFromIndex;
+    end;
 end;
 
 procedure TfrmEventInsAdd.btnMoveUpChoiceClick(Sender: TObject);
@@ -2591,7 +2600,11 @@ begin
         cmbObjectToTransferChange(self);
     end;
 
-    6: ;
+    6:
+    begin
+        btnUpdate.Enabled := ((rbPredefinedCameraPos.Checked = True) and (cbbPredefinedCameraPos.ItemIndex <> -1)) or
+        (rbRandomCameraPos.Checked = True);
+    end;
 
     7:
     begin

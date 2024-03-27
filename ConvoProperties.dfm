@@ -71,7 +71,7 @@ object frmConvoProperties: TfrmConvoProperties
       Top = 3
       Width = 394
       Height = 404
-      ActivePage = tsinfo
+      ActivePage = TabSheet1
       Align = alClient
       DoubleBuffered = False
       ParentDoubleBuffered = False
@@ -133,10 +133,9 @@ object frmConvoProperties: TfrmConvoProperties
           Left = 12
           Top = 181
           Width = 333
-          Height = 23
-          Style = csDropDownList
+          Height = 22
+          Style = csOwnerDrawFixed
           TabOrder = 2
-          StyleElements = []
           OnChange = editConvoNameChange
         end
         object editConvoDescription: TEdit
