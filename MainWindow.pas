@@ -485,6 +485,8 @@ type
 
     var ReorderModKey: TReorderEventsModKey; // Hold xxx key to reorder events
 
+    var EventListColorsMode: TEventListColorsMode;
+
 
     // end of configuration file variables
 
@@ -4579,6 +4581,20 @@ end;
 
 procedure TfrmMain.FileNewExecute(Sender: TObject);
 begin
+    if (currentConFile <> '') and (bFileModified = true) then
+    begin
+        case MessageDlg(strSaveConversationFileQuestion, mtConfirmation, mbYesNoCancel, 0) of
+          mrCancel: // Cancel, just close the dialog and exit
+            begin
+                Exit();
+            end;
+          mrYes: // Save the file
+            begin
+                FileSaveExecute(self);
+            end;
+        end;
+    end;
+
     CreateConFile(True);
 end;
 
@@ -4589,6 +4605,21 @@ end;
 
 procedure TfrmMain.FileOpenExecute(Sender: TObject);
 begin
+    if (currentConFile <> '') and (bFileModified = true) then
+    begin
+        case MessageDlg(strSaveConversationFileQuestion, mtConfirmation, mbYesNoCancel, 0) of
+          mrCancel: // Cancel, just close the dialog and exit
+            begin
+                Exit();
+            end;
+          mrYes: // Save the file
+            begin
+                FileSaveExecute(self);
+            end;
+        end;
+    end;
+
+
     ClearForNewFile(); // free memory before loading new file
 
     FileOpenDialog.FileTypeIndex := OpenFileFilterIndex; // restore filter index
