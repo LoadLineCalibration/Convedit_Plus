@@ -25,8 +25,8 @@ type TConversationEditMode =
 
 type TEventListColorsMode =
 (
-    TLCM_Default, // for classic or light themes
-    TLCM_Dark     // for dark mode themes.
+    ELCM_Default, // for classic or light themes
+    ELCM_Dark     // for dark mode themes.
 );
 
 
