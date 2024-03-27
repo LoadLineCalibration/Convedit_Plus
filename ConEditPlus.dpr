@@ -56,5 +56,7 @@ begin
   Application.CreateForm(TfrmHelp, frmHelp);
   Application.CreateForm(TfrmTableEdit, frmTableEdit);
   Application.CreateForm(TfrmLabelErrors, frmLabelErrors);
+  Application.HintHidePause := 10000; // hint delay
   Application.Run;
+
 end.
