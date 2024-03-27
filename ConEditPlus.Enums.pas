@@ -23,6 +23,12 @@ type TConversationEditMode =
     em_Create
 );
 
+type TEventListColorsMode =
+(
+    TLCM_Default, // for classic or light themes
+    TLCM_Dark     // for dark mode themes.
+);
+
 
 implementation
 
