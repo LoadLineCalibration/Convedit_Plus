@@ -11,16 +11,12 @@ type
     pnl1: TPanel;
     redtHelpContents: TRichEdit;
     btnClose: TButton;
-    btnZoom100: TButton;
-    btnZoom125: TButton;
-    btnZoom150: TButton;
-    btnZoom175: TButton;
-    btnZoom200: TButton;
-    btnZoom75: TButton;
+    cmbHelpTextScale: TComboBox;
     // new procedures
     procedure LoadHelpResource(topic: string);
     procedure btnCloseClick(Sender: TObject);
-    procedure btnZoom100Click(Sender: TObject);
+    procedure cmbHelpTextScaleChange(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     { Private declarations }
   public
@@ -34,39 +30,47 @@ var
 implementation
 
 {$R *.dfm}
-{$R HelpResources.res}  // <---- your resource file!
+{$R HelpResources.res} // help resources (rtf)
 
 procedure TfrmHelp.btnCloseClick(Sender: TObject);
 begin
     Close();
 end;
 
-procedure TfrmHelp.btnZoom100Click(Sender: TObject);
+procedure TfrmHelp.cmbHelpTextScaleChange(Sender: TObject);
 begin
-    if TButton(Sender) <> nil then
-    begin
-       redtHelpContents.Zoom := 100; // bug?
-       redtHelpContents.Zoom := TButton(Sender).Tag;
-       memorizedScale := TButton(Sender).Tag;
+    case cmbHelpTextScale.itemIndex of
+        0: redtHelpContents.Zoom := 75; // 75%
+        1: redtHelpContents.Zoom := 100; // 100%
+        2: redtHelpContents.Zoom := 125; // 125%
+        3: redtHelpContents.Zoom := 150; // 150%
     end;
+
+end;
+
+procedure TfrmHelp.FormShow(Sender: TObject);
+begin
+    cmbHelpTextScaleChange(self);
 end;
 
 procedure TfrmHelp.LoadHelpResource(topic: string);
-var rs: TResourceStream;
+var
+    rs: TResourceStream;
 begin
-  rs := TResourceStream.Create(hinstance, topic, RT_RCDATA);
-  try
-    redtHelpContents.PlainText := False;
-    rs.Position := 0;
-    redtHelpContents.Lines.LoadFromStream(rs);
-    redtHelpContents.ReadOnly := true;
-    redtHelpContents.Zoom := 100;
-    redtHelpContents.Zoom := memorizedScale; // Restore scale after loading new help resource.
-  finally
-    rs.Free();
-  end;
+    rs := TResourceStream.Create(hinstance, topic, RT_RCDATA);
 
-  self.Show();
+    try
+        redtHelpContents.PlainText := False;
+        rs.Position := 0;
+        redtHelpContents.Lines.LoadFromStream(rs);
+        redtHelpContents.ReadOnly := true;
+        redtHelpContents.Zoom := 100;
+        redtHelpContents.Zoom := memorizedScale; // Restore scale after loading new help resource.
+    finally
+        rs.Free();
+    end;
+
+    self.Show();
 end;
 
 end.
