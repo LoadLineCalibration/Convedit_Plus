@@ -5917,12 +5917,6 @@ object frmMain: TfrmMain
       object N2: TMenuItem
         Caption = '-'
       end
-      object GenAudioNames: TMenuItem
-        Action = FileGenerateAudioNames
-      end
-      object N17: TMenuItem
-        Caption = '-'
-      end
       object ConvoProperties: TMenuItem
         Action = FileProperties
       end
@@ -5985,12 +5979,10 @@ object frmMain: TfrmMain
       Caption = 'Tables'
       object ActorsPawns1: TMenuItem
         Caption = 'Actors/Pawns'
-        ImageIndex = 9
         OnClick = ActorsPawns1Click
       end
       object Flags1: TMenuItem
         Caption = 'Flags'
-        ImageIndex = 16
         OnClick = Flags1Click
       end
       object Skills1: TMenuItem

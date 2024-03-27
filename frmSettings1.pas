@@ -49,6 +49,9 @@ type
     dlgSelectFolder: TFileOpenDialog;
     Label6: TLabel;
     chkEnableLogging: TCheckBox;
+    chkDblClickTreeFlag: TCheckBox;
+    GroupBox1: TGroupBox;
+    chkDarkModeEventList: TCheckBox;
 
     // new procedures
     procedure SaveChanges();

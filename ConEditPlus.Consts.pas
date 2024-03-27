@@ -121,7 +121,7 @@ const conFileHeader: array[0..25] of Byte =
 
 
 
-Const
+const
     ET_Speech_Caption         = 'Speech';
     ET_Choice_Caption         = 'Choice';
     ET_SetFlag_Caption        = 'Set Flags';
@@ -341,6 +341,9 @@ ResourceString
                             'Do you want to open directory with these files?';
 
     strAudioDirsError = 'There is error when creating audio directories in "%s". %s';
+
+    strAddNewConversation = 'Add new conversation';
+    strEditConversation = 'Edit conversation properties';
 
 
 

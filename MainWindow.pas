@@ -28,7 +28,6 @@ type
     Save1: TMenuItem;
     SaveAs1: TMenuItem;
     N2: TMenuItem;
-    GenAudioNames: TMenuItem;
     ConvoProperties: TMenuItem;
     mniRecent: TMenuItem;
     N3: TMenuItem;
@@ -124,7 +123,6 @@ type
     RecentFile6: TMenuItem;
     RecentFile7: TMenuItem;
     mnuGithub: TMenuItem;
-    N17: TMenuItem;
     pnlEventList: TEsPanel;
     ActionList1: TActionList;
     FileOpen: TAction;
@@ -485,7 +483,7 @@ type
 
     var ReorderModKey: TReorderEventsModKey; // Hold xxx key to reorder events
 
-    var EventListColorsMode: TEventListColorsMode;
+    var EventListColorsMode: TEventListColorsMode; // Events list mode (regular/dark)
 
 
     // end of configuration file variables
@@ -2051,6 +2049,13 @@ begin
 
        OpenFileFilterIndex := ReadInteger('OpenFileDialog', 'OpenFileFilterIndex', 1);
        SaveFileFilterIndex := ReadInteger('SaveFileDialog', 'SaveFileFilterIndex', 2);
+
+       EventListColorsMode := TEventListColorsMode(ReadInteger('frmMain', 'EventListColorsMode', 0));
+
+        case EventListColorsMode of
+            ELCM_Default: ConEventList.Color := clWindow;
+            ELCM_Dark: ConEventList.Color := RGB(60, 60, 60);
+        end;
     end;
 
     finally
@@ -3338,7 +3343,7 @@ begin
 
 //            if Event.bHighlightAsRelated = true then
 //                GradientFillCanvas(TListBox(Control).Canvas, clYellow, clCream, tempRect, gdHorizontal)
-//                else
+//
             FillRectAlpha(TListBox(Control).Canvas, tempRect, clLime, 64);
         end;
 
@@ -3351,7 +3356,13 @@ begin
             tempRect.Top := Rect.Top;
             Brush.Style := bsClear;
 
-            GradientFillCanvas(TListBox(Control).Canvas, clYellow, clCream, tempRect, gdHorizontal);
+            case EventListColorsMode of
+                ELCM_Default: GradientFillCanvas(TListBox(Control).Canvas, clYellow, clCream, tempRect, gdHorizontal);
+                ELCM_Dark:    GradientFillCanvas(TListBox(Control).Canvas, RGB(128,121,0), clWebYellowGreen, tempRect, gdHorizontal);
+            end;
+
+
+            //GradientFillCanvas(TListBox(Control).Canvas, clYellow, clCream, tempRect, gdHorizontal);
         end else
         if Event.EventHighlightType = EHT_Error then
         begin
@@ -3390,10 +3401,7 @@ begin
     if CurrentConversation = nil then Exit();
 
     for var unhglEvent in CurrentConversation.Events do
-    begin
-        //if unhglEvent.EventHighlightType = EHT_Related then
-            unhglEvent.EventHighlightType := EHT_None;
-    end;
+        unhglEvent.EventHighlightType := EHT_None;
 end;
 
 procedure TfrmMain.UpdateEventListHeights();
@@ -3416,7 +3424,6 @@ begin
 
                 ConEventList.Perform(LB_SETITEMHEIGHT, i, GetChoiceItemHeight([ChoiceEvent]));
             end;
-
 
             if ConEventList.Items.Objects[i] is TConEventAddGoal then
             begin
@@ -4344,7 +4351,7 @@ begin
         CopyEventToClipboard(CurrentEvent);
         DeleteCurrentEvent();
 
-        frmMain.bFileModified := True;
+        bFileModified := True;
     end;
 end;
 
@@ -4402,13 +4409,15 @@ begin
 
     ConvoTreeChange(Self, ConvoTree.Selected); // todo: remove this and update only EventList.
     ConEventList.ItemIndex := ItemIdx;
+
+    bFileModified := True;
 end;
 
 procedure TfrmMain.Event_PasteExecute(Sender: TObject);
 begin
     PasteEventFromClipboard();
 
-    frmMain.bFileModified := True;
+    bFileModified := True;
 end;
 
 procedure TfrmMain.Exit1Click(Sender: TObject);
@@ -4455,9 +4464,28 @@ end;
 
 procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-//    ShowMessage('CloseQuery?');
-//    CanClose := False;
-    // This one called first. If CanClose := False, FormClose will not be callsed, also cannot close the form.
+    if (currentConFile <> '') and (bFileModified = true) then
+    begin
+        case MessageDlg(strSaveConversationFileQuestion, mtConfirmation, mbYesNoCancel, 0) of
+          mrCancel: // Cancel, do not close the program
+            begin
+                CanClose := False;
+            end;
+
+          mrYes: // Save the file
+            begin
+                FileSaveExecute(self);
+                CanClose := True;
+            end;
+
+          mrNo:
+            begin
+                CanClose := True;
+            end;
+        end;
+    end;
+
+    // This one called first. If CanClose := False, FormClose will not be called, also cannot close the form.
 end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
@@ -4521,7 +4549,7 @@ begin
         SaveAs1.Visible         := True;
         tbSaveFile.Enabled      := True;
         tbCloseFile.Enabled     := True;
-        GenAudioNames.Visible   := True;
+//        GenAudioNames.Visible   := True;
         ConvoProperties.Visible := True;
     end;
 
@@ -4537,7 +4565,7 @@ begin
         SaveAs1.Visible         := False;
         tbSaveFile.Enabled      := False;
         tbCloseFile.Enabled     := False;
-        GenAudioNames.Visible   := False;
+//        GenAudioNames.Visible   := False;
         ConvoProperties.Visible := False;
     end;
 end;
@@ -5489,6 +5517,9 @@ begin
 
     btnCloseLog.Visible := mmoOutput.Visible;
     btnViewLog.Down := mmoOutput.Visible;
+
+    if bUseLogging = False then
+        mmoOutput.Text := 'Logging is disabled. To see log messages, enable logging in program options.';
 end;
 
 end.
