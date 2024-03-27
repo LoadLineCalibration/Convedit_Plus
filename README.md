@@ -3,7 +3,8 @@
 An attempt to recreate Deus Ex conversation editor (ConEdit or ConvEdit) in Delphi Language (Pascal). 
 
 what is __NOT__ implemented yet:
-* Insert event
+* Full support for dark mode
+* ~Insert event~ 
 * ~copy~/~paste~ ~events~/conversations ~to~/~from~ clipboard
 * ~text wrap~ ~also make it dynamic~ ~for other events?~
 * ~search functions~
@@ -25,7 +26,7 @@ Compatible with [Windows XP .. Windows 11]
 <details> 
   <summary>Screenshot</summary>
 
-The program is working under Windows XP, but there is some problem displaying TProgressBar. Everything else seems to be working fine.
+The program is working under Windows XP, but there is some problem rendering TProgressBar. Everything else seems to be working fine.
 The program crashes under Windows 2000, so this OS has been removed from compatibilty list.
   
 ![изображение](https://github.com/LoadLineCalibration/Convedit_Plus/assets/44388228/9129ad5c-194b-4a7d-a4aa-0ae519d45a3e)
