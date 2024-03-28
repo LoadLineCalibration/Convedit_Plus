@@ -76,9 +76,11 @@ Enhancements over OG ConEdit:
 </details> 
 
 <details> 
-  <summary>Duplicate Event:</summary>
+  <summary>Duplicate Event and Expand Tree with/without flags:</summary>
 
 ![изображение](https://github.com/LoadLineCalibration/Convedit_Plus/assets/44388228/4905b818-cc86-4417-b29c-f4f4ed13cb03)
+![изображение](https://github.com/LoadLineCalibration/Convedit_Plus/assets/44388228/f3534f14-6f88-464a-b0d6-5ea5ec5bda97)
+
 
 </details> 
 
