@@ -406,6 +406,8 @@ begin
 
         btnAddDef_CR_weapons.Enabled := False;
     end;
+
+    frmMain.bFileModified := True;
 end;
 
 procedure TfrmTableEdit.btnAddDef_LR_WeaponsClick(Sender: TObject);
@@ -417,6 +419,8 @@ begin
 
         btnAddDef_LR_Weapons.Enabled := False;
     end;
+
+    frmMain.bFileModified := True;
 end;
 
 procedure TfrmTableEdit.btnAddItemClick(Sender: TObject); // Добавить элемент в один из списков. Также не допустить повторов.
@@ -542,7 +546,6 @@ begin
             end;
         end;
     end;
-
 
     // в очередной раз проверить кнопки.
     UpdateButtonsState();

@@ -5788,7 +5788,7 @@ object frmMain: TfrmMain
       BevelOuter = bvNone
       FrameStyle = None
       FrameColor = clBtnFace
-      object Label1: TLabel
+      object lblQSearch: TLabel
         Left = 9
         Top = 1
         Width = 72

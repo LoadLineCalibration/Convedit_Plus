@@ -347,6 +347,8 @@ ResourceString
 
     strNothingToDelete = 'Nothing to delete!';
 
+    strNoFileLoaded = 'No file loaded';
+
 
 
 

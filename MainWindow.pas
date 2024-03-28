@@ -194,7 +194,7 @@ type
     Conversation_CheckLabels: TAction;
     tbVerifyLabels: TToolButton;
     ToolButton12: TToolButton;
-    Label1: TLabel;
+    lblQSearch: TLabel;
     N5: TMenuItem;
     Duplicate1: TMenuItem;
     Event_Duplicate: TAction;
@@ -4544,15 +4544,6 @@ begin
         pnlEventList.Show();
         Splitter1.Show();
         pnlConvoTree.Show();
-        TablesMenu.Visible      := True;
-
-        Close1.Visible          := True;
-        Save1.Visible           := True;
-        SaveAs1.Visible         := True;
-        tbSaveFile.Enabled      := True;
-        tbCloseFile.Enabled     := True;
-//        GenAudioNames.Visible   := True;
-        ConvoProperties.Visible := True;
     end;
 
     if bVisible = False then
@@ -4560,16 +4551,32 @@ begin
         pnlEventList.Hide();
         pnlConvoTree.Hide();
         Splitter1.Hide();
-        TablesMenu.Visible      := False;
 
-        Close1.Visible          := False;
-        Save1.Visible           := False;
-        SaveAs1.Visible         := False;
-        tbSaveFile.Enabled      := False;
-        tbCloseFile.Enabled     := False;
-//        GenAudioNames.Visible   := False;
-        ConvoProperties.Visible := False;
+        StatusBar.Panels[0].Text := strNoFileLoaded;
+        StatusBar.Panels[1].Text := '';
     end;
+
+    TablesMenu.Visible    := bVisible;
+
+    Close1.Visible        := bVisible;
+    Save1.Visible         := bVisible;
+    SaveAs1.Visible       := bVisible;
+    FileSave.Enabled      := bVisible;
+    FileClose.Enabled     := bVisible;
+
+    ConvoProperties.Visible := bVisible;
+
+    tbPrint.Enabled       := bVisible;
+    tbSearch.Enabled      := bVisible;
+    tbVerifyLabels.Enabled:= bVisible;
+
+    Conversation_Properties.Enabled := bVisible;
+    FileGenerateAudioNames.Enabled  := bVisible;
+    tbGenerateAudioDirs.Enabled     := bVisible;
+    btnReorder.Enabled              := bVisible;
+
+    lblQSearch.Enabled   := bVisible;
+    edtSearchBox.Enabled := bVisible;
 end;
 
 procedure TfrmMain.CreateTestFile1Click(Sender: TObject);
