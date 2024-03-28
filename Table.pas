@@ -343,6 +343,8 @@ begin
             end;
         end;
     end;
+
+    frmMain.bFileModified := True;
 end;
 
 procedure TfrmTableEdit.btnAddDefGrenadesClick(Sender: TObject);
@@ -354,6 +356,8 @@ begin
 
         btnAddDefGrenades.Enabled := False;
     end;
+
+    frmMain.bFileModified := True;
 end;
 
 procedure TfrmTableEdit.btnAddDefInfolinkNamesClick(Sender: TObject);
@@ -365,6 +369,8 @@ begin
 
         btnAddDefInfolinkNames.Enabled := False;
     end;
+
+    frmMain.bFileModified := True;
 end;
 
 procedure TfrmTableEdit.btnAddDefMiscItemsClick(Sender: TObject);
@@ -376,6 +382,8 @@ begin
 
         btnAddDefMiscItems.Enabled := False;
     end;
+
+    frmMain.bFileModified := True;
 end;
 
 procedure TfrmTableEdit.btnAddDefSkillsClick(Sender: TObject);
@@ -418,13 +426,15 @@ begin
     begin
         itemstr := Trim(editTable.Text);
         if lstTableContents.Items.IndexOf(itemstr) < 0 then
-           lstTableContents.items.Add(itemstr);
+            lstTableContents.items.Add(itemstr);
     end;
 
     if chkClearAfterAdd.Checked = True then
        editTable.Clear();
 
     editTable.SetFocus(); // very convenient if one needs to add many objects
+
+    frmMain.bFileModified := True;
 end;
 
 procedure TfrmTableEdit.btnCloseClick(Sender: TObject);
@@ -453,6 +463,8 @@ begin
     end;
 
     UpdateButtonsState();
+
+    frmMain.bFileModified := True;
 end;
 
 procedure TfrmTableEdit.btnDeleteUnusedClick(Sender: TObject);
@@ -763,7 +775,7 @@ begin
 
             if tempList.Count = 0 then
             begin
-                MessageDlg('Nothing to delete!',  mtInformation, [mbOK], 0);
+                MessageDlg(strNothingToDelete,  mtInformation, [mbOK], 0);
                 tempList.Free();
                 Exit();
             end;
@@ -786,7 +798,7 @@ begin
 
             if tempList.Count = 0 then
             begin
-                MessageDlg('Nothing to delete!',  mtInformation, [mbOK], 0);
+                MessageDlg(strNothingToDelete,  mtInformation, [mbOK], 0);
                 tempList.Free();
                 Exit();
             end;
@@ -809,7 +821,7 @@ begin
 
             if tempList.Count = 0 then
             begin
-                MessageDlg('Nothing to delete!',  mtInformation, [mbOK], 0);
+                MessageDlg(strNothingToDelete,  mtInformation, [mbOK], 0);
                 tempList.Free();
                 Exit();
             end;
@@ -832,7 +844,7 @@ begin
 
             if tempList.Count = 0 then
             begin
-                MessageDlg('Nothing to delete!',  mtInformation, [mbOK], 0);
+                MessageDlg(strNothingToDelete,  mtInformation, [mbOK], 0);
                 tempList.Free();
                 Exit();
             end;
@@ -848,6 +860,8 @@ begin
 
         end;
     end;
+
+    frmMain.bFileModified := True;
 
     tempList.Free();
 end;

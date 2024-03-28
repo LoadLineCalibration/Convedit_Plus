@@ -345,6 +345,8 @@ ResourceString
     strAddNewConversation = 'Add new conversation';
     strEditConversation = 'Edit conversation properties';
 
+    strNothingToDelete = 'Nothing to delete!';
+
 
 
 

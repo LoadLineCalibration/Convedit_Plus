@@ -20,7 +20,7 @@ type
   private
     { Private declarations }
   public
-    receiver: TControl;
+    Receiver: TControl;
     { Public declarations }
   end;
 
@@ -51,10 +51,10 @@ end;
 procedure TfrmEditValue.SendDataBack();
     var idx: Integer;
 begin
-   if receiver is TListBox then
+   if Receiver is TListBox then
    begin
-       idx:=TListBox(receiver).ItemIndex;
-       TListBox(receiver).Items[idx] := editValue.Text;
+       idx:=TListBox(Receiver).ItemIndex;
+       TListBox(Receiver).Items[idx] := editValue.Text;
    end;
 end;
 

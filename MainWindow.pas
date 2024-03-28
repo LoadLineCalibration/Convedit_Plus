@@ -3754,7 +3754,7 @@ begin
     if control is TListBox then frmEditValue.editValue.Text := TListBox(control).Items[TListBox(control).ItemIndex];
 
 
-    frmEditValue.receiver := control; // назначить имя элемента управления на переменную.
+    frmEditValue.Receiver := control; // назначить имя элемента управления на переменную.
     frmEditValue.ShowModal();
 end;
 
@@ -3977,6 +3977,8 @@ begin
     SetEventIndexes();
     UpdateEventListHeights();
     ConEventList.Repaint();
+
+    bFileModified := True;
 end;
 
 procedure TfrmMain.ConEventListMeasureItem(Control: TWinControl; Index: Integer; var Height: Integer);
