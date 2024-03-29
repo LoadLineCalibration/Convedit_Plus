@@ -255,7 +255,7 @@ ResourceString
     strDelChoiceText = 'Are you sure you want to delete selected choice item?';
 
     strAppTitle = 'ConEditPlus';
-    strNewFile = '(New File)';
+    strNewFile = ' (New File)';
 
     strActorPawn = 'Actor/Pawn:';
     strFlagName = 'Flag Name:';
@@ -264,7 +264,7 @@ ResourceString
 
     strCustomClassesNotFound = 'The "%s" file does not exists! If you want to use custom classes, create it and place into ConEditPlus directory.' + #13#10 +
                                'The syntax is simple: className;description in each line.' + #13#10 +
-                               'Use - for separator (as usually in Delphi IDE).';
+                               'Use "-" for separator.';
 
     strDefaultString = 'Default text';
 
@@ -349,8 +349,7 @@ ResourceString
 
     strNoFileLoaded = 'No file loaded';
 
-
-
+    strAskToOpenGithub = 'Do you want to open ConEditPlus Github page in your Internet browser?';
 
 
 implementation

@@ -6038,7 +6038,7 @@ object frmMain: TfrmMain
     object mnuHelp: TMenuItem
       Caption = 'Help'
       object mnuGithub: TMenuItem
-        Caption = 'Open Github repository'
+        Caption = 'Open Github repository...'
         ImageIndex = 10
         OnClick = mnuGithubClick
       end

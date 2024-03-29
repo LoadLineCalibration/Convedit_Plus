@@ -3,7 +3,7 @@ object frmConvoProperties: TfrmConvoProperties
   Top = 0
   BorderStyle = bsDialog
   Caption = 'Conversation Properties'
-  ClientHeight = 467
+  ClientHeight = 471
   ClientWidth = 416
   Color = 13160660
   Font.Charset = DEFAULT_CHARSET
@@ -13,7 +13,6 @@ object frmConvoProperties: TfrmConvoProperties
   Font.Style = []
   Position = poMainFormCenter
   ShowHint = True
-  StyleElements = []
   OnMouseWheel = FormMouseWheel
   OnShow = FormShow
   TextHeight = 15
@@ -159,6 +158,7 @@ object frmConvoProperties: TfrmConvoProperties
           Top = 181
           Width = 21
           Height = 22
+          Hint = 'Edit NPC Table'
           Anchors = [akRight, akBottom]
           Caption = '...'
           TabOrder = 4

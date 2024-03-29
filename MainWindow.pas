@@ -1097,7 +1097,10 @@ begin
     ClearForNewFile();
 
     if (bCreatingNew = True) then
+    begin
+        Caption := strAppTitle + strNewFile;
         frmConvoFileProperties.ShowModal();
+    end;
 end;
 
 procedure TfrmMain.ClearForNewFile();
@@ -1939,6 +1942,7 @@ begin
     end;
 
     currentConFile := aFile;
+    StatusBar.Panels[0].Text := '';
     StatusBar.Panels[1].Text := currentConFile;
 end;
 
@@ -4592,7 +4596,7 @@ end;
 
 procedure TfrmMain.FileCloseExecute(Sender: TObject);
 begin
-    if (currentConFile <> '') and (bFileModified = true) then
+    if {(currentConFile <> '') and} (bFileModified = true) then
     begin
         case MessageDlg(strSaveConversationFileQuestion, mtConfirmation, mbYesNoCancel, 0) of
           mrCancel: // Cancel, just close the dialog and exit
@@ -4618,7 +4622,7 @@ end;
 
 procedure TfrmMain.FileNewExecute(Sender: TObject);
 begin
-    if (currentConFile <> '') and (bFileModified = true) then
+    if {(currentConFile <> '') and} (bFileModified = true) then
     begin
         case MessageDlg(strSaveConversationFileQuestion, mtConfirmation, mbYesNoCancel, 0) of
           mrCancel: // Cancel, just close the dialog and exit
@@ -4642,7 +4646,7 @@ end;
 
 procedure TfrmMain.FileOpenExecute(Sender: TObject);
 begin
-    if (currentConFile <> '') and (bFileModified = true) then
+    if {(currentConFile <> '') and} (bFileModified = true) then
     begin
         case MessageDlg(strSaveConversationFileQuestion, mtConfirmation, mbYesNoCancel, 0) of
           mrCancel: // Cancel, just close the dialog and exit
@@ -4681,6 +4685,7 @@ begin
             Exit();
         end;
 
+        StatusBar.Panels[0].Text := '';
         StatusBar.Panels[1].Text := currentConFile; // filename in StatusBar
         AddRecentFile(currentConFile);  // Add to recent
         ToggleMenusPanels(True);
@@ -4714,13 +4719,15 @@ begin
                 StatusBar.Panels[1].Text := strSavingFile + savefileName;
                 BuildConXMLFile(savefileName);
                 StatusBar.Panels[1].Text := strSavedFile + savefileName;
+
+                if Caption = strAppTitle + strNewFile then
+                    Caption := strAppTitle;
             except
                 StatusBar.Panels[1].Text := strSaveErrorStatus + savefileName;
                 raise Exception.Create(Format(strSaveError, [SysErrorMessage(GetLastError), savefileName]));
             end;
 
             currentConFile := savefileName;
-
         end;
 
         if FileSaveDialog.FileTypeIndex = 2 then
@@ -4734,6 +4741,9 @@ begin
                 StatusBar.Panels[1].Text := strSavingFile + savefileName;
                 SaveConFile(savefileName);
                 StatusBar.Panels[1].Text := strSavedFile + savefileName;
+
+                if Caption = strAppTitle + strNewFile then
+                    Caption := strAppTitle;
             except
                 StatusBar.Panels[1].Text := strSaveErrorStatus + savefileName;
                 raise Exception.Create(Format(strSaveError, [SysErrorMessage(GetLastError), savefileName]));
@@ -5394,7 +5404,8 @@ end;
 
 procedure TfrmMain.mnuGithubClick(Sender: TObject);
 begin
-    ShellExecute(0, 'open', 'https://github.com/LoadLineCalibration/Convedit_Plus', nil, nil, SW_SHOWNORMAL);
+    if MessageDlg(strAskToOpenGithub, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+        ShellExecute(0, 'open', 'https://github.com/LoadLineCalibration/Convedit_Plus', nil, nil, SW_SHOWNORMAL);
 end;
 
 procedure TfrmMain.PlayAnimation1Click(Sender: TObject);
