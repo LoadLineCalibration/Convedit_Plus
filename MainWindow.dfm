@@ -5408,8 +5408,10 @@ object frmMain: TfrmMain
       StateImages = TreeImages
       TabOrder = 0
       StyleName = 'Windows'
+      OnAddition = ConvoTreeAddition
       OnChange = ConvoTreeChange
       OnDblClick = ConvoTreeDblClick
+      OnDeletion = ConvoTreeDeletion
       OnEdited = ConvoTreeEdited
       OnEditing = ConvoTreeEditing
     end

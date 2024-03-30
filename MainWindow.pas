@@ -220,6 +220,7 @@ type
     function GetReorderButtonHint(): string;
 
     function CountLineWraps(str: string): Integer;
+    function CanRenameConversation(convoName: string): Boolean;
 
     function GetSetFlagsItemHeight(events: array of TConEvent): Integer;
     function GetCheckFlagsItemHeight(events: array of TConEvent): Integer;
@@ -440,6 +441,8 @@ type
     procedure FileOpenDialogTypeChange(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure ConEventListEndDrag(Sender, Target: TObject; X, Y: Integer);
+    procedure ConvoTreeAddition(Sender: TObject; Node: TTreeNode);
+    procedure ConvoTreeDeletion(Sender: TObject; Node: TTreeNode);
   private
     { Private declarations }
     procedure WMEnterSizeMove(var Msg: TMessage); message WM_ENTERSIZEMOVE;
@@ -4150,6 +4153,11 @@ begin
     frmConvoProperties.EditConversation(CurrentConversation);
 end;
 
+procedure TfrmMain.ConvoTreeAddition(Sender: TObject; Node: TTreeNode);
+begin
+    AddLog('OnAddition ' + Node.Text);
+end;
+
 procedure TfrmMain.ConvoTreeChange(Sender: TObject; Node: TTreeNode);
 begin
     ConEventList.Enabled := Node.Level = 1;
@@ -4264,20 +4272,36 @@ begin
     end;
 end;
 
-procedure TfrmMain.ConvoTreeEdited(Sender: TObject; Node: TTreeNode; var S: string);
+procedure TfrmMain.ConvoTreeDeletion(Sender: TObject; Node: TTreeNode);
 begin
-    // ToDo: Check if conversation can be renamed from here (name is valid, etc.)
-    //TConversation(Node.data).conName := S;
+    AddLog('OnDeletion ' + Node.Text);
+end;
+
+procedure TfrmMain.ConvoTreeEdited(Sender: TObject; Node: TTreeNode; var S: string); // Check if conversation can be renamed from here (name is valid, etc.)
+begin
+    var Conversation := TConversation(Node.Data);
+
+    if Assigned(Conversation) then
+    begin
+        if CanRenameConversation(S) = True then
+        begin
+            Conversation.conName := S;
+            bFileModified := True;
+        end
+        else
+        begin
+            MessageBeep(MB_ICONASTERISK); // Play warning sound
+            S := Conversation.conName;
+        end;
+    end;
 end;
 
 procedure TfrmMain.ConvoTreeEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
 begin
-//    if ((Assigned(Node.Data) = true) and (Node.Data is TConversation)) then
-    if TObject(Node.Data) is TConversation then
-    begin
+    var Conversation := TConversation(Node.Data);
+
+    if Assigned(Conversation) then
         AllowEdit := True;
-//        TConversation(Node.data).conName := Node.Text;
-    end;
 end;
 
 procedure TfrmMain.End1Click(Sender: TObject);
@@ -4689,6 +4713,8 @@ begin
         StatusBar.Panels[1].Text := currentConFile; // filename in StatusBar
         AddRecentFile(currentConFile);  // Add to recent
         ToggleMenusPanels(True);
+
+        Caption := strAppTitle;
     end;
 end;
 
@@ -4854,6 +4880,26 @@ end;
 procedure TfrmMain.BuySellTrade2Click(Sender: TObject);
 begin
     InsertEvent(Ord(ET_Trade));
+end;
+
+function TfrmMain.CanRenameConversation(convoName: string): Boolean;
+begin
+    if StringStartsFromDigit(convoName) = True then
+    begin
+        Result := False;
+        Exit;
+    end;
+
+    for var Con in Conversationslist do
+    begin
+        if LowerCase(Con.conName) = LowerCase(convoName) then
+        begin
+            Result := False;
+            Exit;
+        end;
+    end;
+
+    Result := True;
 end;
 
 procedure TfrmMain.Checkflag1Click(Sender: TObject);
