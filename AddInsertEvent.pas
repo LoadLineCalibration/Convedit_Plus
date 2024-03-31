@@ -871,6 +871,8 @@ begin
     RepaintCurrentEvent();
     EventWarning(false);
 
+    frmMain.bFileModified := True;
+
     Exit(True);
 end;
 
@@ -893,6 +895,8 @@ begin
     frmMain.ConEventList.Items.ValueFromIndex[frmMain.ConEventList.ItemIndex] := frmMain.GetChoiceItemHeight([choice]).ToString;
     RepaintCurrentEvent();
     EventWarning(false);
+
+    frmMain.bFileModified := True;
 
     Exit(True);
 end;
@@ -920,6 +924,8 @@ begin
     RepaintCurrentEvent();
     EventWarning(False);
 
+    frmMain.bFileModified := True;
+
     Exit(True);
 end;
 
@@ -945,6 +951,8 @@ begin
     RepaintCurrentEvent();
     EventWarning(False);
 
+    frmMain.bFileModified := True;
+
     Exit(True);
 end;
 
@@ -956,6 +964,8 @@ begin
     checkObj.GoToLabel := cmbObjNotFoundJumpTo.Items[cmbObjNotFoundJumpTo.ItemIndex];
 
     RepaintCurrentEvent();
+
+    frmMain.bFileModified := True;
 
     Exit(True);
 end;
@@ -976,6 +986,8 @@ begin
     transObj.GotoLabel := cmbTransferObjectFailLabel.Items[cmbTransferObjectFailLabel.ItemIndex];
 
     RepaintCurrentEvent();
+
+    frmMain.bFileModified := True;
 
     Exit(True);
 end;
@@ -1002,6 +1014,8 @@ begin
 
     RepaintCurrentEvent();
     EventWarning(false);
+
+    frmMain.bFileModified := True;
 
     Exit(True);
 end;
@@ -1039,6 +1053,8 @@ begin
     EventWarning(false);
     RepaintCurrentEvent();
 
+    frmMain.bFileModified := True;
+
     Exit(True);
 end;
 
@@ -1054,6 +1070,8 @@ begin
     jump.gotoLabel := cboJumpLabel.Items[cboJumpLabel.ItemIndex];
 
     RepaintCurrentEvent();
+
+    frmMain.bFileModified := True;
 
     Exit(True);
 end;
@@ -1081,6 +1099,8 @@ begin
     RepaintCurrentEvent();
     EventWarning(False);
 
+    frmMain.bFileModified := True;
+
     Exit(True);
 end;
 
@@ -1103,6 +1123,8 @@ begin
     RepaintCurrentEvent();
     EventWarning(False);
 
+    frmMain.bFileModified := True;
+
     Exit(True);
 end;
 
@@ -1123,6 +1145,8 @@ begin
     RepaintCurrentEvent();
     EventWarning(False);
 
+    frmMain.bFileModified := True;
+
     Exit(True);
 end;
 
@@ -1132,6 +1156,8 @@ begin
 
     RepaintCurrentEvent();
     EventWarning(False);
+
+    frmMain.bFileModified := True;
 
     Exit(True);
 end;
@@ -1144,6 +1170,8 @@ begin
     RepaintCurrentEvent();
     EventWarning(False);
 
+    frmMain.bFileModified := True;
+
     Exit(True);
 end;
 
@@ -1153,6 +1181,8 @@ begin
 
     RepaintCurrentEvent();
     EventWarning(False);
+
+    frmMain.bFileModified := True;
 
     Exit(True);
 end;
@@ -1177,6 +1207,8 @@ begin
     RepaintCurrentEvent();
     EventWarning(False);
 
+    frmMain.bFileModified := True;
+
     Exit(True);
 end;
 
@@ -1194,12 +1226,17 @@ begin
     RepaintCurrentEvent();
     EventWarning(False);
 
+    frmMain.bFileModified := True;
+
     Exit(True);
 end;
 
 function TfrmEventInsAdd.ValidateEnd(endEvent: TConEventEnd): Boolean;
 begin
     RepaintCurrentEvent();
+
+    frmMain.bFileModified := True;
+
     Exit(True);
 end;
 
@@ -2064,8 +2101,8 @@ procedure TfrmEventInsAdd.ValidateEvents(event: TConEvent);
 begin
     if StringStartsFromDigit(Trim(editEventLabel.Text)) then
     begin
-       ShowMessage(strLabelStartsFromDigit);
-       Exit();
+        MessageDlg(strLabelStartsWithNumber,  mtError, [mbOK], 0);
+        Exit();
     end;
 
     event.EventLabel := editEventLabel.Text; // add/update event label in any case
@@ -3101,7 +3138,6 @@ begin
     end;
 
     ValidateEvents(frmMain.CurrentEvent);
-    frmMain.bFileModified := True;
 end;
 
 procedure TfrmEventInsAdd.UpdateAddRandomLabelButtonState();
