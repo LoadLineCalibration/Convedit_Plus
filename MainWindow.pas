@@ -494,7 +494,7 @@ type
 
     var EventListColorsMode: TEventListColorsMode; // Events list mode (regular/dark)
 
-
+    var bEnableDblClickTreeFlag: Boolean;
     // end of configuration file variables
 
     var MainFormIni: TIniFile;     // ini file
@@ -2085,6 +2085,8 @@ begin
             ELCM_Default: ConEventList.Color := clWindow;
             ELCM_Dark: ConEventList.Color := RGB(60, 60, 60);
         end;
+
+        bEnableDblClickTreeFlag := ReadBool('frmMain', 'bEnableDblClickTreeFlag', True);
     end;
 
     finally
@@ -2141,6 +2143,8 @@ begin
 
            WriteInteger('OpenFileDialog', 'OpenFileFilterIndex', OpenFileFilterIndex);
            WriteInteger('SaveFileDialog', 'SaveFileFilterIndex', SaveFileFilterIndex);
+
+           WriteBool('frmMain', 'bEnableDblClickTreeFlag', bEnableDblClickTreeFlag);
        end;
 
     finally
@@ -4259,6 +4263,9 @@ var
     CurrentConvo: TConversation;
     flag: TFlag;
 begin
+    if bEnableDblClickTreeFlag = False then
+        Exit();
+
     if (ConvoTree.Selected <> nil) and (ConvoTree.Selected.Level = 2) then
     begin
         CurrentConvo := TConversation(ConvoTree.Selected.Parent.Data);

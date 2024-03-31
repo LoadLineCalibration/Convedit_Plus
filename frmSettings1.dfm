@@ -252,9 +252,7 @@ object frmSettings: TfrmSettings
     Top = 412
     Width = 239
     Height = 17
-    Hint = 
-      '(not implemented yet) Toggle flag value in conversations tree by' +
-      ' double-clicking it. '
+    Hint = 'Toggle flag value in conversations tree by double-clicking it. '
     Caption = 'DblClick tree flag to change value'
     TabOrder = 17
   end

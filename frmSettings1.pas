@@ -124,6 +124,8 @@ begin
         chkEnableLogging.Checked := bUseLogging;
 
         cbbReorderEventsModKey.ItemIndex := Ord(ReorderModKey);
+
+        chkDblClickTreeFlag.Checked := bEnableDblClickTreeFlag;
     end;
 end;
 
@@ -165,6 +167,8 @@ begin
 
         ReorderModKey := TReorderEventsModKey(cbbReorderEventsModKey.ItemIndex);
         btnReorder.Hint := GetReorderButtonHint(); // Update hint
+
+        bEnableDblClickTreeFlag := chkDblClickTreeFlag.Checked;
 
         ConEventList.Invalidate(); // Refresh the event list
     end;
