@@ -5377,18 +5377,20 @@ object frmMain: TfrmMain
     Width = 300
     Height = 531
     Align = alLeft
+    BorderStyle = bsSingle
     Color = 3947580
     TabOrder = 0
     object ConvoTree: TTreeView
       Left = 1
       Top = 1
-      Width = 298
-      Height = 529
+      Width = 294
+      Height = 525
       Margins.Left = 0
       Margins.Top = 0
       Margins.Right = 0
       Margins.Bottom = 0
       Align = alClient
+      BorderStyle = bsNone
       BorderWidth = 1
       DoubleBuffered = True
       Font.Charset = RUSSIAN_CHARSET
@@ -5407,7 +5409,6 @@ object frmMain: TfrmMain
       RowSelect = True
       StateImages = TreeImages
       TabOrder = 0
-      StyleName = 'Windows'
       OnAddition = ConvoTreeAddition
       OnChange = ConvoTreeChange
       OnDblClick = ConvoTreeDblClick

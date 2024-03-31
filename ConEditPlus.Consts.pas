@@ -351,6 +351,9 @@ ResourceString
 
     strAskToOpenGithub = 'Do you want to open ConEditPlus Github page in your Internet browser?';
 
+    strCannotRenameConversation = 'Another conversation with such name already exists or name contains invalid characters!' + #13#10#13#10 +
+                                  'Cannot rename this conversation.';
+
 
 implementation
 

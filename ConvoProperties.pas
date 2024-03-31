@@ -211,6 +211,8 @@ begin
             NodeDependsOnFlags.SelectedIndex := 3;
         end;
     end;
+
+    frmMain.SelectTreeItemByObject(frmMain.ConvoTree, ConvoToAdd); // select the conversation
 end;
 
 procedure TfrmConvoProperties.UpdateConversation(var convoToUpdate: TConversation);
@@ -256,6 +258,7 @@ begin
 
     frmMain.ConvoTree.Items.Clear();
     frmMain.BuildConvoTree();
+    frmMain.SelectTreeItemByObject(frmMain.ConvoTree, convoToUpdate); // select the conversation
 end;
 
 procedure TfrmConvoProperties.EditConversation(var convoToEdit: TConversation);
@@ -400,7 +403,18 @@ end;
 procedure TfrmConvoProperties.btnOkClick(Sender: TObject);
 begin
     case EditMode of
-        em_Edit: UpdateConversation(frmMain.CurrentConversation);
+        em_Edit:
+        begin
+            if (editConvoName.Text <> frmMain.CurrentConversation.conName) and
+               (frmMain.CanRenameConversation(editConvoName.Text) = False) then
+            begin
+                MessageDlg(PChar(strCannotRenameConversation),  mtError, [mbOK], 0);
+                Exit();
+            end;
+
+            UpdateConversation(frmMain.CurrentConversation)
+        end;
+
         em_Create: AddNewConversation();
     end;
 
@@ -416,27 +430,27 @@ procedure TfrmConvoProperties.chkDataLinkConvoClick(Sender: TObject);
 begin
     if (chkDataLinkConvo.Checked = true) then
         begin
-          chkNonInteractive.Checked := false;
-          chkFPMode.Checked := false;
-          chkRandomCameraPlacement.Checked := false;
-          chkCanBeInterruptedByAnotherConvo.Checked := false;
+            chkNonInteractive.Checked := false;
+            chkFPMode.Checked := false;
+            chkRandomCameraPlacement.Checked := false;
+            chkCanBeInterruptedByAnotherConvo.Checked := false;
 
-          chkNonInteractive.Enabled := false;
-          chkFPMode.Enabled := false;
-          chkRandomCameraPlacement.Enabled := false;
-          chkCanBeInterruptedByAnotherConvo.Enabled := false;
+            chkNonInteractive.Enabled := false;
+            chkFPMode.Enabled := false;
+            chkRandomCameraPlacement.Enabled := false;
+            chkCanBeInterruptedByAnotherConvo.Enabled := false;
 
-          if StartsText(INFOLINK_PREFIX,editConvoName.Text) = false then
-             editConvoName.Text := INFOLINK_PREFIX + editConvoName.Text;
+            if StartsText(INFOLINK_PREFIX,editConvoName.Text) = false then
+               editConvoName.Text := INFOLINK_PREFIX + editConvoName.Text;
         end else
         begin
-          chkNonInteractive.Enabled := true;
-          chkFPMode.Enabled := true;
-          chkRandomCameraPlacement.Enabled := true;
-          chkCanBeInterruptedByAnotherConvo.Enabled := true;
+            chkNonInteractive.Enabled := true;
+            chkFPMode.Enabled := true;
+            chkRandomCameraPlacement.Enabled := true;
+            chkCanBeInterruptedByAnotherConvo.Enabled := true;
 
-          if StartsText(INFOLINK_PREFIX,editConvoName.Text) = true then
-             editConvoName.Text := ReplaceStr(editConvoName.Text, INFOLINK_PREFIX, '');
+            if StartsText(INFOLINK_PREFIX,editConvoName.Text) = true then
+               editConvoName.Text := ReplaceStr(editConvoName.Text, INFOLINK_PREFIX, '');
         end;
 end;
 

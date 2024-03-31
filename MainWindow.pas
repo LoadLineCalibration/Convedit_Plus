@@ -3850,8 +3850,6 @@ begin
             ET_Comment:      EditCurrentEvent(TConEventComment(CurrentEvent));
             ET_End:          EditCurrentEvent(TConEventEnd(CurrentEvent));
         end;
-
-        bFileModified := True; // we're about to edit some event, so most likely file will be modified
     end;
 end;
 
@@ -4298,7 +4296,8 @@ begin
         end
         else
         begin
-            MessageBeep(MB_ICONASTERISK); // Rename is not allowed for this case, play warning sound
+            //MessageBeep(MB_ICONASTERISK); // Rename is not allowed for this case, play warning sound
+            MessageDlg(PChar(strCannotRenameConversation),  mtError, [mbOK], 0);
             S := Conversation.conName;
         end;
     end;
@@ -4309,17 +4308,17 @@ begin
     var Conversation := TConversation(Node.Data);
 
     if Assigned(Conversation) then
-        AllowEdit := True;
+        AllowEdit := True else AllowEdit := False;
 end;
 
 procedure TfrmMain.End1Click(Sender: TObject);
 begin
-  AddEvent(Ord(ET_End));
+    AddEvent(Ord(ET_End));
 end;
 
 procedure TfrmMain.End2Click(Sender: TObject);
 begin
-  InsertEvent(Ord(ET_End));
+    InsertEvent(Ord(ET_End));
 end;
 
 procedure TfrmMain.DateTimeToDouble1Click(Sender: TObject);
