@@ -297,7 +297,7 @@ begin
     editConvoCreatedBy.Text := convoToEdit.conCreatedByName;
 
     editConvoLastModifiedOn.Text := convoToEdit.conModifiedByDate;
-    editConvoLastModifiedBy.Text      := convoToEdit.conModifiedByName;
+    editConvoLastModifiedBy.Text := convoToEdit.conModifiedByName;
 
     editConvoNameChange(self);
 
@@ -320,12 +320,12 @@ procedure TfrmConvoProperties.chkNPCentersPCRadiusClick(Sender: TObject);
 begin
     if (chkNPCentersPCRadius.Checked = true) then
     begin
-      editDistFromPlayer.Enabled := true;
-      lblDistFromPlayer.Enabled := true;
+        editDistFromPlayer.Enabled := true;
+        lblDistFromPlayer.Enabled := true;
     end else
     begin
-      editDistFromPlayer.Enabled := false;
-      lblDistFromPlayer.Enabled := false;
+        editDistFromPlayer.Enabled := false;
+        lblDistFromPlayer.Enabled := false;
     end
 end;
 

@@ -212,7 +212,7 @@ ResourceString
 
     strDependsOnFlag = 'Flags: ';
 
-    strLabelStartsFromDigit = 'Cannot add label since it starts from a number.';
+    strLabelStartsWithNumber = 'Cannot add label since it starts with number.';
     strSpeechTextIsEmpty = 'Speech text cannot be empty! Please enter some text.';
 
     strCommentTextIsEmpty = 'Comment text cannot be empty! Please enter some text.';
@@ -353,6 +353,8 @@ ResourceString
 
     strCannotRenameConversation = 'Another conversation with such name already exists or name contains invalid characters!' + #13#10#13#10 +
                                   'Cannot rename this conversation.';
+
+    strNameStartsFromDigit = 'Conversation name cannot start with number!';
 
 
 implementation

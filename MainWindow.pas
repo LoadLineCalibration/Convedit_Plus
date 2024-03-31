@@ -447,6 +447,10 @@ type
     procedure Conversation_RenameExecute(Sender: TObject);
   private
     { Private declarations }
+    FFileModified: Boolean;
+    function GetFileModified(): Boolean; // Getter function
+    procedure SetFileModified(const Value: Boolean); // Setter procedure
+
     procedure WMEnterSizeMove(var Msg: TMessage); message WM_ENTERSIZEMOVE;
     procedure WMExitSizeMove(var Msg: TMessage); message WM_EXITSIZEMOVE;
   public
@@ -497,7 +501,8 @@ type
 
     var currentConFile: string; // global variable, so I can use it anywhere...
 
-    var bFileModified: Boolean; // set to True when file has been modified
+    //var bFileModified: Boolean; // set to True when file has been modified
+    property bFileModified: Boolean read GetFileModified write SetFileModified; // Property for bFileModified
 
     var eventsFormLeft: Integer;
     var eventsFormTop: Integer;
@@ -520,6 +525,20 @@ uses frmSettings1, EditValueDialog, ConFileProperties, AboutBox1, ConvoPropertie
      ConXml.Reader, ConXML.Writer, confile.Reader, conFile.Writer, uFrmLabelErrors;
 
 
+procedure TfrmMain.SetFileModified(const Value: Boolean);
+begin
+    FFileModified := Value;
+
+    case Value of
+        True: Caption := strAppTitle + ' [File has been modified]';
+        False: Caption := strAppTitle;
+    end;
+end;
+
+function TfrmMain.GetFileModified: Boolean;
+begin
+    Result := FFileModified;
+end;
 
 procedure TfrmMain.WMEnterSizeMove(var Msg: TMessage);
 begin
@@ -1269,6 +1288,7 @@ begin
         end;
     end;
 end;
+
 
 procedure TfrmMain.CreateAudioDirectories(const InitialPath: string);
 begin
@@ -4753,8 +4773,7 @@ begin
                 BuildConXMLFile(savefileName);
                 StatusBar.Panels[1].Text := strSavedFile + savefileName;
 
-                if Caption = strAppTitle + strNewFile then
-                    Caption := strAppTitle;
+                bFileModified := False;
             except
                 StatusBar.Panels[1].Text := strSaveErrorStatus + savefileName;
                 raise Exception.Create(Format(strSaveError, [SysErrorMessage(GetLastError), savefileName]));
@@ -4775,8 +4794,7 @@ begin
                 SaveConFile(savefileName);
                 StatusBar.Panels[1].Text := strSavedFile + savefileName;
 
-                if Caption = strAppTitle + strNewFile then
-                    Caption := strAppTitle;
+                bFileModified := False;
             except
                 StatusBar.Panels[1].Text := strSaveErrorStatus + savefileName;
                 raise Exception.Create(Format(strSaveError, [SysErrorMessage(GetLastError), savefileName]));
@@ -4797,6 +4815,8 @@ begin
                 StatusBar.Panels[1].Text := strSavingFile + currentConFile;
                 BuildConXMLFile(currentConFile);
                 StatusBar.Panels[1].Text := strSavedFile + currentConFile;
+
+                bFileModified := False;
             except
                 StatusBar.Panels[1].Text := strSaveErrorStatus + currentConFile;
                 raise Exception.Create(Format(strSaveError, [SysErrorMessage(GetLastError), currentConFile]));
@@ -4809,6 +4829,8 @@ begin
                 StatusBar.Panels[1].Text := strSavingFile + currentConFile;
                 SaveConFile(currentConFile);
                 StatusBar.Panels[1].Text := strSavedFile + currentConFile;
+
+                bFileModified := False;
             except
                 StatusBar.Panels[1].Text := strSaveErrorStatus + currentConFile;
                 raise Exception.Create(Format(strSaveError, [SysErrorMessage(GetLastError), currentConFile]));
