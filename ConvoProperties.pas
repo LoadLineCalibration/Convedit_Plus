@@ -126,13 +126,6 @@ begin
     var ConvoToAdd: TConversation;
     var NodeConName, NodeConOwnerName, NodeDependsOnFlags: TTreeNode;
 
-    if CheckConversationExists(editConvoName.Text) = True then
-    begin
-        MessageDlg(strConversationAlreadyExists,  mtError, [mbOK], 0);
-        Exit();
-    end;
-
-
     ConvoToAdd := TConversation.Create(); // create empty TConversation object
 
     with ConvoToAdd do
@@ -415,7 +408,22 @@ begin
             UpdateConversation(frmMain.CurrentConversation)
         end;
 
-        em_Create: AddNewConversation();
+        em_Create:
+        begin
+            if StringStartsFromDigit(editConvoName.Text) = True then
+            begin
+                MessageDlg(strNameStartsFromDigit,  mtError, [mbOK], 0);
+                Exit();
+            end;
+
+            if CheckConversationExists(editConvoName.Text) = True then
+            begin
+                MessageDlg(strConversationAlreadyExists,  mtError, [mbOK], 0);
+                Exit();
+            end;
+
+            AddNewConversation();
+        end;
     end;
 
     Close();
