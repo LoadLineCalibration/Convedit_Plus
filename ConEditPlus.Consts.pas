@@ -356,6 +356,8 @@ ResourceString
 
     strNameStartsFromDigit = 'Conversation name cannot start with number!';
 
+    strUniqueLabelRequired = 'The EventLabel you entered is not unique, please choose another';
+
 
 implementation
 

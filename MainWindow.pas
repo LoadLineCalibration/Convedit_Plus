@@ -9,7 +9,7 @@ uses
   Conversation.Classes, System.ImageList, Vcl.ImgList, Table, Vcl.GraphUtil, ES.BaseControls, ES.Layouts,
   System.Actions, Vcl.ActnList, System.Generics.Collections, System.TypInfo, xml.VerySimple, System.StrUtils,
   system.Math, Vcl.MPlayer, ConEditPlus.Enums, Winapi.ShellAPI, ConEditPlus.Helpers, Vcl.Clipbrd, system.Rtti,
-  ConEditPlus.Clipboard.Helper;
+  ConEditPlus.Clipboard.Helper, Vcl.AppEvnts;
 
 
 type
@@ -42,7 +42,7 @@ type
     mnuEventIndex: TMenuItem;
     mnuShowAudioFiles1: TMenuItem;
     PopupConvoEventList: TPopupMenu;
-    pnlConvoTree: TPanel;
+    pnlConvoTree: TEsPanel;
     Splitter1: TSplitter;
     ConvoTree: TTreeView;
     Add2: TMenuItem;
@@ -190,7 +190,6 @@ type
     StaticText1: TStaticText;
     EsPanel1: TEsPanel;
     edtSearchBox: TEdit;
-    N20: TMenuItem;
     Conversation_CheckLabels: TAction;
     tbVerifyLabels: TToolButton;
     ToolButton12: TToolButton;
@@ -201,6 +200,7 @@ type
     N6: TMenuItem;
     ExpandTreeWithoutFlags: TMenuItem;
     Conversation_Rename: TAction;
+    ConversationRename1: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -4516,7 +4516,6 @@ end;
 procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
     SaveCfg();
-//    ShowMessage('Close?');
 end;
 
 procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -4578,6 +4577,8 @@ begin
 
     if ParamStr(1).IsEmpty = False then // open file from commandline
         ProcessCommandline(ParamStr(1));
+
+    Screen.HintFont.Name := 'Verdana';
 end;
 
 procedure TfrmMain.CreateObjectLists();

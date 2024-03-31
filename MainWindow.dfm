@@ -5355,9 +5355,9 @@ object frmMain: TfrmMain
   TextHeight = 15
   object Splitter1: TSplitter
     Left = 300
-    Top = 34
+    Top = 35
     Width = 5
-    Height = 531
+    Height = 530
     Cursor = crSizeWE
     Margins.Left = 5
     Margins.Top = 5
@@ -5371,20 +5371,23 @@ object frmMain: TfrmMain
     ExplicitTop = 38
     ExplicitHeight = 623
   end
-  object pnlConvoTree: TPanel
+  object pnlConvoTree: TEsPanel
     Left = 0
-    Top = 34
+    Top = 35
     Width = 300
-    Height = 531
+    Height = 530
     Align = alLeft
-    BorderStyle = bsSingle
     Color = 3947580
+    IsOpaque = True
+    ParentColor = False
     TabOrder = 0
+    FrameStyle = None
+    FrameColor = clBtnFace
     object ConvoTree: TTreeView
-      Left = 1
-      Top = 1
-      Width = 294
-      Height = 525
+      Left = 0
+      Top = 0
+      Width = 300
+      Height = 530
       Margins.Left = 0
       Margins.Top = 0
       Margins.Right = 0
@@ -5438,9 +5441,9 @@ object frmMain: TfrmMain
   end
   object pnlEventList: TEsPanel
     Left = 305
-    Top = 34
+    Top = 35
     Width = 697
-    Height = 531
+    Height = 530
     Align = alClient
     Color = 3947580
     ParentColor = False
@@ -5450,12 +5453,12 @@ object frmMain: TfrmMain
     FrameStyle = Bump
     DesignSize = (
       697
-      531)
+      530)
     object ConEventList: TListBox
       Left = 2
       Top = 22
       Width = 693
-      Height = 221
+      Height = 220
       Style = lbOwnerDrawVariable
       Align = alClient
       BevelWidth = 5
@@ -5533,7 +5536,7 @@ object frmMain: TfrmMain
     end
     object mmoOutput: TMemo
       Left = 2
-      Top = 243
+      Top = 242
       Width = 693
       Height = 286
       Align = alBottom
@@ -5562,7 +5565,7 @@ object frmMain: TfrmMain
     end
     object btnCloseLog: TButton
       Left = 678
-      Top = 401
+      Top = 400
       Width = 20
       Height = 20
       Hint = 'Close Log'
@@ -5588,19 +5591,23 @@ object frmMain: TfrmMain
     Left = 0
     Top = 0
     Width = 1002
-    Height = 31
     AutoSize = True
     ButtonHeight = 31
     ButtonWidth = 31
     Caption = 'mainToolBar'
     Color = clBtnFace
     DoubleBuffered = True
-    EdgeInner = esLowered
+    EdgeBorders = [ebTop]
+    EdgeInner = esNone
+    EdgeOuter = esRaised
     GradientEndColor = 10526880
     GradientStartColor = 13160660
+    HotTrackColor = clSkyBlue
     Images = ImageListToolbar
     Indent = 2
     List = True
+    GradientDirection = gdHorizontal
+    GradientDrawingOptions = [gdoHotTrack]
     ParentColor = False
     ParentDoubleBuffered = False
     TabOrder = 3
@@ -5780,15 +5787,12 @@ object frmMain: TfrmMain
       Top = 0
       Width = 367
       Height = 31
-      Color = clMenu
       Ctl3D = True
       ParentBackground = False
       ParentColor = False
       ParentCtl3D = False
       TabOrder = 0
       CaptionVisible = False
-      BevelInner = bvNone
-      BevelOuter = bvNone
       FrameStyle = None
       FrameColor = clBtnFace
       object lblQSearch: TLabel
@@ -5824,7 +5828,7 @@ object frmMain: TfrmMain
   end
   object StaticText1: TStaticText
     Left = 0
-    Top = 31
+    Top = 32
     Width = 1002
     Height = 3
     Align = alTop
@@ -5864,11 +5868,11 @@ object frmMain: TfrmMain
     object N13: TMenuItem
       Caption = '-'
     end
-    object N20: TMenuItem
-      Action = Conversation_CheckLabels
-    end
     object menuConvoProperties: TMenuItem
       Action = Conversation_Properties
+    end
+    object ConversationRename1: TMenuItem
+      Action = Conversation_Rename
     end
     object N14: TMenuItem
       Caption = '-'
@@ -8469,7 +8473,7 @@ object frmMain: TfrmMain
     end
     object Conversation_Rename: TAction
       Category = 'Conversation'
-      Caption = 'Conversation_Rename'
+      Caption = 'Rename'
       ShortCut = 113
       OnExecute = Conversation_RenameExecute
     end

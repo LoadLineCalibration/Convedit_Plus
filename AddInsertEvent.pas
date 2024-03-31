@@ -544,7 +544,8 @@ begin
 
     cmbTransferObjectFailLabel.Clear(); // to avoid duplicates
 
-    for var evt:=0 to High(frmMain.CurrentConversation.Events) do begin
+    for var evt:=0 to High(frmMain.CurrentConversation.Events) do
+    begin
         if frmMain.CurrentConversation.Events[evt].EventLabel <> '' then
            cmbTransferObjectFailLabel.Items.Add(frmMain.CurrentConversation.Events[evt].EventLabel);
     end;
@@ -2099,6 +2100,15 @@ end;
 
 procedure TfrmEventInsAdd.ValidateEvents(event: TConEvent);
 begin
+    for var aEvent in frmMain.CurrentConversation.Events do
+    begin
+        if LowerCase(aEvent.EventLabel) = LowerCase(editEventLabel.Text) then
+        begin
+            MessageDlg(PChar(strUniqueLabelRequired),  mtWarning, [mbOk], 0);
+            Exit();
+        end;
+    end;
+
     if StringStartsFromDigit(Trim(editEventLabel.Text)) then
     begin
         MessageDlg(strLabelStartsWithNumber,  mtError, [mbOK], 0);
