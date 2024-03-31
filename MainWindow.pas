@@ -4157,8 +4157,7 @@ end;
 
 procedure TfrmMain.Conversation_RenameExecute(Sender: TObject);
 begin
-//    ShowMessage('F2 - rename');
-    if (ConvoTree.Selected <> nil) and (ConvoTree.Selected.Level = 1) then
+    if (ConvoTree.Selected <> nil) and (ConvoTree.Selected.Level = 1) and (ActiveControl = ConvoTree) and (Active = True) then
         ConvoTree.Selected.EditText();
 end;
 
