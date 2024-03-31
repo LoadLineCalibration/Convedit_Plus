@@ -8466,6 +8466,12 @@ object frmMain: TfrmMain
       Caption = 'Duplicate'
       OnExecute = Event_DuplicateExecute
     end
+    object Conversation_Rename: TAction
+      Category = 'Conversation'
+      Caption = 'Conversation_Rename'
+      ShortCut = 113
+      OnExecute = Conversation_RenameExecute
+    end
   end
   object FileSaveDialog: TFileSaveDialog
     FavoriteLinks = <>

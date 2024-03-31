@@ -200,6 +200,7 @@ type
     Event_Duplicate: TAction;
     N6: TMenuItem;
     ExpandTreeWithoutFlags: TMenuItem;
+    Conversation_Rename: TAction;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -443,6 +444,7 @@ type
     procedure ConEventListEndDrag(Sender, Target: TObject; X, Y: Integer);
     procedure ConvoTreeAddition(Sender: TObject; Node: TTreeNode);
     procedure ConvoTreeDeletion(Sender: TObject; Node: TTreeNode);
+    procedure Conversation_RenameExecute(Sender: TObject);
   private
     { Private declarations }
     procedure WMEnterSizeMove(var Msg: TMessage); message WM_ENTERSIZEMOVE;
@@ -4153,6 +4155,13 @@ begin
     frmConvoProperties.EditConversation(CurrentConversation);
 end;
 
+procedure TfrmMain.Conversation_RenameExecute(Sender: TObject);
+begin
+//    ShowMessage('F2 - rename');
+    if (ConvoTree.Selected <> nil) and (ConvoTree.Selected.Level = 1) then
+        ConvoTree.Selected.EditText();
+end;
+
 procedure TfrmMain.ConvoTreeAddition(Sender: TObject; Node: TTreeNode);
 begin
     AddLog('OnAddition ' + Node.Text);
@@ -4290,7 +4299,7 @@ begin
         end
         else
         begin
-            MessageBeep(MB_ICONASTERISK); // Play warning sound
+            MessageBeep(MB_ICONASTERISK); // Rename is not allowed for this case, play warning sound
             S := Conversation.conName;
         end;
     end;
