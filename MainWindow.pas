@@ -2994,7 +2994,9 @@ begin
         DrawText(Handle,strGoalName + GoalName, -1, TempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
         Inc(tempRect.Top, 16);
         TempRect.Right := Rect.Right - SysScrollBarWidth; // right offset
-        DrawText(Handle,strGoalText + GoalText, -1, TempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
+
+        if bComplete = False then
+            DrawText(Handle,strGoalText + GoalText, -1, TempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
 
         if bPrimaryGoal = true then
         begin
@@ -4589,6 +4591,7 @@ begin
         ProcessCommandline(ParamStr(1));
 
     Screen.HintFont.Name := 'Verdana';
+//    Screen.MenuFont.Name := 'Cascadia Code';
 end;
 
 procedure TfrmMain.CreateObjectLists();
