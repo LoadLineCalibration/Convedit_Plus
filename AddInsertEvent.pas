@@ -1143,6 +1143,7 @@ begin
     end else
     begin
        theGoal.bComplete := True;
+       theGoal.GoalText := '';
     end;
 
     RepaintCurrentEvent();
@@ -2392,7 +2393,8 @@ begin
     if frmMain.ConEventList.ItemIndex <> -1 then
     begin
         frmMain.ConEventList.ItemIndex := frmMain.ConEventList.ItemIndex + 1;
-        frmMain.ConEventListDblClick(frmMain.ConEventList);
+        frmMain.ConEventListClick(frmMain.ConEventList);
+        //frmMain.ConEventListDblClick(frmMain.ConEventList);
     end;
 end;
 
@@ -2403,7 +2405,8 @@ begin
     if frmMain.ConEventList.ItemIndex <> -1 then
     begin
         frmMain.ConEventList.ItemIndex := frmMain.ConEventList.ItemIndex - 1;
-        frmMain.ConEventListDblClick(frmMain.ConEventList);
+        frmMain.ConEventListClick(frmMain.ConEventList);
+        //frmMain.ConEventListDblClick(frmMain.ConEventList);
     end;
 end;
 

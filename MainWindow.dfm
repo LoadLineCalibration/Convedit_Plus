@@ -5572,7 +5572,7 @@ object frmMain: TfrmMain
     end
     object btnCloseLog: TButton
       Left = 678
-      Top = 397
+      Top = 394
       Width = 20
       Height = 20
       Hint = 'Close Log'
@@ -5592,7 +5592,7 @@ object frmMain: TfrmMain
       Visible = False
       StyleName = 'Windows'
       OnClick = ViewoutputTMemo1Click
-      ExplicitTop = 400
+      ExplicitTop = 397
     end
   end
   object mainToolBar: TToolBar
@@ -6036,6 +6036,7 @@ object frmMain: TfrmMain
       end
       object Darkmode1: TMenuItem
         Caption = 'Theme'
+        OnClick = Darkmode1Click
       end
       object Options1: TMenuItem
         Action = ShowOptions

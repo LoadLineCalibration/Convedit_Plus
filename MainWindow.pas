@@ -445,6 +445,7 @@ type
     procedure ConvoTreeAddition(Sender: TObject; Node: TTreeNode);
     procedure ConvoTreeDeletion(Sender: TObject; Node: TTreeNode);
     procedure Conversation_RenameExecute(Sender: TObject);
+    procedure Darkmode1Click(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -3846,6 +3847,11 @@ begin
        ConEventListDblClick(Sender);
 
     ConEventList.Repaint();
+
+    frmEventInsAdd.btnInsertEvent.Enabled := ConEventList.Count > 1;
+
+    frmEventInsAdd.btnNextEvent.Enabled := ConEventList.ItemIndex < ConEventList.Count -1;
+    frmEventInsAdd.btnPrevEvent.Enabled := ConEventList.ItemIndex > 0;
 end;
 
 procedure TfrmMain.ConEventListDblClick(Sender: TObject);
@@ -4190,7 +4196,8 @@ end;
 
 procedure TfrmMain.ConvoTreeAddition(Sender: TObject; Node: TTreeNode);
 begin
-    AddLog('OnAddition ' + Node.Text);
+    //AddLog('OnAddition ' + Node.Text);
+    //bFileModified := True;
 end;
 
 procedure TfrmMain.ConvoTreeChange(Sender: TObject; Node: TTreeNode);
@@ -4312,7 +4319,8 @@ end;
 
 procedure TfrmMain.ConvoTreeDeletion(Sender: TObject; Node: TTreeNode);
 begin
-    AddLog('OnDeletion ' + Node.Text);
+    //AddLog('OnDeletion ' + Node.Text);
+    //bFileModified := True;
 end;
 
 procedure TfrmMain.ConvoTreeEdited(Sender: TObject; Node: TTreeNode; var S: string); // Check if conversation can be renamed from here (name is valid, etc.)
@@ -4351,6 +4359,11 @@ end;
 procedure TfrmMain.End2Click(Sender: TObject);
 begin
     InsertEvent(Ord(ET_End));
+end;
+
+procedure TfrmMain.Darkmode1Click(Sender: TObject);
+begin
+    ShowMessage('Not implemented yet');
 end;
 
 procedure TfrmMain.DateTimeToDouble1Click(Sender: TObject);
