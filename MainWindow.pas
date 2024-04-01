@@ -1290,7 +1290,6 @@ begin
     end;
 end;
 
-
 procedure TfrmMain.CreateAudioDirectories(const InitialPath: string);
 begin
     GenerateAudioFileNames(); // Generate filenames and paths first
@@ -1975,7 +1974,38 @@ end;
 procedure TfrmMain.AddRecentFile(aFile: string);
 var i: Integer;
 begin
-    for i:=0 to Length(RecentFiles) -1 do
+    var bListIsFull := True;
+
+    for i := 0 to Length(RecentFiles) - 1 do
+    begin
+        if RecentFiles[i] = aFile then
+          Exit;
+
+        if RecentFiles[i] = '' then
+        begin
+            RecentFiles[i] := aFile;
+            mniRecent.Items[i].Caption := aFile;
+            mniRecent.Items[i].Visible := True;
+            bListIsFull := False;
+            Break;
+        end;
+    end;
+
+    if bListIsFull then
+    begin
+        // Shift all items down by 1
+        for i := Length(RecentFiles) - 1 downto 1 do
+        begin
+            RecentFiles[i] := RecentFiles[i - 1];
+            mniRecent.Items[i].Caption := mniRecent.Items[i - 1].Caption;
+            mniRecent.Items[i].Visible := mniRecent.Items[i - 1].Visible;
+        end;
+
+        RecentFiles[0] := aFile;
+        mniRecent.Items[0].Caption := aFile;
+        mniRecent.Items[0].Visible := True;
+    end;
+{    for i:=0 to Length(RecentFiles) -1 do
     begin
         if RecentFiles[i] = aFile then Exit();
         if RecentFiles[i] = '' then
@@ -1986,7 +2016,7 @@ begin
            Break
         end else
         Continue;
-    end;
+    end;}
 end;
 
 procedure TfrmMain.Clear1Click(Sender: TObject);
@@ -3849,7 +3879,6 @@ begin
     ConEventList.Repaint();
 
     frmEventInsAdd.btnInsertEvent.Enabled := ConEventList.Count > 1;
-
     frmEventInsAdd.btnNextEvent.Enabled := ConEventList.ItemIndex < ConEventList.Count -1;
     frmEventInsAdd.btnPrevEvent.Enabled := ConEventList.ItemIndex > 0;
 end;
