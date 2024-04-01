@@ -9,9 +9,9 @@ uses
 
 type
   TfrmSettings = class(TForm)
-    lbl1: TLabel;
-    Label1: TLabel;
-    Label2: TLabel;
+    lblUserName: TLabel;
+    lblConversationsPath: TLabel;
+    lblAudioPath: TLabel;
     Label3: TLabel;
     edtUserName: TEdit;
     edtConFilePath: TEdit;
@@ -29,13 +29,10 @@ type
     shpHighlightColorTo: TShape;
     shpHighlightColorSingle: TShape;
     dlgColor1: TColorDialog;
-    txt1: TStaticText;
     btnOk: TButton;
     btnCancel: TButton;
     btnClearLastFiles: TButton;
     chkFlatControlsMainWin: TCheckBox;
-    chkAutoSaveEnabled: TCheckBox;
-    seAutoSaveMinutes: TSpinEdit;
     btnPickUserName: TButton;
     btnResetToDefaults: TButton;
     chkUseSelectionFrame: TCheckBox;
@@ -43,15 +40,21 @@ type
     shpUserName: TShape;
     shpOriginalStyle: TShape;
     shpGridColor: TShape;
-    Label4: TLabel;
+    lblGridColor: TLabel;
     cbbReorderEventsModKey: TComboBox;
-    Label5: TLabel;
+    lblReorderKey: TLabel;
     dlgSelectFolder: TFileOpenDialog;
-    Label6: TLabel;
     chkEnableLogging: TCheckBox;
     chkDblClickTreeFlag: TCheckBox;
-    GroupBox1: TGroupBox;
+    grpEventsList: TGroupBox;
     chkDarkModeEventList: TCheckBox;
+    pgcSettings: TPageControl;
+    Page1: TTabSheet;
+    PageA: TTabSheet;
+    GroupBox1: TGroupBox;
+    chkAutoSaveEnabled: TCheckBox;
+    seAutoSaveMinutes: TSpinEdit;
+    lblMinutes: TLabel;
 
     // new procedures
     procedure SaveChanges();
@@ -250,6 +253,8 @@ end;
 
 procedure TfrmSettings.FormCreate(Sender: TObject);
 begin
+    Icon := frmMain.Icon;
+
     LoadSettings();
     edtUserNameChange(self);
 end;

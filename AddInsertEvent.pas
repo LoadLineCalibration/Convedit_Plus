@@ -272,6 +272,8 @@ type
     function ValidateComment(comment: TConEventComment): Boolean;
     function ValidateEnd(endEvent: TConEventEnd): Boolean;
 
+    function CheckLabelDuplicates(const Conversation: TConversation; const LabelToCheck: string): Boolean;
+
     procedure NewSpeech();
     procedure NewChoice();
     procedure NewSetFlags();
@@ -2100,13 +2102,10 @@ end;
 
 procedure TfrmEventInsAdd.ValidateEvents(event: TConEvent);
 begin
-    for var aEvent in frmMain.CurrentConversation.Events do
+    if CheckLabelDuplicates(frmMain.CurrentConversation, editEventLabel.Text) = True then
     begin
-        if LowerCase(aEvent.EventLabel) = LowerCase(editEventLabel.Text) then
-        begin
-            MessageDlg(PChar(strUniqueLabelRequired),  mtWarning, [mbOk], 0);
-            Exit();
-        end;
+        MessageDlg(strUniqueLabelRequired,  mtWarning, [mbOk], 0);
+        Exit();
     end;
 
     if StringStartsFromDigit(Trim(editEventLabel.Text)) then
@@ -2761,6 +2760,22 @@ begin
 
 end;
 
+function TfrmEventInsAdd.CheckLabelDuplicates(const Conversation: TConversation; const LabelToCheck: string): Boolean;
+begin
+    var bDuplicateFound := False;
+
+    for var Event in Conversation.Events do
+    begin
+        if (Event.EventLabel <> '') and (LowerCase(Event.EventLabel) = LowerCase(LabelToCheck)) then
+        begin
+            bDuplicateFound := True;
+            Break;
+        end;
+    end;
+
+    Result := bDuplicateFound;
+end;
+
 procedure TfrmEventInsAdd.FormCreate(Sender: TObject);
   var i: Integer;
 begin
@@ -2775,7 +2790,8 @@ end;
 
 procedure TfrmEventInsAdd.FormMouseWheelDown(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
 begin
-    if ActiveControl is TSpinEdit then begin
+    if ActiveControl is TSpinEdit then
+    begin
         if Shift = [] then
         begin
            TSpinEdit(ActiveControl).Value := TSpinEdit(ActiveControl).Value - 1;
@@ -2796,7 +2812,8 @@ end;
 
 procedure TfrmEventInsAdd.FormMouseWheelUp(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
 begin
-    if ActiveControl is TSpinEdit then begin
+    if ActiveControl is TSpinEdit then
+    begin
         if Shift = [] then
         begin
            TSpinEdit(ActiveControl).Value := TSpinEdit(ActiveControl).Value + 1;

@@ -47,7 +47,7 @@ object frmConvoFileProperties: TfrmConvoFileProperties
       Top = 3
       Width = 394
       Height = 412
-      ActivePage = tsMissions
+      ActivePage = tsStats
       Align = alClient
       Style = tsFlatButtons
       TabOrder = 0

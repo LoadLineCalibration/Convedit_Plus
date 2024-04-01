@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls, Conversation.Classes,
-  ConEditplus.Consts;
+  ConEditplus.Consts, System.Generics.Collections;
 
 type
   TfrmLabelErrors = class(TForm)
@@ -17,9 +17,9 @@ type
     // new functions
     function CheckEventLabel(con: TConversation; aLabel: string): String;
 
-
     // new procedures
     procedure VerifyLabels(bSilent: Boolean = False);
+    procedure CheckLabelDuplicates(const con: TConversation);
 
     procedure btnCloseClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -48,6 +48,50 @@ begin
     begin
         if LowerCase(event.EventLabel) = LowerCase(aLabel) then
             Result := event.EventLabel
+    end;
+end;
+
+procedure TfrmLabelErrors.CheckLabelDuplicates(const con: TConversation);
+begin
+    var TempDict := TDictionary<string, Integer>.Create();
+    var bDuplicateFound: Boolean := False;
+
+    try
+        for var aEvent in con.Events do
+        begin
+            var aEventLabel := LowerCase(aEvent.EventLabel);
+
+            if aEventLabel <> '' then
+            begin
+                if TempDict.ContainsKey(aEventLabel) then
+                begin
+                    bDuplicateFound := True;
+                    TempDict[aEventLabel] := TempDict[aEventLabel] + 1; // Update the count of duplicates for the event label
+                end
+                else
+                begin
+                    TempDict.Add(aEventLabel, 1);
+                end;
+            end;
+        end;
+
+        if bDuplicateFound then
+        begin
+            ShowMessage('Duplicate event labels found.');
+
+            for var Key in TempDict.Keys do // Display the duplicate event labels and their counts
+            begin
+                if TempDict[Key] > 1 then
+                    ShowMessage('Duplicate Event Label: ' + Key + ' Count: ' + TempDict[Key].ToString);
+            end;
+        end
+        else
+        begin
+            //ShowMessage('No duplicates found.');
+        end;
+
+    finally
+        TempDict.Free();
     end;
 end;
 

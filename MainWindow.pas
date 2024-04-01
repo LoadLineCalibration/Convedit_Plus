@@ -4161,6 +4161,9 @@ end;
 
 procedure TfrmMain.Conversation_CheckLabelsExecute(Sender: TObject);
 begin
+    for var con in Conversationslist do
+        frmLabelErrors.CheckLabelDuplicates(con);
+
     frmLabelErrors.VerifyLabels();
 
     if frmLabelErrors.lvLabelErrors.Items.Count > 0 then

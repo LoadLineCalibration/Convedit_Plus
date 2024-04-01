@@ -5383,6 +5383,8 @@ object frmMain: TfrmMain
     TabOrder = 0
     FrameStyle = None
     FrameColor = clBtnFace
+    ExplicitTop = 32
+    ExplicitHeight = 533
     object ConvoTree: TTreeView
       Left = 0
       Top = 0
@@ -5418,6 +5420,7 @@ object frmMain: TfrmMain
       OnDeletion = ConvoTreeDeletion
       OnEdited = ConvoTreeEdited
       OnEditing = ConvoTreeEditing
+      ExplicitHeight = 533
     end
   end
   object StatusBar: TStatusBar
@@ -5451,6 +5454,8 @@ object frmMain: TfrmMain
     TabOrder = 2
     CaptionVisible = False
     FrameStyle = Bump
+    ExplicitTop = 32
+    ExplicitHeight = 533
     DesignSize = (
       697
       530)
@@ -5484,6 +5489,7 @@ object frmMain: TfrmMain
       OnEndDrag = ConEventListEndDrag
       OnMeasureItem = ConEventListMeasureItem
       OnMouseUp = ConEventListMouseUp
+      ExplicitHeight = 223
     end
     object HeaderControl1: THeaderControl
       Left = 2
@@ -5562,10 +5568,11 @@ object frmMain: TfrmMain
       Visible = False
       WordWrap = False
       StyleName = 'Windows'
+      ExplicitTop = 245
     end
     object btnCloseLog: TButton
       Left = 678
-      Top = 400
+      Top = 397
       Width = 20
       Height = 20
       Hint = 'Close Log'
@@ -5585,6 +5592,7 @@ object frmMain: TfrmMain
       Visible = False
       StyleName = 'Windows'
       OnClick = ViewoutputTMemo1Click
+      ExplicitTop = 400
     end
   end
   object mainToolBar: TToolBar
