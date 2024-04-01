@@ -2249,8 +2249,8 @@ procedure TfrmEventInsAdd.btnDeleteChoiceClick(Sender: TObject); // Delete choic
 begin
     if (frmMain.bAskForEventDelete = true) and (lvChoiceList.ItemIndex <> -1) then
     begin
-       if Application.MessageBox(PChar(strDelChoiceText), PChar(strDelChoiceTitle), MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2 + MB_TOPMOST) = IDYES then
-          lvChoiceList.Items.Delete(lvChoiceList.ItemIndex);
+        if MessageDlg(strDelChoiceText,  mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+            lvChoiceList.Items.Delete(lvChoiceList.ItemIndex);
     end
     else
        lvChoiceList.Items.Delete(lvChoiceList.ItemIndex);
@@ -2723,7 +2723,10 @@ end;
 
 procedure TfrmEventInsAdd.editGoalNameChange(Sender: TObject);
 begin
-    btnUpdate.Enabled := (Trim(editGoalName.Text) <> '') and (Trim(memoGoalText.Text) <> '');
+    if rbAddGoal.Checked = True then
+        btnUpdate.Enabled := (Trim(editGoalName.Text) <> '') and (Trim(memoGoalText.Text) <> '')
+    else
+        btnUpdate.Enabled := (Trim(editGoalName.Text) <> '')
 end;
 
 procedure TfrmEventInsAdd.editTriggerTagChange(Sender: TObject);
@@ -2766,7 +2769,8 @@ begin
 
     for var Event in Conversation.Events do
     begin
-        if (Event.EventLabel <> '') and (LowerCase(Event.EventLabel) = LowerCase(LabelToCheck)) then
+        //if (Event.EventLabel <> '') and (LowerCase(Event.EventLabel) = LowerCase(LabelToCheck)) then
+        if (Event.EventLabel <> '') and (LowerCase(Event.EventLabel) = LowerCase(LabelToCheck)) and (Event <> frmMain.CurrentEvent) then
         begin
             bDuplicateFound := True;
             Break;
