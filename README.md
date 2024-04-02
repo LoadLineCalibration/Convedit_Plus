@@ -1,6 +1,6 @@
-# Convedit_Plus
+# ConEditPlus
 
-An attempt to recreate Deus Ex conversation editor (ConEdit or ConvEdit) in Delphi Language (Pascal). 
+An attempt to recreate Deus Ex conversation editor (ConEdit/ConvEdit) in Delphi Language (Pascal). 
 
 what is __NOT__ implemented yet:
 * Full support for dark mode
