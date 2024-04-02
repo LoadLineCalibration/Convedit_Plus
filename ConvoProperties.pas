@@ -405,7 +405,8 @@ begin
                 Exit();
             end;
 
-            UpdateConversation(frmMain.CurrentConversation)
+            UpdateConversation(frmMain.CurrentConversation);
+            frmMain.bFileModified := True;
         end;
 
         em_Create:
@@ -423,6 +424,7 @@ begin
             end;
 
             AddNewConversation();
+            frmMain.bFileModified := True;
         end;
     end;
 
