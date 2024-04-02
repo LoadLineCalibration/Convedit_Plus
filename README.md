@@ -4,6 +4,7 @@ An attempt to recreate Deus Ex conversation editor (ConEdit/ConvEdit) in Delphi 
 
 what is __NOT__ implemented yet:
 * Full support for dark mode
+* AutoSave
 * ~Only unique event labels~
 * ~Insert event~ 
 * ~copy~/~paste~ ~events~/conversations ~to~/~from clipboard~
