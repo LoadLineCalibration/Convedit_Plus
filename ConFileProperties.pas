@@ -282,6 +282,12 @@ end;
 
 procedure TfrmConvoFileProperties.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+    if btnOk.Enabled = False then
+    begin
+        frmMain.Caption := strAppTitle;
+        frmMain.ToggleMenusPanels(False);
+    end;
+
     ResetAll();
 end;
 
