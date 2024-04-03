@@ -201,6 +201,8 @@ type
     ExpandTreeWithoutFlags: TMenuItem;
     Conversation_Rename: TAction;
     ConversationRename1: TMenuItem;
+    ImageListToolbar_Hot: TImageList;
+    ImageList_Toolbar_Disabled: TImageList;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -2063,7 +2065,6 @@ begin
        MainToolBar.Visible := bShowToolbar;
        mnuToggleMainToolBar.Checked := bShowToolbar;
 
-       //bExpandedEventList := ReadBool('frmMain', 'bExpandedEventList', true);
        bDrawEventIdx := ReadBool('frmMain', 'bDrawEventIdx', true);
        mnuEventIndex.Checked := bDrawEventIdx;
 
@@ -2118,6 +2119,11 @@ begin
         end;
 
         bEnableDblClickTreeFlag := ReadBool('frmMain', 'bEnableDblClickTreeFlag', True);
+
+        // Events List header
+        HeaderControl1.Sections[0].Width := ReadInteger('frmMain', 'HeaderControl1.Sections[0].Width', 150);
+        HeaderControl1.Sections[1].Width := ReadInteger('frmMain', 'HeaderControl1.Sections[1].Width', 150);
+        HeaderControl1.Sections[2].Width := ReadInteger('frmMain', 'HeaderControl1.Sections[2].Width', 500);
     end;
 
     finally
@@ -2129,57 +2135,62 @@ procedure TfrmMain.SaveCfg();
 begin
     MainFormIni := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
     try
-       with MainFormIni do
-       begin
-           WriteInteger('frmMain', 'SplitterPosition', pnlConvoTree.Width);
-           WriteInteger('frmMain', 'Height', Height);
-           WriteInteger('frmMain', 'Width', Width);
-           WriteBool('frmMain', 'bMaximized', WindowState = wsMaximized);
-           WriteBool('frmMain', 'bShowAudioFiles', bShowAudioFiles);
-           WriteBool('frmMain', 'bShowStatusBar', bShowStatusBar);
-           WriteBool('frmMain', 'bShowToolbar', bShowToolbar);
-           WriteBool('frmMain', 'bDrawEventIdx', bDrawEventIdx);
+        with MainFormIni do
+        begin
+            WriteInteger('frmMain', 'SplitterPosition', pnlConvoTree.Width);
+            WriteInteger('frmMain', 'Height', Height);
+            WriteInteger('frmMain', 'Width', Width);
+            WriteBool('frmMain', 'bMaximized', WindowState = wsMaximized);
+            WriteBool('frmMain', 'bShowAudioFiles', bShowAudioFiles);
+            WriteBool('frmMain', 'bShowStatusBar', bShowStatusBar);
+            WriteBool('frmMain', 'bShowToolbar', bShowToolbar);
+            WriteBool('frmMain', 'bDrawEventIdx', bDrawEventIdx);
 
-           // Settings form
-           WriteString('frmMain', 'UserName', ConversationUserName);
-           WriteString('frmMain', 'ConFilePath', ConFilePath);
-           WriteString('frmMain', 'ConFileBakPath', ConFileBakPath);
-           WriteString('frmMain', 'ConFileAudioPath', ConFileAudioPath);
+            // Settings form
+            WriteString('frmMain', 'UserName', ConversationUserName);
+            WriteString('frmMain', 'ConFilePath', ConFilePath);
+            WriteString('frmMain', 'ConFileBakPath', ConFileBakPath);
+            WriteString('frmMain', 'ConFileAudioPath', ConFileAudioPath);
 
-           WriteBool('frmMain', 'bHighlightRelatedEvents', bHighlightRelatedEvents);
-           WriteBool('frmMain', 'bAskForConvoDelete', bAskForConvoDelete);
-           WriteBool('frmMain', 'bAskForEventDelete', bAskForEventDelete);
-           WriteBool('frmMain', 'bHglEventWithNoAudio', bHglEventWithNoAudio);
-           WriteBool('frmMain', 'bHglEventsGradient', bHglEventsGradient);
-           WriteBool('frmMain', 'bFlatToolbar', bFlatToolbar);
-           WriteBool('frmMain', 'bAutoSaveEnabled', bAutoSaveEnabled);
+            WriteBool('frmMain', 'bHighlightRelatedEvents', bHighlightRelatedEvents);
+            WriteBool('frmMain', 'bAskForConvoDelete', bAskForConvoDelete);
+            WriteBool('frmMain', 'bAskForEventDelete', bAskForEventDelete);
+            WriteBool('frmMain', 'bHglEventWithNoAudio', bHglEventWithNoAudio);
+            WriteBool('frmMain', 'bHglEventsGradient', bHglEventsGradient);
+            WriteBool('frmMain', 'bFlatToolbar', bFlatToolbar);
+            WriteBool('frmMain', 'bAutoSaveEnabled', bAutoSaveEnabled);
 
-           WriteInteger('frmMain', 'AutoSaveMinutes', AutoSaveMinutes);
-           // Colors...
-           WriteInteger('frmMain', 'clrHighlightEvent', clrHighlightEvent);
-           WriteInteger('frmMain', 'clrHighlightEventFrom', clrHighlightEventFrom);
-           WriteInteger('frmMain', 'clrHighlightEventTo', clrHighlightEventTo);
-           WriteInteger('frmMain', 'clrGrid', clrGrid);
+            WriteInteger('frmMain', 'AutoSaveMinutes', AutoSaveMinutes);
+            // Colors...
+            WriteInteger('frmMain', 'clrHighlightEvent', clrHighlightEvent);
+            WriteInteger('frmMain', 'clrHighlightEventFrom', clrHighlightEventFrom);
+            WriteInteger('frmMain', 'clrHighlightEventTo', clrHighlightEventTo);
+            WriteInteger('frmMain', 'clrGrid', clrGrid);
 
-           WriteBool('frmMain', 'bUse3DSelectionFrame', bUse3DSelectionFrame);
-           WriteBool('frmMain', 'bUseWhiteSelectedText', bUseWhiteSelectedText);
+            WriteBool('frmMain', 'bUse3DSelectionFrame', bUse3DSelectionFrame);
+            WriteBool('frmMain', 'bUseWhiteSelectedText', bUseWhiteSelectedText);
 
-           WriteBool('frmMain', 'bUseLogging', bUseLogging);
+            WriteBool('frmMain', 'bUseLogging', bUseLogging);
 
-           WriteInteger('frmMain', 'ReorderModKey',Ord(ReorderModKey));
+            WriteInteger('frmMain', 'ReorderModKey',Ord(ReorderModKey));
 
-           // up to 8 recent files
-           for var i := 0 to CEP_MAX_RECENT_FILES do
+            // up to 8 recent files
+            for var i := 0 to CEP_MAX_RECENT_FILES do
                WriteString('RecentFiles', 'RecentFile'+i.ToString, RecentFiles[i]);
 
-           WriteInteger('OpenFileDialog', 'OpenFileFilterIndex', OpenFileFilterIndex);
-           WriteInteger('SaveFileDialog', 'SaveFileFilterIndex', SaveFileFilterIndex);
+            WriteInteger('OpenFileDialog', 'OpenFileFilterIndex', OpenFileFilterIndex);
+            WriteInteger('SaveFileDialog', 'SaveFileFilterIndex', SaveFileFilterIndex);
 
-           WriteBool('frmMain', 'bEnableDblClickTreeFlag', bEnableDblClickTreeFlag);
-       end;
+            WriteBool('frmMain', 'bEnableDblClickTreeFlag', bEnableDblClickTreeFlag);
+
+            // Events List header
+            WriteInteger('frmMain', 'HeaderControl1.Sections[0].Width', HeaderControl1.Sections[0].Width);
+            WriteInteger('frmMain', 'HeaderControl1.Sections[1].Width', HeaderControl1.Sections[1].Width);
+            WriteInteger('frmMain', 'HeaderControl1.Sections[2].Width', HeaderControl1.Sections[2].Width);
+        end;
 
     finally
-       MainFormIni.Free();
+        MainFormIni.Free();
     end;
 end;
 
@@ -4232,6 +4243,7 @@ end;
 procedure TfrmMain.ConvoTreeChange(Sender: TObject; Node: TTreeNode);
 begin
     ConEventList.Enabled := Node.Level = 1;
+    Conversation_Properties.Enabled := Node.Level = 1;
 
     //if Node.Level >= 1 then
     if Node.Level = 1 then
@@ -4681,7 +4693,7 @@ begin
     tbSearch.Enabled      := bVisible;
     tbVerifyLabels.Enabled:= bVisible;
 
-    Conversation_Properties.Enabled := bVisible;
+    Conversation_Properties.Enabled := False; //bVisible;
     FileGenerateAudioNames.Enabled  := bVisible;
     tbGenerateAudioDirs.Enabled     := bVisible;
     btnReorder.Enabled              := bVisible;
@@ -4743,6 +4755,7 @@ begin
         end;
     end;
 
+    ToggleMenusPanels(True);
     CreateConFile(True);
 end;
 
@@ -5065,6 +5078,30 @@ begin
 
         editConvoLastModifiedOn.Text := conXMLDateTime();
         editConvoLastModifiedBy.Text := ConversationUserName;
+
+        cmbConvoOwner.Clear();
+        cmbConvoOwner.Items.Assign(listPawnsActors);
+
+        if ConvoTree.Selected <> nil then
+        begin
+            var ConvoOwner: string;
+
+            if ConvoTree.Selected.Level = 0 then // if selected tree item is conversation owner, use it
+            begin
+                ConvoOwner := ConvoTree.Selected.Text;
+                cmbConvoOwner.ItemIndex := cmbConvoOwner.Items.IndexOf(ConvoOwner);
+            end
+            else if ConvoTree.Selected.Level = 1 then
+            begin
+                ConvoOwner := ConvoTree.Selected.Parent.Text; // if selected tree item is conversation name, try to get conversation owner
+                cmbConvoOwner.ItemIndex := cmbConvoOwner.Items.IndexOf(ConvoOwner);
+            end
+            else if ConvoTree.Selected.Level = 2 then
+            begin
+                ConvoOwner := ConvoTree.Selected.Parent.Parent.Text; // if selected tree item is flag, try to get conversation owner
+                cmbConvoOwner.ItemIndex := cmbConvoOwner.Items.IndexOf(ConvoOwner);
+            end;
+        end;
 
         ClearFields();
         Caption := strAddNewConversation;
