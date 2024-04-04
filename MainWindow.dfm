@@ -5350,6 +5350,7 @@ object frmMain: TfrmMain
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnResize = FormResize
   OnShow = FormShow
   TextHeight = 15
@@ -5383,6 +5384,8 @@ object frmMain: TfrmMain
     TabOrder = 0
     FrameStyle = None
     FrameColor = clBtnFace
+    ExplicitTop = 32
+    ExplicitHeight = 533
     object ConvoTree: TTreeView
       Left = 0
       Top = 0
@@ -5418,6 +5421,7 @@ object frmMain: TfrmMain
       OnDeletion = ConvoTreeDeletion
       OnEdited = ConvoTreeEdited
       OnEditing = ConvoTreeEditing
+      ExplicitHeight = 533
     end
   end
   object StatusBar: TStatusBar
@@ -5451,6 +5455,8 @@ object frmMain: TfrmMain
     TabOrder = 2
     CaptionVisible = False
     FrameStyle = Bump
+    ExplicitTop = 32
+    ExplicitHeight = 533
     DesignSize = (
       697
       530)
@@ -5484,6 +5490,7 @@ object frmMain: TfrmMain
       OnEndDrag = ConEventListEndDrag
       OnMeasureItem = ConEventListMeasureItem
       OnMouseUp = ConEventListMouseUp
+      ExplicitHeight = 223
     end
     object HeaderControl1: THeaderControl
       Left = 2
@@ -5562,10 +5569,11 @@ object frmMain: TfrmMain
       Visible = False
       WordWrap = False
       StyleName = 'Windows'
+      ExplicitTop = 245
     end
     object btnCloseLog: TButton
       Left = 678
-      Top = 385
+      Top = 379
       Width = 20
       Height = 20
       Hint = 'Close Log'
@@ -5585,6 +5593,7 @@ object frmMain: TfrmMain
       Visible = False
       StyleName = 'Windows'
       OnClick = ViewoutputTMemo1Click
+      ExplicitTop = 382
     end
   end
   object mainToolBar: TToolBar
@@ -8563,7 +8572,7 @@ object frmMain: TfrmMain
     Left = 716
     Top = 239
     Bitmap = {
-      494C01010E001800040018001800FFFFFFFFFF00FFFFFFFFFFFFFFFF424D3600
+      494C01010E001800040018001800FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000600000006000000001002000000000000090
       000000000000000000000000000000000000000000FF000000FF000000FF0000
       00FFFFFFFF00FFFDF800FFFCF800FFFCF800FFFCF800FFFCF800FFFCF800FFFC
@@ -9755,7 +9764,8 @@ object frmMain: TfrmMain
       0100000000000FFBF3FF80000100000000000FFFF0FF80000180000100000FFB
       F07F800001F0000B00000FF8003F800001F0000B00000FFC007F800001F0000F
       00001FFE007F800003F0000F00003FFF80FF80000798001700007FFFFDFFC000
-      0FFC003F8000FFFFFFFFFFFFFFFFFFFF}
+      0FFC003F8000FFFFFFFFFFFFFFFFFFFF00000000000000000000000000000000
+      000000000000}
   end
   object ImageList_Toolbar_Disabled: TImageList
     Height = 24

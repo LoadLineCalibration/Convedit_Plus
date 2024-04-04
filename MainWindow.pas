@@ -333,6 +333,8 @@ type
     // To expand tree without flags
     procedure ExpandTreeViewToLevel(TreeView: TTreeView; Level: Integer);
 
+    procedure WMDropFiles(var Msg: TWMDropFiles); message WM_DROPFILES;
+
     procedure FormResize(Sender: TObject);
     procedure CollapseAll2Click(Sender: TObject);
     procedure ConvoTreeEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
@@ -448,6 +450,7 @@ type
     procedure ConvoTreeDeletion(Sender: TObject; Node: TTreeNode);
     procedure Conversation_RenameExecute(Sender: TObject);
     procedure Darkmode1Click(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -541,6 +544,46 @@ end;
 function TfrmMain.GetFileModified: Boolean;
 begin
     Result := FFileModified;
+end;
+
+procedure TfrmMain.WMDropFiles(var Msg: TWMDropFiles);
+var
+    FileName: array[0..MAX_PATH] of Char;
+begin
+    try
+        if DragQueryFile(Msg.Drop, 0, FileName, MAX_PATH) > 0 then
+        begin
+            // Close current file first!
+            FileCloseExecute(Self);
+
+            if UpperCase(ExtractFileExt(FileName)) = '.XML' then
+            begin
+                LoadConXMLFile(FileName);
+                BuildConvoTree();
+            end else
+            if UpperCase(ExtractFileExt(FileName)) = '.CON' then
+            begin
+                LoadConFile(FileName);
+                BuildConvoTree();
+            end else
+            begin
+                MessageDlg(strSelectConXML,  mtError, [mbOK], 0);
+                Exit();
+            end;
+
+            StatusBar.Panels[0].Text := '';
+            StatusBar.Panels[1].Text := FileName; // filename in StatusBar
+            AddRecentFile(FileName);  // Add to recent
+            ToggleMenusPanels(True);
+
+            Caption := strAppTitle;
+        end;
+    finally
+        DragFinish(Msg.Drop);
+    end;
+    // Note we handled message
+    Msg.Result := 0;
+    inherited;
 end;
 
 procedure TfrmMain.WMEnterSizeMove(var Msg: TMessage);
@@ -4615,6 +4658,8 @@ begin
     // register new clipboard format
     CF_ConEditPlus := RegisterClipboardFormat('CF_ConEditPlus');
 
+    DragAcceptFiles(Handle, True);
+
     SysScrollBarWidth := GetSystemMetrics(SM_CXVSCROLL);
 
     Application.Title := strAppTitle;
@@ -4646,6 +4691,11 @@ begin
 
     Screen.HintFont.Name := 'Verdana';
 //    Screen.MenuFont.Name := 'Cascadia Code';
+end;
+
+procedure TfrmMain.FormDestroy(Sender: TObject);
+begin
+    DragAcceptFiles(Handle, False);
 end;
 
 procedure TfrmMain.CreateObjectLists();
