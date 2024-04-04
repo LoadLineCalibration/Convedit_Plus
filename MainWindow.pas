@@ -3943,6 +3943,8 @@ begin
     frmEventInsAdd.btnInsertEvent.Enabled := ConEventList.Count > 1;
     frmEventInsAdd.btnNextEvent.Enabled := ConEventList.ItemIndex < ConEventList.Count -1;
     frmEventInsAdd.btnPrevEvent.Enabled := ConEventList.ItemIndex > 0;
+
+    frmEventInsAdd.bCreatingNewEvent := False; // cancel event creation
 end;
 
 procedure TfrmMain.ConEventListDblClick(Sender: TObject);
@@ -4468,11 +4470,11 @@ end;
 procedure TfrmMain.DeleteConversationExecute(Sender: TObject);
 begin
     if bAskForConvoDelete = true then
+    begin
         if MessageDlg(PChar(strAskDeleteConvoText),  mtConfirmation, [mbYes, mbNo], 0) = mrYes then
-        begin
             DeleteCurrentConversation();
-        end
-    else DeleteCurrentConversation();
+    end else
+        DeleteCurrentConversation();
 end;
 
 procedure TfrmMain.DeleteCurrentEvent();
@@ -4503,13 +4505,14 @@ begin
     for var k:= 0 to ConversationsList.Count -1 do begin
         AddLog(ConversationsList.Items[k].conName + ' k = ' + k.ToString);
     end;
+
+    bFileModified := True
 end;
 
 procedure TfrmMain.EventListItems1Click(Sender: TObject);
 begin
     for var i:= 0 to ConEventList.Count -1 do
         AddLog('ConEventList[' + i.ToString + '] ' + ConEventList.Items[i]);
-
 end;
 
 procedure TfrmMain.Event_CopyExecute(Sender: TObject);

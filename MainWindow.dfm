@@ -8388,6 +8388,7 @@ object frmMain: TfrmMain
       Caption = 'Delete'
       Enabled = False
       ImageIndex = 4
+      ShortCut = 46
       OnExecute = DeleteConversationExecute
     end
     object Conversation_Cut: TAction
@@ -8456,6 +8457,7 @@ object frmMain: TfrmMain
       Caption = 'Delete'
       Hint = 'Delete selected event'
       ImageIndex = 4
+      ShortCut = 46
       OnExecute = Event_DeleteExecute
     end
     object ShowOptions: TAction
