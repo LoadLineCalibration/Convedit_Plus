@@ -551,6 +551,14 @@ var
     FileName: array[0..MAX_PATH] of Char;
 begin
     try
+        for var i := 0 to Screen.FormCount - 1 do
+        begin
+            if (Screen.Forms[i] <> Application.MainForm) and (Screen.Forms[i].Visible) then
+            begin
+                Exit();
+            end;
+        end;
+
         if DragQueryFile(Msg.Drop, 0, FileName, MAX_PATH) > 0 then
         begin
             // Close current file first!

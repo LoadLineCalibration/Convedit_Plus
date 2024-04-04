@@ -5384,8 +5384,6 @@ object frmMain: TfrmMain
     TabOrder = 0
     FrameStyle = None
     FrameColor = clBtnFace
-    ExplicitTop = 32
-    ExplicitHeight = 533
     object ConvoTree: TTreeView
       Left = 0
       Top = 0
@@ -5421,7 +5419,6 @@ object frmMain: TfrmMain
       OnDeletion = ConvoTreeDeletion
       OnEdited = ConvoTreeEdited
       OnEditing = ConvoTreeEditing
-      ExplicitHeight = 533
     end
   end
   object StatusBar: TStatusBar
@@ -5455,8 +5452,6 @@ object frmMain: TfrmMain
     TabOrder = 2
     CaptionVisible = False
     FrameStyle = Bump
-    ExplicitTop = 32
-    ExplicitHeight = 533
     DesignSize = (
       697
       530)
@@ -5468,7 +5463,6 @@ object frmMain: TfrmMain
       Style = lbOwnerDrawVariable
       Align = alClient
       BevelWidth = 5
-      Ctl3D = True
       Enabled = False
       ExtendedSelect = False
       Font.Charset = DEFAULT_CHARSET
@@ -5477,11 +5471,9 @@ object frmMain: TfrmMain
       Font.Name = 'Lucida Console'
       Font.Style = []
       ItemHeight = 14
-      ParentCtl3D = False
       ParentFont = False
       PopupMenu = PopupConvoEventList
       TabOrder = 0
-      StyleName = 'Windows'
       OnClick = ConEventListClick
       OnDblClick = ConEventListDblClick
       OnDragDrop = ConEventListDragDrop
@@ -5490,7 +5482,6 @@ object frmMain: TfrmMain
       OnEndDrag = ConEventListEndDrag
       OnMeasureItem = ConEventListMeasureItem
       OnMouseUp = ConEventListMouseUp
-      ExplicitHeight = 223
     end
     object HeaderControl1: THeaderControl
       Left = 2
@@ -5569,7 +5560,6 @@ object frmMain: TfrmMain
       Visible = False
       WordWrap = False
       StyleName = 'Windows'
-      ExplicitTop = 245
     end
     object btnCloseLog: TButton
       Left = 678
@@ -5593,7 +5583,6 @@ object frmMain: TfrmMain
       Visible = False
       StyleName = 'Windows'
       OnClick = ViewoutputTMemo1Click
-      ExplicitTop = 382
     end
   end
   object mainToolBar: TToolBar

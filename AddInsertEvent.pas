@@ -251,7 +251,7 @@ type
     procedure FillChoiceItemIndexes();
 
     // Make sure all events are valid, contains no illegal characters, etc.
-    procedure ValidateEvents(event: TConEvent);
+    procedure ValidateEvents(var Event: TConEvent);
     function ValidateSpeech(var speech: TConEventSpeech): Boolean;
     function ValidateChoice(choice: TConEventChoice): Boolean;
     function ValidateSetFlags(setFlags: TConEventSetFlag): Boolean;
@@ -1270,6 +1270,7 @@ begin
 
             var NewHeight := frmMain.GetSpeechEventItemHeight([NewSpeech]);
             frmMain.ConEventList.Items.AddPair(ET_Speech_Caption,NewHeight.ToString(), frmMain.CurrentEvent);
+            //frmMain.ConEventList.Items.AddPair(ET_Speech_Caption,NewHeight.ToString(), NewSpeech);
         end;
 
         True: // Insert Event
@@ -2101,7 +2102,7 @@ begin
 end;
 
 
-procedure TfrmEventInsAdd.ValidateEvents(event: TConEvent);
+procedure TfrmEventInsAdd.ValidateEvents(var Event: TConEvent);
 begin
     if CheckLabelDuplicates(frmMain.CurrentConversation, editEventLabel.Text) = True then
     begin
@@ -3131,7 +3132,8 @@ end;
 procedure TfrmEventInsAdd.KillPhantoms(); // no ideas why this is happening...
 begin
     for var i:= frmMain.ConEventList.Items.count -1 downto 0 do
-      if frmMain.ConEventList.Items[i].StartsWith('=') then
+      //if frmMain.ConEventList.Items[i].StartsWith('=') then
+      if frmMain.ConEventList.Items.Objects[i] = nil then
           frmMain.ConEventList.Items.Delete(i);
 end;
 
@@ -3172,6 +3174,8 @@ begin
     end;
 
     ValidateEvents(frmMain.CurrentEvent);
+
+    KillPhantoms();
 end;
 
 procedure TfrmEventInsAdd.UpdateAddRandomLabelButtonState();

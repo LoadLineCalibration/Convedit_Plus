@@ -77,6 +77,7 @@ type
     procedure EditConversation(var convoToEdit: TConversation); // Load conversation info so we can change something
     procedure UpdateConversation(var convoToUpdate: TConversation); // write modified data back to Conversation we're loaded in procedure above
     procedure ClearFields();
+
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure editDistFromPlayerChange(Sender: TObject);
 
