@@ -250,8 +250,6 @@ ResourceString
     strStopMP3 = 'Stop';
 
 
-
-    strDelChoiceTitle = 'Really delete this choice?';
     strDelChoiceText = 'Are you sure you want to delete selected choice item?';
 
     strAppTitle = 'ConEditPlus';
@@ -271,7 +269,7 @@ ResourceString
     // Toolbar buttons tooltips
     tbNewConversationFileHint = 'Create new conversation file';
     tbOpenFileHint = 'Open existing .con or .xml file';
-    tbSaveFileHint = 'Save current file. To save under different name or format, use "Save As..."';
+    tbSaveFileHint = 'Save current file.';// To save under different name or format,' + #13#10 + 'use "Save As..." or press Ctrl + A/Ctrl + Shift + S';
     tbCloseFileHint = 'Close current file, ask to save if been modified';
     tbPrintHint = 'Print conversations';
     tbCutHint = 'Cut selected event to clipboard';
@@ -300,8 +298,7 @@ ResourceString
     strUnknownFile = 'Unknown file!';
     strNotImplemented = 'This feature is not implemented (and probably not implemented in game code?)';
 
-    strClearRecentQuestion = 'Are you sure you want to clear list or recent files?';
-    strClearRecentTitle = 'Clear recent files list?';
+    strClearRecentQuestion = 'Are you sure you want to clear list of recent files?';
 
     strConversationAlreadyExists = 'Conversation with such name already exists!';
 

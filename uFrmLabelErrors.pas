@@ -5,14 +5,16 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls, Conversation.Classes,
-  ConEditplus.Consts, System.Generics.Collections;
+  ConEditplus.Consts, System.Generics.Collections, Vcl.Buttons;
 
 type
   TfrmLabelErrors = class(TForm)
     lvLabelErrors: TListView;
     Label1: TLabel;
     btnClose: TButton;
-    Label2: TLabel;
+    lblDblClick: TLabel;
+    btnContinue: TBitBtn;
+    btnCancel: TBitBtn;
 
     // new functions
     function CheckEventLabel(con: TConversation; aLabel: string): String;
@@ -24,6 +26,7 @@ type
     procedure btnCloseClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure lvLabelErrorsDblClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     { Private declarations }
   public
@@ -284,10 +287,26 @@ begin
     lvLabelErrors.Items.Clear();
 end;
 
+procedure TfrmLabelErrors.FormShow(Sender: TObject);
+begin
+    if fsModal in FormState then // check if form has been opened using ShowModal();
+    begin
+        lblDblClick.Hide();
+        btnClose.Hide();
+        btnContinue.Show();
+        btnCancel.Show();
+    end else
+    begin
+        lblDblClick.Show();
+        btnClose.Show();
+        btnContinue.Hide();
+        btnCancel.Hide();
+    end;
+end;
+
 procedure TfrmLabelErrors.lvLabelErrorsDblClick(Sender: TObject);
 begin
     if lvLabelErrors.GetCount() = 0 then Exit();
-
     if lvLabelErrors.ItemIndex = -1 then Exit();
 
     var itemIdx := lvLabelErrors.ItemIndex;

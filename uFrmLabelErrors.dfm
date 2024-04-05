@@ -14,8 +14,8 @@ object frmLabelErrors: TfrmLabelErrors
   Font.Name = 'Segoe UI'
   Font.Style = []
   Position = poOwnerFormCenter
-  StyleName = 'Windows'
   OnClose = FormClose
+  OnShow = FormShow
   DesignSize = (
     476
     402)
@@ -44,7 +44,7 @@ object frmLabelErrors: TfrmLabelErrors
     Layout = tlCenter
     ExplicitWidth = 546
   end
-  object Label2: TLabel
+  object lblDblClick: TLabel
     Left = 8
     Top = 369
     Width = 225
@@ -91,5 +91,23 @@ object frmLabelErrors: TfrmLabelErrors
     Caption = 'Close'
     TabOrder = 1
     OnClick = btnCloseClick
+  end
+  object btnContinue: TBitBtn
+    Left = 220
+    Top = 369
+    Width = 137
+    Height = 25
+    Caption = 'Continue saving file'
+    ModalResult = 1
+    TabOrder = 2
+  end
+  object btnCancel: TBitBtn
+    Left = 363
+    Top = 369
+    Width = 105
+    Height = 25
+    Caption = 'Cancel'
+    ModalResult = 2
+    TabOrder = 3
   end
 end

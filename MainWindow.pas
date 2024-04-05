@@ -4553,6 +4553,8 @@ begin
             DeleteCurrentEvent();
     end else
         DeleteCurrentEvent();
+
+    SetEventIndexes();
 end;
 
 procedure TfrmMain.Event_DuplicateExecute(Sender: TObject);
@@ -4903,6 +4905,18 @@ end;
 
 procedure TfrmMain.FileSaveAsExecute(Sender: TObject);
 begin
+    if frmLabelErrors.Visible = True then frmLabelErrors.Close(); // cannot make visible window modal, so close it first.
+
+    frmLabelErrors.VerifyLabels(False);
+
+    if frmLabelErrors.lvLabelErrors.Items.Count > 0 then
+    begin
+        case frmLabelErrors.ShowModal() of
+            mrCancel: Exit();
+            mrOk:;
+        end;
+    end;
+
     var savefileName: string;
 
     FileSaveDialog.FileTypeIndex := SaveFileFilterIndex;
@@ -4921,7 +4935,7 @@ begin
             try
                 StatusBar.Panels[1].Text := strSavingFile + savefileName;
                 BuildConXMLFile(savefileName);
-                StatusBar.Panels[1].Text := strSavedFile + savefileName;
+                StatusBar.Panels[1].Text := DateTimeToStr(Now()) + ': ' + strSavedFile + savefileName;
 
                 bFileModified := False;
             except
@@ -4942,7 +4956,7 @@ begin
             try
                 StatusBar.Panels[1].Text := strSavingFile + savefileName;
                 SaveConFile(savefileName);
-                StatusBar.Panels[1].Text := strSavedFile + savefileName;
+                StatusBar.Panels[1].Text := DateTimeToStr(Now()) + ': ' + strSavedFile + savefileName;
 
                 bFileModified := False;
             except
@@ -4957,6 +4971,18 @@ end;
 
 procedure TfrmMain.FileSaveExecute(Sender: TObject);
 begin
+    if frmLabelErrors.Visible = True then frmLabelErrors.Close();  // cannot make visible window modal, so close it first.
+
+    frmLabelErrors.VerifyLabels(False);
+
+    if frmLabelErrors.lvLabelErrors.Items.Count > 0 then
+    begin
+        case frmLabelErrors.ShowModal() of
+            mrCancel: Exit();
+            mrOk:;
+        end;
+    end;
+
     if currentConFile <> '' then
     begin
         if LowerCase(ExtractFileExt(currentConFile)) = '.xml' then
@@ -4964,7 +4990,7 @@ begin
             try
                 StatusBar.Panels[1].Text := strSavingFile + currentConFile;
                 BuildConXMLFile(currentConFile);
-                StatusBar.Panels[1].Text := strSavedFile + currentConFile;
+                StatusBar.Panels[1].Text := DateTimeToStr(Now()) + ': ' + strSavedFile + currentConFile;
 
                 bFileModified := False;
             except
@@ -4978,7 +5004,7 @@ begin
             try
                 StatusBar.Panels[1].Text := strSavingFile + currentConFile;
                 SaveConFile(currentConFile);
-                StatusBar.Panels[1].Text := strSavedFile + currentConFile;
+                StatusBar.Panels[1].Text := DateTimeToStr(Now()) + ': ' + strSavedFile + currentConFile;
 
                 bFileModified := False;
             except

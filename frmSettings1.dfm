@@ -66,7 +66,7 @@ object frmSettings: TfrmSettings
     Style = tsFlatButtons
     TabOrder = 11
     object Page1: TTabSheet
-      Caption = 'Page1'
+      Caption = 'Events and conversations'
       object grpEventsList: TGroupBox
         Left = 1
         Top = 7
@@ -276,7 +276,7 @@ object frmSettings: TfrmSettings
       end
     end
     object PageA: TTabSheet
-      Caption = 'PageA'
+      Caption = 'Misc. options'
       ImageIndex = 1
       object GroupBox1: TGroupBox
         Left = 1

@@ -2843,6 +2843,11 @@ end;
 procedure TfrmEventInsAdd.FormShow(Sender: TObject);
 begin
     pgcChoiceDetails.ActivePageIndex := 0;
+
+    btnInsertEvent.Enabled := frmMain.ConEventList.Count > 1;
+    btnNextEvent.Enabled := frmMain.ConEventList.ItemIndex < frmMain.ConEventList.Count -1;
+    btnPrevEvent.Enabled := frmMain.ConEventList.ItemIndex > 0;
+
 end;
 
 procedure TfrmEventInsAdd.lvCheckFlagsChange(Sender: TObject; Item: TListItem; Change: TItemChange);
