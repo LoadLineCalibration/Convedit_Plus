@@ -4671,6 +4671,21 @@ begin
 
           mrYes: // Save the file
             begin
+                if frmLabelErrors.Visible = True then frmLabelErrors.Close(); // Can save the file, but...
+                frmLabelErrors.VerifyLabels(False);
+
+                if frmLabelErrors.lvLabelErrors.Items.Count > 0 then
+                begin
+                    case frmLabelErrors.ShowModal() of
+                        mrCancel:
+                        begin
+                            CanClose := False;
+                            Exit();
+                        end;
+                        mrOk:;
+                    end;
+                end;
+
                 FileSaveExecute(self);
                 CanClose := True;
             end;
