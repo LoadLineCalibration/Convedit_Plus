@@ -5384,6 +5384,8 @@ object frmMain: TfrmMain
     TabOrder = 0
     FrameStyle = None
     FrameColor = clBtnFace
+    ExplicitTop = 32
+    ExplicitHeight = 533
     object ConvoTree: TTreeView
       Left = 0
       Top = 0
@@ -5419,6 +5421,7 @@ object frmMain: TfrmMain
       OnDeletion = ConvoTreeDeletion
       OnEdited = ConvoTreeEdited
       OnEditing = ConvoTreeEditing
+      ExplicitHeight = 533
     end
   end
   object StatusBar: TStatusBar
@@ -5452,6 +5455,8 @@ object frmMain: TfrmMain
     TabOrder = 2
     CaptionVisible = False
     FrameStyle = Bump
+    ExplicitTop = 32
+    ExplicitHeight = 533
     DesignSize = (
       697
       530)
@@ -5482,6 +5487,7 @@ object frmMain: TfrmMain
       OnEndDrag = ConEventListEndDrag
       OnMeasureItem = ConEventListMeasureItem
       OnMouseUp = ConEventListMouseUp
+      ExplicitHeight = 223
     end
     object HeaderControl1: THeaderControl
       Left = 2
@@ -5560,10 +5566,11 @@ object frmMain: TfrmMain
       Visible = False
       WordWrap = False
       StyleName = 'Windows'
+      ExplicitTop = 245
     end
     object btnCloseLog: TButton
       Left = 678
-      Top = 379
+      Top = 373
       Width = 20
       Height = 20
       Hint = 'Close Log'
@@ -5583,6 +5590,7 @@ object frmMain: TfrmMain
       Visible = False
       StyleName = 'Windows'
       OnClick = ViewoutputTMemo1Click
+      ExplicitTop = 376
     end
   end
   object mainToolBar: TToolBar
@@ -5670,8 +5678,8 @@ object frmMain: TfrmMain
     object tbSearch: TToolButton
       Left = 181
       Top = 0
+      Action = Conversation_Find
       ImageIndex = 5
-      OnClick = tbSearchClick
     end
     object ToolButton12: TToolButton
       Left = 212
@@ -5920,6 +5928,12 @@ object frmMain: TfrmMain
       object SaveAs1: TMenuItem
         Action = FileSaveAs
         ImageIndex = 6
+      end
+      object N7: TMenuItem
+        Caption = '-'
+      end
+      object GenAudiofilenames: TMenuItem
+        Action = FileGenerateAudioNames
       end
       object N2: TMenuItem
         Caption = '-'
@@ -6296,8 +6310,8 @@ object frmMain: TfrmMain
     GrayscaleFactor = 50
     Height = 24
     Width = 24
-    Left = 708
-    Top = 183
+    Left = 548
+    Top = 1
     Bitmap = {
       494C01010E00A000040018001800FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000600000006000000001002000000000000090
@@ -8331,19 +8345,21 @@ object frmMain: TfrmMain
   end
   object ActionList1: TActionList
     Images = MenusImageList
-    Left = 711
-    Top = 43
+    Left = 719
+    Top = 75
     object FileNew: TAction
       Category = 'File'
       Caption = 'New...'
       Hint = 'Create new conversation file'
       ImageIndex = 13
+      ShortCut = 16462
       OnExecute = FileNewExecute
     end
     object FileOpen: TAction
       Category = 'File'
       Caption = 'Open...'
       Hint = 'Open existing conversation file'
+      ShortCut = 16463
       OnExecute = FileOpenExecute
     end
     object FileSave: TAction
@@ -8351,12 +8367,14 @@ object frmMain: TfrmMain
       Caption = 'Save'
       Hint = 'Save current file'
       ImageIndex = 14
+      ShortCut = 16467
       OnExecute = FileSaveExecute
     end
     object FileSaveAs: TAction
       Category = 'File'
       Caption = 'Save As...'
       Hint = 'Save current file with diffenent name or format (.con or .xml)'
+      ShortCut = 16449
       OnExecute = FileSaveAsExecute
     end
     object FileGenerateAudioNames: TAction
@@ -8418,7 +8436,8 @@ object frmMain: TfrmMain
     object Conversation_Find: TAction
       Category = 'Conversation'
       Caption = 'Find...'
-      Enabled = False
+      ShortCut = 16454
+      OnExecute = Conversation_FindExecute
     end
     object Event_Add: TAction
       Category = 'Events'
@@ -8468,6 +8487,7 @@ object frmMain: TfrmMain
     object Conversation_CheckLabels: TAction
       Category = 'Conversation'
       Caption = 'Check Labels'
+      ShortCut = 16460
       OnExecute = Conversation_CheckLabelsExecute
     end
     object Event_Duplicate: TAction
@@ -8500,7 +8520,7 @@ object frmMain: TfrmMain
   end
   object pmOutput: TPopupMenu
     Left = 721
-    Top = 478
+    Top = 486
     object Clear1: TMenuItem
       Caption = 'Clear()'
       OnClick = Clear1Click
@@ -8560,8 +8580,8 @@ object frmMain: TfrmMain
   object ImageListToolbar_Hot: TImageList
     Height = 24
     Width = 24
-    Left = 716
-    Top = 239
+    Left = 644
+    Top = 65535
     Bitmap = {
       494C01010E001800040018001800FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000600000006000000001002000000000000090
@@ -9761,8 +9781,8 @@ object frmMain: TfrmMain
   object ImageList_Toolbar_Disabled: TImageList
     Height = 24
     Width = 24
-    Left = 716
-    Top = 303
+    Left = 780
+    Top = 65535
     Bitmap = {
       494C01010E001800040018001800FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000600000006000000001002000000000000090

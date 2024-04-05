@@ -203,6 +203,8 @@ type
     ConversationRename1: TMenuItem;
     ImageListToolbar_Hot: TImageList;
     ImageList_Toolbar_Disabled: TImageList;
+    N7: TMenuItem;
+    GenAudiofilenames: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -391,7 +393,6 @@ type
     procedure ConEventListMeasureItem(Control: TWinControl; Index: Integer; var Height: Integer);
     procedure Splitter1Moved(Sender: TObject);
     procedure ConEventListClick(Sender: TObject);
-    procedure tbSearchClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure mnuShowAudioFiles1Click(Sender: TObject);
     procedure RecentFile0Click(Sender: TObject);
@@ -451,6 +452,7 @@ type
     procedure Conversation_RenameExecute(Sender: TObject);
     procedure Darkmode1Click(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure Conversation_FindExecute(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -539,6 +541,8 @@ begin
         True: Caption := strAppTitle + ' [File has been modified]';
         False: Caption := strAppTitle;
     end;
+
+    FileSave.Enabled := Value;
 end;
 
 function TfrmMain.GetFileModified: Boolean;
@@ -2022,6 +2026,8 @@ begin
     currentConFile := aFile;
     StatusBar.Panels[0].Text := '';
     StatusBar.Panels[1].Text := currentConFile;
+
+    bFileModified := False;
 end;
 
 procedure TfrmMain.AddRecentFile(aFile: string);
@@ -3846,25 +3852,27 @@ end;
 procedure TfrmMain.HeaderControl1DrawSection(HeaderControl: THeaderControl; Section: THeaderSection; const Rect: TRect; Pressed: Boolean);
 begin
     var TempRect := Rect;
-
-    GradientFillCanvas(HeaderControl1.Canvas, clBtnFace, clBtnHighlight, Rect, gdVertical);
+    var TempRect2 := Rect;
 
     with HeaderControl1.Canvas do
     begin
+        //if bFlatToolbar = False then
+            //GradientFillCanvas(HeaderControl1.Canvas, clrHighlightEventTo, clrHighlightEventFrom, Rect, gdVertical);
+            //GradientFillCanvas(HeaderControl1.Canvas, clBtnFace, clBtnHighlight , Rect, gdVertical);
+
         Font.Name := CEP_EVENT_HEADER_LIST_FONT_NAME; // Шрифт
         Font.Size := CEP_EVENT_HEADER_LIST_FONT_SIZE;
         Font.Color := clBtnText;
 
         SetBkMode(Handle, TRANSPARENT); // Прозрачный фон.
         TempRect.Left := Rect.Left + 4; // Отступ
+        TempRect.Top := Rect.Top + 1;
         DrawText(Handle, Section.Text, -1, TempRect, DT_END_ELLIPSIS); // Название
     end;
 
-    if bFlatToolbar = False then
-    begin
-        var TempRect2 := Rect;
-
-        Frame3D(HeaderControl1.Canvas, TempRect2, clBtnHighlight, clBtnShadow, 2);
+    case bFlatToolbar of
+        True: Frame3D(HeaderControl1.Canvas, TempRect2, clBtnFace, clBtnShadow, 1);
+        False: Frame3D(HeaderControl1.Canvas, TempRect2, clBtnHighlight, clBtnShadow, 1);
     end;
 end;
 
@@ -4273,6 +4281,11 @@ begin
         MessageDlg(strLabelsValid,  mtInformation, [mbOK], 0);
 end;
 
+procedure TfrmMain.Conversation_FindExecute(Sender: TObject);
+begin
+    frmFind.Show();
+end;
+
 procedure TfrmMain.Conversation_PropertiesExecute(Sender: TObject);
 begin
     if Assigned(CurrentConversation) = false then Exit();
@@ -4630,6 +4643,12 @@ end;
 procedure TfrmMain.mnuEventIndexClick(Sender: TObject);
 begin
     bDrawEventIdx := mnuEventIndex.Checked;
+
+    case mnuEventIndex.Checked of
+        True: HeaderControl1.Sections[0].Text := 'idx/Label';
+        False: HeaderControl1.Sections[0].Text := 'Label';
+    end;
+
     ConEventList.Invalidate();
 end;
 
@@ -4754,6 +4773,7 @@ begin
     tbSearch.Enabled      := bVisible;
     tbVerifyLabels.Enabled:= bVisible;
 
+    Conversation_Find.Enabled       := bVisible;
     Conversation_Properties.Enabled := False; //bVisible;
     FileGenerateAudioNames.Enabled  := bVisible;
     tbGenerateAudioDirs.Enabled     := bVisible;
@@ -5599,10 +5619,10 @@ end;
 procedure TfrmMain.MenuMainChange(Sender: TObject; Source: TMenuItem; Rebuild: Boolean);
 var i: Integer;
 begin
-//    PasteEvent.Enabled := HasConvoEventToPaste();
-
     for i := 0 to 7 do
         mniRecent.Items[i].Visible := mniRecent.Items[i].Caption <> '';
+
+    GenAudiofilenames.Visible := not mainToolBar.Visible;
 
 //    ConvoProperties.Enabled := conXmlFile <> '';
 end;
@@ -5721,11 +5741,6 @@ end;
 procedure TfrmMain.tbPrintClick(Sender: TObject);
 begin
     MessageDlg('Printing is not implemented yet ',  mtWarning, [mbOK], 0);
-end;
-
-procedure TfrmMain.tbSearchClick(Sender: TObject);
-begin
-    frmFind.Show();
 end;
 
 procedure TfrmMain.tmrEventWinPosSyncTimer(Sender: TObject);
