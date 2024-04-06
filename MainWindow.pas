@@ -2257,32 +2257,47 @@ var
     mp3str, SpeechStr,
     ActorNameStr,
     ActorToNameStr: string;
+    SpeechEvent: TConEventSpeech;
 begin
+    SpeechEvent := TConEventSpeech(ConEventList.Items.Objects[Index]);
+    if SpeechEvent = nil then Exit();
+
     // load data from event
-    if ((CurrentConversation <> nil) and (TConEventSpeech(ConEventList.Items.Objects[Index]) <> nil)) then
+    //if ((CurrentConversation <> nil) and (TConEventSpeech(ConEventList.Items.Objects[Index]) <> nil)) then
+    if ((CurrentConversation <> nil) and (SpeechEvent <> nil)) then
     begin
-        mp3str := TConEventSpeech(ConEventList.Items.Objects[Index]).mp3File;
+        {mp3str := TConEventSpeech(ConEventList.Items.Objects[Index]).mp3File;
         ActorNameStr := TConEventSpeech(ConEventList.Items.Objects[Index]).ActorValue;
         ActorToNameStr := TConEventSpeech(ConEventList.Items.Objects[Index]).ActorToValue;
-        SpeechStr := TConEventSpeech(ConEventList.Items.Objects[Index]).TextLine;
+        SpeechStr := TConEventSpeech(ConEventList.Items.Objects[Index]).TextLine;}
+        mp3str         := SpeechEvent.mp3File;
+        ActorNameStr   := SpeechEvent.ActorValue;
+        ActorToNameStr := SpeechEvent.ActorToValue;
+        SpeechStr      := SpeechEvent.TextLine;
     end;
 
     with (Control as TListBox).Canvas do
     begin
         if odSelected in State then
         begin
-           if bUse3DSelectionFrame = True then
-              DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
-           if (bHglEventsGradient = True) then
-               GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
-            else begin
-               Brush.Color := clrHighlightEvent;
-               FillRect(Rect); // Заполнение цветом
-               end
+            if bUse3DSelectionFrame = True then
+                DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
+
+            if bHglEventsGradient = True then
+                GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
+            else
+            begin
+                Brush.Color := clrHighlightEvent;
+                FillRect(Rect); // Заполнение цветом
+            end
         end else
         begin
-           Brush.Color := RGB(192,255,192); // green
-           FillRect(Rect); // Заполнение цветом
+            if (bHglEventWithNoAudio = True) and (mp3str = '') then // what the point?
+                Brush.Color := RGB(192,255,255)
+            else
+                Brush.Color := RGB(192,255,192); // green
+
+            FillRect(Rect); // Заполнение цветом
         end;
 
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
@@ -2325,29 +2340,49 @@ var
     EventChoice: TConEventChoice;
     FlagsStr: string;
 begin
-    EventChoice:= nil;
+    //EventChoice:= nil;
+    EventChoice := TConEventChoice(ConEventList.Items.Objects[Index]);
+    if EventChoice = nil then Exit();
 
-    if ((CurrentConversation <> nil) and (TConEventChoice(ConEventList.Items.Objects[Index]) <> nil)) then
-    begin
+//    if ((CurrentConversation <> nil) and (TConEventChoice(ConEventList.Items.Objects[Index]) <> nil)) then
+    if ((CurrentConversation <> nil) and (EventChoice <> nil)) then
         EventChoice := TConEventChoice(ConEventList.Items.Objects[Index]);
-    end;
+//    begin
+//        EventChoice := TConEventChoice(ConEventList.Items.Objects[Index]);
+//    end;
 
     with (Control as TListBox).Canvas do
     begin
         if odSelected in State then
         begin
-           if bUse3DSelectionFrame = True then
-              DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
-           if (bHglEventsGradient = True) then
-               GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
-            else begin
+            if bUse3DSelectionFrame = True then
+                DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
+            if (bHglEventsGradient = True) then
+                 GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
+            else
+            begin
                Brush.Color := clrHighlightEvent;
                FillRect(Rect); // Заполнение цветом
-               end
+            end
         end else
         begin
-           Brush.Color := RGB(255,250,200);
-           FillRect(Rect); // Заполнение цветом
+            var bHasMP3String:= True;
+
+            for var d:= 0 to EventChoice.NumChoices -1 do
+            begin
+                if EventChoice.Choices[d].mp3 = '' then
+                begin
+                    bHasMP3String := False;
+                    Break;
+                end;
+            end;
+
+            if (bHglEventWithNoAudio = True) and (bHasMP3String = False) then
+                Brush.Color := RGB(192,255,255)
+            else
+                Brush.Color := RGB(255,250,200);
+
+                FillRect(Rect); // Заполнение цветом
         end;
 
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
@@ -2423,11 +2458,12 @@ begin
                     Font.Size := CEP_EVENT_LIST_FONT_SIZE;
                     if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clYellow else Font.Color := clBlue;
 
-                        FlagsStr := '';
+                    FlagsStr := '';
+
                     for var F := 0 to Length(EventChoice.Choices[E].RequiredFlags) -1 do
                     begin
-                        FlagsStr :=  FlagsStr + '[' + EventChoice.Choices[E].RequiredFlags[F].flagName + '='
-                                          + BoolToStr(EventChoice.Choices[E].RequiredFlags[F].flagValue, True) + '] ';
+                        FlagsStr := FlagsStr + '[' + EventChoice.Choices[E].RequiredFlags[F].flagName + '='
+                                  + BoolToStr(EventChoice.Choices[E].RequiredFlags[F].flagValue, True) + '] ';
                     end;
 
                     Inc(tempRect.Top, 17);
