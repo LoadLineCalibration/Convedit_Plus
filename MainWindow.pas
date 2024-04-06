@@ -3475,41 +3475,37 @@ begin
             tempRect.Top := Rect.Top;
             Brush.Style := bsClear;
 
-//            if Event.bHighlightAsRelated = true then
-//                GradientFillCanvas(TListBox(Control).Canvas, clYellow, clCream, tempRect, gdHorizontal)
-//
             FillRectAlpha(TListBox(Control).Canvas, tempRect, clLime, 64);
         end;
 
-        if Event.EventHighlightType = EHT_Related then //Event.bHighlightAsRelated = true then
-        begin
-            tempRect := Rect;
+        case Event.EventHighlightType of
+            EHT_Related:
+            begin
+                tempRect := Rect;
 
-            tempRect.Left := Rect.Left;
-            tempRect.Right := HeaderControl1.Sections[0].Width - 1;
-            tempRect.Top := Rect.Top;
-            Brush.Style := bsClear;
+                tempRect.Left := Rect.Left;
+                tempRect.Right := HeaderControl1.Sections[0].Width - 1;
+                tempRect.Top := Rect.Top;
+                Brush.Style := bsClear;
 
-            case EventListColorsMode of
-                ELCM_Default: GradientFillCanvas(TListBox(Control).Canvas, clYellow, clCream, tempRect, gdHorizontal);
-                ELCM_Dark:    GradientFillCanvas(TListBox(Control).Canvas, RGB(128,121,0), clWebYellowGreen, tempRect, gdHorizontal);
+                case EventListColorsMode of
+                    ELCM_Default: GradientFillCanvas(TListBox(Control).Canvas, clYellow, clCream, tempRect, gdHorizontal);
+                    ELCM_Dark:    GradientFillCanvas(TListBox(Control).Canvas, RGB(128,121,0), clWebYellowGreen, tempRect, gdHorizontal);
+                end;
             end;
 
+            EHT_Error:
+            begin
+                tempRect := Rect;
 
-            //GradientFillCanvas(TListBox(Control).Canvas, clYellow, clCream, tempRect, gdHorizontal);
-        end else
-        if Event.EventHighlightType = EHT_Error then
-        begin
-            tempRect := Rect;
+                tempRect.Left := Rect.Left;
+                tempRect.Right := HeaderControl1.Sections[0].Width - 1;
+                tempRect.Top := Rect.Top;
+                Brush.Style := bsClear;
 
-            tempRect.Left := Rect.Left;
-            tempRect.Right := HeaderControl1.Sections[0].Width - 1;
-            tempRect.Top := Rect.Top;
-            Brush.Style := bsClear;
-
-            GradientFillCanvas(TListBox(Control).Canvas, clRed, clWebOrange, tempRect, gdHorizontal);
+                GradientFillCanvas(TListBox(Control).Canvas, clWebOrange, clRed, tempRect, gdHorizontal);
+            end;
         end;
-
 
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then
            Font.Color := clWhite else Font.Color := clMaroon;
@@ -3856,10 +3852,6 @@ begin
 
     with HeaderControl1.Canvas do
     begin
-        //if bFlatToolbar = False then
-            //GradientFillCanvas(HeaderControl1.Canvas, clrHighlightEventTo, clrHighlightEventFrom, Rect, gdVertical);
-            //GradientFillCanvas(HeaderControl1.Canvas, clBtnFace, clBtnHighlight , Rect, gdVertical);
-
         Font.Name := CEP_EVENT_HEADER_LIST_FONT_NAME; // Ўрифт
         Font.Size := CEP_EVENT_HEADER_LIST_FONT_SIZE;
         Font.Color := clBtnText;
@@ -3939,9 +3931,9 @@ begin
     Statusbar.Panels[0].Text := 'ItemIndex=' + ConEventList.ItemIndex.ToString + objStr +
     ' Value=' + ConEventList.Items.ValueFromIndex[ConEventList.ItemIndex];
 
-    HighlightRelatedEvents();
+    frmLabelErrors.VerifyLabels(True);
 
-//    frmLabelErrors.VerifyLabels(True);
+    HighlightRelatedEvents();
 
     if frmEventInsAdd.Visible = true then
        ConEventListDblClick(Sender);
@@ -4019,18 +4011,7 @@ begin
 end;
 
 procedure TfrmMain.ConEventListDrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
-//var
-//    labelStr, idxStr: string;
-//    tempRect: TRect;
 begin
-//    if ConEventList.Items.Count < 1 then
-//        Exit();
-
-//    if Assigned(ConEventList.Items.Objects[Index]) = false then
-//        Exit();
-
-    // ToDo: если событие содержит ссылки на событи€, подсветить их.
-
     with (Control as TListBox).Canvas do
     begin
         Font.Size := CEP_EVENT_LIST_FONT_SIZE;
@@ -4074,41 +4055,6 @@ begin
         end;
 
         HighlightSelectedEvent(Control, Index, Rect, State);
-
-{        Font.Size := CEP_EVENT_LABEL_FONT_SIZE; //CEP_EVENT_LIST_FONT_SIZE;
-        Font.Name := CEP_EVENT_LABEL_FONT; //CEP_EVENT_LIST_FONT_NAME;
-        Font.Style := [fsBold];
-
-        if labelStr <> '' then
-        begin
-            tempRect := Rect;
-
-            tempRect.Left := Rect.Left;
-            tempRect.Right := HeaderControl1.Sections[0].Width - 1;
-            tempRect.Top := Rect.Top;
-            Brush.Style := bsClear;
-            FillRectAlpha(TListBox(Control).Canvas, tempRect, clLime, 64);
-            //FillRectAlpha(TListBox(Control).Canvas, tempRect, clLime, 48);
-        end;
-
-        HighlightEvent(Control, Index, Rect, State);
-
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then
-           Font.Color := clWhite else Font.Color := clMaroon;
-
-        if bDrawEventIdx = True then
-            TextOut(Rect.Left + 20, Rect.Top + 4, labelStr)
-        else
-            TextOut(Rect.Left + 2, Rect.Top + 2, labelStr);
-
-        // draw event index here (set color and draw text)
-        if bDrawEventIdx = True then
-        begin
-            if ((odSelected in State) and (bUseWhiteSelectedText = true)) then
-               Font.Color := clYellow else Font.Color := clBlue;
-
-            TextOut(Rect.Left, Rect.Top + 4, idxStr);
-        end;}
     end;
 end;
 
