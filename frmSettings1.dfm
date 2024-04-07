@@ -4,7 +4,7 @@ object frmSettings: TfrmSettings
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'ConEditPlus Settings'
-  ClientHeight = 527
+  ClientHeight = 474
   ClientWidth = 451
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -43,28 +43,20 @@ object frmSettings: TfrmSettings
   end
   object lblAudioPath: TLabel
     Left = 8
-    Top = 166
+    Top = 109
     Width = 62
     Height = 15
     Caption = 'Audio Path:'
     StyleName = 'Windows'
   end
-  object Label3: TLabel
-    Left = 8
-    Top = 115
-    Width = 163
-    Height = 15
-    Caption = 'Conversation File Backup Path:'
-    StyleName = 'Windows'
-  end
   object pgcSettings: TPageControl
     Left = 4
-    Top = 213
+    Top = 161
     Width = 446
     Height = 277
-    ActivePage = Page1
+    ActivePage = PageA
     Style = tsFlatButtons
-    TabOrder = 11
+    TabOrder = 9
     object Page1: TTabSheet
       Caption = 'Events and conversations'
       object grpEventsList: TGroupBox
@@ -275,6 +267,24 @@ object frmSettings: TfrmSettings
         end
       end
     end
+    object TabSheet1: TTabSheet
+      Caption = 'EventList colors'
+      ImageIndex = 2
+      object grpEventListColors: TGroupBox
+        Left = 1
+        Top = 7
+        Width = 434
+        Height = 236
+        Caption = 'ToDo: add options to customize eventList colors'
+        DefaultHeaderFont = False
+        HeaderFont.Charset = DEFAULT_CHARSET
+        HeaderFont.Color = clWindowText
+        HeaderFont.Height = -12
+        HeaderFont.Name = 'Segoe UI'
+        HeaderFont.Style = [fsBold]
+        TabOrder = 0
+      end
+    end
     object PageA: TTabSheet
       Caption = 'Misc. options'
       ImageIndex = 1
@@ -300,9 +310,25 @@ object frmSettings: TfrmSettings
           Caption = 'minutes'
           Layout = tlCenter
         end
+        object lblAutoSavePath: TLabel
+          Left = 11
+          Top = 53
+          Width = 224
+          Height = 15
+          Caption = 'Conversation File Backup (AutoSave) Path:'
+        end
+        object lblAutoSaveWarning: TLabel
+          Left = 11
+          Top = 103
+          Width = 380
+          Height = 30
+          Caption = 
+            'Important: If you created new conversation file, you need to sav' +
+            'e it first, '#13#10'otherwise AutoSave will not work.'
+        end
         object chkEnableLogging: TCheckBox
           Left = 11
-          Top = 46
+          Top = 206
           Width = 117
           Height = 17
           Hint = 
@@ -337,6 +363,28 @@ object frmSettings: TfrmSettings
           TabOrder = 2
           Value = 5
         end
+        object btnBrowseBakConFilePath: TButton
+          Left = 351
+          Top = 72
+          Width = 75
+          Height = 25
+          Caption = 'Browse...'
+          TabOrder = 3
+          StyleName = 'Windows'
+          OnClick = btnBrowseBakConFilePathClick
+        end
+        object edtConFileBakPath: TEdit
+          Left = 11
+          Top = 74
+          Width = 334
+          Height = 23
+          Hint = 'Leave empty to save in current directory'
+          HideSelection = False
+          PopupMenu = frmEventInsAdd.MemoPopup
+          ReadOnly = True
+          TabOrder = 4
+          StyleName = 'Windows'
+        end
       end
     end
   end
@@ -361,9 +409,9 @@ object frmSettings: TfrmSettings
     TabOrder = 1
     StyleName = 'Windows'
   end
-  object edtConFileBakPath: TEdit
+  object edtAudioPath: TEdit
     Left = 8
-    Top = 135
+    Top = 127
     Width = 353
     Height = 23
     HideSelection = False
@@ -372,75 +420,54 @@ object frmSettings: TfrmSettings
     TabOrder = 2
     StyleName = 'Windows'
   end
-  object edtAudioPath: TEdit
-    Left = 8
-    Top = 184
-    Width = 353
-    Height = 23
-    HideSelection = False
-    PopupMenu = frmEventInsAdd.MemoPopup
-    ReadOnly = True
-    TabOrder = 3
-    StyleName = 'Windows'
-  end
   object btnBrowseConFilePath: TButton
     Left = 367
     Top = 79
     Width = 75
     Height = 25
     Caption = 'Browse...'
-    TabOrder = 4
+    TabOrder = 3
     StyleName = 'Windows'
     OnClick = btnBrowseConFilePathClick
   end
-  object btnBrowseBakConFilePath: TButton
-    Left = 367
-    Top = 134
-    Width = 75
-    Height = 25
-    Caption = 'Browse...'
-    TabOrder = 5
-    StyleName = 'Windows'
-    OnClick = btnBrowseBakConFilePathClick
-  end
   object btnBrowseConAudioPath: TButton
     Left = 367
-    Top = 183
+    Top = 126
     Width = 75
     Height = 25
     Caption = 'Browse...'
-    TabOrder = 6
+    TabOrder = 4
     StyleName = 'Windows'
     OnClick = btnBrowseConAudioPathClick
   end
   object btnOk: TButton
     Left = 368
-    Top = 496
+    Top = 440
     Width = 75
     Height = 25
     Caption = 'Ok'
-    TabOrder = 7
+    TabOrder = 5
     StyleName = 'Windows'
     OnClick = btnOkClick
   end
   object btnCancel: TButton
     Left = 267
-    Top = 496
+    Top = 440
     Width = 75
     Height = 25
     Cancel = True
     Caption = 'Cancel'
-    TabOrder = 8
+    TabOrder = 6
     StyleName = 'Windows'
     OnClick = btnCancelClick
   end
   object btnClearLastFiles: TButton
     Left = 8
-    Top = 496
+    Top = 440
     Width = 167
     Height = 25
     Caption = 'Clear recent files'
-    TabOrder = 9
+    TabOrder = 7
     StyleName = 'Windows'
     OnClick = btnClearLastFilesClick
   end
@@ -450,13 +477,13 @@ object frmSettings: TfrmSettings
     Width = 228
     Height = 25
     Caption = 'Use from current logged in user?'
-    TabOrder = 10
+    TabOrder = 8
     StyleName = 'Windows'
     OnClick = btnPickUserNameClick
   end
   object dlgColor1: TColorDialog
     Left = 208
-    Top = 168
+    Top = 111
   end
   object dlgSelectFolder: TFileOpenDialog
     FavoriteLinks = <>

@@ -12,7 +12,7 @@ type
     lblUserName: TLabel;
     lblConversationsPath: TLabel;
     lblAudioPath: TLabel;
-    Label3: TLabel;
+    lblAutoSavePath: TLabel;
     edtUserName: TEdit;
     edtConFilePath: TEdit;
     edtConFileBakPath: TEdit;
@@ -55,6 +55,9 @@ type
     chkAutoSaveEnabled: TCheckBox;
     seAutoSaveMinutes: TSpinEdit;
     lblMinutes: TLabel;
+    TabSheet1: TTabSheet;
+    grpEventListColors: TGroupBox;
+    lblAutoSaveWarning: TLabel;
 
     // new procedures
     procedure SaveChanges();
@@ -117,8 +120,8 @@ begin
         shpGridColor.Brush.Color := clrGrid;
 
         chkFlatControlsMainWin.Checked := bFlatToolbar;
-        chkAutoSaveEnabled.Checked := bAutoSaveEnabled;
 
+        chkAutoSaveEnabled.Checked := bAutoSaveEnabled;
         seAutoSaveMinutes.Value := AutoSaveMinutes;
 
         chkUseSelectionFrame.Checked := bUse3DSelectionFrame;
@@ -162,6 +165,7 @@ begin
 
         bAutoSaveEnabled := chkAutoSaveEnabled.Checked;
         AutoSaveMinutes := seAutoSaveMinutes.Value;
+        AutoSaveTimer.Interval := AutoSaveMinutes * 60000;
 
         bUse3DSelectionFrame := chkUseSelectionFrame.Checked;
         bUseWhiteSelectedText := chkSelectedTextIsWhite.Checked;
@@ -203,9 +207,7 @@ end;
 
 procedure TfrmSettings.btnClearLastFilesClick(Sender: TObject);
 begin
-    if Application.MessageBox(PChar(strClearRecentQuestion),
-       PChar(strClearRecentTitle), MB_YESNO + MB_ICONQUESTION +
-       MB_DEFBUTTON2 + MB_TOPMOST) = IDYES then
+    if MessageDlg(strClearRecentQuestion,  mtConfirmation, [mbYes, mbNo],0) = mrYes then
         frmMain.ClearRecentFiles();
 end;
 
@@ -216,13 +218,14 @@ begin
 end;
 
 procedure TfrmSettings.btnPickUserNameClick(Sender: TObject); // Get current Windows user name
-var TempUser: PChar; i: DWord;
+var
+    TempUser: PChar; i: DWord;
 begin
     i := 1024;
     TempUser := StrAlloc(Succ(i));
 
     if GetUserName(TempUser, i) = True then
-       edtUserName.Text := TempUser
+        edtUserName.Text := TempUser
     else Exit();
 end;
 
@@ -253,6 +256,8 @@ end;
 
 procedure TfrmSettings.FormCreate(Sender: TObject);
 begin
+    edtConFileBakPath.Hint := Format(strAutoSavePathHint, [ParamStr(0)]);
+
     Icon := frmMain.Icon;
 
     LoadSettings();
