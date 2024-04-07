@@ -355,6 +355,8 @@ ResourceString
 
     strUniqueLabelRequired = 'The EventLabel you entered is not unique, please choose another.';
 
+    strAutoSavePathHint = 'Leave empty to use current program directory' + #13#10 + '(%s)';
+
 
 implementation
 
