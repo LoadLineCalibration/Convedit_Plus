@@ -9,7 +9,7 @@ uses
   Conversation.Classes, System.ImageList, Vcl.ImgList, Table, Vcl.GraphUtil, ES.BaseControls, ES.Layouts,
   System.Actions, Vcl.ActnList, System.Generics.Collections, System.TypInfo, xml.VerySimple, System.StrUtils,
   system.Math, Vcl.MPlayer, ConEditPlus.Enums, Winapi.ShellAPI, ConEditPlus.Helpers, Vcl.Clipbrd, system.Rtti,
-  ConEditPlus.Clipboard.Helper, Vcl.AppEvnts;
+  ConEditPlus.Clipboard.Helper, Vcl.AppEvnts, system.Threading;
 
 
 type
@@ -339,9 +339,7 @@ type
     // to load file using drag and drop
     procedure WMDropFiles(var Msg: TWMDropFiles); message WM_DROPFILES;
 
-    // For autosave. Autosave will save file in both formats (con + xml)
-    // Label errors are ignored in this case.
-    // Execute in background, to avoid any possible freezes in main thread.
+    // For autosave.
     procedure AutoSaveFile(const aFileName: string);
 
     procedure FormResize(Sender: TObject);
@@ -5633,9 +5631,19 @@ begin
     InsertEvent(Ord(ET_AddSkillPoints));
 end;
 
-procedure TfrmMain.AutoSaveFile(const aFileName: string);
-begin
-//
+procedure TfrmMain.AutoSaveFile(const aFileName: string); // Label errors should be ignored in this case.
+begin                                                     // Execute in background, to avoid any possible freezes in main thread.
+    TTask.Run(
+    procedure
+    begin
+        SaveConFile(aFileName); // save file here
+
+        TThread.Synchronize(nil,
+        procedure
+        begin
+            StatusBar.Panels[1].Text := DateTimeToStr(Now()) + ' -- Saved As ' + aFileName;
+        end);
+    end);
 end;
 
 procedure TfrmMain.AutoSaveTimerTimer(Sender: TObject);
@@ -5644,10 +5652,12 @@ var
 begin
     if currentConFile = '' then Exit();
 
-    NewFileName:= currentConFile +  '_AutoSave_' + FormatDateTime('hh_mm_ss__dd_mmm_yyyy', Now()); //    yyyy_mmdd_hhmmss
-    StatusBar.Panels[1].Text := 'AutoSave file: ' + NewFileName;
+    var TempFileName := ChangeFileExt(currentConFile, ''); //ExtractFileName(currentConFile);
+    var TempFileExt := ExtractFileExt(currentConFile);
 
-//    ShowMessage(NewFileName);
+    NewFileName:= TempFileName +  '_AutoSave_' + FormatDateTime('hh_mm_ss__dd_mmm_yyyy', Now()) + TempFileExt; //    yyyy_mmdd_hhmmss
+    StatusBar.Panels[1].Text := '(simulation) AutoSave file: ' + NewFileName;
+    AutoSaveFile(NewFileName);
 end;
 
 procedure TfrmMain.tbGenerateAudioDirsClick(Sender: TObject);
