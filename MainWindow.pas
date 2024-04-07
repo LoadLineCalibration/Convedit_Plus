@@ -205,6 +205,7 @@ type
     ImageList_Toolbar_Disabled: TImageList;
     N7: TMenuItem;
     GenAudiofilenames: TMenuItem;
+    AutoSaveTimer: TTimer;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -335,7 +336,13 @@ type
     // To expand tree without flags
     procedure ExpandTreeViewToLevel(TreeView: TTreeView; Level: Integer);
 
+    // to load file using drag and drop
     procedure WMDropFiles(var Msg: TWMDropFiles); message WM_DROPFILES;
+
+    // For autosave. Autosave will save file in both formats (con + xml)
+    // Label errors are ignored in this case.
+    // Execute in background, to avoid any possible freezes in main thread.
+    procedure AutoSaveFile(const aFileName: string);
 
     procedure FormResize(Sender: TObject);
     procedure CollapseAll2Click(Sender: TObject);
@@ -453,11 +460,17 @@ type
     procedure Darkmode1Click(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Conversation_FindExecute(Sender: TObject);
+    procedure AutoSaveTimerTimer(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
+    FAutoSaveEnabled: Boolean;
+
     function GetFileModified(): Boolean; // Getter function
     procedure SetFileModified(const Value: Boolean); // Setter procedure
+
+    function GetAutoSaveEnabled(): Boolean;
+    procedure SetAutoSaveEnabled(const Value: Boolean);
 
     procedure WMEnterSizeMove(var Msg: TMessage); message WM_ENTERSIZEMOVE;
     procedure WMExitSizeMove(var Msg: TMessage); message WM_EXITSIZEMOVE;
@@ -484,8 +497,10 @@ type
     var bShowAudioFiles, bShowStatusBar, bShowToolbar, bExpandedEventList,
     bHighlightRelatedEvents,
     bAskForConvoDelete, bAskForEventDelete, bHglEventWithNoAudio,
-    bHglEventsGradient, bFlatToolbar, bAutoSaveEnabled,
+    bHglEventsGradient, bFlatToolbar, {bAutoSaveEnabled,}
     bUse3DSelectionFrame, bUseWhiteSelectedText, bDrawEventIdx, bUseLogging: Boolean;
+
+    property bAutoSaveEnabled: Boolean read GetAutoSaveEnabled write SetAutoSaveEnabled;
 
     // strings
     var ConversationUserName,
@@ -533,6 +548,11 @@ uses frmSettings1, EditValueDialog, ConFileProperties, AboutBox1, ConvoPropertie
      ConXml.Reader, ConXML.Writer, confile.Reader, conFile.Writer, uFrmLabelErrors;
 
 
+function TfrmMain.GetFileModified: Boolean;
+begin
+    Result := FFileModified;
+end;
+
 procedure TfrmMain.SetFileModified(const Value: Boolean);
 begin
     FFileModified := Value;
@@ -545,9 +565,15 @@ begin
     FileSave.Enabled := Value;
 end;
 
-function TfrmMain.GetFileModified: Boolean;
+function TfrmMain.GetAutoSaveEnabled(): Boolean;
 begin
-    Result := FFileModified;
+    Result := FAutoSaveEnabled;
+end;
+
+procedure TfrmMain.SetAutoSaveEnabled(const Value: Boolean);
+begin
+    FAutoSaveEnabled := Value;
+    AutoSaveTimer.Enabled := Value;
 end;
 
 procedure TfrmMain.WMDropFiles(var Msg: TWMDropFiles);
@@ -2143,6 +2169,7 @@ begin
 
        bAutoSaveEnabled := ReadBool('frmMain', 'bAutoSaveEnabled', false);
        AutoSaveMinutes := ReadInteger('frmMain', 'AutoSaveMinutes', 5);
+       AutoSaveTimer.Interval := AutoSaveMinutes * 60000;
 
        clrHighlightEvent := ReadInteger('frmMain', 'clrHighlightEvent', 16767927);
        clrHighlightEventFrom := ReadInteger('frmMain', 'clrHighlightEventFrom', 16767927);
@@ -3808,6 +3835,7 @@ begin
        LongRec(FixedPtr.dwFileVersionLS).Hi,  //release
        LongRec(FixedPtr.dwFileVersionLS).Lo]) //build
 end;
+
 
 function TfrmMain.HasConvoEventToPaste(): Boolean; // to enable/disable "Paste" menu item
 var
@@ -5603,6 +5631,23 @@ end;
 procedure TfrmMain.AddSkillPoints2Click(Sender: TObject);
 begin
     InsertEvent(Ord(ET_AddSkillPoints));
+end;
+
+procedure TfrmMain.AutoSaveFile(const aFileName: string);
+begin
+//
+end;
+
+procedure TfrmMain.AutoSaveTimerTimer(Sender: TObject);
+var
+    NewFileName: string;
+begin
+    if currentConFile = '' then Exit();
+
+    NewFileName:= currentConFile +  '_AutoSave_' + FormatDateTime('hh_mm_ss__dd_mmm_yyyy', Now()); //    yyyy_mmdd_hhmmss
+    StatusBar.Panels[1].Text := 'AutoSave file: ' + NewFileName;
+
+//    ShowMessage(NewFileName);
 end;
 
 procedure TfrmMain.tbGenerateAudioDirsClick(Sender: TObject);

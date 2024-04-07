@@ -5384,8 +5384,6 @@ object frmMain: TfrmMain
     TabOrder = 0
     FrameStyle = None
     FrameColor = clBtnFace
-    ExplicitTop = 32
-    ExplicitHeight = 533
     object ConvoTree: TTreeView
       Left = 0
       Top = 0
@@ -5421,7 +5419,6 @@ object frmMain: TfrmMain
       OnDeletion = ConvoTreeDeletion
       OnEdited = ConvoTreeEdited
       OnEditing = ConvoTreeEditing
-      ExplicitHeight = 533
     end
   end
   object StatusBar: TStatusBar
@@ -5455,8 +5452,6 @@ object frmMain: TfrmMain
     TabOrder = 2
     CaptionVisible = False
     FrameStyle = Bump
-    ExplicitTop = 32
-    ExplicitHeight = 533
     DesignSize = (
       697
       530)
@@ -5487,7 +5482,6 @@ object frmMain: TfrmMain
       OnEndDrag = ConEventListEndDrag
       OnMeasureItem = ConEventListMeasureItem
       OnMouseUp = ConEventListMouseUp
-      ExplicitHeight = 223
     end
     object HeaderControl1: THeaderControl
       Left = 2
@@ -5566,11 +5560,10 @@ object frmMain: TfrmMain
       Visible = False
       WordWrap = False
       StyleName = 'Windows'
-      ExplicitTop = 245
     end
     object btnCloseLog: TButton
       Left = 678
-      Top = 370
+      Top = 355
       Width = 20
       Height = 20
       Hint = 'Close Log'
@@ -5590,7 +5583,6 @@ object frmMain: TfrmMain
       Visible = False
       StyleName = 'Windows'
       OnClick = ViewoutputTMemo1Click
-      ExplicitTop = 373
     end
   end
   object mainToolBar: TToolBar
@@ -6303,7 +6295,6 @@ object frmMain: TfrmMain
     end
     object Duplicate1: TMenuItem
       Action = Event_Duplicate
-      ImageIndex = 3
     end
   end
   object ImageListToolbar: TImageList
@@ -8493,6 +8484,8 @@ object frmMain: TfrmMain
     object Event_Duplicate: TAction
       Category = 'Events'
       Caption = 'Duplicate'
+      ImageIndex = 3
+      ShortCut = 16452
       OnExecute = Event_DuplicateExecute
     end
     object Conversation_Rename: TAction
@@ -10978,5 +10971,12 @@ object frmMain: TfrmMain
       00001FFE007F800003F0000F00003FFF80FF80000798001700007FFFFDFFC000
       0FFC003F8000FFFFFFFFFFFFFFFFFFFF00000000000000000000000000000000
       000000000000}
+  end
+  object AutoSaveTimer: TTimer
+    Enabled = False
+    Interval = 60000
+    OnTimer = AutoSaveTimerTimer
+    Left = 641
+    Top = 347
   end
 end
