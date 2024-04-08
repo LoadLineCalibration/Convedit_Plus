@@ -355,7 +355,11 @@ ResourceString
 
     strUniqueLabelRequired = 'The EventLabel you entered is not unique, please choose another.';
 
-    strAutoSavePathHint = 'Leave empty to use current program directory' + #13#10 + '(%s)';
+    strAutoSavePathHint = 'Leave empty to use directory with conversation files' + #13#10 + '(%s)';
+
+    strFileModiefied = ' [File has been modified]';
+
+
 
 
 implementation

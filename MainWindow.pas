@@ -9,7 +9,7 @@ uses
   Conversation.Classes, System.ImageList, Vcl.ImgList, Table, Vcl.GraphUtil, ES.BaseControls, ES.Layouts,
   System.Actions, Vcl.ActnList, System.Generics.Collections, System.TypInfo, xml.VerySimple, System.StrUtils,
   system.Math, Vcl.MPlayer, ConEditPlus.Enums, Winapi.ShellAPI, ConEditPlus.Helpers, Vcl.Clipbrd, system.Rtti,
-  ConEditPlus.Clipboard.Helper, Vcl.AppEvnts, system.Threading;
+  ConEditPlus.Clipboard.Helper, Vcl.AppEvnts, System.Threading, system.DateUtils;
 
 
 type
@@ -206,6 +206,7 @@ type
     N7: TMenuItem;
     GenAudiofilenames: TMenuItem;
     AutoSaveTimer: TTimer;
+    lblSelectedEvent: TLabel;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -339,9 +340,6 @@ type
     // to load file using drag and drop
     procedure WMDropFiles(var Msg: TWMDropFiles); message WM_DROPFILES;
 
-    // For autosave.
-    procedure AutoSaveFile(const aFileName: string);
-
     procedure FormResize(Sender: TObject);
     procedure CollapseAll2Click(Sender: TObject);
     procedure ConvoTreeEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
@@ -472,6 +470,9 @@ type
 
     procedure WMEnterSizeMove(var Msg: TMessage); message WM_ENTERSIZEMOVE;
     procedure WMExitSizeMove(var Msg: TMessage); message WM_EXITSIZEMOVE;
+
+    // For autosave.
+    procedure AutoSaveFile(const aFileName: string);
   public
     { Public declarations }
 
@@ -531,6 +532,9 @@ type
     var SysScrollBarWidth: Integer;
 
     var CF_ConEditPlus: Word; // Custom clipboard format
+
+    var TreeBuildTask: ITask;
+    var AutoSaveTask: ITask;
   end;
 
 var
@@ -556,7 +560,7 @@ begin
     FFileModified := Value;
 
     case Value of
-        True: Caption := strAppTitle + ' [File has been modified]';
+        True: Caption := strAppTitle + strFileModiefied;
         False: Caption := strAppTitle;
     end;
 
@@ -1133,7 +1137,82 @@ begin
 end;
 
 procedure TfrmMain.BuildConvoTree();
+var
+  StartTime, EndTime: TDateTime;
 begin
+    StartTime := Now();
+
+    TreeBuildTask := TTask.Run(
+    procedure
+    begin
+
+    for var cList := 0 to ConversationsList.Count -1 do
+    begin
+        var NodeConName, NodeConOwnerName, NodeDependsOnFlags: TTreeNode;
+        var tempConvo := ConversationsList.Items[cList];
+
+        TThread.Synchronize(nil,
+        procedure
+        begin
+
+        if ItemExistsInTreeView(ConvoTree, tempConvo.conOwnerName) = false then
+        begin
+           NodeConOwnerName:= frmMain.ConvoTree.Items.Add(nil, tempConvo.conOwnerName);
+           NodeConOwnerName.ImageIndex := 0;
+           NodeConOwnerName.ExpandedImageIndex := 0;
+           NodeConOwnerName.SelectedIndex := 0;
+        end
+        else
+        begin
+           NodeConOwnerName := ConvoTree.Items.GetFirstNode;
+           while NodeConOwnerName <> nil do
+           begin
+               if NodeConOwnerName.Text = tempConvo.conOwnerName then
+                   Break;
+               NodeConOwnerName := NodeConOwnerName.GetNextSibling;
+           end;
+        end;
+
+        // Add owner's conversations
+        NodeConName:= frmMain.ConvoTree.Items.AddChildObject(NodeConOwnerName, tempConvo.conName, tempConvo);
+        NodeConName.ImageIndex := 1;
+        NodeConName.ExpandedImageIndex := 1;
+        NodeConName.SelectedIndex := 1;
+
+        // Flags required by this conversation
+        for var DOF:= 0 to Length(tempConvo.conDependsOnFlags) -1 do
+        begin
+            NodeDependsOnFlags:= frmMain.ConvoTree.Items.AddChild(NodeConName,
+            tempConvo.conDependsOnFlags[DOF].flagName + ' = '
+            + BoolToStr(tempConvo.conDependsOnFlags[DOF].flagValue, true));
+
+            // red icon = false, green icon = true
+            if NodeDependsOnFlags.Text.EndsText('true', NodeDependsOnFlags.Text) then
+            begin
+                NodeDependsOnFlags.ImageIndex := 2;
+                NodeDependsOnFlags.ExpandedImageIndex := 2;
+                NodeDependsOnFlags.SelectedIndex := 2;
+            end else
+            begin
+                NodeDependsOnFlags.ImageIndex := 3;
+                NodeDependsOnFlags.ExpandedImageIndex := 3;
+                NodeDependsOnFlags.SelectedIndex := 3;
+            end;
+        end;
+
+        end);
+    end;
+
+        EndTime := Now();
+        lblSelectedEvent.Caption := 'Tree built in ' + IntToStr(MilliSecondsBetween(EndTime, StartTime)) + ' ms';
+
+
+    end);
+
+    SetEventIndexes();
+
+
+{
     for var cList := 0 to ConversationsList.Count -1 do
     begin
         var NodeConName, NodeConOwnerName, NodeDependsOnFlags: TTreeNode;
@@ -1184,8 +1263,7 @@ begin
             end;
         end;
     end;
-
-    SetEventIndexes();
+}
 end;
 
 procedure TfrmMain.FirstTimeLaunch();// First launch?
@@ -3990,7 +4068,7 @@ begin
 
     objStr:= ' EventType = ' + CurrentEvent.ClassName;
 
-    Statusbar.Panels[0].Text := 'ItemIndex=' + ConEventList.ItemIndex.ToString + objStr +
+    lblSelectedEvent.Caption := 'ItemIndex=' + ConEventList.ItemIndex.ToString + objStr +
     ' Value=' + ConEventList.Items.ValueFromIndex[ConEventList.ItemIndex];
 
     frmLabelErrors.VerifyLabels(True);
@@ -4700,6 +4778,12 @@ begin
 
           mrNo:
             begin
+                if TreeBuildTask.Status = TTaskStatus.Running then
+                    TreeBuildTask.Cancel(); // stop building tree
+
+                if AutoSaveTask.Status = TTaskStatus.Running then
+                    AutoSaveTask.Wait(5000);
+
                 CanClose := True;
             end;
         end;
@@ -5633,16 +5717,25 @@ end;
 
 procedure TfrmMain.AutoSaveFile(const aFileName: string); // Label errors should be ignored in this case.
 begin                                                     // Execute in background, to avoid any possible freezes in main thread.
-    TTask.Run(
+    AutoSaveTask := TTask.Run(
     procedure
     begin
-        SaveConFile(aFileName); // save file here
+        try
+            AutoSaveTimer.Enabled := False; // Just precautions
 
-        TThread.Synchronize(nil,
-        procedure
-        begin
-            StatusBar.Panels[1].Text := DateTimeToStr(Now()) + ' -- Saved As ' + aFileName;
-        end);
+            SaveConFile(aFileName); // save file here
+            Sleep(10000); // Test: sleep 10 seconds to simulate long operation
+
+            TThread.Synchronize(nil,
+            procedure
+            begin
+                // do something else?
+            end);
+
+        finally
+            StatusBar.Panels[1].Text := DateTimeToStr(Now()) + ' -- AutoSaved As ' + aFileName;
+            AutoSaveTimer.Enabled := True; // Ready for next autosave
+        end;
     end);
 end;
 
@@ -5656,7 +5749,8 @@ begin
     var TempFileExt := ExtractFileExt(currentConFile);
 
     NewFileName:= TempFileName +  '_AutoSave_' + FormatDateTime('hh_mm_ss__dd_mmm_yyyy', Now()) + TempFileExt; //    yyyy_mmdd_hhmmss
-    StatusBar.Panels[1].Text := '(simulation) AutoSave file: ' + NewFileName;
+
+    StatusBar.Panels[1].Text := DateTimeToStr(Now()) + ' -- AutoSave file: ' + NewFileName;
     AutoSaveFile(NewFileName);
 end;
 
