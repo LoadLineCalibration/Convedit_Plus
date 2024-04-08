@@ -317,15 +317,6 @@ object frmSettings: TfrmSettings
           Height = 15
           Caption = 'Conversation File Backup (AutoSave) Path:'
         end
-        object lblAutoSaveWarning: TLabel
-          Left = 11
-          Top = 103
-          Width = 380
-          Height = 30
-          Caption = 
-            'Important: If you created new conversation file, you need to sav' +
-            'e it first, '#13#10'otherwise AutoSave will not work.'
-        end
         object chkEnableLogging: TCheckBox
           Left = 11
           Top = 206
@@ -344,7 +335,7 @@ object frmSettings: TfrmSettings
           Top = 23
           Width = 114
           Height = 17
-          Hint = 'AutoSave is not implemented yet '
+          Hint = 'Enable/disable AutoSave'
           Caption = 'AutoSave every'
           TabOrder = 1
         end
@@ -364,10 +355,10 @@ object frmSettings: TfrmSettings
           Value = 5
         end
         object btnBrowseBakConFilePath: TButton
-          Left = 351
-          Top = 72
-          Width = 75
-          Height = 25
+          Left = 323
+          Top = 74
+          Width = 58
+          Height = 23
           Caption = 'Browse...'
           TabOrder = 3
           StyleName = 'Windows'
@@ -376,14 +367,28 @@ object frmSettings: TfrmSettings
         object edtConFileBakPath: TEdit
           Left = 11
           Top = 74
-          Width = 334
+          Width = 306
           Height = 23
-          Hint = 'Leave empty to save in current directory'
+          Hint = 
+            'Important: If you created a new conversation file, '#13#10'you need to' +
+            ' save it first; otherwise, AutoSave will not work.'#10#13#10'If you want' +
+            ' to save backup files in the same directory as the '#13#10'loaded file' +
+            ', leave this field empty.'
           HideSelection = False
           PopupMenu = frmEventInsAdd.MemoPopup
           ReadOnly = True
           TabOrder = 4
           StyleName = 'Windows'
+        end
+        object btnEmptyBakPath: TButton
+          Left = 382
+          Top = 74
+          Width = 44
+          Height = 23
+          Caption = 'Empty'
+          TabOrder = 5
+          StyleName = 'Windows'
+          OnClick = btnEmptyBakPathClick
         end
       end
     end
@@ -403,6 +408,9 @@ object frmSettings: TfrmSettings
     Top = 80
     Width = 353
     Height = 23
+    Hint = 
+      'I don'#39't know what is this, this option was borrowed from OG ConE' +
+      'dit.'#13#10'Maybe eventually I will remove it.'#13#10
     HideSelection = False
     PopupMenu = frmEventInsAdd.MemoPopup
     ReadOnly = True

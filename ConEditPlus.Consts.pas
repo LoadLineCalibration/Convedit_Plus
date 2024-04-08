@@ -282,7 +282,7 @@ ResourceString
     tbGenerateAudioDirsHint = 'Create all required directories with placeholder .mp3 files.' + #10#13 +
                               'You will need to replace these placeholder files with real speech files.';
     tbSettingsHint = 'Change program settings';
-    tbReorderHint = 'Enable changing order of events. Hold %s key and drag one of items.';
+    tbReorderHint = 'Enable changing order of events. Hold the %s key and drag one of the items.';
     tbStickyWindowHint = 'Window will snap to screen';
     tbShowLogHint = 'Show log';
 
@@ -334,7 +334,7 @@ ResourceString
     strJumpToEvent = 'Jump to this Event';
     strJumpToConversation = 'Jump to this Conversation';
 
-    strAudioDirsSuccesful = 'Audio directories with placeholder .mp3 files has been succesfully generated!' + #13#10#13#10 +
+    strAudioDirsSuccesful = 'Audio directories with placeholder .mp3 files have been successfully generated!' + #13#10#13#10 +
                             'Do you want to open directory with these files?';
 
     strAudioDirsError = 'There is error when creating audio directories in "%s". %s';
@@ -354,8 +354,6 @@ ResourceString
     strNameStartsFromDigit = 'Conversation name cannot start with number!';
 
     strUniqueLabelRequired = 'The EventLabel you entered is not unique, please choose another.';
-
-    strAutoSavePathHint = 'Leave empty to use directory with conversation files' + #13#10 + '(%s)';
 
     strFileModiefied = ' [File has been modified]';
 

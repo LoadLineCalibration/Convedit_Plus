@@ -4778,11 +4778,11 @@ begin
 
           mrNo:
             begin
-                if TreeBuildTask.Status = TTaskStatus.Running then
+                if (TreeBuildTask <> nil) and (TreeBuildTask.Status = TTaskStatus.Running) then
                     TreeBuildTask.Cancel(); // stop building tree
 
-                if AutoSaveTask.Status = TTaskStatus.Running then
-                    AutoSaveTask.Wait(5000);
+                if (AutoSaveTask <> nil) and (AutoSaveTask.Status = TTaskStatus.Running) then
+                    AutoSaveTask.Cancel();
 
                 CanClose := True;
             end;
@@ -5717,23 +5717,38 @@ end;
 
 procedure TfrmMain.AutoSaveFile(const aFileName: string); // Label errors should be ignored in this case.
 begin                                                     // Execute in background, to avoid any possible freezes in main thread.
+    var FileToSave := aFileName;
+    var OnlyFileToSave: string;
+
+    if (ConFileBakPath <> '') and (DirectoryExists(ConFileBakPath)) then
+    begin
+        OnlyFileToSave := ExtractFileName(aFileName); // Get only fileName.ext
+        FileToSave := IncludeTrailingPathDelimiter(ConFileBakPath) + OnlyFileToSave;
+    end;
+
+
     AutoSaveTask := TTask.Run(
     procedure
     begin
         try
             AutoSaveTimer.Enabled := False; // Just precautions
 
-            SaveConFile(aFileName); // save file here
-            Sleep(10000); // Test: sleep 10 seconds to simulate long operation
+            if LowerCase(ExtractFileExt(FileToSave)) = '.con' then
+                SaveConFile(FileToSave)
+            else
+            if LowerCase(ExtractFileExt(FileToSave)) = '.xml' then
+                BuildConXMLFile(FileToSave);
 
             TThread.Synchronize(nil,
             procedure
             begin
+                StatusBar.Panels[1].Text := 'Done!';
                 // do something else?
             end);
 
         finally
-            StatusBar.Panels[1].Text := DateTimeToStr(Now()) + ' -- AutoSaved As ' + aFileName;
+            Sleep(2000); // so user will see the message!
+            StatusBar.Panels[1].Text := DateTimeToStr(Now()) + ' AutoSaved: ' + FileToSave;
             AutoSaveTimer.Enabled := True; // Ready for next autosave
         end;
     end);
@@ -5743,6 +5758,7 @@ procedure TfrmMain.AutoSaveTimerTimer(Sender: TObject);
 var
     NewFileName: string;
 begin
+    // don't autosave if no file loaded
     if currentConFile = '' then Exit();
 
     var TempFileName := ChangeFileExt(currentConFile, ''); //ExtractFileName(currentConFile);
@@ -5750,7 +5766,7 @@ begin
 
     NewFileName:= TempFileName +  '_AutoSave_' + FormatDateTime('hh_mm_ss__dd_mmm_yyyy', Now()) + TempFileExt; //    yyyy_mmdd_hhmmss
 
-    StatusBar.Panels[1].Text := DateTimeToStr(Now()) + ' -- AutoSave file: ' + NewFileName;
+    StatusBar.Panels[1].Text := DateTimeToStr(Now()) + ' AutoSaving file: ' + NewFileName;
     AutoSaveFile(NewFileName);
 end;
 

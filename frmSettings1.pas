@@ -57,7 +57,7 @@ type
     lblMinutes: TLabel;
     TabSheet1: TTabSheet;
     grpEventListColors: TGroupBox;
-    lblAutoSaveWarning: TLabel;
+    btnEmptyBakPath: TButton;
 
     // new procedures
     procedure SaveChanges();
@@ -83,6 +83,7 @@ type
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
       var Handled: Boolean);
     procedure shpGridColorMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure btnEmptyBakPathClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -211,6 +212,11 @@ begin
         frmMain.ClearRecentFiles();
 end;
 
+procedure TfrmSettings.btnEmptyBakPathClick(Sender: TObject);
+begin
+    edtConFileBakPath.Clear();
+end;
+
 procedure TfrmSettings.btnOkClick(Sender: TObject);
 begin
     SaveChanges();
@@ -256,8 +262,6 @@ end;
 
 procedure TfrmSettings.FormCreate(Sender: TObject);
 begin
-    edtConFileBakPath.Hint := Format(strAutoSavePathHint, [ParamStr(0)]);
-
     Icon := frmMain.Icon;
 
     LoadSettings();
