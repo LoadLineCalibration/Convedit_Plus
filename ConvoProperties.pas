@@ -210,19 +210,21 @@ begin
 end;
 
 procedure TfrmConvoProperties.UpdateConversation(var convoToUpdate: TConversation);
+var
+    TempConvoOwnerName: string;
 begin
     with convoToUpdate do
     begin
         conName := editConvoName.Text;
-        conCreatedByName  := frmMain.ConversationUserName;
+        //conCreatedByName  := frmMain.ConversationUserName;
         conModifiedByName := frmMain.ConversationUserName;
 
         conModifiedByDate := conXMLDateTime(); // set current date/time
 
         // conversation has only one owner
-        var tempConvoOwnerName := cmbConvoOwner.Items[cmbConvoOwner.ItemIndex];
+        TempConvoOwnerName := cmbConvoOwner.Items[cmbConvoOwner.ItemIndex];
 
-        conOwnerName := tempConvoOwnerName; //cmbConvoOwner.Items[cmbConvoOwner.ItemIndex];
+        conOwnerName  := TempConvoOwnerName; //cmbConvoOwner.Items[cmbConvoOwner.ItemIndex];
         conOwnerIndex := frmMain.FindTableIdByName(TM_ActorsPawns, tempConvoOwnerName);
 
         // How conversation is activated + options
@@ -250,9 +252,52 @@ begin
         end;
     end;
 
-    frmMain.ConvoTree.Items.Clear();
-    frmMain.BuildConvoTree();
-    frmMain.SelectTreeItemByObject(frmMain.ConvoTree, convoToUpdate); // select the conversation
+    var ConversationNameNode := frmMain.ConvoTree.Selected; // в дереве выбран Conversation
+    var ConversationOwnerNode := frmMain.ConvoTree.Selected.Parent; // Owner
+    var LC_ConName := LowerCase(convoToUpdate.conName);
+    var LC_ConOwner := LowerCase(convoToUpdate.conOwnerName);
+    var LC_NodeConNameTxt := LowerCase(ConversationNameNode.Text);
+    var LC_NodeConOwnerTxt := LowerCase(ConversationOwnerNode.Text);
+
+
+    // изменилось только им€ диалога  а Owner не изменилс€
+    if (LC_NodeConNameTxt <> LC_ConName) and (LC_NodeConOwnerTxt = LC_ConOwner) then
+        ConversationNameNode.Text := convoToUpdate.conName;
+
+    // »зменилось им€ диалога и Owner, а кол-во диалогов = 1, просто мен€ем названи€
+    if (LC_NodeConNameTxt <> LC_ConName) and (LC_NodeConOwnerTxt <> LC_ConOwner) and
+       (ConversationOwnerNode.Count = 1) then
+       begin
+           ConversationNameNode.Text := convoToUpdate.conName;
+           ConversationOwnerNode.Text := convoToUpdate.conOwnerName;
+       end;
+
+    // »зменилс€ Owner, а им€ диалога нет, кол-во диалогов = 1
+    if (LC_NodeConNameTxt = LC_ConName) and (LC_NodeConOwnerTxt <> LC_ConOwner) and
+       (ConversationOwnerNode.Count = 1) then
+       begin
+           ConversationNameNode.Text := convoToUpdate.conName;
+           ConversationOwnerNode.Text := convoToUpdate.conOwnerName;
+       end;
+
+    // »м€ диалога не изменилось, но изменилс€ Owner.
+    if (LC_NodeConNameTxt = LC_ConName) and (LC_NodeConOwnerTxt <> LC_ConOwner) and
+       (ConversationOwnerNode.Count > 1) then
+       begin
+           var NewOwnerNode := frmMain.FindConvoOwnerInTree(convoToUpdate.conOwnerName); // ћожет у нас есть уже такой?
+
+           if NewOwnerNode = nil then // Ќету! “огда создать.
+               NewOwnerNode := frmMain.ConvoTree.Items.Add(nil, convoToUpdate.conOwnerName);
+
+           var Destination := NewOwnerNode;
+
+           ConversationNameNode.MoveTo(Destination, naAddChild); // ѕереместить
+       end;
+
+
+    //frmMain.ConvoTree.Items.Clear();
+    //frmMain.BuildConvoTree();
+    //frmMain.SelectTreeItemByObject(frmMain.ConvoTree, convoToUpdate); // select the conversation
 end;
 
 procedure TfrmConvoProperties.EditConversation(var convoToEdit: TConversation);
@@ -408,6 +453,7 @@ begin
 
             UpdateConversation(frmMain.CurrentConversation);
             frmMain.bFileModified := True;
+            frmMain.SelectTreeItemByObject(frmMain.ConvoTree, frmMain.CurrentConversation);
         end;
 
         em_Create:
