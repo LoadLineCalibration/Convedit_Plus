@@ -70,7 +70,7 @@ object frmConvoProperties: TfrmConvoProperties
       Top = 3
       Width = 394
       Height = 404
-      ActivePage = TabSheet1
+      ActivePage = tsinfo
       Align = alClient
       DoubleBuffered = False
       ParentDoubleBuffered = False
@@ -78,6 +78,7 @@ object frmConvoProperties: TfrmConvoProperties
       TabOrder = 0
       TabWidth = 65
       StyleName = 'Windows'
+      OnChange = pgcConvoPropertiesTabsChange
       object TabSheet1: TTabSheet
         Caption = 'General'
         DesignSize = (

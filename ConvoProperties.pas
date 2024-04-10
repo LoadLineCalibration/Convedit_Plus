@@ -74,7 +74,7 @@ type
 
     // new procedures
     procedure AddNewConversation();
-    procedure EditConversation(var convoToEdit: TConversation); // Load conversation info so we can change something
+    procedure EditConversation_FillFields(var convoToEdit: TConversation); // Load conversation info so we can change something
     procedure UpdateConversation(var convoToUpdate: TConversation); // write modified data back to Conversation we're loaded in procedure above
     procedure ClearFields();
 
@@ -83,6 +83,7 @@ type
 
     // new functions
     function CheckConversationExists(conName: string): Boolean;
+    procedure pgcConvoPropertiesTabsChange(Sender: TObject);
   private
     { Private declarations }
   public
@@ -216,7 +217,7 @@ begin
     with convoToUpdate do
     begin
         conName := editConvoName.Text;
-        //conCreatedByName  := frmMain.ConversationUserName;
+
         conModifiedByName := frmMain.ConversationUserName;
 
         conModifiedByDate := conXMLDateTime(); // set current date/time
@@ -293,14 +294,9 @@ begin
 
            ConversationNameNode.MoveTo(Destination, naAddChild); // Переместить
        end;
-
-
-    //frmMain.ConvoTree.Items.Clear();
-    //frmMain.BuildConvoTree();
-    //frmMain.SelectTreeItemByObject(frmMain.ConvoTree, convoToUpdate); // select the conversation
 end;
 
-procedure TfrmConvoProperties.EditConversation(var convoToEdit: TConversation);
+procedure TfrmConvoProperties.EditConversation_FillFields(var convoToEdit: TConversation);
 begin
     pgcConvoPropertiesTabs.ActivePageIndex := 0;
     ClearFields();
@@ -428,11 +424,16 @@ begin
     frmMain.ToggleLV_FlagValue(lvConvoDependsOnFlags);
 end;
 
+procedure TfrmConvoProperties.pgcConvoPropertiesTabsChange(Sender: TObject);
+begin
+    btnHelp.Visible := pgcConvoPropertiesTabs.ActivePageIndex <> 4;
+end;
+
 procedure TfrmConvoProperties.btnHelpClick(Sender: TObject);
 begin
     case pgcConvoPropertiesTabs.TabIndex of
-    0: frmHelp.LoadHelpResource('EmptyHelp');
-    1: frmHelp.LoadHelpResource('EmptyHelp');
+    0: frmHelp.LoadHelpResource('ConvPropertiesGeneral');
+    1: frmHelp.LoadHelpResource('ConvPropertiesFlags');
     2: frmHelp.LoadHelpResource('ConvPropertiesInvoke');
     3: frmHelp.LoadHelpResource('ConvPropertiesOptions');
     4: frmHelp.LoadHelpResource('EmptyHelp');
