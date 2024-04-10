@@ -250,6 +250,7 @@ type
     function TreeHasItemsOfLevel(Tree: TTreeView; LevelToCheck: Integer): Boolean;
     function ItemExistsInTreeView(TreeView: TTreeView; ItemText: string): Boolean;
     function FindTreeItemByText(TreeView: TTreeView; Text: string): TTreeNode;
+    function FindConvoOwnerInTree(Text: string): TTreeNode;
 
     procedure SelectTreeItemByObject(TreeView: TTreeView; Obj: TObject);
     procedure SelectEventByObject(obj: TObject);
@@ -913,7 +914,7 @@ begin
     end;
 end;
 
-function FindItemByObject(Node: TTreeNode; Obj: TObject): TTreeNode;
+{function FindItemByObject(Node: TTreeNode; Obj: TObject): TTreeNode;
 var
   ChildNode: TTreeNode;
 begin
@@ -934,7 +935,7 @@ begin
         ChildNode := Node.GetNextChild(ChildNode);
       end;
     end;
-end;
+end; }
 
 procedure TfrmMain.SelectTreeItemByObject(TreeView: TTreeView; Obj: TObject);
 var
@@ -979,6 +980,21 @@ begin
     end;
 
     Result := nil;
+end;
+
+function TfrmMain.FindConvoOwnerInTree(Text: string): TTreeNode; // only first level
+begin
+    Result := nil;
+    if Text = '' then Exit(nil);
+
+    for var item in ConvoTree.Items do
+    begin
+        if (item.Level = 0) and (lowerCase(Text) = LowerCase(item.Text)) then
+        begin
+            Result := item;
+            Break;
+        end;
+    end;
 end;
 
 function TfrmMain.FindConversationById(id: Integer): string;
@@ -1157,20 +1173,20 @@ begin
 
         if ItemExistsInTreeView(ConvoTree, tempConvo.conOwnerName) = false then
         begin
-           NodeConOwnerName:= frmMain.ConvoTree.Items.Add(nil, tempConvo.conOwnerName);
-           NodeConOwnerName.ImageIndex := 0;
-           NodeConOwnerName.ExpandedImageIndex := 0;
-           NodeConOwnerName.SelectedIndex := 0;
+            NodeConOwnerName:= frmMain.ConvoTree.Items.Add(nil, tempConvo.conOwnerName);
+            NodeConOwnerName.ImageIndex := 0;
+            NodeConOwnerName.ExpandedImageIndex := 0;
+            NodeConOwnerName.SelectedIndex := 0;
         end
         else
         begin
-           NodeConOwnerName := ConvoTree.Items.GetFirstNode;
-           while NodeConOwnerName <> nil do
-           begin
-               if NodeConOwnerName.Text = tempConvo.conOwnerName then
-                   Break;
-               NodeConOwnerName := NodeConOwnerName.GetNextSibling;
-           end;
+            NodeConOwnerName := ConvoTree.Items.GetFirstNode;
+            while NodeConOwnerName <> nil do
+            begin
+                if NodeConOwnerName.Text = tempConvo.conOwnerName then
+                    Break;
+                NodeConOwnerName := NodeConOwnerName.GetNextSibling;
+            end;
         end;
 
         // Add owner's conversations
@@ -1203,8 +1219,8 @@ begin
         end);
     end;
 
-        EndTime := Now();
-        lblSelectedEvent.Caption := 'Tree built in ' + IntToStr(MilliSecondsBetween(EndTime, StartTime)) + ' ms';
+    EndTime := Now();
+    lblSelectedEvent.Caption := 'Tree built in ' + IntToStr(MilliSecondsBetween(EndTime, StartTime)) + ' ms';
 
 
     end);
@@ -4377,7 +4393,7 @@ begin
     if Assigned(CurrentConversation) = false then Exit();
 
     frmConvoProperties.Caption := strEditConversation;
-    frmConvoProperties.EditConversation(CurrentConversation);
+    frmConvoProperties.EditConversation_FillFields(CurrentConversation);
 end;
 
 procedure TfrmMain.Conversation_RenameExecute(Sender: TObject);
@@ -4700,8 +4716,7 @@ end;
 
 procedure TfrmMain.Exit1Click(Sender: TObject);
 begin
-    SaveCfg();
-    Application.Terminate();
+    Close();
 end;
 
 procedure TfrmMain.ExpandTreeViewToLevel(TreeView: TTreeView; Level: Integer);
@@ -5899,11 +5914,12 @@ begin
     begin
         DeleteConversation.Enabled := ConvoTree.Selected.Level = 1;
         Conversation_Properties.Enabled := ConvoTree.Selected.Level = 1;
-    end
-    else begin
-        DeleteConversation.Enabled := ConvoTree.Selected.Level = 1;
-        Conversation_Properties.Enabled := ConvoTree.Selected.Level = 1;
+        Conversation_Rename.Enabled := ConvoTree.Selected.Level = 1;
     end;
+//    else begin
+//        DeleteConversation.Enabled := ConvoTree.Selected.Level = 1;
+//        Conversation_Properties.Enabled := ConvoTree.Selected.Level = 1;
+//    end;
 end;
 
 procedure TfrmMain.Random1Click(Sender: TObject);
