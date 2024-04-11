@@ -249,8 +249,8 @@ type
 
     function TreeHasItemsOfLevel(Tree: TTreeView; LevelToCheck: Integer): Boolean;
     function ItemExistsInTreeView(TreeView: TTreeView; ItemText: string): Boolean;
-    function FindTreeItemByText(TreeView: TTreeView; Text: string): TTreeNode;
-    function FindConvoOwnerInTree(Text: string): TTreeNode;
+    function FindConvoOwnerInTree(OwnerName: string): TTreeNode;
+    function FindConversationInTree(ConName: string): TTreeNode;
 
     procedure SelectTreeItemByObject(TreeView: TTreeView; Obj: TObject);
     procedure SelectEventByObject(obj: TObject);
@@ -899,21 +899,6 @@ begin
     end;
 end;
 
-function TfrmMain.FindTreeItemByText(TreeView: TTreeView; Text: string): TTreeNode;
-var
-    Node: TTreeNode;
-begin
-    Result := nil;
-    for Node in TreeView.Items do
-    begin
-        if SameText(Node.Text, Text) then
-        begin
-            Result := Node;
-        Break;
-        end;
-    end;
-end;
-
 procedure TfrmMain.SelectTreeItemByObject(TreeView: TTreeView; Obj: TObject);
 var
     Node: TTreeNode;
@@ -959,14 +944,29 @@ begin
     Result := nil;
 end;
 
-function TfrmMain.FindConvoOwnerInTree(Text: string): TTreeNode; // only first level
+function TfrmMain.FindConversationInTree(ConName: string): TTreeNode;
 begin
     Result := nil;
-    if Text = '' then Exit(nil);
+    if ConName = '' then Exit(nil);
 
     for var item in ConvoTree.Items do
     begin
-        if (item.Level = 0) and (lowerCase(Text) = LowerCase(item.Text)) then
+        if (item.Level = 1) and (lowerCase(ConName) = LowerCase(Item.Text)) then
+        begin
+            Result := item;
+            Break;
+        end;
+    end;
+end;
+
+function TfrmMain.FindConvoOwnerInTree(OwnerName: string): TTreeNode; // only first level
+begin
+    Result := nil;
+    if OwnerName = '' then Exit(nil);
+
+    for var item in ConvoTree.Items do
+    begin
+        if (item.Level = 0) and (lowerCase(OwnerName) = LowerCase(Item.Text)) then
         begin
             Result := item;
             Break;
@@ -987,6 +987,8 @@ begin
 
     Result := tempStr;
 end;
+
+
 
 function TfrmMain.FindConversationObjById(idToLookFor: Integer): TConversation;
 begin
@@ -4581,7 +4583,7 @@ procedure TfrmMain.DeleteCurrentConversation();
 begin
     if CurrentConversation = nil then Exit();
 
-    var convoTreeItem:= FindTreeItemByText(ConvoTree, CurrentConversation.conName);
+    var convoTreeItem := FindConversationInTree(CurrentConversation.conName);
     if convoTreeItem <> nil then
     begin
         var convoToDelete:= convoTreeItem.Data;
