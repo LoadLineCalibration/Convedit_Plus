@@ -914,29 +914,6 @@ begin
     end;
 end;
 
-{function FindItemByObject(Node: TTreeNode; Obj: TObject): TTreeNode;
-var
-  ChildNode: TTreeNode;
-begin
-    Result := nil;
-
-    // Check if the current node's Data property matches the desired object
-    if Node.Data = Obj then
-       Result := Node
-    else
-    begin
-      // Traverse the child nodes recursively
-      ChildNode := Node.GetFirstChild;
-      while ChildNode <> nil do
-      begin
-        Result := FindItemByObject(ChildNode, Obj);
-        if Result <> nil then
-           Break;
-        ChildNode := Node.GetNextChild(ChildNode);
-      end;
-    end;
-end; }
-
 procedure TfrmMain.SelectTreeItemByObject(TreeView: TTreeView; Obj: TObject);
 var
     Node: TTreeNode;
