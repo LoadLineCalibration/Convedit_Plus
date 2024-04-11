@@ -171,7 +171,8 @@ begin
     ConvoToAdd.id := frmMain.ConversationsList.IndexOfItem(ConvoToAdd, TList.TDirection.FromBeginning); // set id from list
 
     // Add conversation to the tree
-    if frmMain.ItemExistsInTreeView(frmMain.ConvoTree, ConvoToAdd.conOwnerName) = False then
+    //if frmMain.ItemExistsInTreeView(frmMain.ConvoTree, ConvoToAdd.conOwnerName) = False then
+    if frmMain.FindConvoOwnerInTree(ConvoToAdd.conOwnerName) = nil then
     begin
         NodeConOwnerName:= frmMain.ConvoTree.Items.Add(nil, ConvoToAdd.conOwnerName);
         NodeConOwnerName.ImageIndex := 0;
@@ -179,7 +180,7 @@ begin
         NodeConOwnerName.SelectedIndex := 0;
     end
     else
-        NodeConOwnerName := frmMain.FindTreeItemByText(frmMain.ConvoTree, ConvoToAdd.conOwnerName);
+        NodeConOwnerName := frmMain.FindConvoOwnerInTree(ConvoToAdd.conOwnerName); //frmMain.FindTreeItemByText(frmMain.ConvoTree, ConvoToAdd.conOwnerName);
 
     // Add owner's conversations
     NodeConName:= frmMain.ConvoTree.Items.AddChildObject(NodeConOwnerName, ConvoToAdd.conName, ConvoToAdd);
@@ -253,47 +254,38 @@ begin
         end;
     end;
 
-    var ConversationNameNode := frmMain.ConvoTree.Selected; // в дереве выбран Conversation
-    var ConversationOwnerNode := frmMain.ConvoTree.Selected.Parent; // Owner
-    var LC_ConName := LowerCase(convoToUpdate.conName);
-    var LC_ConOwner := LowerCase(convoToUpdate.conOwnerName);
-    var LC_NodeConNameTxt := LowerCase(ConversationNameNode.Text);
-    var LC_NodeConOwnerTxt := LowerCase(ConversationOwnerNode.Text);
-
+    var NameNode := frmMain.ConvoTree.Selected; // в дереве выбран Conversation
+    var OwnerNode := frmMain.ConvoTree.Selected.Parent; // Owner
+    var ConName := LowerCase(convoToUpdate.conName);
+    var ConOwner := LowerCase(convoToUpdate.conOwnerName);
+    var NodeConNameText := LowerCase(NameNode.Text);
+    var NodeConOwnerText := LowerCase(OwnerNode.Text);
 
     // изменилось только им€ диалога  а Owner не изменилс€
-    if (LC_NodeConNameTxt <> LC_ConName) and (LC_NodeConOwnerTxt = LC_ConOwner) then
-        ConversationNameNode.Text := convoToUpdate.conName;
+    if (NodeConNameText <> ConName) and (NodeConOwnerText = ConOwner) then
+        NameNode.Text := convoToUpdate.conName;
 
-    // »зменилось им€ диалога и Owner, а кол-во диалогов = 1, просто мен€ем названи€
-    if (LC_NodeConNameTxt <> LC_ConName) and (LC_NodeConOwnerTxt <> LC_ConOwner) and
-       (ConversationOwnerNode.Count = 1) then
-       begin
-           ConversationNameNode.Text := convoToUpdate.conName;
-           ConversationOwnerNode.Text := convoToUpdate.conOwnerName;
-       end;
+    // Owner changed
+    if NodeConOwnerText <> ConOwner then
+    begin
+        var ExistingOwnerNode := frmMain.FindConvoOwnerInTree(ConOwner); // сначала поискать, может быть в дереве уже есть такой Owner?
 
-    // »зменилс€ Owner, а им€ диалога нет, кол-во диалогов = 1
-    if (LC_NodeConNameTxt = LC_ConName) and (LC_NodeConOwnerTxt <> LC_ConOwner) and
-       (ConversationOwnerNode.Count = 1) then
-       begin
-           ConversationNameNode.Text := convoToUpdate.conName;
-           ConversationOwnerNode.Text := convoToUpdate.conOwnerName;
-       end;
+        if ExistingOwnerNode <> nil then
+        begin
+           NameNode.Text := convoToUpdate.conName;
+           NameNode.MoveTo(ExistingOwnerNode, naAddChild); // Move conversation branch to existing owner node
 
-    // »м€ диалога не изменилось, но изменилс€ Owner.
-    if (LC_NodeConNameTxt = LC_ConName) and (LC_NodeConOwnerTxt <> LC_ConOwner) and
-       (ConversationOwnerNode.Count > 1) then
-       begin
-           var NewOwnerNode := frmMain.FindConvoOwnerInTree(convoToUpdate.conOwnerName); // ћожет у нас есть уже такой?
+           if OwnerNode.Count = 0 then
+               OwnerNode.Delete();
+        end else
+        begin
+            // Handle the scenario where the new owner node does not exist
+            var NewOwnerNode := frmMain.ConvoTree.Items.Add(nil, convoToUpdate.conOwnerName);
 
-           if NewOwnerNode = nil then // Ќету! “огда создать.
-               NewOwnerNode := frmMain.ConvoTree.Items.Add(nil, convoToUpdate.conOwnerName);
-
-           var Destination := NewOwnerNode;
-
-           ConversationNameNode.MoveTo(Destination, naAddChild); // ѕереместить
-       end;
+            NameNode.Text := convoToUpdate.conName;
+            NameNode.MoveTo(NewOwnerNode, naAddChild); // Move conversation branch to existing owner node
+        end;
+    end;
 end;
 
 procedure TfrmConvoProperties.EditConversation_FillFields(var convoToEdit: TConversation);
@@ -436,7 +428,6 @@ begin
     1: frmHelp.LoadHelpResource('ConvPropertiesFlags');
     2: frmHelp.LoadHelpResource('ConvPropertiesInvoke');
     3: frmHelp.LoadHelpResource('ConvPropertiesOptions');
-    4: frmHelp.LoadHelpResource('EmptyHelp');
     end;
 end;
 
