@@ -144,6 +144,8 @@ const
 
     STATS_CHOICE_SPEAKER = 'JCDenton';
 
+    CLIPBOARD_CONVERSATION_ID = 'id_CONVERSATION';
+
 
 
 ResourceString
