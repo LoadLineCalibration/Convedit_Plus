@@ -148,9 +148,8 @@ const
 
 
 
-ResourceString
+ResourceString // These strings can be translated.
 
-    // Can be translated from here and below
     ET_Random_TargetLabels = 'Target labels:';
 
     // for Table.pas/dfm

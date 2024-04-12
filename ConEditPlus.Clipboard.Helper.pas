@@ -17,34 +17,34 @@ function ReadContentHeader(var br: TBinaryReader; var ms: TMemoryStream): string
 function GetEventTypeInClipboard(var BinReader: TBinaryReader; var mStream: TMemoryStream): string;
 
 // to copy events to clipboard (see MainWindow.pas > procedure CopyEventToClipboard())
-procedure WriteSpeech(Speech: TConEventSpeech; var bw: TBinaryWriter);
-procedure WriteChoice(Choice: TConEventChoice; var bw: TBinaryWriter);
+procedure WriteSpeech(Speech: TConEventSpeech; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
+procedure WriteChoice(Choice: TConEventChoice; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 
-procedure WriteSetFlag(SetFlag: TConEventSetFlag; var bw: TBinaryWriter);
-procedure WriteCheckFlag(CheckFlag: TConEventCheckFlag; var bw: TBinaryWriter);
+procedure WriteSetFlag(SetFlag: TConEventSetFlag; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
+procedure WriteCheckFlag(CheckFlag: TConEventCheckFlag; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 
-procedure WriteCheckObject(CheckObject: TConEventCheckObject; var bw: TBinaryWriter);
-procedure WriteTransObject(TransObject: TConEventTransferObject; var bw: TBinaryWriter);
+procedure WriteCheckObject(CheckObject: TConEventCheckObject; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
+procedure WriteTransObject(TransObject: TConEventTransferObject; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 
-procedure WriteMoveCam(MoveCam: TConEventMoveCamera; var bw: TBinaryWriter);
-procedure WriteAnim(Anim: TConEventAnimation; var bw: TBinaryWriter);
+procedure WriteMoveCam(MoveCam: TConEventMoveCamera; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
+procedure WriteAnim(Anim: TConEventAnimation; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 
-procedure WriteTrade(Trade: TConEventTrade; var bw: TBinaryWriter);
-procedure WriteJump(Jump: TConEventJump; var bw: TBinaryWriter);
+procedure WriteTrade(Trade: TConEventTrade; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
+procedure WriteJump(Jump: TConEventJump; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 
-procedure WriteRandom(Rand: TConEventRandom; var bw: TBinaryWriter);
-procedure WriteTrigger(Trigger: TConEventTrigger; var bw: TBinaryWriter);
+procedure WriteRandom(Rand: TConEventRandom; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
+procedure WriteTrigger(Trigger: TConEventTrigger; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 
-procedure WriteAddGoal(AddGoal: TConEventAddGoal; var bw: TBinaryWriter);
-procedure WriteAddNote(Note: TConEventAddNote; var bw: TBinaryWriter);
+procedure WriteAddGoal(AddGoal: TConEventAddGoal; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
+procedure WriteAddNote(Note: TConEventAddNote; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 
-procedure WriteAddSkillPts(SkillPts: TConEventAddSkillPoints; var bw: TBinaryWriter);
-procedure WriteAddCredits(Credits: TConEventAddCredits; var bw: TBinaryWriter);
+procedure WriteAddSkillPts(SkillPts: TConEventAddSkillPoints; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
+procedure WriteAddCredits(Credits: TConEventAddCredits; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 
-procedure WriteCheckPersona(CheckPersona: TConEventCheckPersona; var bw: TBinaryWriter);
-procedure WriteComment(Comment: TConEventComment; var bw: TBinaryWriter);
+procedure WriteCheckPersona(CheckPersona: TConEventCheckPersona; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
+procedure WriteComment(Comment: TConEventComment; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 
-procedure WriteEnd(EventEnd: TConEventEnd; var bw: TBinaryWriter);
+procedure WriteEnd(EventEnd: TConEventEnd; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 
 procedure WriteFirst4Fields(Event: TConEvent; var bw: TBinaryWriter);
 
@@ -171,9 +171,10 @@ begin
     Result:= EventToPaste;
 end;
 
-procedure WriteSpeech(Speech: TConEventSpeech; var bw: TBinaryWriter);
+procedure WriteSpeech(Speech: TConEventSpeech; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 begin
-    WriteString(bw, ET_Speech_Caption); // id for clipboard
+    if bSkipClipboardId = False then
+        WriteString(bw, ET_Speech_Caption); // id for clipboard
 
     WriteFirst4Fields(Speech, bw);
 
@@ -191,9 +192,10 @@ begin
     WriteInteger(bw, Speech.SpeechFont);  //
 end;
 
-procedure WriteChoice(Choice: TConEventChoice; var bw: TBinaryWriter);
+procedure WriteChoice(Choice: TConEventChoice; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 begin
-    WriteString(bw, ET_Choice_Caption); // id for clipboard
+    if bSkipClipboardId = False then
+        WriteString(bw, ET_Choice_Caption); // id for clipboard
 
     WriteFirst4Fields(Choice, bw);
 
@@ -235,9 +237,10 @@ begin
     end;
 end;
 
-procedure WriteSetFlag(SetFlag: TConEventSetFlag; var bw: TBinaryWriter);
+procedure WriteSetFlag(SetFlag: TConEventSetFlag; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 begin
-    WriteString(bw, ET_SetFlag_Caption); // id for clipboard
+    if bSkipClipboardId = False then
+        WriteString(bw, ET_SetFlag_Caption); // id for clipboard
 
     WriteFirst4Fields(SetFlag, bw);
 
@@ -253,9 +256,10 @@ begin
     end;
 end;
 
-procedure WriteCheckFlag(CheckFlag: TConEventCheckFlag; var bw: TBinaryWriter);
+procedure WriteCheckFlag(CheckFlag: TConEventCheckFlag; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 begin
-    WriteString(bw, ET_CheckFlag_Caption); // id for clipboard
+    if bSkipClipboardId = False then
+        WriteString(bw, ET_CheckFlag_Caption); // id for clipboard
 
     WriteFirst4Fields(CheckFlag, bw);
 
@@ -273,9 +277,10 @@ begin
     WriteString(bw, CheckFlag.GotoLabel); // setLabel
 end;
 
-procedure WriteCheckObject(CheckObject: TConEventCheckObject; var bw: TBinaryWriter);
+procedure WriteCheckObject(CheckObject: TConEventCheckObject; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 begin
-    WriteString(bw, ET_CheckObject_Caption); // id for clipboard
+    if bSkipClipboardId = False then
+        WriteString(bw, ET_CheckObject_Caption); // id for clipboard
 
     WriteFirst4Fields(CheckObject, bw);
 
@@ -284,9 +289,10 @@ begin
     WriteString(bw, CheckObject.GoToLabel); // failLabel
 end;
 
-procedure WriteTransObject(TransObject: TConEventTransferObject; var bw: TBinaryWriter);
+procedure WriteTransObject(TransObject: TConEventTransferObject; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 begin
-    WriteString(bw, ET_TransferObject_Caption); // id for clipboard
+    if bSkipClipboardId = False then
+        WriteString(bw, ET_TransferObject_Caption); // id for clipboard
 
     WriteFirst4Fields(TransObject, bw);
 
@@ -303,9 +309,10 @@ begin
     WriteString(bw, TransObject.GotoLabel); // failLabel
 end;
 
-procedure WriteMoveCam(MoveCam: TConEventMoveCamera; var bw: TBinaryWriter);
+procedure WriteMoveCam(MoveCam: TConEventMoveCamera; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 begin
-    WriteString(bw, ET_MoveCamera_Caption); // id for clipboard
+    if bSkipClipboardId = False then
+        WriteString(bw, ET_MoveCamera_Caption); // id for clipboard
 
     WriteFirst4Fields(MoveCam, bw);
 
@@ -319,9 +326,10 @@ begin
     WriteInteger(bw, -1); // cameraTransition was not implemented anyway, so just write -1
 end;
 
-procedure WriteAnim(Anim: TConEventAnimation; var bw: TBinaryWriter);
+procedure WriteAnim(Anim: TConEventAnimation; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 begin
-    WriteString(bw, ET_Animation_Caption); // id for clipboard
+    if bSkipClipboardId = False then
+        WriteString(bw, ET_Animation_Caption); // id for clipboard
 
     WriteFirst4Fields(Anim, bw);
 
@@ -333,14 +341,15 @@ begin
     WriteLongBool(bw, Anim.bAnimWaitToFinish); // bFinishAnim
 end;
 
-procedure WriteTrade(Trade: TConEventTrade; var bw: TBinaryWriter);
+procedure WriteTrade(Trade: TConEventTrade; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 begin
     // not implemented...
 end;
 
-procedure WriteJump(Jump: TConEventJump; var bw: TBinaryWriter);
+procedure WriteJump(Jump: TConEventJump; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 begin
-    WriteString(bw, ET_Jump_Caption); // id for clipboard
+    if bSkipClipboardId = False then
+        WriteString(bw, ET_Jump_Caption); // id for clipboard
 
     WriteFirst4Fields(Jump, bw);
 
@@ -348,9 +357,10 @@ begin
     WriteInteger(bw, Jump.conversationId); // conId
 end;
 
-procedure WriteRandom(Rand: TConEventRandom; var bw: TBinaryWriter);
+procedure WriteRandom(Rand: TConEventRandom; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 begin
-    WriteString(bw, ET_Random_Caption); // id for clipboard
+    if bSkipClipboardId = False then
+        WriteString(bw, ET_Random_Caption); // id for clipboard
 
     WriteFirst4Fields(Rand, bw);
 
@@ -365,18 +375,20 @@ begin
     WriteLongBool(bw, Rand.bCycleRandom);
 end;
 
-procedure WriteTrigger(Trigger: TConEventTrigger; var bw: TBinaryWriter);
+procedure WriteTrigger(Trigger: TConEventTrigger; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 begin
-    WriteString(bw, ET_Trigger_Caption); // id for clipboard
+    if bSkipClipboardId = False then
+        WriteString(bw, ET_Trigger_Caption); // id for clipboard
 
     WriteFirst4Fields(Trigger, bw);
 
     WriteString(bw, Trigger.TriggerTag);
 end;
 
-procedure WriteAddGoal(AddGoal: TConEventAddGoal; var bw: TBinaryWriter);
+procedure WriteAddGoal(AddGoal: TConEventAddGoal; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 begin
-    WriteString(bw, ET_AddGoal_Caption); // id for clipboard
+    if bSkipClipboardId = False then
+        WriteString(bw, ET_AddGoal_Caption); // id for clipboard
 
     WriteFirst4Fields(AddGoal, bw);
 
@@ -391,18 +403,20 @@ begin
     end;
 end;
 
-procedure WriteAddNote(Note: TConEventAddNote; var bw: TBinaryWriter);
+procedure WriteAddNote(Note: TConEventAddNote; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 begin
-    WriteString(bw, ET_AddNote_Caption); // id for clipboard
+    if bSkipClipboardId = False then
+        WriteString(bw, ET_AddNote_Caption); // id for clipboard
 
     WriteFirst4Fields(Note, bw);
 
     WriteString(bw, Note.TextLine); // noteText
 end;
 
-procedure WriteAddSkillPts(SkillPts: TConEventAddSkillPoints; var bw: TBinaryWriter);
+procedure WriteAddSkillPts(SkillPts: TConEventAddSkillPoints; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 begin
-    WriteString(bw, ET_AddSkillPoints_Caption); // id for clipboard
+    if bSkipClipboardId = False then
+        WriteString(bw, ET_AddSkillPoints_Caption); // id for clipboard
 
     WriteFirst4Fields(SkillPts, bw);
 
@@ -410,18 +424,20 @@ begin
     WriteString(bw, SkillPts.TextLine); // awardMessage
 end;
 
-procedure WriteAddCredits(Credits: TConEventAddCredits; var bw: TBinaryWriter);
+procedure WriteAddCredits(Credits: TConEventAddCredits; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 begin
-    WriteString(bw, ET_AddCredits_Caption); // id for clipboard
+    if bSkipClipboardId = False then
+        WriteString(bw, ET_AddCredits_Caption); // id for clipboard
 
     WriteFirst4Fields(Credits, bw);
 
     WriteInteger(bw, Credits.Credits);
 end;
 
-procedure WriteCheckPersona(CheckPersona: TConEventCheckPersona; var bw: TBinaryWriter);
+procedure WriteCheckPersona(CheckPersona: TConEventCheckPersona; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 begin
-    WriteString(bw, ET_CheckPersona_Caption); // id for clipboard
+    if bSkipClipboardId = False then
+        WriteString(bw, ET_CheckPersona_Caption); // id for clipboard
 
     WriteFirst4Fields(CheckPersona, bw);
 
@@ -431,18 +447,20 @@ begin
     WriteString(bw, CheckPersona.CheckGoToLabel); // JumpLabel
 end;
 
-procedure WriteComment(Comment: TConEventComment; var bw: TBinaryWriter);
+procedure WriteComment(Comment: TConEventComment; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 begin
-    WriteString(bw, ET_Comment_Caption); // id for clipboard
+    if bSkipClipboardId = False then
+        WriteString(bw, ET_Comment_Caption); // id for clipboard
 
     WriteFirst4Fields(Comment, bw);
 
     WriteString(bw, Comment.TextLine); // comment
 end;
 
-procedure WriteEnd(EventEnd: TConEventEnd; var bw: TBinaryWriter);
+procedure WriteEnd(EventEnd: TConEventEnd; var bw: TBinaryWriter; bSkipClipboardId: Boolean = False);
 begin
-    WriteString(bw, ET_End_Caption); // id for clipboard
+    if bSkipClipboardId = False then
+        WriteString(bw, ET_End_Caption); // id for clipboard
 
     WriteFirst4Fields(EventEnd, bw);
 end;
@@ -457,14 +475,14 @@ end;
 
 procedure WriteConversation(const con: TConversation; var bw: TBinaryWriter); // to save conversation to clipboard
 begin
-    WriteString(bw, CLIPBOARD_CONVERSATION_ID);
+    WriteString(bw, CLIPBOARD_CONVERSATION_ID); // write id first
 
     WriteInteger(bw, con.id); // unknown0
     WriteInteger(bw, con.id);
     WriteString(bw, con.conName);
     WriteString(bw, con.conDescription);
 
-//    WriteDouble(bw, DateTimeStrToDouble(con.conCreatedByDate)); // createdOn
+    WriteDouble(bw, DateTimeStrToDouble(con.conCreatedByDate)); // createdOn
     WriteString(bw, con.conCreatedByName); // createdBy
 
     WriteDouble(bw, DateTimeStrToDouble(con.conModifiedByDate)); // lastModifiedOn
@@ -487,6 +505,154 @@ begin
     WriteLongBool(bw, con.bNPCSees);
     WriteLongBool(bw, con.bNPCEnters);
     WriteInteger(bw, con.distance); // Radius
+
+    var numFlagRefList := Length(con.conDependsOnFlags); // array size
+    WriteInteger(bw, numFlagRefList);                             // write numFlagRefList
+
+    for var nfr := 0 to numFlagRefList -1 do
+    begin
+        WriteInteger(bw, con.conDependsOnFlags[nfr].flagIndex);
+        WriteString(bw, con.conDependsOnFlags[nfr].flagName);
+        WriteLongBool(bw, con.conDependsOnFlags[nfr].flagValue);
+        WriteInteger(bw, con.conDependsOnFlags[nfr].flagExpiration);
+    end;
+
+    var numEventList := Length(con.Events);  // array size
+    WriteInteger(bw, numEventList);                   // write numEventList
+
+    for var NEL := 0 to numEventList -1 do
+    begin
+        if con.Events[NEL].EventType = ET_Speech then // 00
+        begin
+            var eventSpeech := TConEventSpeech(con.Events[NEL]);
+            WriteSpeech(EventSpeech, bw, true);
+//            SaveSpeech(bw, eventSpeech);
+        end;
+
+        if con.Events[NEL].EventType = ET_Choice then //01
+        begin
+            var eventChoice := TConEventChoice(con.Events[NEL]);
+            WriteChoice(eventChoice, bw, true);
+//            SaveChoice(bw, eventChoice);
+        end;
+
+        if con.Events[NEL].EventType = ET_SetFlag then // 02
+        begin
+            var eventSetFlag := TConEventSetFlag(con.Events[NEL]);
+            WriteSetFlag(eventSetFlag, bw, true);
+//            SaveSetFlag(bw, eventSetFlag);
+        end;
+
+        if con.Events[NEL].EventType = ET_CheckFlag then // 03
+        begin
+            var eventCheckFlag := TConEventCheckFlag(con.Events[NEL]);
+            WriteCheckFlag(eventCheckFlag, bw, true);
+//            SaveCheckFlag(bw, eventCheckFlag);
+        end;
+
+        if con.Events[NEL].EventType = ET_CheckObject then // 04
+        begin
+            var eventCheckObject := TConEventCheckObject(con.Events[NEL]);
+            WriteCheckObject(eventCheckObject, bw, true);
+//            SaveCheckObject(bw, eventCheckObject);
+        end;
+
+        if con.Events[NEL].EventType = ET_TransferObject then // 05
+        begin
+            var eventTransObject := TConEventTransferObject(con.Events[NEL]);
+            WriteTransObject(eventTransObject, bw, true);
+//            SaveTransObject(bw, eventTransObject);
+        end;
+
+        if con.Events[NEL].EventType = ET_MoveCamera then // 06
+        begin
+            var eventMoveCam := TConEventMoveCamera(con.Events[NEL]);
+            WriteMoveCam(eventMoveCam, bw, true);
+//            SaveMoveCam(bw, eventMoveCam);
+        end;
+
+        if con.Events[NEL].EventType = ET_Animation then // 07
+        begin
+            var eventAnim := TConEventAnimation(con.Events[NEL]);
+            WriteAnim(eventAnim, bw, true);
+//            SavePlayAnim(bw, eventAnim);
+        end;
+
+        if con.Events[NEL].EventType = ET_Trade then // 08
+        begin
+            // not implemented (at least for now)
+        end;
+
+        if con.Events[NEL].EventType = ET_Jump then // 09
+        begin
+            var eventJump := TConEventJump(con.Events[NEL]);
+            WriteJump(eventJump, bw, true);
+//            SaveJump(bw, eventJump);
+        end;
+
+        if con.Events[NEL].EventType = ET_Random then // 10
+        begin
+            var eventRandom := TConEventRandom(con.Events[NEL]);
+            WriteRandom(eventRandom, bw, True);
+//            SaveRandom(bw, eventRandom);
+        end;
+
+        if con.Events[NEL].EventType = ET_Trigger then // 11
+        begin
+            var eventTrigger := TConEventTrigger(con.Events[NEL]);
+            WriteTrigger(eventTrigger, bw, True);
+//            SaveTrigger(bw, eventTrigger);
+        end;
+
+        if con.Events[NEL].EventType = ET_AddGoal then // 12
+        begin
+            var eventAddGoal := TConEventAddGoal(con.Events[NEL]);
+            WriteAddGoal(eventAddGoal, bw, True);
+//            SaveAddGoal(bw, eventAddGoal);
+        end;
+
+        if con.Events[NEL].EventType = ET_AddNote then // 13
+        begin
+            var eventAddNote := TConEventAddNote(con.Events[NEL]);
+            WriteAddNote(eventAddNote, bw, True);
+//            SaveAddNote(bw, eventAddNote);
+        end;
+
+        if con.Events[NEL].EventType = ET_AddSkillPoints then // 14
+        begin
+            var eventAddSkillPoints := TConEventAddSkillPoints(con.Events[NEL]);
+            WriteAddSkillPts(eventAddSkillPoints, bw, True);
+//            SaveAddSkillPts(bw, eventAddSkillPoints);
+        end;
+
+        if con.Events[NEL].EventType = ET_AddCredits then // 15
+        begin
+            var eventAddCredits := TConEventAddCredits(con.Events[NEL]);
+            WriteAddCredits(eventAddCredits, bw, True);
+//            SaveAddCredits(bw, eventAddCredits);
+        end;
+
+        if con.Events[NEL].EventType = ET_CheckPersona then // 16
+        begin
+            var eventCheckPersona := TConEventCheckPersona(con.Events[NEL]);
+            WriteCheckPersona(eventCheckPersona, bw, True);
+//            SaveCheckPersona(bw, eventCheckPersona);
+        end;
+
+        if con.Events[NEL].EventType = ET_Comment then // 17
+        begin
+            var eventComment := TConEventComment(con.Events[NEL]);
+            WriteComment(eventComment, bw, True);
+//            SaveComment(bw, eventComment);
+        end;
+
+        if con.Events[NEL].EventType = ET_End then // 18
+        begin
+            var eventEnd := TConEventEnd(con.Events[NEL]);
+            WriteEnd(eventEnd, bw, True);
+//            SaveEnd(bw, eventEnd);
+        end;
+    end;
 end;
 
 procedure BuildSpeech(var br: TBinaryReader; var Speech: TConEventSpeech); // build event from binary data

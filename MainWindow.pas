@@ -4375,9 +4375,9 @@ procedure TfrmMain.ConFileParameters1Click(Sender: TObject);
 begin
     with conFileParameters do
     begin
-        for var i:= 0 to Length(fpMissions) -1 do begin
+        for var i:= 0 to Length(fpMissions) -1 do
             AddLog( 'Used Mission numbers: ' + fpMissions[i].ToString);
-        end;
+
             AddLog(#13#10 + 'Used Actors:------------------------');
 
         for var k:= 0 to fpActors.Count -1 do begin
@@ -4417,7 +4417,6 @@ begin
     begin
         AddLog(ConversationsList.Items[i].conName + ' id: ' + ConversationsList.Items[i].id.ToString);
     end;
-
 end;
 
 procedure TfrmMain.Conversation_CheckLabelsExecute(Sender: TObject);
