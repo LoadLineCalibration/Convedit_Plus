@@ -11,6 +11,7 @@ uses
 // functions
 function StringStartsFromDigit(str: String): Boolean;
 function IsInvalidFName(const AString: string): Boolean;
+function ValidateFName(const AString: string): Boolean;
 
 // procedures
 procedure FilterEditInput(var aKey: Char);
@@ -35,6 +36,14 @@ begin
             break;
         end;
     end;
+end;
+
+function ValidateFName(const AString: string): Boolean;
+begin
+    Result := (Pos(' ', AString) = 0) and
+              (Pos('_', AString) > 0) and
+              (CharInSet(AString[1],  ['A'..'Z', 'a'..'z'])) and
+              (not CharInSet(AString[1], ['0'..'9']));
 end;
 
 procedure FilterEditInput(var aKey: Char);

@@ -48,6 +48,8 @@ procedure WriteEnd(EventEnd: TConEventEnd; var bw: TBinaryWriter);
 
 procedure WriteFirst4Fields(Event: TConEvent; var bw: TBinaryWriter);
 
+procedure WriteConversation(const con: TConversation; var bw: TBinaryWriter); // to save conversation to clipboard
+
 // to paste events from clipboard
 procedure BuildSpeech(var br: TBinaryReader; var Speech: TConEventSpeech); // build event from binary data
 procedure BuildChoice(var br: TBinaryReader; var Choice: TConEventChoice);
@@ -71,6 +73,8 @@ procedure BuildEnd(var br: TBinaryReader; var NewEnd: TConEventEnd);
 
 
 implementation
+
+uses ConFile.Writer;
 
 procedure WriteString(var bw: TBinaryWriter; str: String);
 begin
@@ -449,6 +453,40 @@ begin
     WriteInteger(bw, Event.unknown1);
     WriteInteger(bw, Ord(Event.EventType));
     WriteString(bw, Event.EventLabel);
+end;
+
+procedure WriteConversation(const con: TConversation; var bw: TBinaryWriter); // to save conversation to clipboard
+begin
+    WriteString(bw, CLIPBOARD_CONVERSATION_ID);
+
+    WriteInteger(bw, con.id); // unknown0
+    WriteInteger(bw, con.id);
+    WriteString(bw, con.conName);
+    WriteString(bw, con.conDescription);
+
+//    WriteDouble(bw, DateTimeStrToDouble(con.conCreatedByDate)); // createdOn
+    WriteString(bw, con.conCreatedByName); // createdBy
+
+    WriteDouble(bw, DateTimeStrToDouble(con.conModifiedByDate)); // lastModifiedOn
+    WriteString(bw, con.conModifiedByName); // lastModifiedBy
+
+    WriteInteger(bw, con.conOwnerIndex); // OwnerName id
+    WriteString(bw, con.conOwnerName); // OwnerName
+
+    WriteLongBool(bw, con.bInfoLink);
+    WriteString(bw, con.conNotes); // notes
+    WriteLongBool(bw, con.bOnlyOnce); // bDisplayOnce
+    WriteLongBool(bw, con.bFirstPerson);
+    WriteLongBool(bw, con.bNonInteract);
+    WriteLongBool(bw, con.bRandomCamera);
+    WriteLongBool(bw, con.bCanInterrupt);
+    WriteLongBool(bw, con.bCannotInterrupt);
+
+    WriteLongBool(bw, con.bPCBumps);
+    WriteLongBool(bw, con.bPCFrobs);
+    WriteLongBool(bw, con.bNPCSees);
+    WriteLongBool(bw, con.bNPCEnters);
+    WriteInteger(bw, con.distance); // Radius
 end;
 
 procedure BuildSpeech(var br: TBinaryReader; var Speech: TConEventSpeech); // build event from binary data

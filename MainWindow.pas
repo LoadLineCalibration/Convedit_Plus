@@ -224,6 +224,7 @@ type
 
     function GetAppVersionStr(): string; //https://delphihaven.wordpress.com/2012/12/08/retrieving-the-applications-version-string/
     function HasConvoEventToPaste(): Boolean;
+    function HasConversationToPaste(): Boolean;
     function GetReorderButtonHint(): string;
 
     function CountLineWraps(str: string): Integer;
@@ -329,8 +330,9 @@ type
     procedure PasteEventFromClipboard();
 
     // to copy/paste conversations
-    procedure CopyConversationToClipboard(var Convo: TConversation);
+    procedure CopyConversationToClipboard(const Convo: TConversation);
     procedure PasteConversationFromClipboard();
+
 
     // To duplicate selected event
     procedure CopyEventFields(Source, Dest: TConEvent);
@@ -458,6 +460,9 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure Conversation_FindExecute(Sender: TObject);
     procedure AutoSaveTimerTimer(Sender: TObject);
+    procedure Conversation_CutExecute(Sender: TObject);
+    procedure Conversation_CopyExecute(Sender: TObject);
+    procedure Conversation_PasteExecute(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -1096,15 +1101,6 @@ begin
         LoadConXMLFile(cmdLine);
         BuildConvoTree();
         ToggleMenusPanels(True);
-    end;
-end;
-
-function TfrmMain.GetReorderButtonHint(): string;
-begin
-    case ReorderModKey of
-      re_Ctrl: Result :=  Format(tbReorderHint, ['Ctrl']);
-      re_Shift: Result := Format(tbReorderHint, ['Shift']);
-      re_Alt: Result :=   Format(tbReorderHint, ['Alt']);
     end;
 end;
 
@@ -2065,9 +2061,39 @@ begin
     end;
 end;
 
-procedure TfrmMain.CopyConversationToClipboard(var Convo: TConversation);
+procedure TfrmMain.CopyConversationToClipboard(const Convo: TConversation);
+var
+    hBuf: THandle;
+    BufPtr: Pointer;
+    mStream: TMemoryStream;
+    BinWriter: TBinaryWriter;
 begin
-    // ToDo: ...
+    if CurrentConversation = nil then Exit();
+
+    mStream := TMemoryStream.Create();
+    BinWriter := TBinaryWriter.Create(mStream, TEncoding.ANSI);
+
+    try
+        WriteConversation(CurrentConversation, BinWriter);
+
+        hBuf := GlobalAlloc(GMEM_MOVEABLE, mStream.Size);
+        try
+            BufPtr := GlobalLock(hBuf);
+            try
+                Move(mStream.Memory^, BufPtr^, mStream.Size);
+                Clipboard.SetAsHandle(CF_ConEditPlus, hBuf);
+
+            finally
+                GlobalUnlock(hBuf);
+            end;
+        except
+            GlobalFree(hBuf);
+            raise;
+        end;
+    finally
+        BinWriter.Free();
+        mStream.Free();
+    end;
 end;
 
 procedure TfrmMain.PasteConversationFromClipboard();
@@ -3907,7 +3933,6 @@ begin
        LongRec(FixedPtr.dwFileVersionLS).Lo]) //build
 end;
 
-
 function TfrmMain.HasConvoEventToPaste(): Boolean; // to enable/disable "Paste" menu item
 var
     hBuf: THandle;
@@ -3977,6 +4002,52 @@ begin
                 GlobalUnlock(hBuf);
             end;
         end;
+    end;
+end;
+
+function TfrmMain.HasConversationToPaste(): Boolean;
+var
+    hBuf: THandle;
+    BufPtr: Pointer;
+    mStream: TMemoryStream;
+    BinReader: TBinaryReader;
+begin
+    Result := False;
+
+    hBuf := Clipboard.GetAsHandle(CF_ConEditPlus);
+    if hBuf <> 0 then
+    begin
+        BufPtr := GlobalLock(hBuf);
+        if BufPtr <> nil then
+        begin
+            try
+                mStream := TMemoryStream.Create();
+                try
+                    mStream.WriteBuffer(bufPtr^, GlobalSize(hBuf));
+                    mStream.Position := 0;
+
+                    BinReader := TBinaryReader.Create(mStream, TEncoding.ANSI);
+
+                    // read conversation header for clipboard here
+                    if ReadContentHeader(BinReader, mStream) = CLIPBOARD_CONVERSATION_ID then
+                        Result := True;
+                finally
+                    mStream.Free();
+                    BinReader.Free();
+                end;
+            finally
+                GlobalUnlock(hBuf);
+            end;
+        end;
+    end;
+end;
+
+function TfrmMain.GetReorderButtonHint(): string;
+begin
+    case ReorderModKey of
+      re_Ctrl: Result :=  Format(tbReorderHint, ['Ctrl']);
+      re_Shift: Result := Format(tbReorderHint, ['Shift']);
+      re_Alt: Result :=   Format(tbReorderHint, ['Alt']);
     end;
 end;
 
@@ -4360,6 +4431,21 @@ begin
         frmLabelErrors.Show() // only show if we have > 0 items!
     else
         MessageDlg(strLabelsValid,  mtInformation, [mbOK], 0);
+end;
+
+procedure TfrmMain.Conversation_CutExecute(Sender: TObject);
+begin
+    // Copy conversation to clipboard and delete
+end;
+
+procedure TfrmMain.Conversation_CopyExecute(Sender: TObject);
+begin
+    CopyConversationToClipboard(CurrentConversation);
+end;
+
+procedure TfrmMain.Conversation_PasteExecute(Sender: TObject);
+begin
+    // Paste conversation from clipboard
 end;
 
 procedure TfrmMain.Conversation_FindExecute(Sender: TObject);
@@ -5894,6 +5980,11 @@ begin
         DeleteConversation.Enabled := ConvoTree.Selected.Level = 1;
         Conversation_Properties.Enabled := ConvoTree.Selected.Level = 1;
         Conversation_Rename.Enabled := ConvoTree.Selected.Level = 1;
+
+        Conversation_Cut.Enabled := ConvoTree.Selected.Level = 1;
+        Conversation_Copy.Enabled := ConvoTree.Selected.Level = 1;
+        Conversation_Paste.Enabled := HasConversationToPaste();
+
     end;
 //    else begin
 //        DeleteConversation.Enabled := ConvoTree.Selected.Level = 1;
