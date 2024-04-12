@@ -117,7 +117,7 @@ try
         Result := tempStr;
 except
     Result := '';
-    raise Exception.Create('Error reading data from Clipboard!');
+    raise Exception.Create(strClipboardReadError);
 end;
 end;
 

@@ -357,6 +357,8 @@ ResourceString
 
     strFileModiefied = ' [File has been modified]';
 
+    strClipboardReadError = 'Error reading data from Clipboard!';
+
 
 
 
