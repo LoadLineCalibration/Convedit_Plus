@@ -48,33 +48,36 @@ procedure WriteEnd(EventEnd: TConEventEnd; var bw: TBinaryWriter; bSkipClipboard
 
 procedure WriteFirst4Fields(Event: TConEvent; var bw: TBinaryWriter);
 
-procedure WriteConversation(const con: TConversation; var bw: TBinaryWriter); // to save conversation to clipboard
+procedure SerializeConversation(const con: TConversation; var bw: TBinaryWriter); // to save conversation to clipboard
 
 // to paste events from clipboard
-procedure BuildSpeech(var br: TBinaryReader; var Speech: TConEventSpeech); // build event from binary data
-procedure BuildChoice(var br: TBinaryReader; var Choice: TConEventChoice);
-procedure BuildSetFlag(var br: TBinaryReader; var SetFlag: TConEventSetFlag);
-procedure BuildCheckFlag(var br: TBinaryReader; var CheckFlag: TConEventCheckFlag);
-procedure BuildCheckObject(var br: TBinaryReader; var CheckObj: TConEventCheckObject);
-procedure BuildTransferObject(var br: TBinaryReader; var TransObj: TConEventTransferObject);
-procedure BuildMoveCamera(var br: TBinaryReader; var MoveCam: TConEventMoveCamera);
-procedure BuildAnimation(var br: TBinaryReader; var NewAnim: TConEventAnimation);
-procedure BuildTrade(var br: TBinaryReader; var NewTrade: TConEventTrade);
-procedure BuildJump(var br: TBinaryReader; var NewJump: TConEventJump);
-procedure BuildRandom(var br: TBinaryReader; var NewRandom: TConEventRandom);
-procedure BuildTrigger(var br: TBinaryReader; var NewTrigger: TConEventTrigger);
-procedure BuildAddGoal(var br: TBinaryReader; var NewAddGoal: TConEventAddGoal);
-procedure BuildAddNote(var br: TBinaryReader; var NewAddNote: TConEventAddNote);
-procedure BuildAddSkillPts(var br: TBinaryReader; var NewAddSkillPts: TConEventAddSkillPoints);
-procedure BuildAddCredits(var br: TBinaryReader; var NewAddCredits: TConEventAddCredits);
-procedure BuildCheckPersona(var br: TBinaryReader; var NewCheckPersona: TConEventCheckPersona);
-procedure BuildComment(var br: TBinaryReader; var NewComment: TConEventComment);
-procedure BuildEnd(var br: TBinaryReader; var NewEnd: TConEventEnd);
+procedure DeSerializeSpeech(var br: TBinaryReader; var Speech: TConEventSpeech; bSkipClipboardId: Boolean = False); // build event from binary data
+procedure DeSerializeChoice(var br: TBinaryReader; var Choice: TConEventChoice; bSkipClipboardId: Boolean = False);
+procedure DeSerializeSetFlag(var br: TBinaryReader; var SetFlag: TConEventSetFlag; bSkipClipboardId: Boolean = False);
+procedure DeSerializeCheckFlag(var br: TBinaryReader; var CheckFlag: TConEventCheckFlag; bSkipClipboardId: Boolean = False);
+procedure DeSerializeCheckObject(var br: TBinaryReader; var CheckObj: TConEventCheckObject; bSkipClipboardId: Boolean = False);
+procedure DeSerializeTransferObject(var br: TBinaryReader; var TransObj: TConEventTransferObject; bSkipClipboardId: Boolean = False);
+procedure DeSerializeMoveCamera(var br: TBinaryReader; var MoveCam: TConEventMoveCamera; bSkipClipboardId: Boolean = False);
+procedure DeSerializeAnimation(var br: TBinaryReader; var NewAnim: TConEventAnimation; bSkipClipboardId: Boolean = False);
+procedure DeSerializeTrade(var br: TBinaryReader; var NewTrade: TConEventTrade; bSkipClipboardId: Boolean = False);
+procedure DeSerializeJump(var br: TBinaryReader; var NewJump: TConEventJump; bSkipClipboardId: Boolean = False);
+procedure DeSerializeRandom(var br: TBinaryReader; var NewRandom: TConEventRandom; bSkipClipboardId: Boolean = False);
+procedure DeSerializeTrigger(var br: TBinaryReader; var NewTrigger: TConEventTrigger; bSkipClipboardId: Boolean = False);
+procedure DeSerializeAddGoal(var br: TBinaryReader; var NewAddGoal: TConEventAddGoal; bSkipClipboardId: Boolean = False);
+procedure DeSerializeAddNote(var br: TBinaryReader; var NewAddNote: TConEventAddNote; bSkipClipboardId: Boolean = False);
+procedure DeSerializeAddSkillPts(var br: TBinaryReader; var NewAddSkillPts: TConEventAddSkillPoints; bSkipClipboardId: Boolean = False);
+procedure DeSerializeAddCredits(var br: TBinaryReader; var NewAddCredits: TConEventAddCredits; bSkipClipboardId: Boolean = False);
+procedure DeSerializeCheckPersona(var br: TBinaryReader; var NewCheckPersona: TConEventCheckPersona; bSkipClipboardId: Boolean = False);
+procedure DeSerializeComment(var br: TBinaryReader; var NewComment: TConEventComment; bSkipClipboardId: Boolean = False);
+procedure DeSerializeEnd(var br: TBinaryReader; var NewEnd: TConEventEnd; bSkipClipboardId: Boolean = False);
+
+// to paste conversation from clipboard
+procedure DeSerializeConversation(var br: TBinaryReader; var NewConvo: TConversation);
 
 
 implementation
 
-uses ConFile.Writer;
+uses ConFile.Writer, MainWindow;
 
 procedure WriteString(var bw: TBinaryWriter; str: String);
 begin
@@ -473,7 +476,7 @@ begin
     WriteString(bw, Event.EventLabel);
 end;
 
-procedure WriteConversation(const con: TConversation; var bw: TBinaryWriter); // to save conversation to clipboard
+procedure SerializeConversation(const con: TConversation; var bw: TBinaryWriter); // Write conversation to clipboard using TBinaryWriter
 begin
     WriteString(bw, CLIPBOARD_CONVERSATION_ID); // write id first
 
@@ -526,56 +529,48 @@ begin
         begin
             var eventSpeech := TConEventSpeech(con.Events[NEL]);
             WriteSpeech(EventSpeech, bw, true);
-//            SaveSpeech(bw, eventSpeech);
         end;
 
         if con.Events[NEL].EventType = ET_Choice then //01
         begin
             var eventChoice := TConEventChoice(con.Events[NEL]);
             WriteChoice(eventChoice, bw, true);
-//            SaveChoice(bw, eventChoice);
         end;
 
         if con.Events[NEL].EventType = ET_SetFlag then // 02
         begin
             var eventSetFlag := TConEventSetFlag(con.Events[NEL]);
             WriteSetFlag(eventSetFlag, bw, true);
-//            SaveSetFlag(bw, eventSetFlag);
         end;
 
         if con.Events[NEL].EventType = ET_CheckFlag then // 03
         begin
             var eventCheckFlag := TConEventCheckFlag(con.Events[NEL]);
             WriteCheckFlag(eventCheckFlag, bw, true);
-//            SaveCheckFlag(bw, eventCheckFlag);
         end;
 
         if con.Events[NEL].EventType = ET_CheckObject then // 04
         begin
             var eventCheckObject := TConEventCheckObject(con.Events[NEL]);
             WriteCheckObject(eventCheckObject, bw, true);
-//            SaveCheckObject(bw, eventCheckObject);
         end;
 
         if con.Events[NEL].EventType = ET_TransferObject then // 05
         begin
             var eventTransObject := TConEventTransferObject(con.Events[NEL]);
             WriteTransObject(eventTransObject, bw, true);
-//            SaveTransObject(bw, eventTransObject);
         end;
 
         if con.Events[NEL].EventType = ET_MoveCamera then // 06
         begin
             var eventMoveCam := TConEventMoveCamera(con.Events[NEL]);
             WriteMoveCam(eventMoveCam, bw, true);
-//            SaveMoveCam(bw, eventMoveCam);
         end;
 
         if con.Events[NEL].EventType = ET_Animation then // 07
         begin
             var eventAnim := TConEventAnimation(con.Events[NEL]);
             WriteAnim(eventAnim, bw, true);
-//            SavePlayAnim(bw, eventAnim);
         end;
 
         if con.Events[NEL].EventType = ET_Trade then // 08
@@ -587,83 +582,76 @@ begin
         begin
             var eventJump := TConEventJump(con.Events[NEL]);
             WriteJump(eventJump, bw, true);
-//            SaveJump(bw, eventJump);
         end;
 
         if con.Events[NEL].EventType = ET_Random then // 10
         begin
             var eventRandom := TConEventRandom(con.Events[NEL]);
             WriteRandom(eventRandom, bw, True);
-//            SaveRandom(bw, eventRandom);
         end;
 
         if con.Events[NEL].EventType = ET_Trigger then // 11
         begin
             var eventTrigger := TConEventTrigger(con.Events[NEL]);
             WriteTrigger(eventTrigger, bw, True);
-//            SaveTrigger(bw, eventTrigger);
         end;
 
         if con.Events[NEL].EventType = ET_AddGoal then // 12
         begin
             var eventAddGoal := TConEventAddGoal(con.Events[NEL]);
             WriteAddGoal(eventAddGoal, bw, True);
-//            SaveAddGoal(bw, eventAddGoal);
         end;
 
         if con.Events[NEL].EventType = ET_AddNote then // 13
         begin
             var eventAddNote := TConEventAddNote(con.Events[NEL]);
             WriteAddNote(eventAddNote, bw, True);
-//            SaveAddNote(bw, eventAddNote);
         end;
 
         if con.Events[NEL].EventType = ET_AddSkillPoints then // 14
         begin
             var eventAddSkillPoints := TConEventAddSkillPoints(con.Events[NEL]);
             WriteAddSkillPts(eventAddSkillPoints, bw, True);
-//            SaveAddSkillPts(bw, eventAddSkillPoints);
         end;
 
         if con.Events[NEL].EventType = ET_AddCredits then // 15
         begin
             var eventAddCredits := TConEventAddCredits(con.Events[NEL]);
             WriteAddCredits(eventAddCredits, bw, True);
-//            SaveAddCredits(bw, eventAddCredits);
         end;
 
         if con.Events[NEL].EventType = ET_CheckPersona then // 16
         begin
             var eventCheckPersona := TConEventCheckPersona(con.Events[NEL]);
             WriteCheckPersona(eventCheckPersona, bw, True);
-//            SaveCheckPersona(bw, eventCheckPersona);
         end;
 
         if con.Events[NEL].EventType = ET_Comment then // 17
         begin
             var eventComment := TConEventComment(con.Events[NEL]);
             WriteComment(eventComment, bw, True);
-//            SaveComment(bw, eventComment);
         end;
 
         if con.Events[NEL].EventType = ET_End then // 18
         begin
             var eventEnd := TConEventEnd(con.Events[NEL]);
             WriteEnd(eventEnd, bw, True);
-//            SaveEnd(bw, eventEnd);
         end;
     end;
 end;
 
-procedure BuildSpeech(var br: TBinaryReader; var Speech: TConEventSpeech); // build event from binary data
+procedure DeSerializeSpeech(var br: TBinaryReader; var Speech: TConEventSpeech; bSkipClipboardId: Boolean = False); // build event from binary data
 begin
-    GetConString(br); // skip the header for clipboard
+    if bSkipClipboardId = False then
+    begin
+        GetConString(br); // skip the header for clipboard
 
-    // first 4
-    Speech.EventIdx := br.ReadInteger();
-    Speech.unknown1 := br.ReadInteger();
-    Speech.EventType := TEventType(br.ReadInteger());
-    Speech.EventLabel := GetConString(br);
+        // first 4
+        Speech.EventIdx := br.ReadInteger();
+        Speech.unknown1 := br.ReadInteger();
+        Speech.EventType := TEventType(br.ReadInteger());
+        Speech.EventLabel := GetConString(br);
+    end;
 
     // ET_Speech
     Speech.ActorIndex := br.ReadInteger(); // speaker id
@@ -680,15 +668,18 @@ begin
     Speech.SpeechFont := br.ReadInteger();
 end;
 
-procedure BuildChoice(var br: TBinaryReader; var Choice: TConEventChoice);
+procedure DeSerializeChoice(var br: TBinaryReader; var Choice: TConEventChoice; bSkipClipboardId: Boolean = False);
 begin
-    var Temp := GetConString(br); // skip the header for clipboard
+    if bSkipClipboardId = False then
+    begin
+        var Temp := GetConString(br); // skip the header for clipboard
 
-    // first 4
-    Choice.EventIdx := br.ReadInteger();
-    Choice.unknown1 := br.ReadInteger();
-    Choice.EventType := TEventType(br.ReadInteger());
-    Choice.EventLabel := GetConString(br);
+        // first 4
+        Choice.EventIdx := br.ReadInteger();
+        Choice.unknown1 := br.ReadInteger();
+        Choice.EventType := TEventType(br.ReadInteger());
+        Choice.EventLabel := GetConString(br);
+    end;
 
     // ET_Choice
     Choice.unk0 := br.ReadInteger(); // unk0
@@ -749,15 +740,18 @@ begin
     end;
 end;
 
-procedure BuildSetFlag(var br: TBinaryReader; var SetFlag: TConEventSetFlag);
+procedure DeSerializeSetFlag(var br: TBinaryReader; var SetFlag: TConEventSetFlag; bSkipClipboardId: Boolean = False);
 begin
-    var Temp := GetConString(br); // skip the header for clipboard
+    if bSkipClipboardId = False then
+    begin
+        var Temp := GetConString(br); // skip the header for clipboard
 
-    // first 4
-    SetFlag.EventIdx := br.ReadInteger();
-    SetFlag.unknown1 := br.ReadInteger();
-    SetFlag.EventType := TEventType(br.ReadInteger());
-    SetFlag.EventLabel := GetConString(br);
+        // first 4
+        SetFlag.EventIdx := br.ReadInteger();
+        SetFlag.unknown1 := br.ReadInteger();
+        SetFlag.EventType := TEventType(br.ReadInteger());
+        SetFlag.EventLabel := GetConString(br);
+    end;
 
     var numFlags := br.ReadInteger();
 
@@ -773,15 +767,18 @@ begin
     end;
 end;
 
-procedure BuildCheckFlag(var br: TBinaryReader; var CheckFlag: TConEventCheckFlag);
+procedure DeSerializeCheckFlag(var br: TBinaryReader; var CheckFlag: TConEventCheckFlag; bSkipClipboardId: Boolean = False);
 begin
-    var Temp := GetConString(br); // skip the header for clipboard
+    if bSkipClipboardId = False then
+    begin
+        var Temp := GetConString(br); // skip the header for clipboard
 
-    // first 4
-    CheckFlag.EventIdx := br.ReadInteger();
-    CheckFlag.unknown1 := br.ReadInteger();
-    CheckFlag.EventType := TEventType(br.ReadInteger());
-    CheckFlag.EventLabel := GetConString(br);
+        // first 4
+        CheckFlag.EventIdx := br.ReadInteger();
+        CheckFlag.unknown1 := br.ReadInteger();
+        CheckFlag.EventType := TEventType(br.ReadInteger());
+        CheckFlag.EventLabel := GetConString(br);
+    end;
 
     var numFlags := br.ReadInteger();
 
@@ -799,15 +796,18 @@ begin
     CheckFlag.GotoLabel := GetConString(br);
 end;
 
-procedure BuildCheckObject(var br: TBinaryReader; var CheckObj: TConEventCheckObject);
+procedure DeSerializeCheckObject(var br: TBinaryReader; var CheckObj: TConEventCheckObject; bSkipClipboardId: Boolean = False);
 begin
-    var Temp := GetConString(br); // skip the header for clipboard
+    if bSkipClipboardId = False then
+    begin
+        var Temp := GetConString(br); // skip the header for clipboard
 
-    // first 4
-    CheckObj.EventIdx := br.ReadInteger();
-    CheckObj.unknown1 := br.ReadInteger();
-    CheckObj.EventType := TEventType(br.ReadInteger());
-    CheckObj.EventLabel := GetConString(br);
+        // first 4
+        CheckObj.EventIdx := br.ReadInteger();
+        CheckObj.unknown1 := br.ReadInteger();
+        CheckObj.EventType := TEventType(br.ReadInteger());
+        CheckObj.EventLabel := GetConString(br);
+    end;
 
     CheckObj.ObjectIndex := br.ReadInteger(); // id
     CheckObj.ObjectValue := GetConString(br); // string: size and data
@@ -815,15 +815,18 @@ begin
     CheckObj.GoToLabel := GetConString(br); // failLabel
 end;
 
-procedure BuildTransferObject(var br: TBinaryReader; var TransObj: TConEventTransferObject);
+procedure DeSerializeTransferObject(var br: TBinaryReader; var TransObj: TConEventTransferObject; bSkipClipboardId: Boolean = False);
 begin
-    var Temp := GetConString(br); // skip the header for clipboard
+    if bSkipClipboardId = False then
+    begin
+        var Temp := GetConString(br); // skip the header for clipboard
 
-    // first 4
-    TransObj.EventIdx := br.ReadInteger();
-    TransObj.unknown1 := br.ReadInteger();
-    TransObj.EventType := TEventType(br.ReadInteger());
-    TransObj.EventLabel := GetConString(br);
+        // first 4
+        TransObj.EventIdx := br.ReadInteger();
+        TransObj.unknown1 := br.ReadInteger();
+        TransObj.EventType := TEventType(br.ReadInteger());
+        TransObj.EventLabel := GetConString(br);
+    end;
 
     TransObj.ObjectIndex := br.ReadInteger(); //objectName/id
     TransObj.ObjectValue := GetConString(br); // objectName/name
@@ -839,30 +842,36 @@ begin
     TransObj.GotoLabel := GetConString(br);  // failLabel
 end;
 
-procedure BuildMoveCamera(var br: TBinaryReader; var MoveCam: TConEventMoveCamera);
+procedure DeSerializeMoveCamera(var br: TBinaryReader; var MoveCam: TConEventMoveCamera; bSkipClipboardId: Boolean = False);
 begin
-    var Temp := GetConString(br); // skip the header for clipboard
+    if bSkipClipboardId = False then
+    begin
+        var Temp := GetConString(br); // skip the header for clipboard
 
-    // first 4
-    MoveCam.EventIdx := br.ReadInteger();
-    MoveCam.unknown1 := br.ReadInteger();
-    MoveCam.EventType := TEventType(br.ReadInteger());
-    MoveCam.EventLabel := GetConString(br);
+        // first 4
+        MoveCam.EventIdx := br.ReadInteger();
+        MoveCam.unknown1 := br.ReadInteger();
+        MoveCam.EventType := TEventType(br.ReadInteger());
+        MoveCam.EventLabel := GetConString(br);
+    end;
 
     MoveCam.CameraType := TCameraTypes(br.ReadInteger());
     MoveCam.CameraAngle := TCameraPositions(br.ReadInteger());
     br.ReadInteger(); // stub
 end;
 
-procedure BuildAnimation(var br: TBinaryReader; var NewAnim: TConEventAnimation);
+procedure DeSerializeAnimation(var br: TBinaryReader; var NewAnim: TConEventAnimation; bSkipClipboardId: Boolean = False);
 begin
-    var Temp := GetConString(br); // skip the header for clipboard
+    if bSkipClipboardId = False then
+    begin
+        var Temp := GetConString(br); // skip the header for clipboard
 
-    // first 4
-    NewAnim.EventIdx := br.ReadInteger();
-    NewAnim.unknown1 := br.ReadInteger();
-    NewAnim.EventType := TEventType(br.ReadInteger());
-    NewAnim.EventLabel := GetConString(br);
+        // first 4
+        NewAnim.EventIdx := br.ReadInteger();
+        NewAnim.unknown1 := br.ReadInteger();
+        NewAnim.EventType := TEventType(br.ReadInteger());
+        NewAnim.EventLabel := GetConString(br);
+    end;
 
     NewAnim.ActorIndex := br.ReadInteger();
     NewAnim.ActorValue := GetConString(br);
@@ -874,43 +883,52 @@ begin
     NewAnim.bAnimWaitToFinish := GetConLongBool(br);
 end;
 
-procedure BuildTrade(var br: TBinaryReader; var NewTrade: TConEventTrade);
+procedure DeSerializeTrade(var br: TBinaryReader; var NewTrade: TConEventTrade; bSkipClipboardId: Boolean = False);
 begin
-    var Temp := GetConString(br); // skip the header for clipboard
+    if bSkipClipboardId = False then
+    begin
+        var Temp := GetConString(br); // skip the header for clipboard
 
-    // first 4
-    NewTrade.EventIdx := br.ReadInteger();
-    NewTrade.unknown1 := br.ReadInteger();
-    NewTrade.EventType := TEventType(br.ReadInteger());
-    NewTrade.EventLabel := GetConString(br);
+        // first 4
+        NewTrade.EventIdx := br.ReadInteger();
+        NewTrade.unknown1 := br.ReadInteger();
+        NewTrade.EventType := TEventType(br.ReadInteger());
+        NewTrade.EventLabel := GetConString(br);
+    end;
 
     NewTrade.TradeActorIndex := br.ReadInteger();
     NewTrade.TradeActorValue := GetConString(br);
 end;
 
-procedure BuildJump(var br: TBinaryReader; var NewJump: TConEventJump);
+procedure DeSerializeJump(var br: TBinaryReader; var NewJump: TConEventJump; bSkipClipboardId: Boolean = False);
 begin
-    var Temp := GetConString(br); // skip the header for clipboard
+    if bSkipClipboardId = False then
+    begin
+        var Temp := GetConString(br); // skip the header for clipboard
 
-    // first 4
-    NewJump.EventIdx := br.ReadInteger();
-    NewJump.unknown1 := br.ReadInteger();
-    NewJump.EventType := TEventType(br.ReadInteger());
-    NewJump.EventLabel := GetConString(br);
+        // first 4
+        NewJump.EventIdx := br.ReadInteger();
+        NewJump.unknown1 := br.ReadInteger();
+        NewJump.EventType := TEventType(br.ReadInteger());
+        NewJump.EventLabel := GetConString(br);
+    end;
 
     NewJump.gotoLabel := GetConString(br);
     NewJump.conversationId := br.ReadInteger();
 end;
 
-procedure BuildRandom(var br: TBinaryReader; var NewRandom: TConEventRandom);
+procedure DeSerializeRandom(var br: TBinaryReader; var NewRandom: TConEventRandom; bSkipClipboardId: Boolean = False);
 begin
-    var Temp := GetConString(br); // skip the header for clipboard
+    if bSkipClipboardId = False then
+    begin
+        var Temp := GetConString(br); // skip the header for clipboard
 
-    // first 4
-    NewRandom.EventIdx := br.ReadInteger();
-    NewRandom.unknown1 := br.ReadInteger();
-    NewRandom.EventType := TEventType(br.ReadInteger());
-    NewRandom.EventLabel := GetConString(br);
+        // first 4
+        NewRandom.EventIdx := br.ReadInteger();
+        NewRandom.unknown1 := br.ReadInteger();
+        NewRandom.EventType := TEventType(br.ReadInteger());
+        NewRandom.EventLabel := GetConString(br);
+    end;
 
     NewRandom.numLabels := br.ReadInteger();
     SetLength(NewRandom.GoToLabels, NewRandom.numLabels);
@@ -923,28 +941,34 @@ begin
     NewRandom.bCycleRandom := GetConLongBool(br);
 end;
 
-procedure BuildTrigger(var br: TBinaryReader; var NewTrigger: TConEventTrigger);
+procedure DeSerializeTrigger(var br: TBinaryReader; var NewTrigger: TConEventTrigger; bSkipClipboardId: Boolean = False);
 begin
-    var Temp := GetConString(br); // skip the header for clipboard
+    if bSkipClipboardId = False then
+    begin
+        var Temp := GetConString(br); // skip the header for clipboard
 
-    // first 4
-    NewTrigger.EventIdx := br.ReadInteger();
-    NewTrigger.unknown1 := br.ReadInteger();
-    NewTrigger.EventType := TEventType(br.ReadInteger());
-    NewTrigger.EventLabel := GetConString(br);
+        // first 4
+        NewTrigger.EventIdx := br.ReadInteger();
+        NewTrigger.unknown1 := br.ReadInteger();
+        NewTrigger.EventType := TEventType(br.ReadInteger());
+        NewTrigger.EventLabel := GetConString(br);
+    end;
 
     NewTrigger.TriggerTag := GetConString(br);
 end;
 
-procedure BuildAddGoal(var br: TBinaryReader; var NewAddGoal: TConEventAddGoal);
+procedure DeSerializeAddGoal(var br: TBinaryReader; var NewAddGoal: TConEventAddGoal; bSkipClipboardId: Boolean = False);
 begin
-    var Temp := GetConString(br); // skip the header for clipboard
+    if bSkipClipboardId = False then
+    begin
+        var Temp := GetConString(br); // skip the header for clipboard
 
-    // first 4
-    NewAddGoal.EventIdx := br.ReadInteger();
-    NewAddGoal.unknown1 := br.ReadInteger();
-    NewAddGoal.EventType := TEventType(br.ReadInteger());
-    NewAddGoal.EventLabel := GetConString(br);
+        // first 4
+        NewAddGoal.EventIdx := br.ReadInteger();
+        NewAddGoal.unknown1 := br.ReadInteger();
+        NewAddGoal.EventType := TEventType(br.ReadInteger());
+        NewAddGoal.EventLabel := GetConString(br);
+    end;
 
     NewAddGoal.GoalName := GetConString(br); // goalNameString
     NewAddGoal.bComplete := GetConLongBool(br);
@@ -956,55 +980,67 @@ begin
     end;
 end;
 
-procedure BuildAddNote(var br: TBinaryReader; var NewAddNote: TConEventAddNote);
+procedure DeSerializeAddNote(var br: TBinaryReader; var NewAddNote: TConEventAddNote; bSkipClipboardId: Boolean = False);
 begin
-    var Temp := GetConString(br); // skip the header for clipboard
+    if bSkipClipboardId = False then
+    begin
+        var Temp := GetConString(br); // skip the header for clipboard
 
-    // first 4
-    NewAddNote.EventIdx := br.ReadInteger();
-    NewAddNote.unknown1 := br.ReadInteger();
-    NewAddNote.EventType := TEventType(br.ReadInteger());
-    NewAddNote.EventLabel := GetConString(br);
+        // first 4
+        NewAddNote.EventIdx := br.ReadInteger();
+        NewAddNote.unknown1 := br.ReadInteger();
+        NewAddNote.EventType := TEventType(br.ReadInteger());
+        NewAddNote.EventLabel := GetConString(br);
+    end;
 
     NewAddNote.TextLine := GetConString(br);
 end;
 
-procedure BuildAddSkillPts(var br: TBinaryReader; var NewAddSkillPts: TConEventAddSkillPoints);
+procedure DeSerializeAddSkillPts(var br: TBinaryReader; var NewAddSkillPts: TConEventAddSkillPoints; bSkipClipboardId: Boolean = False);
 begin
-    var Temp := GetConString(br); // skip the header for clipboard
+    if bSkipClipboardId = False then
+    begin
+        var Temp := GetConString(br); // skip the header for clipboard
 
-    // first 4
-    NewAddSkillPts.EventIdx := br.ReadInteger();
-    NewAddSkillPts.unknown1 := br.ReadInteger();
-    NewAddSkillPts.EventType := TEventType(br.ReadInteger());
-    NewAddSkillPts.EventLabel := GetConString(br);
+        // first 4
+        NewAddSkillPts.EventIdx := br.ReadInteger();
+        NewAddSkillPts.unknown1 := br.ReadInteger();
+        NewAddSkillPts.EventType := TEventType(br.ReadInteger());
+        NewAddSkillPts.EventLabel := GetConString(br);
+    end;
 
     NewAddSkillPts.Points := br.ReadInteger(); // pointsToAdd
     NewAddSkillPts.TextLine := GetConString(br);
 end;
 
-procedure BuildAddCredits(var br: TBinaryReader; var NewAddCredits: TConEventAddCredits);
+procedure DeSerializeAddCredits(var br: TBinaryReader; var NewAddCredits: TConEventAddCredits; bSkipClipboardId: Boolean = False);
 begin
-    var Temp := GetConString(br); // skip the header for clipboard
+    if bSkipClipboardId = False then
+    begin
+        var Temp := GetConString(br); // skip the header for clipboard
 
-    // first 4
-    NewAddCredits.EventIdx := br.ReadInteger();
-    NewAddCredits.unknown1 := br.ReadInteger();
-    NewAddCredits.EventType := TEventType(br.ReadInteger());
-    NewAddCredits.EventLabel := GetConString(br);
+        // first 4
+        NewAddCredits.EventIdx := br.ReadInteger();
+        NewAddCredits.unknown1 := br.ReadInteger();
+        NewAddCredits.EventType := TEventType(br.ReadInteger());
+        NewAddCredits.EventLabel := GetConString(br);
+    end;
 
     NewAddCredits.Credits := br.ReadInteger(); // creditsToAdd
 end;
 
-procedure BuildCheckPersona(var br: TBinaryReader; var NewCheckPersona: TConEventCheckPersona);
+procedure DeSerializeCheckPersona(var br: TBinaryReader; var NewCheckPersona: TConEventCheckPersona; bSkipClipboardId: Boolean = False);
 begin
-    var Temp := GetConString(br); // skip the header for clipboard
+    if bSkipClipboardId = False then
+    begin
+        var Temp := GetConString(br); // skip the header for clipboard
 
-    // first 4
-    NewCheckPersona.EventIdx := br.ReadInteger();
-    NewCheckPersona.unknown1 := br.ReadInteger();
-    NewCheckPersona.EventType := TEventType(br.ReadInteger());
-    NewCheckPersona.EventLabel := GetConString(br);
+        // first 4
+        NewCheckPersona.EventIdx := br.ReadInteger();
+        NewCheckPersona.unknown1 := br.ReadInteger();
+        NewCheckPersona.EventType := TEventType(br.ReadInteger());
+        NewCheckPersona.EventLabel := GetConString(br);
+    end;
 
     NewCheckPersona.AttrToCheck := TPersonaTypes(br.ReadInteger()); // personaType
     NewCheckPersona.Condition := TConditions(br.ReadInteger());
@@ -1012,28 +1048,299 @@ begin
     NewCheckPersona.CheckGoToLabel := GetConString(br); // jumpLabel
 end;
 
-procedure BuildComment(var br: TBinaryReader; var NewComment: TConEventComment);
+procedure DeSerializeComment(var br: TBinaryReader; var NewComment: TConEventComment; bSkipClipboardId: Boolean = False);
 begin
-    var Temp := GetConString(br); // skip the header for clipboard
+    if bSkipClipboardId = False then
+    begin
+        var Temp := GetConString(br); // skip the header for clipboard
 
-    // first 4
-    NewComment.EventIdx := br.ReadInteger();
-    NewComment.unknown1 := br.ReadInteger();
-    NewComment.EventType := TEventType(br.ReadInteger());
-    NewComment.EventLabel := GetConString(br);
+        // first 4
+        NewComment.EventIdx := br.ReadInteger();
+        NewComment.unknown1 := br.ReadInteger();
+        NewComment.EventType := TEventType(br.ReadInteger());
+        NewComment.EventLabel := GetConString(br);
+    end;
 
     NewComment.TextLine := GetConString(br);
 end;
 
-procedure BuildEnd(var br: TBinaryReader; var NewEnd: TConEventEnd);
+procedure DeSerializeEnd(var br: TBinaryReader; var NewEnd: TConEventEnd; bSkipClipboardId: Boolean = False);
 begin
-    var Temp := GetConString(br); // skip the header for clipboard
+    if bSkipClipboardId = False then
+    begin
+        var Temp := GetConString(br); // skip the header for clipboard
 
-    // first 4
-    NewEnd.EventIdx := br.ReadInteger();
-    NewEnd.unknown1 := br.ReadInteger();
-    NewEnd.EventType := TEventType(br.ReadInteger());
-    NewEnd.EventLabel := GetConString(br);
+        // first 4
+        NewEnd.EventIdx := br.ReadInteger();
+        NewEnd.unknown1 := br.ReadInteger();
+        NewEnd.EventType := TEventType(br.ReadInteger());
+        NewEnd.EventLabel := GetConString(br);
+    end;
+end;
+
+procedure DeSerializeConversation(var br: TBinaryReader; var NewConvo: TConversation); // Read conversation from clipboard using BinaryReader
+begin
+    var tempId := GetConString(br); // Don't forget the clipboard id...
+
+    NewConvo.unknown0 := br.ReadInteger();
+    NewConvo.id := br.ReadInteger();
+
+    NewConvo.conName := GetConString(br);
+
+    NewConvo.conDescription := GetConString(br);
+    frmMain.AddLog('Description: ' + NewConvo.conDescription);
+
+
+    var conCreatedOnDouble := br.ReadDouble(); // createdOn
+    NewConvo.conCreatedByDate := DateTimeToStr(DoubleToDateTime(conCreatedOnDouble));
+    frmMain.AddLog('Conversation createdOn: ' + conCreatedOnDouble.ToString + ' converted to: ' + NewConvo.conCreatedByDate);
+
+    NewConvo.conCreatedByName := GetConString(br); // createdBy
+    frmMain.AddLog('Conversation createdBy: ' + NewConvo.conCreatedByName);
+
+
+    var conLastModifOnDouble := br.ReadDouble(); //lastModifiedOn
+    NewConvo.conModifiedByDate := DateTimeToStr(DoubleToDateTime(conLastModifOnDouble));
+    frmMain.AddLog('Conversation lastModifiedOn: ' + conLastModifOnDouble.ToString + ' converted to: ' + NewConvo.conModifiedByDate);
+
+    NewConvo.conModifiedByName := GetConString(br);  // lastModifiedBy
+    frmMain.AddLog('Conversation lastModifiedBy: ' + NewConvo.conModifiedByName);
+
+    var conOwnerIndexInt := br.ReadInteger(); // ownerName index(id)
+    NewConvo.conOwnerIndex := conOwnerIndexInt;
+
+    NewConvo.conOwnerName := GetConString(br); // ownerName
+    frmMain.AddLog('Conversation Owner: ' + NewConvo.conOwnerName + ' index: ' + conOwnerIndexInt.ToString);
+
+
+    var bDataLinkCon := br.ReadInteger(); // LongBool, 4 bytes
+    NewConvo.bInfoLink := bDataLinkCon.ToBoolean;
+    frmMain.AddLog('bDataLinkCon = ' + BoolToStr(NewConvo.bInfoLink, True));
+
+
+    NewConvo.conNotes := GetConString(br);
+    if NewConvo.conNotes = '' then
+        frmMain.AddLog('Conversation Notes: ' + strEmptyValue)
+        else frmMain.AddLog('Conversation Notes: ' + NewConvo.conNotes);
+
+    var bDisplayOnce := br.ReadInteger();
+    NewConvo.bOnlyOnce := bDisplayOnce.ToBoolean;
+    frmMain.AddLog('bDisplayOnce = ' + BoolToStr(NewConvo.bOnlyOnce, True));
+
+    var bFirstPerson := br.ReadInteger();
+    NewConvo.bFirstPerson := bFirstPerson.ToBoolean;
+    frmMain.AddLog('bFirstPerson = ' + BoolToStr(NewConvo.bFirstPerson, True));
+
+    var bNonInteractive := br.ReadInteger();
+    NewConvo.bNonInteract := bNonInteractive.ToBoolean;
+    frmMain.AddLog('bNonInteractive = ' + BoolToStr(NewConvo.bNonInteract, True));
+
+    var bRandomCam := br.ReadInteger();
+    NewConvo.bRandomCamera := bRandomCam.ToBoolean;
+    frmMain.AddLog('bRandomCamera = ' + BoolToStr(NewConvo.bRandomCamera, True));
+
+    var bCanbeInterrupted := br.ReadInteger();
+    NewConvo.bCanInterrupt := bCanbeInterrupted.ToBoolean;
+    frmMain.AddLog('bCanBeInterrupted = ' + BoolToStr(NewConvo.bCanInterrupt, True));
+
+    var bCannotBeInterrupted := br.ReadInteger();
+    NewConvo.bCannotInterrupt := bCannotBeInterrupted.ToBoolean;
+    frmMain.AddLog('bCannotBeInterrupted = ' + BoolToStr(NewConvo.bCannotInterrupt, True));
+
+    var bInvokeBump := br.ReadInteger();
+    NewConvo.bPCBumps := bInvokeBump.ToBoolean;
+    frmMain.AddLog('bInvokeBump = ' + BoolToStr(NewConvo.bPCBumps, True));
+
+    var bInvokeFrob := br.ReadInteger();
+    NewConvo.bPCFrobs := bInvokeFrob.ToBoolean;
+    frmMain.AddLog('bInvokeFrob = ' + BoolToStr(NewConvo.bPCFrobs, True));
+
+    var bInvokeSight := br.ReadInteger();
+    NewConvo.bNPCSees := bInvokeSight.ToBoolean;
+    frmMain.AddLog('bInvokeSight = ' + BoolToStr(NewConvo.bNPCSees, True));
+
+    var bInvokeRadius := br.ReadInteger();
+    NewConvo.bNPCEnters := bInvokeRadius.ToBoolean;
+    frmMain.AddLog('bInvokeRadius = ' + BoolToStr(NewConvo.bNPCEnters, True));
+
+    var InvokeRadiusInt := br.ReadInteger();
+    NewConvo.distance := InvokeRadiusInt;
+    frmMain.AddLog('InvokeRadius = ' + InvokeRadiusInt.ToString);
+
+    var numFlagRefList := br.ReadInteger();
+    frmMain.AddLog('numFlagRefList = ' + numFlagRefList.ToString);
+
+    SetLength(NewConvo.conDependsOnFlags, numFlagRefList); // set array length
+
+    for var fr := 0 to numFlagRefList -1 do
+    begin
+        NewConvo.conDependsOnFlags[fr].flagIndex := br.ReadInteger();
+
+        var cfRefNameSize := br.ReadInteger();
+        var cfRefNameBytes := br.ReadBytes(cfRefNameSize);
+        NewConvo.conDependsOnFlags[fr].flagName := TEncoding.ANSI.GetString(cfRefNameBytes);
+
+        var cfRefValue := br.ReadInteger();
+        NewConvo.conDependsOnFlags[fr].flagValue := cfRefValue.ToBoolean;
+
+        var cfRefExpiration := br.ReadInteger();
+
+        frmMain.AddLog(#9+'conFlagRef: index = ' + NewConvo.conDependsOnFlags[fr].flagIndex.ToString +
+               ' Name = ' +  NewConvo.conDependsOnFlags[fr].flagName +
+               ' Value = ' + BoolToStr(NewConvo.conDependsOnFlags[fr].flagValue, True) +
+               ' Expiration = ' + cfRefExpiration.ToString);
+    end;
+
+    NewConvo.numEventList := br.ReadInteger(); // now events...
+    frmMain.AddLog('numEventList = ' + NewConvo.numEventList.ToString);
+    SetLength(NewConvo.Events, NewConvo.numEventList); // set array length
+    frmMain.AddLog('Events:');
+
+    for var NEL := 0 to NewConvo.numEventList -1 do
+    begin
+        var tempEvent: TConEvent;
+
+        var EventIdx := br.ReadInteger();
+        var Unknown1 := br.ReadInteger();
+        var intEventType := br.ReadInteger();
+        var eventLabel := GetConString(br);
+
+
+        if intEventType = Ord(ET_Speech) then
+        begin
+            frmMain.AddLog('Reading event: ET_Speech, position: 0x'+ br.BaseStream.Position.ToHexString(1));
+            tempEvent := TConEventSpeech.Create();
+            DeSerializeSpeech(br, TConEventSpeech(tempEvent), true);
+        end;
+
+        if intEventType = Ord(ET_Choice) then
+        begin
+            frmMain.AddLog('Reading event: ET_Choice, position: 0x'+ br.BaseStream.Position.ToHexString(1));
+            tempEvent := TConEventChoice.Create();
+            DeSerializeChoice(br, TConEventChoice(tempEvent), true);
+        end;
+
+        if intEventType = Ord(ET_SetFlag) then
+        begin
+            frmMain.AddLog('Reading event: ET_SetFlag, position: 0x'+ br.BaseStream.Position.ToHexString(1));
+            tempEvent := TConEventSetFlag.Create();
+            DeSerializeSetFlag(br, TConEventSetFlag(tempEvent), true);
+        end;
+
+        if intEventType = Ord(ET_CheckFlag) then
+        begin
+            frmMain.AddLog('Reading event: ET_CheckFlag, position: 0x'+ br.BaseStream.Position.ToHexString(1));
+            tempEvent := TConEventCheckFlag.Create();
+            DeSerializeCheckFlag(br, TConEventCheckFlag(tempEvent), true);
+        end;
+
+        if intEventType = Ord(ET_CheckObject) then
+        begin
+            frmMain.AddLog('Reading event: ET_CheckObject, position: 0x'+ br.BaseStream.Position.ToHexString(1));
+            tempEvent := TConEventCheckObject.Create();
+            DeSerializeCheckObject(br, TConEventCheckObject(tempEvent), true);
+        end;
+
+        if intEventType = Ord(ET_TransferObject) then
+        begin
+            frmMain.AddLog('Reading event: ET_TransferObject, position: 0x'+ br.BaseStream.Position.ToHexString(1));
+            tempEvent := TConEventTransferObject.Create();
+            DeSerializeTransferObject(br, TConEventTransferObject(tempEvent), true);
+        end;
+
+        if intEventType = Ord(ET_MoveCamera) then
+        begin
+            frmMain.AddLog('Reading event: ET_MoveCamera, position: 0x'+ br.BaseStream.Position.ToHexString(1));
+            tempEvent := TConEventMoveCamera.Create();
+            DeSerializeMoveCamera(br, TConEventMoveCamera(tempEvent), true);
+        end;
+
+        if intEventType = Ord(ET_Animation) then
+        begin
+            frmMain.AddLog('Reading event: ET_Animation, position: 0x'+ br.BaseStream.Position.ToHexString(1));
+            tempEvent := TConEventAnimation.Create();
+            DeSerializeAnimation(br, TConEventAnimation(tempEvent), true);
+        end;
+
+        if intEventType = Ord(ET_Trade) then
+        begin
+            frmMain.AddLog('Reading event: ET_Trade, position: 0x'+ br.BaseStream.Position.ToHexString(1));
+            tempEvent := TConEventTrade.Create();
+            DeSerializeTrade(br, TConEventTrade(tempEvent), True);
+        end;
+
+        if intEventType = Ord(ET_Jump) then
+        begin
+            frmMain.AddLog('Reading event: ET_Jump, position: 0x'+ br.BaseStream.Position.ToHexString(1));
+            tempEvent := TConEventJump.Create();
+            DeSerializeJump(br, TConEventJump(tempEvent), True);
+        end;
+
+        if intEventType = Ord(ET_Random) then
+        begin
+            frmMain.AddLog('Reading event: ET_Random, position: 0x'+ br.BaseStream.Position.ToHexString(1));
+            tempEvent := TConEventRandom.Create();
+            DeSerializeRandom(br, TConEventRandom(tempEvent), True);
+        end;
+
+        if intEventType = Ord(ET_Trigger) then
+        begin
+            frmMain.AddLog('Reading event: ET_Trigger, position: 0x'+ br.BaseStream.Position.ToHexString(1));
+            tempEvent := TConEventTrigger.Create();
+            DeSerializeTrigger(br, TConEventTrigger(tempEvent), True);
+        end;
+
+        if intEventType = Ord(ET_AddGoal) then
+        begin
+            frmMain.AddLog('Reading event: ET_AddGoal, position: 0x'+ br.BaseStream.Position.ToHexString(1));
+            tempEvent := TConEventAddGoal.Create();
+            DeSerializeAddGoal(br, TConEventAddGoal(tempEvent), true);
+        end;
+
+        if intEventType = Ord(ET_AddNote) then
+        begin
+            frmMain.AddLog('Reading event: ET_AddNote, position: 0x'+ br.BaseStream.Position.ToHexString(1));
+            tempEvent := TConEventAddNote.Create();
+            DeSerializeAddNote(br, TConEventAddNote(tempEvent), True);
+        end;
+
+        if intEventType = Ord(ET_AddSkillPoints) then
+        begin
+            frmMain.AddLog('Reading event: ET_AddSkillPoints, position: 0x'+ br.BaseStream.Position.ToHexString(1));
+            tempEvent := TConEventAddSkillPoints.Create();
+            DeSerializeAddSkillPts(br, TConEventAddSkillPoints(tempEvent), True);
+        end;
+
+        if intEventType = Ord(ET_AddCredits) then
+        begin
+            frmMain.AddLog('Reading event: ET_AddCredits, position: 0x'+ br.BaseStream.Position.ToHexString(1));
+            tempEvent := TConEventAddCredits.Create();
+            DeSerializeAddCredits(br, TConEventAddCredits(tempEvent), True);
+        end;
+
+        if intEventType = Ord(ET_CheckPersona) then
+        begin
+            frmMain.AddLog('Reading event: ET_CheckPersona, position: 0x'+ br.BaseStream.Position.ToHexString(1));
+            tempEvent := TConEventCheckPersona.Create();
+            DeSerializeCheckPersona(br, TConEventCheckPersona(tempEvent), True);
+        end;
+
+        if intEventType = Ord(ET_Comment) then
+        begin
+            frmMain.AddLog('Reading event: ET_Comment, position: 0x'+ br.BaseStream.Position.ToHexString(1));
+            tempEvent := TConEventComment.Create();
+            DeSerializeComment(br, TConEventComment(tempEvent), True);
+        end;
+
+        if intEventType = Ord(ET_End) then
+        begin
+            frmMain.AddLog('Reading event: ET_End, position: 0x'+ br.BaseStream.Position.ToHexString(1));
+            tempEvent := TConEventEnd.Create();
+            DeSerializeEnd(br, TConEventEnd(tempEvent), True);
+        end;
+
+        NewConvo.Events[NEL] := tempEvent;
+    end;
 end;
 
 
