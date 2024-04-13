@@ -7,7 +7,7 @@ what is __NOT__ implemented yet:
 * ~AutoSave~
 * ~Only unique event labels~
 * ~Insert event~ 
-* ~copy~/~paste~ ~events~/conversations ~to~/~from clipboard~
+* ~Cut/Copy/Paste~ ~events~/conversations ~to~/~from clipboard~
 * ~text wrap~ ~also make it dynamic~ ~for other events?~
 * ~search functions~
 * ~label checking~
