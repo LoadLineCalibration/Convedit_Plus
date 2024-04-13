@@ -12,6 +12,7 @@ uses
 function StringStartsFromDigit(str: String): Boolean;
 function IsInvalidFName(const AString: string): Boolean;
 function ValidateFName(const AString: string): Boolean;
+function GenerateRandomSuffix(): string;
 
 // procedures
 procedure FilterEditInput(var aKey: Char);
@@ -46,12 +47,23 @@ begin
               (not CharInSet(AString[1], ['0'..'9']));
 end;
 
+function GenerateRandomSuffix(): string;
+begin
+    Randomize;
+    Result := '_';
+
+    for var i := 1 to 3 do
+        Result := Result + Chr(Ord('a') + Random(26));
+end;
+
 procedure FilterEditInput(var aKey: Char);
 begin
     if CharInSet(aKey, ['A'..'Z', 'a'..'z', '0'..'9', '_', #8]) then
     else
     aKey := #0;
 end;
+
+
 
 
 end.

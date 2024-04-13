@@ -2137,6 +2137,41 @@ begin
                     // И только после этого добавляем NewConversation в список а потом в дерево.
                     // При необходимости создаем нужную ветку с Owner.
 
+                    if FindTableIdByName(TM_ActorsPawns, NewConversation.conOwnerName) = -1 then
+                    begin
+                        listPawnsActors.Add(NewConversation.conOwnerName); // try to find such actor in table, add if failed
+                        NewConversation.conOwnerIndex := FindTableIdByName(TM_ActorsPawns, NewConversation.conOwnerName); // set id
+                    end;
+
+                    if FindConversationObjByString(NewConversation.conName) <> nil then
+                        NewConversation.conName := NewConversation.conName + GenerateRandomSuffix(); // don't allow duplicates
+
+                    ConversationsList.Add(NewConversation); // Add to object list
+
+
+                    // Now add to tree
+                    var OwnerNode := FindConvoOwnerInTree(NewConversation.conOwnerName);
+
+                    if OwnerNode = nil then
+                        OwnerNode := ConvoTree.Items.Add(nil, NewConversation.conOwnerName);
+
+                    OwnerNode.ImageIndex := 0;
+                    OwnerNode.ExpandedImageIndex := 0;
+                    OwnerNode.SelectedIndex := 0;
+
+
+                    var ConvoNode := ConvoTree.Items.AddChildObject(OwnerNode, NewConversation.conName, NewConversation);
+
+                    ConvoNode.ImageIndex := 1;
+                    ConvoNode.ExpandedImageIndex := 1;
+                    ConvoNode.SelectedIndex := 1;
+
+
+                    //ShowMessage(NewConversation.conName);
+
+
+
+
 
                    {
                     if EventToPaste = ET_Speech_Caption then
