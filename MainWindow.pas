@@ -1690,7 +1690,7 @@ begin
                     begin
                         var NewSpeech := TConEventSpeech.Create(); // Create new event
 
-                        BuildSpeech(BinReader, NewSpeech); // fill fields here (ConEditPlus.Clipboard.Helper.pas)
+                        DeSerializeSpeech(BinReader, NewSpeech); // fill fields here (ConEditPlus.Clipboard.Helper.pas)
 
                         if FindTableIdByName(TM_ActorsPawns, NewSpeech.ActorValue) = -1 then
                         begin
@@ -1720,7 +1720,7 @@ begin
                     begin
                         var NewChoice := TConEventChoice.Create();
 
-                        BuildChoice(BinReader, NewChoice);
+                        DeSerializeChoice(BinReader, NewChoice);
 
                         for var choiceItem in NewChoice.Choices do // Choice in Clipboard can contain flags and skills
                         begin                                       // (skills? Really?), so add them to corresponding tables
@@ -1761,7 +1761,7 @@ begin
                     begin
                         var NewSetFlag := TConEventSetFlag.Create();
 
-                        BuildSetFlag(BinReader, NewSetFlag);
+                        DeSerializeSetFlag(BinReader, NewSetFlag);
 
                         //for var Flag in NewSetFlag.SetFlags do
                         for var i:= 0 to High(NewSetFlag.SetFlags) do
@@ -1790,7 +1790,7 @@ begin
                     begin
                         var NewCheckFlag := TConEventCheckFlag.Create();
 
-                        BuildCheckFlag(BinReader, NewCheckFlag);
+                        DeSerializeCheckFlag(BinReader, NewCheckFlag);
 
                         for var i:= 0 to High(NewCheckFlag.FlagsToCheck) do
                         begin
@@ -1818,7 +1818,7 @@ begin
                     begin
                         var NewCheckObj := TConEventCheckObject.Create();
 
-                        BuildCheckObject(BinReader, NewCheckObj);
+                        DeSerializeCheckObject(BinReader, NewCheckObj);
 
                         if FindTableIdByName(TM_Objects, NewCheckObj.ObjectValue) = -1 then
                         begin
@@ -1841,7 +1841,7 @@ begin
                     begin
                         var NewTransObject := TConEventTransferObject.Create();
 
-                        BuildTransferObject(BinReader, NewTransObject);
+                        DeSerializeTransferObject(BinReader, NewTransObject);
 
                         if FindTableIdByName(TM_Objects, NewTransObject.ObjectValue) = -1 then
                         begin
@@ -1875,7 +1875,7 @@ begin
                     begin
                         var NewMoveCam := TConEventMoveCamera.Create();
 
-                        BuildMoveCamera(BinReader, NewMoveCam);
+                        DeSerializeMoveCamera(BinReader, NewMoveCam);
 
                         Insert(NewMoveCam, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_MoveCamera_Caption, NewMoveCam);
@@ -1886,7 +1886,7 @@ begin
                     begin
                         var NewAnim := TConEventAnimation.Create();
 
-                        BuildAnimation(BinReader, NewAnim);
+                        DeSerializeAnimation(BinReader, NewAnim);
 
                         if FindTableIdByName(TM_ActorsPawns, NewAnim.ActorValue) = -1 then
                         begin
@@ -1904,7 +1904,7 @@ begin
                     begin
                         var NewTrade := TConEventTrade.Create();
 
-                        BuildTrade(BinReader, NewTrade);
+                        DeSerializeTrade(BinReader, NewTrade);
 
                         if FindTableIdByName(TM_ActorsPawns, NewTrade.TradeActorValue) = -1 then
                         begin
@@ -1922,7 +1922,7 @@ begin
                     begin
                         var NewJump := TConEventJump.Create();
 
-                        BuildJump(BinReader, NewJump);
+                        DeSerializeJump(BinReader, NewJump);
 
                         Insert(NewJump, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_Jump_Caption, NewJump);
@@ -1933,7 +1933,7 @@ begin
                     begin
                         var NewRandom := TConEventRandom.Create();
 
-                        BuildRandom(BinReader, NewRandom);
+                        DeSerializeRandom(BinReader, NewRandom);
 
                         Insert(NewRandom, CurrentConversation.Events, ItemIdx);
 
@@ -1947,7 +1947,7 @@ begin
                     begin
                         var NewTrigger := TConEventTrigger.Create();
 
-                        BuildTrigger(BinReader, NewTrigger);
+                        DeSerializeTrigger(BinReader, NewTrigger);
 
                         Insert(NewTrigger, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_Trigger_Caption, NewTrigger);
@@ -1958,7 +1958,7 @@ begin
                     begin
                         var NewAddGoal := TConEventAddGoal.Create();
 
-                        BuildAddGoal(BinReader, NewAddGoal);
+                        DeSerializeAddGoal(BinReader, NewAddGoal);
 
                         Insert(NewAddGoal, CurrentConversation.Events, ItemIdx);
 
@@ -1972,7 +1972,7 @@ begin
                     begin
                         var NewAddNote := TConEventAddNote.Create();
 
-                        BuildAddNote(BinReader, NewAddNote);
+                        DeSerializeAddNote(BinReader, NewAddNote);
 
                         Insert(NewAddNote, CurrentConversation.Events, ItemIdx);
 
@@ -1986,7 +1986,7 @@ begin
                     begin
                         var NewAddSkillPts := TConEventAddSkillPoints.Create();
 
-                        BuildAddSkillPts(BinReader, NewAddSkillPts);
+                        DeSerializeAddSkillPts(BinReader, NewAddSkillPts);
 
                         Insert(NewAddSkillPts, CurrentConversation.Events, ItemIdx);
 
@@ -2000,7 +2000,7 @@ begin
                     begin
                         var NewAddCredits := TConEventAddCredits.Create();
 
-                        BuildAddCredits(BinReader, NewAddCredits);
+                        DeSerializeAddCredits(BinReader, NewAddCredits);
 
                         Insert(NewAddCredits, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_AddCredits_Caption, NewAddCredits);
@@ -2011,7 +2011,7 @@ begin
                     begin
                         var NewCheckPersona := TConEventCheckPersona.Create();
 
-                        BuildCheckPersona(BinReader, NewCheckPersona);
+                        DeSerializeCheckPersona(BinReader, NewCheckPersona);
 
                         Insert(NewCheckPersona, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_CheckPersona_Caption, NewCheckPersona);
@@ -2022,7 +2022,7 @@ begin
                     begin
                         var NewComment := TConEventComment.Create();
 
-                        BuildComment(BinReader, NewComment);
+                        DeSerializeComment(BinReader, NewComment);
 
                         Insert(NewComment, CurrentConversation.Events, ItemIdx);
 
@@ -2036,7 +2036,7 @@ begin
                     begin
                         var NewEnd := TConEventEnd.Create();
 
-                        BuildEnd(BinReader, NewEnd);
+                        DeSerializeEnd(BinReader, NewEnd);
 
                         Insert(NewEnd, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_End_Caption, NewEnd);
@@ -2068,13 +2068,11 @@ var
     mStream: TMemoryStream;
     BinWriter: TBinaryWriter;
 begin
-    if CurrentConversation = nil then Exit();
-
     mStream := TMemoryStream.Create();
     BinWriter := TBinaryWriter.Create(mStream, TEncoding.ANSI);
 
     try
-        WriteConversation(CurrentConversation, BinWriter);
+        SerializeConversation(CurrentConversation, BinWriter);
 
         hBuf := GlobalAlloc(GMEM_MOVEABLE, mStream.Size);
         try
@@ -2097,8 +2095,97 @@ begin
 end;
 
 procedure TfrmMain.PasteConversationFromClipboard();
+var
+    hBuf: THandle;
+    BufPtr: Pointer;
+    mStream: TMemoryStream;
+    BinReader: TBinaryReader;
+    ConversationIdString: string;
 begin
-//
+    hBuf := Clipboard.GetAsHandle(CF_ConEditPlus);
+    if hBuf <> 0 then
+    begin
+        BufPtr := GlobalLock(hBuf);
+        if BufPtr <> nil then
+        begin
+            try
+                mStream := TMemoryStream.Create();
+                try
+                    mStream.WriteBuffer(bufPtr^, GlobalSize(hBuf));
+                    mStream.Position := 0;
+
+                    BinReader := TBinaryReader.Create(mStream, TEncoding.ANSI);
+                    ConversationIdString := ReadContentHeader(BinReader, mStream);
+
+                    if ConversationIdString <> CLIPBOARD_CONVERSATION_ID then
+                    begin
+                        mStream.Free();
+                        BinReader.Free();
+                        Exit();
+                    end;
+
+                    var NewConversation := TConversation.Create();
+                    DeSerializeConversation(BinReader, NewConversation);
+
+
+
+                    // ToDo: Обойти все events заполненного NewConversation, и добавить в таблицы элементы,
+                    // также как это было если вставляется TConEvent.
+                    // Затем обходим дерево, смотрим, если есть такой Owner, то будем добавлять к нему.
+                    // Если нет -- готовимся создать такого Owner.
+                    // Одинаковые имeна нельзя, переименовываем автоматически.
+                    // И только после этого добавляем NewConversation в список а потом в дерево.
+                    // При необходимости создаем нужную ветку с Owner.
+
+
+                   {
+                    if EventToPaste = ET_Speech_Caption then
+                    begin
+                        var NewSpeech := TConEventSpeech.Create(); // Create new event
+
+                        BuildSpeech(BinReader, NewSpeech); // fill fields here (ConEditPlus.Clipboard.Helper.pas)
+
+                        if FindTableIdByName(TM_ActorsPawns, NewSpeech.ActorValue) = -1 then
+                        begin
+                            listPawnsActors.Add(NewSpeech.ActorValue);
+                            NewSpeech.ActorIndex := FindTableIdByName(TM_ActorsPawns,NewSpeech.ActorValue); // set id from table
+                            AddLog('Added ' + NewSpeech.ActorValue + ' to the table');
+                        end;
+
+                        if FindTableIdByName(TM_ActorsPawns, NewSpeech.ActorToValue) = -1 then
+                        begin
+                            listPawnsActors.Add(NewSpeech.ActorToValue);
+                            NewSpeech.ActorToIndex := FindTableIdByName(TM_ActorsPawns,NewSpeech.ActorToValue); // set id from table
+                            AddLog('Added ' + NewSpeech.ActorToValue + ' to the table');
+                        end;
+
+                        Insert(NewSpeech, CurrentConversation.Events, ItemIdx); // and finally we can add it to array!
+
+                        var ListItemHeight := GetSpeechEventItemHeight([NewSpeech]);
+                        var HeightStr := '=' + ListItemHeight.ToString();
+                        ConEventList.Items.InsertObject(ItemIdx, ET_Speech_Caption+HeightStr, NewSpeech);
+                        ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewSpeech);
+
+                        AddLog('Added event from Clipboard:' + NewSpeech.ClassName);
+                    end; }
+
+
+                finally
+                    mStream.Free();
+                    BinReader.Free();
+                end;
+            finally
+                GlobalUnlock(hBuf);
+            end;
+            UpdateEventListHeights();
+            SetEventIndexes();
+        end;
+    end
+    else
+    begin
+        PasteConvoEvent.Enabled := False; // Just in case...
+        Exit();
+    end;
 end;
 
 
@@ -4434,17 +4521,22 @@ end;
 
 procedure TfrmMain.Conversation_CutExecute(Sender: TObject);
 begin
-    // Copy conversation to clipboard and delete
+    if CurrentConversation <> nil then // Copy conversation to clipboard and delete it
+    begin
+        CopyConversationToClipboard(CurrentConversation);
+        DeleteCurrentConversation();
+    end;
 end;
 
 procedure TfrmMain.Conversation_CopyExecute(Sender: TObject);
 begin
-    CopyConversationToClipboard(CurrentConversation);
+    if CurrentConversation <> nil then
+        CopyConversationToClipboard(CurrentConversation);
 end;
 
 procedure TfrmMain.Conversation_PasteExecute(Sender: TObject);
 begin
-    // Paste conversation from clipboard
+    PasteConversationFromClipboard();
 end;
 
 procedure TfrmMain.Conversation_FindExecute(Sender: TObject);
