@@ -83,11 +83,14 @@ begin
 
     var headerBytes := ConRead.ReadBytes(26);
 
-{    if CompareMem(headerBytes, @conFileHeader, 26) = False then
+    if CompareMem(headerBytes, @conFileHeader, 26) = False then
     begin
-        MessageDlg(strInvalidConFileHdr,  mtError, [mbOK], 0);
-        Exit();
-    end;  }
+        ConRead.Close(); // We have a problem, so kill objects.
+        ConRead.Free();
+        fileStr.Free();
+
+        raise Exception.Create(strInvalidConFileHdr);
+    end;
 
 try
     with frmMain do
@@ -580,7 +583,7 @@ begin
 
         if skillNameId = -1 then  // Skill is NOT required
         begin
-              choiceEvent.Choices[cl].bSkillNeeded := skillNameId; // for XML version
+            choiceEvent.Choices[cl].bSkillNeeded := skillNameId; // for XML version
             frmMain.AddLog('bSkillNeeded = ' + choiceEvent.Choices[cl].bSkillNeeded.ToString);
 
             choiceEvent.Choices[cl].GoToLabel := GetConString(ConRead); //choice Label
@@ -763,6 +766,8 @@ begin
 
     eventAddGoal.GoalText := GetConString(ConRead);
     eventAddGoal.bPrimaryGoal := GetConLongBool(ConRead);
+
+//    eventAddGoal.LineWrapCount := frmMain.CountLineWraps(eventAddGoal.GoalText);
 end;
 
 procedure FillAddNote(ConRead: TBinaryReader; eventAddNote: TConEventAddNote; eventLabel: string);
