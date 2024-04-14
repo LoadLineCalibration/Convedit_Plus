@@ -5409,7 +5409,6 @@ object frmMain: TfrmMain
       MultiSelectStyle = []
       ParentDoubleBuffered = False
       ParentFont = False
-      PopupMenu = PopupTree
       RowSelect = True
       StateImages = TreeImages
       TabOrder = 0
@@ -5419,6 +5418,7 @@ object frmMain: TfrmMain
       OnDeletion = ConvoTreeDeletion
       OnEdited = ConvoTreeEdited
       OnEditing = ConvoTreeEditing
+      OnMouseDown = ConvoTreeMouseDown
     end
   end
   object StatusBar: TStatusBar
@@ -8420,18 +8420,21 @@ object frmMain: TfrmMain
       Caption = 'Cut'
       Enabled = False
       ImageIndex = 1
+      OnExecute = Conversation_CutExecute
     end
     object Conversation_Copy: TAction
       Category = 'Conversation'
       Caption = 'Copy'
       Enabled = False
       ImageIndex = 0
+      OnExecute = Conversation_CopyExecute
     end
     object Conversation_Paste: TAction
       Category = 'Conversation'
       Caption = 'Paste'
       Enabled = False
       ImageIndex = 2
+      OnExecute = Conversation_PasteExecute
     end
     object Conversation_Properties: TAction
       Category = 'Conversation'

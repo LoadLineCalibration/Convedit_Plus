@@ -1210,6 +1210,12 @@ begin
         begin
             frmMain.AddLog('Reading event: ET_Speech, position: 0x'+ br.BaseStream.Position.ToHexString(1));
             tempEvent := TConEventSpeech.Create();
+
+            TempEvent.EventIdx := EventIdx;
+            TempEvent.unknown1 := Unknown1;
+            TempEvent.EventType := TEventType(intEventType);
+            TempEvent.EventLabel := eventLabel;
+
             DeSerializeSpeech(br, TConEventSpeech(tempEvent), true);
         end;
 
@@ -1217,6 +1223,12 @@ begin
         begin
             frmMain.AddLog('Reading event: ET_Choice, position: 0x'+ br.BaseStream.Position.ToHexString(1));
             tempEvent := TConEventChoice.Create();
+
+            TempEvent.EventIdx := EventIdx;
+            TempEvent.unknown1 := Unknown1;
+            TempEvent.EventType := TEventType(intEventType);
+            TempEvent.EventLabel := eventLabel;
+
             DeSerializeChoice(br, TConEventChoice(tempEvent), true);
         end;
 
@@ -1224,6 +1236,12 @@ begin
         begin
             frmMain.AddLog('Reading event: ET_SetFlag, position: 0x'+ br.BaseStream.Position.ToHexString(1));
             tempEvent := TConEventSetFlag.Create();
+
+            TempEvent.EventIdx := EventIdx;
+            TempEvent.unknown1 := Unknown1;
+            TempEvent.EventType := TEventType(intEventType);
+            TempEvent.EventLabel := eventLabel;
+
             DeSerializeSetFlag(br, TConEventSetFlag(tempEvent), true);
         end;
 
@@ -1231,6 +1249,12 @@ begin
         begin
             frmMain.AddLog('Reading event: ET_CheckFlag, position: 0x'+ br.BaseStream.Position.ToHexString(1));
             tempEvent := TConEventCheckFlag.Create();
+
+            TempEvent.EventIdx := EventIdx;
+            TempEvent.unknown1 := Unknown1;
+            TempEvent.EventType := TEventType(intEventType);
+            TempEvent.EventLabel := eventLabel;
+
             DeSerializeCheckFlag(br, TConEventCheckFlag(tempEvent), true);
         end;
 
@@ -1238,6 +1262,12 @@ begin
         begin
             frmMain.AddLog('Reading event: ET_CheckObject, position: 0x'+ br.BaseStream.Position.ToHexString(1));
             tempEvent := TConEventCheckObject.Create();
+
+            TempEvent.EventIdx := EventIdx;
+            TempEvent.unknown1 := Unknown1;
+            TempEvent.EventType := TEventType(intEventType);
+            TempEvent.EventLabel := eventLabel;
+
             DeSerializeCheckObject(br, TConEventCheckObject(tempEvent), true);
         end;
 
@@ -1245,6 +1275,12 @@ begin
         begin
             frmMain.AddLog('Reading event: ET_TransferObject, position: 0x'+ br.BaseStream.Position.ToHexString(1));
             tempEvent := TConEventTransferObject.Create();
+
+            TempEvent.EventIdx := EventIdx;
+            TempEvent.unknown1 := Unknown1;
+            TempEvent.EventType := TEventType(intEventType);
+            TempEvent.EventLabel := eventLabel;
+
             DeSerializeTransferObject(br, TConEventTransferObject(tempEvent), true);
         end;
 
@@ -1252,6 +1288,12 @@ begin
         begin
             frmMain.AddLog('Reading event: ET_MoveCamera, position: 0x'+ br.BaseStream.Position.ToHexString(1));
             tempEvent := TConEventMoveCamera.Create();
+
+            TempEvent.EventIdx := EventIdx;
+            TempEvent.unknown1 := Unknown1;
+            TempEvent.EventType := TEventType(intEventType);
+            TempEvent.EventLabel := eventLabel;
+
             DeSerializeMoveCamera(br, TConEventMoveCamera(tempEvent), true);
         end;
 
@@ -1259,6 +1301,12 @@ begin
         begin
             frmMain.AddLog('Reading event: ET_Animation, position: 0x'+ br.BaseStream.Position.ToHexString(1));
             tempEvent := TConEventAnimation.Create();
+
+            TempEvent.EventIdx := EventIdx;
+            TempEvent.unknown1 := Unknown1;
+            TempEvent.EventType := TEventType(intEventType);
+            TempEvent.EventLabel := eventLabel;
+
             DeSerializeAnimation(br, TConEventAnimation(tempEvent), true);
         end;
 
@@ -1266,6 +1314,12 @@ begin
         begin
             frmMain.AddLog('Reading event: ET_Trade, position: 0x'+ br.BaseStream.Position.ToHexString(1));
             tempEvent := TConEventTrade.Create();
+
+            TempEvent.EventIdx := EventIdx;
+            TempEvent.unknown1 := Unknown1;
+            TempEvent.EventType := TEventType(intEventType);
+            TempEvent.EventLabel := eventLabel;
+
             DeSerializeTrade(br, TConEventTrade(tempEvent), True);
         end;
 
@@ -1273,6 +1327,12 @@ begin
         begin
             frmMain.AddLog('Reading event: ET_Jump, position: 0x'+ br.BaseStream.Position.ToHexString(1));
             tempEvent := TConEventJump.Create();
+
+            TempEvent.EventIdx := EventIdx;
+            TempEvent.unknown1 := Unknown1;
+            TempEvent.EventType := TEventType(intEventType);
+            TempEvent.EventLabel := eventLabel;
+
             DeSerializeJump(br, TConEventJump(tempEvent), True);
         end;
 
@@ -1280,6 +1340,12 @@ begin
         begin
             frmMain.AddLog('Reading event: ET_Random, position: 0x'+ br.BaseStream.Position.ToHexString(1));
             tempEvent := TConEventRandom.Create();
+
+            TempEvent.EventIdx := EventIdx;
+            TempEvent.unknown1 := Unknown1;
+            TempEvent.EventType := TEventType(intEventType);
+            TempEvent.EventLabel := eventLabel;
+
             DeSerializeRandom(br, TConEventRandom(tempEvent), True);
         end;
 
@@ -1287,6 +1353,12 @@ begin
         begin
             frmMain.AddLog('Reading event: ET_Trigger, position: 0x'+ br.BaseStream.Position.ToHexString(1));
             tempEvent := TConEventTrigger.Create();
+
+            TempEvent.EventIdx := EventIdx;
+            TempEvent.unknown1 := Unknown1;
+            TempEvent.EventType := TEventType(intEventType);
+            TempEvent.EventLabel := eventLabel;
+
             DeSerializeTrigger(br, TConEventTrigger(tempEvent), True);
         end;
 
@@ -1294,6 +1366,12 @@ begin
         begin
             frmMain.AddLog('Reading event: ET_AddGoal, position: 0x'+ br.BaseStream.Position.ToHexString(1));
             tempEvent := TConEventAddGoal.Create();
+
+            TempEvent.EventIdx := EventIdx;
+            TempEvent.unknown1 := Unknown1;
+            TempEvent.EventType := TEventType(intEventType);
+            TempEvent.EventLabel := eventLabel;
+
             DeSerializeAddGoal(br, TConEventAddGoal(tempEvent), true);
         end;
 
@@ -1301,6 +1379,12 @@ begin
         begin
             frmMain.AddLog('Reading event: ET_AddNote, position: 0x'+ br.BaseStream.Position.ToHexString(1));
             tempEvent := TConEventAddNote.Create();
+
+            TempEvent.EventIdx := EventIdx;
+            TempEvent.unknown1 := Unknown1;
+            TempEvent.EventType := TEventType(intEventType);
+            TempEvent.EventLabel := eventLabel;
+
             DeSerializeAddNote(br, TConEventAddNote(tempEvent), True);
         end;
 
@@ -1308,6 +1392,12 @@ begin
         begin
             frmMain.AddLog('Reading event: ET_AddSkillPoints, position: 0x'+ br.BaseStream.Position.ToHexString(1));
             tempEvent := TConEventAddSkillPoints.Create();
+
+            TempEvent.EventIdx := EventIdx;
+            TempEvent.unknown1 := Unknown1;
+            TempEvent.EventType := TEventType(intEventType);
+            TempEvent.EventLabel := eventLabel;
+
             DeSerializeAddSkillPts(br, TConEventAddSkillPoints(tempEvent), True);
         end;
 
@@ -1315,6 +1405,12 @@ begin
         begin
             frmMain.AddLog('Reading event: ET_AddCredits, position: 0x'+ br.BaseStream.Position.ToHexString(1));
             tempEvent := TConEventAddCredits.Create();
+
+            TempEvent.EventIdx := EventIdx;
+            TempEvent.unknown1 := Unknown1;
+            TempEvent.EventType := TEventType(intEventType);
+            TempEvent.EventLabel := eventLabel;
+
             DeSerializeAddCredits(br, TConEventAddCredits(tempEvent), True);
         end;
 
@@ -1322,6 +1418,12 @@ begin
         begin
             frmMain.AddLog('Reading event: ET_CheckPersona, position: 0x'+ br.BaseStream.Position.ToHexString(1));
             tempEvent := TConEventCheckPersona.Create();
+
+            TempEvent.EventIdx := EventIdx;
+            TempEvent.unknown1 := Unknown1;
+            TempEvent.EventType := TEventType(intEventType);
+            TempEvent.EventLabel := eventLabel;
+
             DeSerializeCheckPersona(br, TConEventCheckPersona(tempEvent), True);
         end;
 
@@ -1329,6 +1431,12 @@ begin
         begin
             frmMain.AddLog('Reading event: ET_Comment, position: 0x'+ br.BaseStream.Position.ToHexString(1));
             tempEvent := TConEventComment.Create();
+
+            TempEvent.EventIdx := EventIdx;
+            TempEvent.unknown1 := Unknown1;
+            TempEvent.EventType := TEventType(intEventType);
+            TempEvent.EventLabel := eventLabel;
+
             DeSerializeComment(br, TConEventComment(tempEvent), True);
         end;
 
@@ -1336,6 +1444,12 @@ begin
         begin
             frmMain.AddLog('Reading event: ET_End, position: 0x'+ br.BaseStream.Position.ToHexString(1));
             tempEvent := TConEventEnd.Create();
+
+            TempEvent.EventIdx := EventIdx;
+            TempEvent.unknown1 := Unknown1;
+            TempEvent.EventType := TEventType(intEventType);
+            TempEvent.EventLabel := eventLabel;
+
             DeSerializeEnd(br, TConEventEnd(tempEvent), True);
         end;
 

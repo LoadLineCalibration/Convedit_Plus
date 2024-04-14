@@ -463,6 +463,7 @@ type
     procedure Conversation_CutExecute(Sender: TObject);
     procedure Conversation_CopyExecute(Sender: TObject);
     procedure Conversation_PasteExecute(Sender: TObject);
+    procedure ConvoTreeMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -1763,7 +1764,6 @@ begin
 
                         DeSerializeSetFlag(BinReader, NewSetFlag);
 
-                        //for var Flag in NewSetFlag.SetFlags do
                         for var i:= 0 to High(NewSetFlag.SetFlags) do
                         begin
                             if FindTableIdByName(TM_Flags, NewSetFlag.SetFlags[i].flagName) = -1 then
@@ -2127,16 +2127,7 @@ begin
                     var NewConversation := TConversation.Create();
                     DeSerializeConversation(BinReader, NewConversation);
 
-
-
-                    // ToDo: Обойти все events заполненного NewConversation, и добавить в таблицы элементы,
-                    // также как это было если вставляется TConEvent.
-                    // Затем обходим дерево, смотрим, если есть такой Owner, то будем добавлять к нему.
-                    // Если нет -- готовимся создать такого Owner.
-                    // Одинаковые имeна нельзя, переименовываем автоматически.
-                    // И только после этого добавляем NewConversation в список а потом в дерево.
-                    // При необходимости создаем нужную ветку с Owner.
-
+                    // First of all, try to find owner of conversation in the table. Add if not found.
                     if FindTableIdByName(TM_ActorsPawns, NewConversation.conOwnerName) = -1 then
                     begin
                         listPawnsActors.Add(NewConversation.conOwnerName); // try to find such actor in table, add if failed
@@ -2146,64 +2137,207 @@ begin
                     if FindConversationObjByString(NewConversation.conName) <> nil then
                         NewConversation.conName := NewConversation.conName + GenerateRandomSuffix(); // don't allow duplicates
 
-                    ConversationsList.Add(NewConversation); // Add to object list
+                    // Same with flags used by this conversations.
+                    for var fl := 0 to High(NewConversation.conDependsOnFlags) do
+                    begin
+                        var TempFlag := NewConversation.conDependsOnFlags[fl];
 
+                        if FindTableIdByName(TM_Flags, TempFlag.flagName) = -1 then
+                        begin
+                            listFlags.Add(TempFlag.flagName);
+                            TempFlag.flagIndex := FindTableIdByName(TM_Flags, TempFlag.flagName);
+                        end;
+                    end;
+
+                    for var e := 0 to High(NewConversation.Events) do
+                    begin
+                        if NewConversation.Events[e] is TConEventSpeech then
+                        begin
+                            var TempSpeech := TConEventSpeech(NewConversation.Events[e]);
+
+                            if FindTableIdByName(TM_ActorsPawns, TempSpeech.ActorValue) = -1 then
+                            begin
+                                listPawnsActors.Add(TempSpeech.ActorValue);
+                                TempSpeech.ActorIndex := FindTableIdByName(TM_ActorsPawns,TempSpeech.ActorValue); // set id from table
+                                AddLog('Added ' + TempSpeech.ActorValue + ' to the table');
+                            end;
+
+                            if FindTableIdByName(TM_ActorsPawns, TempSpeech.ActorToValue) = -1 then
+                            begin
+                                listPawnsActors.Add(TempSpeech.ActorToValue);
+                                TempSpeech.ActorToIndex := FindTableIdByName(TM_ActorsPawns,TempSpeech.ActorToValue); // set id from table
+                                AddLog('Added ' + TempSpeech.ActorToValue + ' to the table');
+                            end;
+                        end;
+
+                        if NewConversation.Events[e] is TConEventChoice then
+                        begin
+                            var TempChoice := TConEventChoice(NewConversation.Events[e]);
+
+                            for var choiceItem in TempChoice.Choices do // Choice in Clipboard can contain flags and skills
+                            begin                                       // (skills? Really?), so add them to corresponding tables
+                                for var i := 0 to High(choiceItem.RequiredFlags) do
+                                begin
+                                    if FindTableIdByName(TM_Flags, choiceItem.RequiredFlags[i].flagName) = -1 then
+                                    begin
+                                        var flag := choiceItem.RequiredFlags[i];
+
+                                        listFlags.Add(flag.flagName);
+                                        flag.flagIndex := FindTableIdByName(TM_Flags, flag.flagName);
+                                        AddLog('Added flag ' + flag.flagName + ' to the table');
+                                    end;
+                                end;
+
+                                if choiceItem.bSkillNeeded <> -1 then
+                                begin
+                                    if FindTableIdByName(TM_Skills, choiceItem.Skill) = -1 then
+                                    begin
+                                        listSkills.Add(choiceItem.Skill);
+                                        choiceItem.bSkillNeeded := FindTableIdByName(TM_Skills, choiceItem.Skill); // set id from table
+                                        AddLog('Added skill ' + choiceItem.Skill + ' to the table');
+                                    end;
+                                end;
+                            end;
+                        end;
+
+                        if NewConversation.Events[e] is TConEventSetFlag then
+                        begin
+                            var TempSetFlag := TConEventSetFlag(NewConversation.Events[e]);
+
+                            for var i:= 0 to High(TempSetFlag.SetFlags) do
+                            begin
+                                if FindTableIdByName(TM_Flags, TempSetFlag.SetFlags[i].flagName) = -1 then
+                                begin
+                                    var flag := TempSetFlag.SetFlags[i];
+
+                                    listFlags.Add(flag.flagName);
+                                    flag.flagIndex := FindTableIdByName(TM_Flags, flag.flagName); // set id from table
+                                    AddLog('Added flag ' + flag.flagName + ' to the table');
+                                end;
+                            end;
+                        end;
+
+                        if NewConversation.Events[e] is TConEventCheckFlag then
+                        begin
+                            var TempCheckFlag := TConEventCheckFlag(NewConversation.Events[e]);
+
+                            for var i:= 0 to High(TempCheckFlag.FlagsToCheck) do
+                            begin
+                                if FindTableIdByName(TM_Flags, TempCheckFlag.FlagsToCheck[i].flagName) = -1 then
+                                begin
+                                    var flag := TempCheckFlag.FlagsToCheck[i];
+
+                                    listFlags.Add(Flag.flagName);
+                                    flag.flagIndex := FindTableIdByName(TM_Flags, flag.flagName); // set id from table
+                                    AddLog('Added flag ' + Flag.flagName + ' to the table');
+                                end;
+                            end;
+                        end;
+
+                        if NewConversation.Events[e] is TConEventCheckObject then
+                        begin
+                            var TempCheckObj := TConEventCheckObject(NewConversation.Events[e]);
+
+                            if FindTableIdByName(TM_Objects, TempCheckObj.ObjectValue) = -1 then
+                            begin
+                                listObjects.Add(TempCheckObj.ObjectValue);
+                                TempCheckObj.ObjectIndex := FindTableIdByName(TM_Objects, TempCheckObj.ObjectValue); // set id from table
+                                AddLog('Added Object ' + TempCheckObj.ObjectValue + ' to the table');
+                            end;
+                        end;
+
+                        if NewConversation.Events[e] is TConEventTransferObject then
+                        begin
+                            var TempTransObj := TConEventTransferObject(NewConversation.Events[e]);
+
+                            if FindTableIdByName(TM_Objects, TempTransObj.ObjectValue) = -1 then
+                            begin
+                                listObjects.Add(TempTransObj.ObjectValue);
+                                TempTransObj.ObjectIndex := FindTableIdByName(TM_Objects, TempTransObj.ObjectValue); // set id from table
+                                AddLog('Added Object ' + TempTransObj.ObjectValue + ' to the table');
+                            end;
+
+                            if FindTableIdByName(TM_ActorsPawns, TempTransObj.ActorFromValue) = -1 then
+                            begin
+                                listPawnsActors.Add(TempTransObj.ActorFromValue);
+                                TempTransObj.ActorFromIndex := FindTableIdByName(TM_ActorsPawns, TempTransObj.ActorFromValue); // set id from table
+                                AddLog('Added Actor/Pawn ' + TempTransObj.ActorFromValue + ' to the table');
+                            end;
+
+                            if FindTableIdByName(TM_ActorsPawns, TempTransObj.ActorToValue) = -1 then
+                            begin
+                                listPawnsActors.Add(TempTransObj.ActorToValue);
+                                TempTransObj.ActorToIndex := FindTableIdByName(TM_ActorsPawns, TempTransObj.ActorToValue); // set id from table
+                                AddLog('Added Actor/Pawn ' + TempTransObj.ActorToValue + ' to the table');
+                            end;
+                        end;
+
+                        if NewConversation.Events[e] is TConEventAnimation then
+                        begin
+                            var TempAnim := TConEventAnimation(NewConversation.Events[e]);
+
+                            if FindTableIdByName(TM_ActorsPawns, TempAnim.ActorValue) = -1 then
+                            begin
+                                listPawnsActors.Add(TempAnim.ActorValue);
+                                TempAnim.ActorIndex := FindTableIdByName(TM_ActorsPawns, TempAnim.ActorValue); // set id from table
+                                AddLog('Added Actor/Pawn ' + TempAnim.ActorValue + ' to the table');
+                            end;
+                        end;
+
+                        if NewConversation.Events[e] is TConEventTrade then
+                        begin
+                            var TempTrade := TConEventTrade(NewConversation.Events[e]);
+
+                            if FindTableIdByName(TM_ActorsPawns, TempTrade.TradeActorValue) = -1 then
+                            begin
+                                listPawnsActors.Add(TempTrade.TradeActorValue);
+                                TempTrade.TradeActorIndex := FindTableIdByName(TM_ActorsPawns, TempTrade.TradeActorValue); // set id from table
+                                AddLog('Added Actor/Pawn ' + TempTrade.TradeActorValue + ' to the table');
+                            end;
+                        end;
+                    end;
+
+
+                    ConversationsList.Add(NewConversation); // Add to object list
 
                     // Now add to tree
                     var OwnerNode := FindConvoOwnerInTree(NewConversation.conOwnerName);
 
                     if OwnerNode = nil then
                         OwnerNode := ConvoTree.Items.Add(nil, NewConversation.conOwnerName);
-
                     OwnerNode.ImageIndex := 0;
                     OwnerNode.ExpandedImageIndex := 0;
                     OwnerNode.SelectedIndex := 0;
 
-
                     var ConvoNode := ConvoTree.Items.AddChildObject(OwnerNode, NewConversation.conName, NewConversation);
-
                     ConvoNode.ImageIndex := 1;
                     ConvoNode.ExpandedImageIndex := 1;
                     ConvoNode.SelectedIndex := 1;
 
+                    // flags
+                    var NodeDependsOnFlags: TTreeNode;
 
-                    //ShowMessage(NewConversation.conName);
-
-
-
-
-
-                   {
-                    if EventToPaste = ET_Speech_Caption then
+                    for var tfl := 0 to High(NewConversation.conDependsOnFlags) do
                     begin
-                        var NewSpeech := TConEventSpeech.Create(); // Create new event
+                        NodeDependsOnFlags:= ConvoTree.Items.AddChild(ConvoNode,
+                        NewConversation.conDependsOnFlags[tfl].flagName + ' = '
+                        + BoolToStr(NewConversation.conDependsOnFlags[tfl].flagValue, true));
 
-                        BuildSpeech(BinReader, NewSpeech); // fill fields here (ConEditPlus.Clipboard.Helper.pas)
-
-                        if FindTableIdByName(TM_ActorsPawns, NewSpeech.ActorValue) = -1 then
+                        // red icon = false, green icon = true
+                        if NodeDependsOnFlags.Text.EndsText('true', NodeDependsOnFlags.Text) then
                         begin
-                            listPawnsActors.Add(NewSpeech.ActorValue);
-                            NewSpeech.ActorIndex := FindTableIdByName(TM_ActorsPawns,NewSpeech.ActorValue); // set id from table
-                            AddLog('Added ' + NewSpeech.ActorValue + ' to the table');
+                            NodeDependsOnFlags.ImageIndex := 2;
+                            NodeDependsOnFlags.ExpandedImageIndex := 2;
+                            NodeDependsOnFlags.SelectedIndex := 2;
+                        end else
+                        begin
+                            NodeDependsOnFlags.ImageIndex := 3;
+                            NodeDependsOnFlags.ExpandedImageIndex := 3;
+                            NodeDependsOnFlags.SelectedIndex := 3;
                         end;
 
-                        if FindTableIdByName(TM_ActorsPawns, NewSpeech.ActorToValue) = -1 then
-                        begin
-                            listPawnsActors.Add(NewSpeech.ActorToValue);
-                            NewSpeech.ActorToIndex := FindTableIdByName(TM_ActorsPawns,NewSpeech.ActorToValue); // set id from table
-                            AddLog('Added ' + NewSpeech.ActorToValue + ' to the table');
-                        end;
 
-                        Insert(NewSpeech, CurrentConversation.Events, ItemIdx); // and finally we can add it to array!
-
-                        var ListItemHeight := GetSpeechEventItemHeight([NewSpeech]);
-                        var HeightStr := '=' + ListItemHeight.ToString();
-                        ConEventList.Items.InsertObject(ItemIdx, ET_Speech_Caption+HeightStr, NewSpeech);
-                        ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewSpeech);
-
-                        AddLog('Added event from Clipboard:' + NewSpeech.ClassName);
-                    end; }
-
+                    end;
 
                 finally
                     mStream.Free();
@@ -2214,6 +2348,7 @@ begin
             end;
             UpdateEventListHeights();
             SetEventIndexes();
+            bFileModified := True;
         end;
     end
     else
@@ -2222,7 +2357,6 @@ begin
         Exit();
     end;
 end;
-
 
 procedure TfrmMain.CopyFinalMp3(CopyTo, FileName: String);
 var
@@ -4560,6 +4694,7 @@ begin
     begin
         CopyConversationToClipboard(CurrentConversation);
         DeleteCurrentConversation();
+        bFileModified := True;
     end;
 end;
 
@@ -4749,6 +4884,18 @@ begin
 
     if Assigned(Conversation) then
         AllowEdit := True else AllowEdit := False;
+end;
+
+procedure TfrmMain.ConvoTreeMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+    var ScreenPos: TPoint;
+
+    // Convert client coordinates to screen coordinates
+    ScreenPos := ClientToScreen(Point(X, Y));
+
+    // I don't know why there is exception, so I will spawn the menu manually...
+    if Button = mbRight then
+        PopupTree.Popup(ScreenPos.X, ScreenPos.Y + 35);
 end;
 
 procedure TfrmMain.End1Click(Sender: TObject);
@@ -6099,10 +6246,10 @@ end;
 
 procedure TfrmMain.PopupTreePopup(Sender: TObject); // block some menu items depending on selection
 begin
-    if ConvoTree.Items.Count < 2 then Exit();
+//    if ConvoTree.Items.Count < 2 then Exit();
 
-    if TreeHasItemsOfLevel(ConvoTree, 1) = true then
-    begin
+//    if TreeHasItemsOfLevel(ConvoTree, 1) = true then
+//    begin
         DeleteConversation.Enabled := ConvoTree.Selected.Level = 1;
         Conversation_Properties.Enabled := ConvoTree.Selected.Level = 1;
         Conversation_Rename.Enabled := ConvoTree.Selected.Level = 1;
@@ -6111,7 +6258,7 @@ begin
         Conversation_Copy.Enabled := ConvoTree.Selected.Level = 1;
         Conversation_Paste.Enabled := HasConversationToPaste();
 
-    end;
+//    end;
 //    else begin
 //        DeleteConversation.Enabled := ConvoTree.Selected.Level = 1;
 //        Conversation_Properties.Enabled := ConvoTree.Selected.Level = 1;
