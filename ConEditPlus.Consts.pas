@@ -360,6 +360,8 @@ ResourceString // These strings can be translated.
 
     strClipboardReadError = 'Error reading data from Clipboard!';
 
+    strRecentFileNotFound = 'Such file does not exists!';
+
 
 
 

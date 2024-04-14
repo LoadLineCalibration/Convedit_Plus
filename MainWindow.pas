@@ -4943,6 +4943,8 @@ begin
     if CurrentConversation = nil then Exit();
 
     var convoTreeItem := FindConversationInTree(CurrentConversation.conName);
+    var OwnerTreeItem := FindConvoOwnerInTree(CurrentConversation.conOwnerName);
+
     if convoTreeItem <> nil then
     begin
         var convoToDelete:= convoTreeItem.Data;
@@ -4950,6 +4952,10 @@ begin
         ConversationsList.Remove(convoToDelete);
         ConvoTree.Items.Delete(convoTreeItem); // delete from tree
     end;
+
+    if OwnerTreeItem.Count = 0 then
+        ConvoTree.Items.Delete(OwnerTreeItem); // No conversations left, delete parent node
+
 
 //    if CurrentConversation <> nil then
 //        ConversationsList.Remove(CurrentConversation); // delete conversation from list
@@ -6246,6 +6252,19 @@ end;
 
 procedure TfrmMain.PopupTreePopup(Sender: TObject); // block some menu items depending on selection
 begin
+    if ConvoTree.Selected = nil then
+    begin
+        DeleteConversation.Enabled := False;
+        Conversation_Properties.Enabled := False;
+        Conversation_Rename.Enabled := False;
+
+        Conversation_Cut.Enabled := False;
+        Conversation_Copy.Enabled := False;
+        Conversation_Paste.Enabled := False;
+
+        Exit();
+    end;
+
 //    if ConvoTree.Items.Count < 2 then Exit();
 
 //    if TreeHasItemsOfLevel(ConvoTree, 1) = true then
@@ -6277,12 +6296,26 @@ end;
 
 procedure TfrmMain.RecentFile0Click(Sender: TObject);
 begin
+    if bFileModified = true then
+    begin
+        case MessageDlg(strSaveConversationFileQuestion, mtConfirmation, mbYesNoCancel, 0) of
+          mrCancel: // Cancel, just close the dialog and exit
+            begin
+                Exit();
+            end;
+          mrYes: // Save the file
+            begin
+                FileSaveExecute(self);
+            end;
+        end;
+    end;
+
     var fileName := (Sender as TMenuItem).Caption;
 
     if FileExists(fileName) = True then
         OpenRecentFile(fileName)
     else
-        MessageDlg('Such file does not exists!',  mtError, [mbOK], 0);
+        MessageDlg(strRecentFileNotFound,  mtError, [mbOK], 0);
 end;
 
 procedure TfrmMain.tbPrintClick(Sender: TObject);
