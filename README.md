@@ -85,3 +85,13 @@ Enhancements over OG ConEdit:
 
 </details> 
 
+<details> 
+  <summary>How to build from sources:</summary>
+
+* Install Delphi 11.3 or Delphi Community Edition 11.3. Community edition is free.
+* Install CNPack (optional). 
+* Download and install FreeEsVCLComponents components library.
+* Download and install the Xml.VerySimple.
+* Download sources, open the .dproj file and hit F9 (by default).
+
+</details> 
