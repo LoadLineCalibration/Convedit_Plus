@@ -2,8 +2,9 @@
 
 An attempt to recreate Deus Ex conversation editor (ConEdit/ConvEdit) in Delphi Language (Pascal). 
 
-what is __NOT__ implemented yet:
-* Full support for dark mode
+ToDo list:
+* Full support for dark mode/customizable colors
+* Fix bugs and exceptions, write error handling for all possible cases
 * ~AutoSave~
 * ~Only unique event labels~
 * ~Insert event~ 
@@ -12,9 +13,7 @@ what is __NOT__ implemented yet:
 * ~search functions~
 * ~label checking~
 * ~deletion of unused tables entries~
-* and other minor stuff
   
-Also some bugs here and there. 
 
 ___
 
