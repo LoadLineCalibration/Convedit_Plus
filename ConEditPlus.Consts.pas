@@ -288,7 +288,7 @@ ResourceString // These strings can be translated.
     tbShowLogHint = 'Show log';
 
 
-    strInvalidConFileHdr = 'Invalid .con file header! Loading aborted. Please choose valid .con file.';
+    strInvalidConFileHdr = 'This is not a valid Conversation File!!';//  Invalid .con file header! Loading aborted. Please choose valid .con file.';
     strSelectConXML = 'Please select .con or .xml file!';
 
     strEmptyValue = '<empty>';
