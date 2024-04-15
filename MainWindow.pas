@@ -495,22 +495,26 @@ type
     var listSkills: TStringList;
     var listObjects: TStringList;
 
-    // Configuration file
+    // Configuration file variables begin
     // color variables for configuration file (clrGrid is color of separators between events)
     var clrHighlightEvent, clrHighlightEventFrom, clrHighlightEventTo, clrGrid: TColor;
 
+    // Events colors
+    var clSpeechBG, clSpeechNoAudioBG, clSpeechText: TColor;
+    var clChoiceBG, clChoiceNoAudioBG, clChoiceText: TColor;
+
+
     // boolean variables for configuration file
     var bShowAudioFiles, bShowStatusBar, bShowToolbar, bExpandedEventList,
-    bHighlightRelatedEvents,
-    bAskForConvoDelete, bAskForEventDelete, bHglEventWithNoAudio,
-    bHglEventsGradient, bFlatToolbar, {bAutoSaveEnabled,}
-    bUse3DSelectionFrame, bUseWhiteSelectedText, bDrawEventIdx, bUseLogging: Boolean;
+        bHighlightRelatedEvents,
+        bAskForConvoDelete, bAskForEventDelete, bHglEventWithNoAudio,
+        bHglEventsGradient, bFlatToolbar,
+        bUse3DSelectionFrame, bUseWhiteSelectedText, bDrawEventIdx, bUseLogging: Boolean;
 
     property bAutoSaveEnabled: Boolean read GetAutoSaveEnabled write SetAutoSaveEnabled;
 
     // strings
-    var ConversationUserName,
-    ConFilePath, ConFileBakPath, ConFileAudioPath: string;
+    var ConversationUserName, ConFilePath, ConFileBakPath, ConFileAudioPath: string;
 
     // Integer values
     var AutoSaveMinutes: Integer;
@@ -519,19 +523,21 @@ type
     // to store recent files!
     var RecentFiles: array[0..CEP_MAX_RECENT_FILES] of string;
 
-    var ReorderModKey: TReorderEventsModKey; // Hold xxx key to reorder events
+    // Hold xxx key to reorder events
+    var ReorderModKey: TReorderEventsModKey;
 
-    var EventListColorsMode: TEventListColorsMode; // Events list mode (regular/dark)
+    // Events list mode (regular/dark)
+    var EventListColorsMode: TEventListColorsMode;
 
     var bEnableDblClickTreeFlag: Boolean;
-    // end of configuration file variables
+    // Configuration file variables end
 
     var MainFormIni: TIniFile;     // ini file
 
     var currentConFile: string; // global variable, so I can use it anywhere...
 
-    //var bFileModified: Boolean; // set to True when file has been modified
-    property bFileModified: Boolean read GetFileModified write SetFileModified; // Property for bFileModified
+    // set to True when file has been modified. Converted to property
+    property bFileModified: Boolean read GetFileModified write SetFileModified;
 
     var eventsFormLeft: Integer;
     var eventsFormTop: Integer;
@@ -2305,11 +2311,13 @@ begin
 
                     if OwnerNode = nil then
                         OwnerNode := ConvoTree.Items.Add(nil, NewConversation.conOwnerName);
+
                     OwnerNode.ImageIndex := 0;
                     OwnerNode.ExpandedImageIndex := 0;
                     OwnerNode.SelectedIndex := 0;
 
                     var ConvoNode := ConvoTree.Items.AddChildObject(OwnerNode, NewConversation.conName, NewConversation);
+
                     ConvoNode.ImageIndex := 1;
                     ConvoNode.ExpandedImageIndex := 1;
                     ConvoNode.SelectedIndex := 1;
@@ -2335,8 +2343,6 @@ begin
                             NodeDependsOnFlags.ExpandedImageIndex := 3;
                             NodeDependsOnFlags.SelectedIndex := 3;
                         end;
-
-
                     end;
 
                 finally
@@ -2386,20 +2392,19 @@ begin
     ClearForNewFile();
     ToggleMenusPanels(True);
 
-    // ToDo: Add check if file has been modified, ask to save, etc.
     if LowerCase(ExtractFileExt(aFile)) = '.xml' then
     begin
-         LoadConXMLFile(aFile);
-         BuildConvoTree();
+        LoadConXMLFile(aFile);
+        BuildConvoTree();
     end else
     if LowerCase(ExtractFileExt(aFile)) = '.con' then
     begin
-         LoadConFile(aFile);
-         BuildConvoTree();
+        LoadConFile(aFile);
+        BuildConvoTree();
     end else
     begin
-       MessageDlg(strUnknownFile,  mtWarning, [mbOK], 0);
-       Exit();
+        MessageDlg(strUnknownFile,  mtWarning, [mbOK], 0);
+        Exit();
     end;
 
     currentConFile := aFile;
@@ -4450,6 +4455,36 @@ begin
 
     if (DragIndex <> -1) and (DropIndex <> -1) then
     begin
+        if (DragIndex < Length(CurrentConversation.Events)) and (DropIndex < Length(CurrentConversation.Events)) then
+        begin
+            TempEvent := CurrentConversation.Events[DragIndex];
+
+            if DragIndex < DropIndex then
+            begin
+                //Move(CurrentConversation.Events[DragIndex + 1], CurrentConversation.Events[DragIndex], (DropIndex - DragIndex) * SizeOf(TConEvent));
+                for var i := DragIndex to DropIndex - 1 do
+                  CurrentConversation.Events[i] := CurrentConversation.Events[i + 1];
+            end
+            else
+            begin
+                for var i := DragIndex downto DropIndex + 1 do
+                  CurrentConversation.Events[i] := CurrentConversation.Events[i - 1];
+                //Move(CurrentConversation.Events[DropIndex], CurrentConversation.Events[DropIndex + 1], (DragIndex - DropIndex) * SizeOf(TConEvent));
+            end;
+
+            CurrentConversation.Events[DropIndex] := TempEvent;
+
+            bFileModified := True;
+
+            ConEventList.Items.BeginUpdate();
+            ConEventList.Items.Move(DragIndex, DropIndex);
+            ConEventList.ItemIndex := DropIndex;
+            ConEventList.Items.EndUpdate();
+        end;
+    end;
+
+{    if (DragIndex <> -1) and (DropIndex <> -1) then
+    begin
         ConEventList.Items.Move(DragIndex, DropIndex);
         ConEventList.ItemIndex := DropIndex;
 
@@ -4457,10 +4492,16 @@ begin
         if (DragIndex < Length(CurrentConversation.Events)) and (DropIndex < Length(CurrentConversation.Events)) then
         begin
             TempEvent := CurrentConversation.Events[DragIndex];
+
             CurrentConversation.Events[DragIndex] := CurrentConversation.Events[DropIndex];
             CurrentConversation.Events[DropIndex] := TempEvent;
+
+            ConEventList.Items.Move(DragIndex, DropIndex);
+            ConEventList.ItemIndex := DropIndex;
         end;
-    end;
+    end;}
+
+    SetEventIndexes();
 end;
 
 procedure TfrmMain.ConEventListDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean); // More options, yes...
@@ -4481,15 +4522,6 @@ begin
 
         Pen.Style := psInsideFrame;
         Frame3D(TListBox(Control).Canvas, Rect, clWhite, clrGrid, 1); // разделитель
-
-{        if CurrentConversation <> nil then // Hide Event Index when needed
-        begin
-            if TConEvent(ConEventList.Items.Objects[Index]) <> nil then
-            begin
-               labelStr:= TConEvent(ConEventList.Items.Objects[Index]).EventLabel;
-               idxStr := TConEvent(ConEventList.Items.Objects[Index]).EventIdx.toString;
-            end;
-        end; }
 
         // Turns out, original ConEdit highlights events with non-empty label with green color!
         // But I will implement that feature differently...
@@ -4525,8 +4557,6 @@ begin
     SetEventIndexes();
     UpdateEventListHeights();
     ConEventList.Repaint();
-
-    bFileModified := True;
 end;
 
 procedure TfrmMain.ConEventListMeasureItem(Control: TWinControl; Index: Integer; var Height: Integer);
@@ -5188,7 +5218,6 @@ begin
         ProcessCommandline(ParamStr(1));
 
     Screen.HintFont.Name := 'Verdana';
-//    Screen.MenuFont.Name := 'Cascadia Code';
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);

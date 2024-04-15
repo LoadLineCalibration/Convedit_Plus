@@ -5825,6 +5825,7 @@ object frmMain: TfrmMain
         Font.Style = []
         HideSelection = False
         ParentFont = False
+        PopupMenu = frmEventInsAdd.MemoPopup
         TabOrder = 0
         OnKeyPress = edtSearchBoxKeyPress
       end
