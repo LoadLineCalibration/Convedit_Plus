@@ -70,7 +70,7 @@ object frmConvoProperties: TfrmConvoProperties
       Top = 3
       Width = 394
       Height = 404
-      ActivePage = tsinfo
+      ActivePage = Flags
       Align = alClient
       DoubleBuffered = False
       ParentDoubleBuffered = False
@@ -231,6 +231,7 @@ object frmConvoProperties: TfrmConvoProperties
           Caption = 'Delete'
           TabOrder = 2
           StyleElements = []
+          OnClick = btnDeleteFlagClick
         end
       end
       object Invoke: TTabSheet

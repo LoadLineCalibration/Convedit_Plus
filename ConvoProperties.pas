@@ -84,6 +84,7 @@ type
     // new functions
     function CheckConversationExists(conName: string): Boolean;
     procedure pgcConvoPropertiesTabsChange(Sender: TObject);
+    procedure btnDeleteFlagClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -250,7 +251,7 @@ begin
         begin
             conDependsOnFlags[cdof].flagName := lvConvoDependsOnFlags.Items[cdof].Caption; // and fill it
             conDependsOnFlags[cdof].flagValue := StrToBool(lvConvoDependsOnFlags.Items[cdof].SubItems[0]);
-            conDependsOnFlags[cdof].flagIndex := frmMain.FindTableIdByName(TM_Flags, lvConvoDependsOnFlags.Items[cdof].Caption); //lvConvoDependsOnFlags.Items[cdof].SubItems[1].ToInteger;
+            conDependsOnFlags[cdof].flagIndex := frmMain.FindTableIdByName(TM_Flags, lvConvoDependsOnFlags.Items[cdof].Caption);
         end;
     end;
 
@@ -286,6 +287,30 @@ begin
             NameNode.MoveTo(NewOwnerNode, naAddChild); // Move conversation branch to existing owner node
         end;
     end;
+
+    NameNode.DeleteChildren(); // delete all flag nodes
+
+    for var fl := 0 to High(convoToUpdate.conDependsOnFlags) do // and recreate them
+    begin
+        var NewNodeDependsOnFlags:= frmMain.ConvoTree.Items.AddChild(NameNode,
+        convoToUpdate.conDependsOnFlags[fl].flagName + ' = '
+        + BoolToStr(convoToUpdate.conDependsOnFlags[fl].flagValue, true));
+
+        // red icon = false, green icon = true
+        if NewNodeDependsOnFlags.Text.EndsText('true', NewNodeDependsOnFlags.Text) then
+        begin
+            NewNodeDependsOnFlags.ImageIndex := 2;
+            NewNodeDependsOnFlags.ExpandedImageIndex := 2;
+            NewNodeDependsOnFlags.SelectedIndex := 2;
+        end else
+        begin
+            NewNodeDependsOnFlags.ImageIndex := 3;
+            NewNodeDependsOnFlags.ExpandedImageIndex := 3;
+            NewNodeDependsOnFlags.SelectedIndex := 3;
+        end;
+    end;
+
+    NameNode.Expand(False);
 end;
 
 procedure TfrmConvoProperties.EditConversation_FillFields(var convoToEdit: TConversation);
@@ -348,6 +373,12 @@ end;
 procedure TfrmConvoProperties.btnCancelClick(Sender: TObject);
 begin
     Close();
+end;
+
+procedure TfrmConvoProperties.btnDeleteFlagClick(Sender: TObject);
+begin
+    if lvConvoDependsOnFlags.Selected <> nil then
+        lvConvoDependsOnFlags.Selected.Delete();
 end;
 
 procedure TfrmConvoProperties.chkNPCentersPCRadiusClick(Sender: TObject);
