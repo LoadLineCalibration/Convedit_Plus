@@ -1459,8 +1459,8 @@ begin
         begin
             Insert(NewCheckObj, frmMain.CurrentConversation.Events, ItemIdx);
 
-            var NewHeight := 25;
-            var TempString := ET_CheckObject_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            //var NewHeight := 25;
+            var TempString := ET_CheckObject_Caption;// + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
             frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewCheckObj);
         end;
     end;
@@ -1503,8 +1503,8 @@ begin
         begin
             Insert(NewTransObj, frmMain.CurrentConversation.Events, ItemIdx);
 
-            var NewHeight := 35;
-            var TempString := ET_TransferObject_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            //var NewHeight := 35;
+            var TempString := ET_TransferObject_Caption;// + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
             frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewTransObj);
         end;
     end;
@@ -1547,8 +1547,8 @@ begin
         begin
             Insert(NewMoveCam, frmMain.CurrentConversation.Events, ItemIdx);
 
-            var NewHeight := 25;
-            var TempString := ET_MoveCamera_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            //var NewHeight := 25;
+            var TempString := ET_MoveCamera_Caption;// + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
             frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewMoveCam);
         end;
     end;
@@ -1591,8 +1591,8 @@ begin
         begin
             Insert(NewAnim, frmMain.CurrentConversation.Events, ItemIdx);
 
-            var NewHeight := 70;
-            var TempString := ET_Animation_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            //var NewHeight := 70;
+            var TempString := ET_Animation_Caption;// + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
             frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewAnim);
         end;
     end;
@@ -1635,8 +1635,8 @@ begin
         begin
             Insert(NewTrade, frmMain.CurrentConversation.Events, ItemIdx);
 
-            var NewHeight := 44;
-            var TempString := ET_Trade_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            //var NewHeight := 44;
+            var TempString := ET_Trade_Caption;// + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
             frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewTrade);
         end;
     end;
@@ -1679,8 +1679,8 @@ begin
         begin
             Insert(NewEventJump, frmMain.CurrentConversation.Events, ItemIdx);
 
-            var NewHeight := 50;
-            var TempString := ET_Jump_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            //var NewHeight := 50;
+            var TempString := ET_Jump_Caption;// + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
             frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewEventJump);
         end;
     end;
@@ -1769,8 +1769,8 @@ begin
         begin
             Insert(NewEventTrigger, frmMain.CurrentConversation.Events, ItemIdx);
 
-            var NewHeight := 42;
-            var TempString := ET_Trigger_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            //var NewHeight := 42;
+            var TempString := ET_Trigger_Caption;// + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
             frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewEventTrigger);
         end;
     end;
@@ -1951,8 +1951,8 @@ begin
         begin
             Insert(NewEventAddCredits, frmMain.CurrentConversation.Events, ItemIdx);
 
-            var NewHeight := 44;
-            var TempString := ET_AddCredits_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            //var NewHeight := 44;
+            var TempString := ET_AddCredits_Caption;// + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
             frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewEventAddCredits);
         end;
     end;
@@ -1995,8 +1995,8 @@ begin
         begin
             Insert(NewEventCheckPersona, frmMain.CurrentConversation.Events, ItemIdx);
 
-            var NewHeight := 42;
-            var TempString := ET_CheckPersona_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            //var NewHeight := 42;
+            var TempString := ET_CheckPersona_Caption;// + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
             frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewEventCheckPersona);
         end;
     end;
@@ -2085,8 +2085,8 @@ begin
         begin
             Insert(NewEventEnd, frmMain.CurrentConversation.Events, ItemIdx);
 
-            var NewHeight := 25;
-            var TempString := ET_End_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            //var NewHeight := 25;
+            var TempString := ET_End_Caption;// + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
             frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewEventEnd);
         end;
     end;
