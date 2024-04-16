@@ -5136,7 +5136,7 @@ end;
 
 procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-    if (currentConFile <> '') and (bFileModified = true) then
+    if {(currentConFile <> '') and} (bFileModified = true) then
     begin
         case MessageDlg(strSaveConversationFileQuestion, mtConfirmation, mbYesNoCancel, 0) of
           mrCancel: // Cancel, do not close the program
@@ -5171,7 +5171,7 @@ begin
                     TreeBuildTask.Cancel(); // stop building tree
 
                 if (AutoSaveTask <> nil) and (AutoSaveTask.Status = TTaskStatus.Running) then
-                    AutoSaveTask.Cancel();
+                    AutoSaveTask.Cancel();  // stop autosave (can lead to incomplete file, maybe wait?)
 
                 CanClose := True;
             end;
