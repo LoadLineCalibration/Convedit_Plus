@@ -9,7 +9,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
   Vcl.Dialogs, winapi.ActiveX, ConEditPlus.Consts, Conversation.Classes, system.TypInfo,
-  vcl.ComCtrls;
+  vcl.ComCtrls, conEditPlus.Enums;
 
 procedure LoadConFile(conFile: string);
 
@@ -74,9 +74,9 @@ end;
 
 procedure LoadConFile(conFile: string);
 var
-  fileStr: TFileStream;
-  ConRead: TBinaryReader;
-  tempConvo: TConversation;
+    fileStr: TFileStream;
+    ConRead: TBinaryReader;
+    tempConvo: TConversation;
 begin
     fileStr := TFileStream.Create(conFile, fmOpenRead);
     ConRead := TBinaryReader.Create(fileStr, TEncoding.ANSI, False);
@@ -88,6 +88,8 @@ begin
         ConRead.Close(); // We have a problem, so kill objects.
         ConRead.Free();
         fileStr.Free();
+
+        frmMain.ToggleMenusPanels(False);
 
         raise Exception.Create(strInvalidConFileHdr);
     end;
@@ -475,10 +477,11 @@ begin
 
         for var AR := 0 to numActorRecords -1 do
         begin
-            var ActorIdx := ConRead.ReadInteger();
+            {var ActorIdx := }ConRead.ReadInteger();
             var ActorName := GetConString(ConRead);
 
-            conFileParameters.fpActors.Insert(ActorIdx, ActorName);
+            conFileParameters.fpActors.Add(ActorName);
+            //conFileParameters.fpActors.Insert(ActorIdx, ActorName);
         end;
 
         // Flags...
@@ -487,10 +490,11 @@ begin
 
         for var FR := 0 to numFlagsRecords -1 do
         begin
-            var FlagIdx := ConRead.ReadInteger();
+            {var FlagIdx := }ConRead.ReadInteger();
             var FlagName := GetConString(ConRead);
 
-            conFileParameters.fpFlags.Insert(FlagIdx, FlagName);
+            conFileParameters.fpFlags.Add(FlagName);
+            //conFileParameters.fpFlags.Insert(FlagIdx, FlagName);
         end;
 
         // Skills...
@@ -499,10 +503,11 @@ begin
 
         for var FR := 0 to numSkillsRecords -1 do
         begin
-            var SkillIdx := ConRead.ReadInteger();
+            {var SkillIdx := }ConRead.ReadInteger();
             var SkillName := GetConString(ConRead);
 
-            conFileParameters.fpSkills.Insert(SkillIdx, SkillName);
+            conFileParameters.fpSkills.Add(SkillName);
+            //conFileParameters.fpSkills.Insert(SkillIdx, SkillName);
         end;
 
         // Objects...
@@ -511,10 +516,11 @@ begin
 
         for var FR := 0 to numObjectsRecords -1 do
         begin
-            var ObjectIdx := ConRead.ReadInteger();
+            {var ObjectIdx := }ConRead.ReadInteger();
             var ObjectName := GetConString(ConRead);
 
-            conFileParameters.fpObjects.Insert(ObjectIdx, ObjectName);
+            conFileParameters.fpObjects.Add(ObjectName);
+            //conFileParameters.fpObjects.Insert(ObjectIdx, ObjectName);
         end;
     end;
 end;
@@ -522,12 +528,17 @@ end;
 procedure FillSpeech(ConRead: TBinaryReader; speechEvent: TConEventSpeech; eventLabel: string);
 begin
     speechEvent.EventLabel := eventLabel;
-    speechEvent.ActorIndex := ConRead.ReadInteger(); // speakerId
+
+    {speechEvent.ActorIndex := }ConRead.ReadInteger(); // speakerId
     speechEvent.ActorValue := GetConString(ConRead); // speakerName
+    speechEvent.ActorIndex := frmMain.FindTableIdByName(TM_ActorsPawns, speechEvent.ActorValue);
+
     frmMain.AddLog('EventLabel:' + eventLabel + ' Speaker: '+ speechEvent.ActorValue + ' id: ' + speechEvent.ActorIndex.ToString);
 
-    speechEvent.ActorToIndex := ConRead.ReadInteger(); // speakingTo id
+    {speechEvent.ActorToIndex := }ConRead.ReadInteger(); // speakingTo id
     speechEvent.ActorToValue := GetConString(ConRead); // speakingTo Name
+    speechEvent.ActorToIndex := frmMain.FindTableIdByName(TM_ActorsPawns, speechEvent.ActorToValue);
+
     frmMain.AddLog('SpeakingTo: '+ speechEvent.ActorToValue + ' id: ' + speechEvent.ActorToIndex.ToString);
 
     speechEvent.TextLine := GetConString(ConRead); // speech text
@@ -633,8 +644,9 @@ begin
 
     for var SF := 0 to numFlags -1 do
     begin
-        setFlagEvent.SetFlags[SF].flagIndex := ConRead.ReadInteger();
+        {setFlagEvent.SetFlags[SF].flagIndex := }ConRead.ReadInteger();
         setFlagEvent.SetFlags[SF].flagName := GetConString(ConRead);
+        setFlagEvent.SetFlags[SF].flagIndex := frmMain.FindTableIdByName(TM_Flags, setFlagEvent.SetFlags[SF].flagName);
         setFlagEvent.SetFlags[SF].flagValue := GetConLongBool(ConRead);
         setFlagEvent.SetFlags[SF].flagExpiration := ConRead.ReadInteger();
     end;
@@ -651,8 +663,9 @@ begin
 
     for var CF := 0 to numFlags -1 do
     begin
-        checkFlagEvent.FlagsToCheck[CF].flagIndex := ConRead.ReadInteger();
+        {checkFlagEvent.FlagsToCheck[CF].flagIndex := }ConRead.ReadInteger();
         checkFlagEvent.FlagsToCheck[CF].flagName := GetConString(ConRead);
+        checkFlagEvent.FlagsToCheck[CF].flagIndex := frmMain.FindTableIdByName(TM_Flags, checkFlagEvent.FlagsToCheck[CF].flagName);
         checkFlagEvent.FlagsToCheck[CF].flagValue := GetConLongBool(ConRead);
         checkFlagEvent.FlagsToCheck[CF].flagExpiration := ConRead.ReadInteger();
     end;
@@ -664,9 +677,9 @@ procedure FillCheckObject(ConRead: TBinaryReader; checkObjectEvent: TConEventChe
 begin
     checkObjectEvent.EventLabel := eventLabel;
 
-    checkObjectEvent.ObjectIndex := ConRead.ReadInteger(); // id
+    {checkObjectEvent.ObjectIndex :=} ConRead.ReadInteger(); // id
     checkObjectEvent.ObjectValue := GetConString(ConRead); // string: size and data
-
+    checkObjectEvent.ObjectIndex := frmMain.FindTableIdByName(TM_Objects, checkObjectEvent.ObjectValue);
     checkObjectEvent.GoToLabel := GetConString(ConRead); // failLabel
 end;
 
@@ -674,17 +687,20 @@ procedure FillTransferObject(ConRead: TBinaryReader; transferObjectEvent: TConEv
 begin
     transferObjectEvent.EventLabel := eventLabel;
 
-    transferObjectEvent.ObjectIndex := ConRead.ReadInteger(); //objectName/id
+    {transferObjectEvent.ObjectIndex := }ConRead.ReadInteger(); //objectName/id
     transferObjectEvent.ObjectValue := GetConString(ConRead); // objectName/name
+    transferObjectEvent.ObjectIndex := frmMain.FindTableIdByName(TM_Objects, transferObjectEvent.ObjectValue);
 
     transferObjectEvent.Amount := ConRead.ReadInteger(); // TransferCountOpt (?)
     frmMain.AddLog('TransferCountOpt = ' + transferObjectEvent.Amount.ToString);
 
-    transferObjectEvent.ActorFromIndex := ConRead.ReadInteger(); // fromName/id
+    {transferObjectEvent.ActorFromIndex := }ConRead.ReadInteger(); // fromName/id
     transferObjectEvent.ActorFromValue := GetConString(ConRead); // fromName/name
+    transferObjectEvent.ActorFromIndex := frmMain.FindTableIdByName(TM_ActorsPawns, transferObjectEvent.ActorFromValue);
 
-    transferObjectEvent.ActorToIndex := ConRead.ReadInteger(); // toName/id
+    {transferObjectEvent.ActorToIndex := }ConRead.ReadInteger(); // toName/id
     transferObjectEvent.ActorToValue := GetConString(ConRead); // toName/value
+    transferObjectEvent.ActorToIndex := frmMain.FindTableIdByName(TM_ActorsPawns, transferObjectEvent.ActorToValue);
 
     transferObjectEvent.GotoLabel := GetConString(ConRead);  // failLabel
     frmMain.addlog('failLabel = ' + transferObjectEvent.GotoLabel);
@@ -708,8 +724,9 @@ procedure FillAnimation(ConRead: TBinaryReader; animEvent: TConEventAnimation; e
 begin
     animEvent.EventLabel := eventLabel;
 
-    animEvent.ActorIndex := ConRead.ReadInteger();
+    {animEvent.ActorIndex := }ConRead.ReadInteger();
     animEvent.ActorValue := GetConString(ConRead);
+    animEvent.ActorIndex := frmMain.FindTableIdByName(TM_ActorsPawns, animEvent.ActorValue);
     animEvent.AnimSequence := GetConString(ConRead);
 
     // loop = 0, Once = 1
@@ -721,8 +738,9 @@ end;
 procedure FillTrade(ConRead: TBinaryReader; eventTrade: TConEventTrade; eventLabel: string);
 begin
     eventTrade.EventLabel := eventLabel;
-    eventTrade.TradeActorIndex := ConRead.ReadInteger();
+    {eventTrade.TradeActorIndex := }ConRead.ReadInteger();
     eventTrade.TradeActorValue := GetConString(ConRead);
+    eventTrade.TradeActorIndex := frmMain.FindTableIdByName(TM_ActorsPawns, eventTrade.TradeActorValue);
 end;
 
 procedure FillJump(ConRead: TBinaryReader; eventJump: TConEventJump; eventLabel: string);
