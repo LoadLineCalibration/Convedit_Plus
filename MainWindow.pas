@@ -207,6 +207,9 @@ type
     GenAudiofilenames: TMenuItem;
     AutoSaveTimer: TTimer;
     lblSelectedEvent: TLabel;
+    N8: TMenuItem;
+    CopySpeechtext1: TMenuItem;
+    Event_CopySpeechText: TAction;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -464,6 +467,7 @@ type
     procedure Conversation_CopyExecute(Sender: TObject);
     procedure Conversation_PasteExecute(Sender: TObject);
     procedure ConvoTreeMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure Event_CopySpeechTextExecute(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -5010,6 +5014,16 @@ begin
         CopyEventToClipboard(CurrentEvent);
 end;
 
+procedure TfrmMain.Event_CopySpeechTextExecute(Sender: TObject);
+begin
+    var SpeechObj := ConEventList.Items.Objects[ConEventList.ItemIndex];
+
+    if SpeechObj is TConEventSpeech then
+    begin
+        Clipboard.AsText := TConEventSpeech(SpeechObj).TextLine;
+    end;
+end;
+
 procedure TfrmMain.Event_CutExecute(Sender: TObject);
 begin
     if CurrentEvent <> nil then
@@ -5157,7 +5171,6 @@ begin
                             CanClose := False;
                             Exit();
                         end;
-                        mrOk:;
                     end;
                 end;
 
@@ -6266,6 +6279,7 @@ begin
         Copy3.Enabled := false;
         PasteConvoEvent.Enabled := HasConvoEventToPaste();
         Event_Duplicate.Enabled := False;
+        Event_CopySpeechText.Visible := False;
     end else
     begin
         Add2.Enabled := true;
@@ -6276,6 +6290,7 @@ begin
         Copy3.Enabled := true;
         PasteConvoEvent.Enabled := HasConvoEventToPaste();
         Event_Duplicate.Enabled := true;
+        Event_CopySpeechText.Visible := ConEventList.Items.Objects[ConEventList.ItemIndex] is TConEventSpeech;
     end;
 end;
 
