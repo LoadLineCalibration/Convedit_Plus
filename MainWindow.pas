@@ -210,6 +210,8 @@ type
     N8: TMenuItem;
     CopySpeechtext1: TMenuItem;
     Event_CopySpeechText: TAction;
+    Event_CopyMp3Path: TAction;
+    Copymp3filepath1: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -468,6 +470,7 @@ type
     procedure Conversation_PasteExecute(Sender: TObject);
     procedure ConvoTreeMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure Event_CopySpeechTextExecute(Sender: TObject);
+    procedure Event_CopyMp3PathExecute(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -1003,8 +1006,6 @@ begin
 
     Result := tempStr;
 end;
-
-
 
 function TfrmMain.FindConversationObjById(idToLookFor: Integer): TConversation;
 begin
@@ -5014,6 +5015,16 @@ begin
         CopyEventToClipboard(CurrentEvent);
 end;
 
+procedure TfrmMain.Event_CopyMp3PathExecute(Sender: TObject);
+begin
+    var SpeechObj := ConEventList.Items.Objects[ConEventList.ItemIndex];
+
+    if SpeechObj is TConEventSpeech then
+    begin
+        Clipboard.AsText := IncludeTrailingPathDelimiter(ConFileAudioPath) + TConEventSpeech(SpeechObj).mp3File;
+    end;
+end;
+
 procedure TfrmMain.Event_CopySpeechTextExecute(Sender: TObject);
 begin
     var SpeechObj := ConEventList.Items.Objects[ConEventList.ItemIndex];
@@ -6258,17 +6269,8 @@ end;
 
 procedure TfrmMain.PopupConvoEventListPopup(Sender: TObject); // Enable/disable some menu items...
 begin
-{    if (ConvoTree.Items.Count < 1) or (ConvoTree.Selected.Level <> 1) then
-    begin
-        Add2.Enabled := False;
-        Insert2.Enabled := false;
-        Edit1.Enabled := false;
-        Delete1.Enabled := false;
-        Cut3.Enabled := false;
-        Copy3.Enabled := false;
-        PasteConvoEvent.Enabled := False;
-        Event_Duplicate.Enabled := False;
-    end else}
+    var SpeechObj := ConEventList.Items.Objects[ConEventList.ItemIndex];
+
     if ConEventList.ItemIndex = -1 then
     begin
         Add2.Enabled := true;
@@ -6280,6 +6282,7 @@ begin
         PasteConvoEvent.Enabled := HasConvoEventToPaste();
         Event_Duplicate.Enabled := False;
         Event_CopySpeechText.Visible := False;
+        Event_CopyMp3Path.Visible := False;
     end else
     begin
         Add2.Enabled := true;
@@ -6290,7 +6293,8 @@ begin
         Copy3.Enabled := true;
         PasteConvoEvent.Enabled := HasConvoEventToPaste();
         Event_Duplicate.Enabled := true;
-        Event_CopySpeechText.Visible := ConEventList.Items.Objects[ConEventList.ItemIndex] is TConEventSpeech;
+        Event_CopySpeechText.Visible := SpeechObj is TConEventSpeech;
+        Event_CopyMp3Path.Enabled := (SpeechObj is TConEventSpeech) and (TConEventSpeech(SpeechObj).mp3File <> '');
     end;
 end;
 
