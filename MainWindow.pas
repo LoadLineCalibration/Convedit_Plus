@@ -210,8 +210,12 @@ type
     N8: TMenuItem;
     CopySpeechtext1: TMenuItem;
     Event_CopySpeechText: TAction;
-    Event_CopyMp3Path: TAction;
+    Event_CopyMp3FileAndPath: TAction;
     Copymp3filepath1: TMenuItem;
+    Event_CopyMp3FilePath: TAction;
+    Event_CopyMp3File: TAction;
+    EventCopyMp3File1: TMenuItem;
+    Copymp3path1: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -470,7 +474,9 @@ type
     procedure Conversation_PasteExecute(Sender: TObject);
     procedure ConvoTreeMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure Event_CopySpeechTextExecute(Sender: TObject);
-    procedure Event_CopyMp3PathExecute(Sender: TObject);
+    procedure Event_CopyMp3FileAndPathExecute(Sender: TObject);
+    procedure Event_CopyMp3FilePathExecute(Sender: TObject);
+    procedure Event_CopyMp3FileExecute(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -1343,10 +1349,21 @@ end;
 
 procedure TfrmMain.GenerateAudioFileNames();
 begin
+    // ToDo: Add special case for InfoLink convos!
+    // Example: C:\Games\DeusEx_RTX\GameConversations\Audio\Chapter2\InfoLink\DL_Startup
+    // But C:\Games\DeusEx_RTX\GameConversations\Audio\Chapter2\JCDenton\DL_Startup Will NOT work!
+
     // speech events
     for var con in ConversationsList do
     begin
         var tempDict:= TDictionary<string,integer>.Create();
+        var ConNameDirectory: string;
+
+        if con.bInfoLink = True then
+            ConNameDirectory := INFOLINK_CONVERSATION_DIRECTORY
+        else
+            ConNameDirectory := con.conOwnerName;
+
 
         for var i:= 0 to High(con.Events) do
         begin
@@ -1361,13 +1378,13 @@ begin
 
                 if counter < 10 then // maybe just use Format() function?
                     speechEvent.mp3File := conFileParameters.fpAudioPackage + '\'
-                                         + con.conOwnerName + '\'
+                                         + {con.conOwnerName} ConNameDirectory + '\'
                                          + con.conName + '\'
                                          + speechEvent.ActorValue
                                          + '0' + counter.ToString + '.mp3'
                 else
                     speechEvent.mp3File := conFileParameters.fpAudioPackage + '\'
-                                         + con.conOwnerName + '\'
+                                         + {con.conOwnerName} ConNameDirectory + '\'
                                          + con.conName + '\'
                                          + speechEvent.ActorValue
                                          + counter.ToString + '.mp3';
@@ -1415,6 +1432,8 @@ begin
             end;
         end;
     end;
+
+    bFileModified := True;
 
 
     // choices. Должно быть так:
@@ -5015,13 +5034,30 @@ begin
         CopyEventToClipboard(CurrentEvent);
 end;
 
-procedure TfrmMain.Event_CopyMp3PathExecute(Sender: TObject);
+procedure TfrmMain.Event_CopyMp3FileAndPathExecute(Sender: TObject);
+begin
+    var SpeechObj := ConEventList.Items.Objects[ConEventList.ItemIndex];
+
+    if SpeechObj is TConEventSpeech then
+        Clipboard.AsText := IncludeTrailingPathDelimiter(ConFileAudioPath) + TConEventSpeech(SpeechObj).mp3File;
+end;
+
+procedure TfrmMain.Event_CopyMp3FileExecute(Sender: TObject);
+begin
+    var SpeechObj := ConEventList.Items.Objects[ConEventList.ItemIndex];
+
+    if SpeechObj is TConEventSpeech then
+        Clipboard.AsText := ExtractFileName(TConEventSpeech(SpeechObj).mp3File);
+end;
+
+procedure TfrmMain.Event_CopyMp3FilePathExecute(Sender: TObject);
 begin
     var SpeechObj := ConEventList.Items.Objects[ConEventList.ItemIndex];
 
     if SpeechObj is TConEventSpeech then
     begin
-        Clipboard.AsText := IncludeTrailingPathDelimiter(ConFileAudioPath) + TConEventSpeech(SpeechObj).mp3File;
+        var TempPath := ExtractFilePath(IncludeTrailingPathDelimiter(ConFileAudioPath) + TConEventSpeech(SpeechObj).mp3File);
+        Clipboard.AsText := TempPath;
     end;
 end;
 
@@ -5030,9 +5066,7 @@ begin
     var SpeechObj := ConEventList.Items.Objects[ConEventList.ItemIndex];
 
     if SpeechObj is TConEventSpeech then
-    begin
         Clipboard.AsText := TConEventSpeech(SpeechObj).TextLine;
-    end;
 end;
 
 procedure TfrmMain.Event_CutExecute(Sender: TObject);
@@ -6269,9 +6303,19 @@ end;
 
 procedure TfrmMain.PopupConvoEventListPopup(Sender: TObject); // Enable/disable some menu items...
 begin
-    var SpeechObj := ConEventList.Items.Objects[ConEventList.ItemIndex];
+    var ListObject: TObject;
+    var SpeechObj: TConEventSpeech := nil;
+    var ItemIdx := ConEventList.ItemIndex;
 
-    if ConEventList.ItemIndex = -1 then
+    if ItemIdx <> -1 then
+    begin
+        ListObject := ConEventList.Items.Objects[ItemIdx];
+
+        if ListObject is TConEventSpeech then
+            SpeechObj := TConEventSpeech(ListObject);
+    end;
+
+    if ItemIdx = -1 then
     begin
         Add2.Enabled := true;
         Insert2.Enabled := false;
@@ -6282,7 +6326,9 @@ begin
         PasteConvoEvent.Enabled := HasConvoEventToPaste();
         Event_Duplicate.Enabled := False;
         Event_CopySpeechText.Visible := False;
-        Event_CopyMp3Path.Visible := False;
+        Event_CopyMp3FileAndPath.Visible := False;
+        Event_CopyMp3FilePath.Visible := False;
+        Event_CopyMp3File.Visible := False;
     end else
     begin
         Add2.Enabled := true;
@@ -6293,8 +6339,16 @@ begin
         Copy3.Enabled := true;
         PasteConvoEvent.Enabled := HasConvoEventToPaste();
         Event_Duplicate.Enabled := true;
-        Event_CopySpeechText.Visible := SpeechObj is TConEventSpeech;
-        Event_CopyMp3Path.Enabled := (SpeechObj is TConEventSpeech) and (TConEventSpeech(SpeechObj).mp3File <> '');
+
+//        if Assigned(SpeechObj) then
+//        begin
+        Event_CopySpeechText.Visible     := SpeechObj <> nil;
+        Event_CopyMp3FileAndPath.Visible := (SpeechObj <> nil) and (SpeechObj.mp3File <> '');
+        Event_CopyMp3FilePath.Visible    := Event_CopyMp3FileAndPath.Visible;
+        Event_CopyMp3File.Visible        := Event_CopyMp3FileAndPath.Visible;
+//            Event_CopySpeechText.Visible := SpeechObj is TConEventSpeech;
+//            Event_CopyMp3Path.Visible := (SpeechObj is TConEventSpeech) and (TConEventSpeech(SpeechObj).mp3File <> '');
+//        end;
     end;
 end;
 

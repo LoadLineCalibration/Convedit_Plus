@@ -6318,7 +6318,13 @@ object frmMain: TfrmMain
       Action = Event_CopySpeechText
     end
     object Copymp3filepath1: TMenuItem
-      Action = Event_CopyMp3Path
+      Action = Event_CopyMp3FileAndPath
+    end
+    object EventCopyMp3File1: TMenuItem
+      Action = Event_CopyMp3File
+    end
+    object Copymp3path1: TMenuItem
+      Action = Event_CopyMp3FilePath
     end
   end
   object ImageListToolbar: TImageList
@@ -8527,11 +8533,21 @@ object frmMain: TfrmMain
       Caption = 'Copy Speech Text'
       OnExecute = Event_CopySpeechTextExecute
     end
-    object Event_CopyMp3Path: TAction
+    object Event_CopyMp3FileAndPath: TAction
       Category = 'Events'
-      Caption = 'Copy .mp3 file + path'
+      Caption = 'Copy .mp3 path + name'
       ImageIndex = 12
-      OnExecute = Event_CopyMp3PathExecute
+      OnExecute = Event_CopyMp3FileAndPathExecute
+    end
+    object Event_CopyMp3FilePath: TAction
+      Category = 'Events'
+      Caption = 'Copy only path to .mp3'
+      OnExecute = Event_CopyMp3FilePathExecute
+    end
+    object Event_CopyMp3File: TAction
+      Category = 'Events'
+      Caption = 'Copy only .mp3 filename'
+      OnExecute = Event_CopyMp3FileExecute
     end
   end
   object FileSaveDialog: TFileSaveDialog
