@@ -209,6 +209,9 @@ begin
         end;
     end;
 
+    if chkAdd_PlayedFlag.Checked = True then
+        frmMain.listFlags.Add(ConvoToAdd.conName + '_Played');
+
     frmMain.SelectTreeItemByObject(frmMain.ConvoTree, ConvoToAdd); // select the conversation
 end;
 
@@ -309,6 +312,9 @@ begin
             NewNodeDependsOnFlags.SelectedIndex := 3;
         end;
     end;
+
+    if chkAdd_PlayedFlag.Checked = True then
+        frmMain.listFlags.Add(convoToUpdate.conName + '_Played');
 
     NameNode.Expand(False);
 end;
