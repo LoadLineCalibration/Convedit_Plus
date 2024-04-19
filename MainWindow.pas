@@ -216,6 +216,9 @@ type
     Event_CopyMp3File: TAction;
     EventCopyMp3File1: TMenuItem;
     Copymp3path1: TMenuItem;
+    N9: TMenuItem;
+    OpenExplorerforthisevent1: TMenuItem;
+    Event_BrowseTo: TAction;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -477,6 +480,7 @@ type
     procedure Event_CopyMp3FileAndPathExecute(Sender: TObject);
     procedure Event_CopyMp3FilePathExecute(Sender: TObject);
     procedure Event_CopyMp3FileExecute(Sender: TObject);
+    procedure Event_BrowseToExecute(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -5028,6 +5032,19 @@ begin
         AddLog('ConEventList[' + i.ToString + '] ' + ConEventList.Items[i]);
 end;
 
+procedure TfrmMain.Event_BrowseToExecute(Sender: TObject);
+begin
+    var SpeechObj := ConEventList.Items.Objects[ConEventList.ItemIndex];
+
+    if SpeechObj is TConEventSpeech then
+    begin
+        var TempPath := ExtractFilePath(IncludeTrailingPathDelimiter(ConFileAudioPath) + TConEventSpeech(SpeechObj).mp3File);
+
+        if DirectoryExists(TempPath) then
+            ShellExecute(0, 'open', PChar(TempPath), nil, nil, SW_SHOWNORMAL);
+    end;
+end;
+
 procedure TfrmMain.Event_CopyExecute(Sender: TObject);
 begin
     if CurrentEvent <> nil then
@@ -6329,6 +6346,7 @@ begin
         Event_CopyMp3FileAndPath.Visible := False;
         Event_CopyMp3FilePath.Visible := False;
         Event_CopyMp3File.Visible := False;
+        Event_BrowseTo.Visible := False;
     end else
     begin
         Add2.Enabled := true;
@@ -6340,15 +6358,11 @@ begin
         PasteConvoEvent.Enabled := HasConvoEventToPaste();
         Event_Duplicate.Enabled := true;
 
-//        if Assigned(SpeechObj) then
-//        begin
         Event_CopySpeechText.Visible     := SpeechObj <> nil;
         Event_CopyMp3FileAndPath.Visible := (SpeechObj <> nil) and (SpeechObj.mp3File <> '');
         Event_CopyMp3FilePath.Visible    := Event_CopyMp3FileAndPath.Visible;
         Event_CopyMp3File.Visible        := Event_CopyMp3FileAndPath.Visible;
-//            Event_CopySpeechText.Visible := SpeechObj is TConEventSpeech;
-//            Event_CopyMp3Path.Visible := (SpeechObj is TConEventSpeech) and (TConEventSpeech(SpeechObj).mp3File <> '');
-//        end;
+        Event_BrowseTo.Visible           := Event_CopyMp3FileAndPath.Visible;
     end;
 end;
 
