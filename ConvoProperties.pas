@@ -440,6 +440,7 @@ end;
 procedure TfrmConvoProperties.FormShow(Sender: TObject);
 begin
     editConvoNameChange(Self);
+    chkDisplayConvoOnlyOnceClick(self);
 end;
 
 procedure TfrmConvoProperties.lvConvoDependsOnFlagsDblClick(Sender: TObject);

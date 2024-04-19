@@ -70,7 +70,7 @@ object frmConvoProperties: TfrmConvoProperties
       Top = 3
       Width = 394
       Height = 404
-      ActivePage = Flags
+      ActivePage = Options
       Align = alClient
       DoubleBuffered = False
       ParentDoubleBuffered = False
