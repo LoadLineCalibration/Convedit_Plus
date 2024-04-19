@@ -2433,9 +2433,9 @@ begin
     PlayMP3Speech(edtSpeechAudioFile.Text);
 
     if mp1.Mode = mpPlaying then
-       btnPlayAudioFile.Caption:=strPlayMP3
+        btnPlayAudioFile.Caption := strStopMP3
     else
-       btnPlayAudioFile.Caption:=strStopMP3;
+        btnPlayAudioFile.Caption := strPlayMP3;
 end;
 
 procedure TfrmEventInsAdd.btnRemoveAllRandomLabelsClick(Sender: TObject); // Удаляет метки перехода
@@ -3021,7 +3021,7 @@ begin
     if mp1.Mode = mpStopped then
     begin
         mp3posUpdateTimer.Enabled := False;
-        btnPlayAudioFile.Caption := strPlayMP3;
+//        btnPlayAudioFile.Caption := strPlayMP3;
     end;
 end;
 
