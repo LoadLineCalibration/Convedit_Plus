@@ -231,6 +231,7 @@ type
     StaticText1: TStaticText;
     chkFollowMainWindow: TCheckBox;
     btnSaveChoiceItem: TButton;
+    btnSwapNow: TButton;
 
     // new functions
     function CanAddRandomLabel(): Boolean;
@@ -404,6 +405,7 @@ type
     procedure memoCommentTextChange(Sender: TObject);
     procedure btnDeleteChoiceFlagClick(Sender: TObject);
     procedure btnSaveChoiceItemClick(Sender: TObject);
+    procedure btnSwapNowClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -2464,6 +2466,18 @@ begin
     frmMain.PickTableObject(TM_ActorsPawns, cmbSpeakingTo);
 end;
 
+procedure TfrmEventInsAdd.btnSwapNowClick(Sender: TObject);
+begin
+    var SpeakFromIndex := cmbSpeakingFrom.ItemIndex; // to swap items in comboboxes
+    var SpeakToIndex := cmbSpeakingTo.ItemIndex;
+
+    if cmbEventType.ItemIndex = Ord(ET_Speech) then
+    begin
+        cmbSpeakingFrom.ItemIndex := SpeakToIndex;
+        cmbSpeakingTo.ItemIndex := SpeakFromIndex;
+    end;
+end;
+
 procedure TfrmEventInsAdd.btnTransferObjFromClick(Sender: TObject);
 begin
     frmMain.PickTableObject(TM_ActorsPawns, cmbTransferObjectFrom);
@@ -3007,11 +3021,11 @@ begin
     begin
         mp3posUpdateTimer.Enabled := False;
         btnPlayAudioFile.Caption := strPlayMP3;
+        mp1.Close();
     end;
+
     if mp1.Mode = mpPlaying then
-    begin
         btnPlayAudioFile.Caption := strStopMP3;
-    end;
 end;
 
 procedure TfrmEventInsAdd.mp3posUpdateTimerTimer(Sender: TObject);
@@ -3019,10 +3033,7 @@ begin
     mp3Pos_pb.Position := mp1.Position;
 
     if mp1.Mode = mpStopped then
-    begin
         mp3posUpdateTimer.Enabled := False;
-//        btnPlayAudioFile.Caption := strPlayMP3;
-    end;
 end;
 
 procedure TfrmEventInsAdd.mp3VolumeControlChange(Sender: TObject);
