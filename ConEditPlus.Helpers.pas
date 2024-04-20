@@ -12,6 +12,7 @@ uses
 function StringStartsFromDigit(str: String): Boolean;
 function IsInvalidFName(const AString: string): Boolean;
 function ValidateFName(const AString: string): Boolean;
+function GetDPIAsRatio(): Single;
 function GenerateRandomSuffix(): string;
 
 // procedures
@@ -45,6 +46,34 @@ begin
               (Pos('_', AString) > 0) and
               (CharInSet(AString[1],  ['A'..'Z', 'a'..'z'])) and
               (not CharInSet(AString[1], ['0'..'9']));
+end;
+
+{function ValidateFName(const AString: string): Boolean;
+var
+  CharIndex: Integer;
+begin
+  Result := (Pos(' ', AString) = 0) and
+            (CharInSet(AString[1], ['A'..'Z', 'a'..'z'])) and
+            (not CharInSet(AString[1], ['0'..'9']));
+
+  for CharIndex := 1 to Length(AString) do
+  begin
+    if not (AString[CharIndex] in ['A'..'Z', 'a'..'z', '_']) then
+    begin
+      Result := False;
+      Break;
+    end;
+  end;
+end;}
+
+
+function GetDPIAsRatio(): Single;
+var
+    DC: HDC;
+begin
+    DC := GetDC(0);
+    Result := GetDeviceCaps(DC, LOGPIXELSX) / 96.0;
+    ReleaseDC(0, DC);
 end;
 
 function GenerateRandomSuffix(): string;

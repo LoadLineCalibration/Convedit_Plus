@@ -219,6 +219,7 @@ type
     N9: TMenuItem;
     OpenExplorerforthisevent1: TMenuItem;
     Event_BrowseTo: TAction;
+    CheckDpiRatio: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -481,6 +482,7 @@ type
     procedure Event_CopyMp3FilePathExecute(Sender: TObject);
     procedure Event_CopyMp3FileExecute(Sender: TObject);
     procedure Event_BrowseToExecute(Sender: TObject);
+    procedure CheckDpiRatioClick(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -4994,6 +4996,11 @@ begin
     ConEventList.DeleteSelected(); // also delete from list
 
     frmMain.bFileModified := True;
+end;
+
+procedure TfrmMain.CheckDpiRatioClick(Sender: TObject);
+begin
+    ShowMessage(GetDPIAsRatio().ToString());
 end;
 
 procedure TfrmMain.DeleteCurrentConversation();

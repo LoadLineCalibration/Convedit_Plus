@@ -8620,6 +8620,10 @@ object frmMain: TfrmMain
       Caption = 'CurrentConversation.Events'
       OnClick = CurrentConversationEvents1Click
     end
+    object CheckDpiRatio: TMenuItem
+      Caption = 'Check DPI Ratio'
+      OnClick = CheckDpiRatioClick
+    end
   end
   object tmrEventWinPosSync: TTimer
     Enabled = False
