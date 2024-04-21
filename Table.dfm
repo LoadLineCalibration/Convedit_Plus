@@ -59,9 +59,9 @@ object frmTableEdit: TfrmTableEdit
   TextHeight = 15
   object lstTableContents: TListBox
     Left = 7
-    Top = 72
+    Top = 101
     Width = 350
-    Height = 223
+    Height = 197
     Anchors = [akLeft, akTop, akRight, akBottom]
     ItemHeight = 15
     PopupMenu = ListContentsPopup
@@ -80,6 +80,7 @@ object frmTableEdit: TfrmTableEdit
     Height = 23
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 1
+    TextHint = 'Add new item'
     StyleName = 'Windows'
     OnChange = editTableChange
     OnKeyPress = editTableKeyPress
@@ -98,8 +99,8 @@ object frmTableEdit: TfrmTableEdit
     OnClick = btnAddItemClick
   end
   object btnEdit: TButton
-    Left = 364
-    Top = 75
+    Left = 363
+    Top = 72
     Width = 102
     Height = 24
     Anchors = [akTop, akRight]
@@ -110,8 +111,8 @@ object frmTableEdit: TfrmTableEdit
     OnClick = btnEditClick
   end
   object btnDelete: TButton
-    Left = 364
-    Top = 105
+    Left = 363
+    Top = 102
     Width = 102
     Height = 26
     Anchors = [akTop, akRight]
@@ -122,8 +123,8 @@ object frmTableEdit: TfrmTableEdit
     OnClick = btnDeleteClick
   end
   object btnDeleteUnused: TButton
-    Left = 363
-    Top = 137
+    Left = 362
+    Top = 134
     Width = 102
     Height = 25
     Anchors = [akTop, akRight]
@@ -133,8 +134,8 @@ object frmTableEdit: TfrmTableEdit
     OnClick = btnDeleteUnusedClick
   end
   object btnClose: TButton
-    Left = 363
-    Top = 183
+    Left = 362
+    Top = 180
     Width = 102
     Height = 25
     Anchors = [akTop, akRight]
@@ -145,9 +146,9 @@ object frmTableEdit: TfrmTableEdit
     OnClick = btnCloseClick
   end
   object chkClearAfterAdd: TCheckBox
-    Left = 8
+    Left = 203
     Top = 49
-    Width = 177
+    Width = 193
     Height = 17
     Caption = 'Clear input field after adding?'
     Checked = True
@@ -156,9 +157,9 @@ object frmTableEdit: TfrmTableEdit
     StyleName = 'Windows'
   end
   object chkDoubleClickEditItem: TCheckBox
-    Left = 191
+    Left = 8
     Top = 49
-    Width = 129
+    Width = 161
     Height = 17
     Hint = 'Otherwise close window, like in original ConEdit.'
     Caption = 'Double Click to edit?'
@@ -259,6 +260,17 @@ object frmTableEdit: TfrmTableEdit
     AutoSize = False
     BorderStyle = sbsSunken
     TabOrder = 16
+  end
+  object edtSearchInTable: TEdit
+    Left = 8
+    Top = 72
+    Width = 349
+    Height = 23
+    Anchors = [akLeft, akTop, akRight]
+    PopupMenu = frmEventInsAdd.MemoPopup
+    TabOrder = 17
+    TextHint = 'Search in table (case-insensitive, partial match)'
+    OnChange = edtSearchInTableChange
   end
   object CustomItemsPopup: TPopupMenu
     AutoHotkeys = maManual

@@ -31,6 +31,7 @@ type
     CustomItem1: TMenuItem;
     ListContentsPopup: TPopupMenu;
     Copytoclipboard1: TMenuItem;
+    edtSearchInTable: TEdit;
 
     // new procedures
     procedure UpdateButtonsState();
@@ -70,6 +71,7 @@ type
     procedure CustomItem1Click(Sender: TObject);
     procedure ListContentsPopupPopup(Sender: TObject);
     procedure Copytoclipboard1Click(Sender: TObject);
+    procedure edtSearchInTableChange(Sender: TObject);
   private
     { Private declarations }
   public
@@ -510,6 +512,25 @@ begin
     FilterEditInput(key);
 end;
 
+procedure TfrmTableEdit.edtSearchInTableChange(Sender: TObject);
+begin
+    lstTableContents.MultiSelect := True;
+
+    lstTableContents.Items.BeginUpdate();
+
+    try
+        lstTableContents.ClearSelection();
+
+        for var i:= 0 to lstTableContents.Items.Count -1 do
+        begin
+            if Pos(UpperCase(edtSearchInTable.Text), UpperCase(lstTableContents.Items[i])) > 0 then
+                lstTableContents.Selected[i] := True;
+        end;
+    finally
+        lstTableContents.Items.EndUpdate();
+    end;
+end;
+
 procedure TfrmTableEdit.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
     if frmFlagList.Visible = true then
@@ -586,6 +607,7 @@ end;
 
 procedure TfrmTableEdit.lstTableContentsClick(Sender: TObject);
 begin
+    lstTableContents.MultiSelect := False;
     UpdateButtonsState();
 end;
 
