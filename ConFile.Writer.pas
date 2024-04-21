@@ -304,7 +304,8 @@ begin
     WriteInteger(ConWrite, eventPlayAnim.ActorIndex); // eventOwnerName.id
     WriteString(ConWrite, eventPlayAnim.ActorValue); // eventOwnerName.Name
     WriteString(ConWrite, eventPlayAnim.AnimSequence); // seqStr
-    WriteLongBool(ConWrite, eventPlayAnim.bAnimPlayOnce); // playMode.
+//    WriteLongBool(ConWrite, eventPlayAnim.bAnimPlayOnce); // playMode.
+    WriteLongBool(ConWrite, not eventPlayAnim.bAnimPlayOnce); // playMode. // WTF? Maybe convert it to Enum?
     WriteInteger(ConWrite, eventPlayAnim.AnimPlayForSeconds); // This field is missing in ConEventAnimation.uc (by default)
     WriteLongBool(ConWrite, eventPlayAnim.bAnimWaitToFinish); // bFinishAnim
 end;
