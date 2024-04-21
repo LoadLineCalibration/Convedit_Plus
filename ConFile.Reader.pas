@@ -730,6 +730,7 @@ begin
     animEvent.AnimSequence := GetConString(ConRead);
 
     // loop = 0, Once = 1
+    //animEvent.bAnimPlayOnce := not GetConLongBool(ConRead); // Invert the value, so it will look correctly for user.
     animEvent.bAnimPlayOnce := GetConLongBool(ConRead);
     animEvent.AnimPlayForSeconds := ConRead.ReadInteger();
     animEvent.bAnimWaitToFinish := GetConLongBool(ConRead);

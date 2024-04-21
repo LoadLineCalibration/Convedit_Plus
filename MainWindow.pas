@@ -220,6 +220,7 @@ type
     OpenExplorerforthisevent1: TMenuItem;
     Event_BrowseTo: TAction;
     CheckDpiRatio: TMenuItem;
+    N10: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -691,6 +692,7 @@ begin
     end;
 
     dResult := 20 + (17 * aLength); // 20 for name and 17 for each flag string
+    //dResult := Round(20 * GetDPIAsRatio()) + Round(17 * GetDpiAsRatio()) * aLength; // 20 for name and 17 for each flag string
 
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
 
@@ -710,6 +712,8 @@ begin
     end;
 
     dResult := 20 + (17 * aLength); // 20 for name and 17 for each flag string
+    //dResult := Round(20 * GetDPIAsRatio()) + (Round(17 * GetDPIAsRatio()) * aLength); // 20 for name and 17 for each flag string
+    //dResult := Round(20 * GetDPIAsRatio()) + (Round(17 * GetDPIAsRatio()) * aLength);
 
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
 
@@ -741,7 +745,8 @@ begin
         end;
     end;
 
-    dResult := 20 + (17 * tLength); // 20 for name and 17 for each Choice Item + space for flags
+    //dResult := 20 + (17 * tLength); // 20 for name and 17 for each Choice Item + space for flags
+    dResult := Round(20 * GetDPIAsRatio()) + (Round(17 * GetDPIAsRatio()) * tLength); // 20 for name and 17 for each Choice Item + space for flags
 
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
 
@@ -780,7 +785,8 @@ begin
         end;
     end;
 
-    dResult := 18 + (16 * aLength); // 20 for name and 17 for each speech string
+    //dResult := 18 + (16 * aLength); // 20 for name and 17 for each speech string
+    dResult := Round(18 * GetDPIAsRatio()) + (Round(16 * GetDPIAsRatio()) * aLength); // 20 for name and 17 for each speech string
 
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
 
@@ -802,6 +808,7 @@ begin
     end;
 
     dResult := 38 + (17 * aLength); // 38 for name and 17 for each flag string
+    //dResult := Round(38 * GetDPIAsRatio()) + (Round(17 * GetDPIAsRatio()) * aLength); // 38 for name and 17 for each flag string
 
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
 
@@ -822,7 +829,8 @@ begin
         end;
     end;
 
-    dResult := 20 + (16 * aLength); // 18 for event name and 17 for each comment string
+    //dResult := 20 + (16 * aLength); // 18 for event name and 17 for each comment string
+    dResult := Round(20 * GetDPIAsRatio()) + (Round(16 * GetDPIAsRatio()) * aLength); // 18 for event name and 17 for each comment string
 
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
 
@@ -843,7 +851,8 @@ begin
         end;
     end;
 
-    dResult := 5 + (16 * aLength); // 18 for event name and 17 for each comment string
+    //dResult := 5 + (16 * aLength); // 18 for event name and 17 for each comment string
+    dResult := Round(5 * GetDPIAsRatio()) + (Round(16 * GetDPIAsRatio()) * aLength); // 18 for event name and 17 for each comment string
 
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
 
@@ -864,7 +873,8 @@ begin
         end;
     end;
 
-    dResult := 20 + (16 * aLength); // 18 for event name and 17 for each comment string
+    //dResult := 20 + (16 * aLength); // 18 for event name and 17 for each comment string
+    dResult := Round(20 * GetDPIAsRatio()) + (Round(16 * GetDPIAsRatio()) * aLength); // 18 for event name and 17 for each comment string
 
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
 
@@ -885,7 +895,8 @@ begin
         end;
     end;
 
-    dResult := 5 + (16 * aLength); // 18 for event name and 17 for each comment string
+    //dResult := 5 + (16 * aLength); // 18 for event name and 17 for each comment string
+    dResult := Round(5 * GetDPIAsRatio()) + (Round(16 * GetDPIAsRatio()) * aLength); // 18 for event name and 17 for each comment string
 
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
 
@@ -2734,7 +2745,8 @@ begin
 
         tempRect := Rect;
         tempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width;
-        tempRect.Top := Rect.Top + 16;
+        //tempRect.Top := Rect.Top + 16;
+        tempRect.Top := Rect.Top + Round(16 * GetDPIAsRatio());
         tempRect.Right := Rect.Right - SysScrollBarWidth; // right offset
 
         Font.Style := [];
@@ -2817,7 +2829,9 @@ begin
 
         for var E:= 0 to EventChoice.NumChoices -1 do
         begin
-            Inc(tempRect.Top, 17);
+            //Inc(tempRect.Top, 17);
+            Inc(tempRect.Top, Round(GetDPIAsRatio() * 17));
+
             if EventChoice.Choices[E].bSkillNeeded <> -1 then
             begin // bSkillNedded <>  -1, i.e. true
                 if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clNavy;
@@ -2847,7 +2861,8 @@ begin
                                          + BoolToStr(EventChoice.Choices[E].RequiredFlags[F].flagValue, True) + '] ';
                     end;
 
-                    Inc(tempRect.Top, 17);
+                    //Inc(tempRect.Top, 17);
+                    Inc(tempRect.Top, Round(GetDPIAsRatio() * 17));
                     DrawText(Handle,strDependsOnFlag + FlagsStr, -1, tempRect, DT_END_ELLIPSIS);
 
                     Font.Name := CEP_SPEECH_EVENT_FONT;
@@ -2881,7 +2896,8 @@ begin
                                   + BoolToStr(EventChoice.Choices[E].RequiredFlags[F].flagValue, True) + '] ';
                     end;
 
-                    Inc(tempRect.Top, 17);
+                    //Inc(tempRect.Top, 17);
+                    Inc(tempRect.Top, Round(GetDPIAsRatio() * 17));
                     DrawText(Handle,strDependsOnFlag + FlagsStr, -1, tempRect, DT_END_ELLIPSIS);
 
                     Font.Name := CEP_SPEECH_EVENT_FONT;
@@ -2938,17 +2954,19 @@ begin
         Font.Size := CEP_EVENT_HEADER_LIST_FONT_SIZE;
 
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width;
-        Inc(tempRect.Top, 16);
+        //Inc(tempRect.Top, 16);
+        Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));
 
         for var i := 0 to Length(EventSetFlags.SetFlags) -1 do
         begin
-           flagvalue := BoolToStr(EventSetFlags.SetFlags[i].FlagValue, true);
-           if EventSetFlags.SetFlags[i].flagExpiration = 0 then FlagExpiresStr := 'Never' else
-              FlagExpiresStr := EventSetFlags.SetFlags[i].flagExpiration.ToString;
+            flagvalue := BoolToStr(EventSetFlags.SetFlags[i].FlagValue, true);
+            if EventSetFlags.SetFlags[i].flagExpiration = 0 then FlagExpiresStr := 'Never' else
+                FlagExpiresStr := EventSetFlags.SetFlags[i].flagExpiration.ToString;
 
-           DrawText(Handle,EventSetFlags.SetFlags[i].FlagName + '=' + flagvalue +
-           ' Expires: ' + FlagExpiresStr, -1, TempRect, DT_END_ELLIPSIS);
-           Inc(tempRect.Top, 16); // Отступ вниз
+            DrawText(Handle,EventSetFlags.SetFlags[i].FlagName + '=' + flagvalue +
+            ' Expires: ' + FlagExpiresStr, -1, TempRect, DT_END_ELLIPSIS);
+            Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));
+            //Inc(tempRect.Top, 16); // Отступ вниз
         end;
     end;
 end;
@@ -3000,14 +3018,16 @@ begin
         Font.Size := CEP_EVENT_HEADER_LIST_FONT_SIZE;
 
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width;
-        Inc(tempRect.Top, 16);
+        Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));
+        //Inc(tempRect.Top, 16);
 
         for var i := 0 to Length(EventCheckFlag.FlagsToCheck) -1 do
         begin
            var flagvalue := BoolToStr(EventCheckFlag.FlagsToCheck[i].FlagValue, true);
 
            DrawText(Handle,EventCheckFlag.FlagsToCheck[i].FlagName + '=' + flagvalue, -1, TempRect, DT_END_ELLIPSIS);
-           Inc(tempRect.Top, 16); // Отступ вниз
+           Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));
+           //Inc(tempRect.Top, 16); // Отступ вниз
         end;
     end;
 end;
@@ -3238,16 +3258,19 @@ begin
 
         DrawText(Handle, 'Play Animation: ' + PlayAnimSeq, -1, tempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
 
-        Inc(tempRect.Top, 16);
+        //Inc(tempRect.Top, 16);
+        Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));
         DrawText(Handle, 'Play Once: ' + BoolToStr(bPlayAnimOnce, true) + '', -1, tempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
 
-        Inc(tempRect.Top, 16);
+        //Inc(tempRect.Top, 16);
+        Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));
         DrawText(Handle, 'Wait Anim to finish: ' + BoolToStr(bPlayAnimWaitToFinish, true) + '', -1, tempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
 
         if PlayAnimDurationSec > 0 then
         begin
-           Inc(tempRect.Top, 16);
-           DrawText(Handle, 'Play duration: ' + PlayAnimDurationSec.ToString + ' seconds', -1, tempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
+           //Inc(tempRect.Top, 16);
+            Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));
+            DrawText(Handle, 'Play duration: ' + PlayAnimDurationSec.ToString + ' seconds', -1, tempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
         end;
 
     end;
@@ -3326,7 +3349,8 @@ begin
         Font.Size := CEP_EVENT_HEADER_LIST_FONT_SIZE;
 
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width;
-        Inc(tempRect.Top, 16);
+        Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));
+        //Inc(tempRect.Top, 16);
 
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
 
@@ -3391,7 +3415,8 @@ begin
         TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top, ET_Random_Caption);
 
         Font.Style := [];
-        TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top + 12, ET_Random_TargetLabels);
+        TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top + Round(12 * GetDPIAsRatio()), ET_Random_TargetLabels);
+        //TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top + 12, ET_Random_TargetLabels);
 
         tempRect := Rect;
 
@@ -3402,14 +3427,17 @@ begin
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width + HeaderControl1.Sections[1].Width;
         DrawText(Handle, Format(strRandomEventOptions,[strCycle, strCycleOnce, strRandCycle]) , -1, TempRect, DT_END_ELLIPSIS);
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width;
-        tempRect.Top := Rect.Top + 12;
+        tempRect.Top := Rect.Top + Round(12 * GetDPIAsRatio());
+        //tempRect.Top := Rect.Top + 12;
 
-        Inc(tempRect.Top, 16);
+        //Inc(tempRect.Top, 16);
+        Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));
 
         for var i := 0 to Length(labelsArray) -1 do
         begin
-           DrawText(Handle,labelsArray[i], -1, TempRect, DT_END_ELLIPSIS);  // maybe someone will be using very long labels?
-           Inc(tempRect.Top, 16); // Отступ вниз
+            DrawText(Handle,labelsArray[i], -1, TempRect, DT_END_ELLIPSIS);  // maybe someone will be using very long labels?
+            Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));
+            //Inc(tempRect.Top, 16); // Отступ вниз
         end;
     end;
 end;
@@ -3457,7 +3485,8 @@ begin
         Font.Size := CEP_EVENT_HEADER_LIST_FONT_SIZE;
 
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width;
-        Inc(tempRect.Top, 16);
+        Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));
+        //Inc(tempRect.Top, 16);
 
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
         DrawText(Handle,'Trigger ' + TriggerTag, -1, TempRect, DT_END_ELLIPSIS);
@@ -3538,11 +3567,14 @@ begin
         Font.Size := CEP_EVENT_HEADER_LIST_FONT_SIZE;
 
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width;
-        Inc(tempRect.Top, 16);
+        Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));
+        //Inc(tempRect.Top, 16);
 
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+
         DrawText(Handle,strGoalName + GoalName, -1, TempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
-        Inc(tempRect.Top, 16);
+        Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));
+        //Inc(tempRect.Top, 16);
         TempRect.Right := Rect.Right - SysScrollBarWidth; // right offset
 
         if bComplete = False then
@@ -3611,7 +3643,8 @@ begin
 
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width;
         tempRect.Right := Rect.Right - SysScrollBarWidth; // right offset
-        Inc(tempRect.Top, 16);
+        Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));
+        //Inc(tempRect.Top, 16);
 
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
         DrawText(Handle,NoteText, -1, TempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
@@ -3667,11 +3700,13 @@ begin
 
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width;
         tempRect.Right := Rect.Right - SysScrollBarWidth; // right offset
-        Inc(tempRect.Top, 16);
+        Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));
+        //Inc(tempRect.Top, 16);
 
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlue;
         DrawText(Handle,Format(strAddSkillPoints, [SkillPoints]), -1, TempRect, DT_END_ELLIPSIS);
-        Inc(tempRect.Top, 16);
+        Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));
+        //Inc(tempRect.Top, 16);
         DrawText(Handle,SkillAwardMessage, -1, TempRect, DT_END_ELLIPSIS);
     end;
 end;
@@ -3721,7 +3756,8 @@ begin
         Font.Size := CEP_EVENT_HEADER_LIST_FONT_SIZE;
 
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width;
-        Inc(tempRect.Top, 16);
+        Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));
+        //Inc(tempRect.Top, 16);
 
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlue;
 
@@ -3797,7 +3833,8 @@ begin
         Font.Size := CEP_EVENT_HEADER_LIST_FONT_SIZE;
 
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width;
-        Inc(tempRect.Top, 16);
+        Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));
+        //Inc(tempRect.Top, 16);
 
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlue;
         DrawText(Handle,CombinedString, -1, TempRect, DT_END_ELLIPSIS);
@@ -3849,7 +3886,8 @@ begin
 
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width;
         tempRect.Right := Rect.Right - SysScrollBarWidth; // right offset
-        Inc(tempRect.Top, 16);
+        Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));
+        //Inc(tempRect.Top, 16);
 
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlue;
         DrawText(Handle,CommentString, -1, TempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
@@ -3962,7 +4000,8 @@ begin
            Font.Color := clWhite else Font.Color := clMaroon;
 
         if bDrawEventIdx = True then
-            TextOut(Rect.Left + 20, Rect.Top + 4, labelStr)
+            TextOut(Rect.Left + Round(30 * GetDPIAsRatio()), Rect.Top + 4, labelStr)
+            //TextOut(Rect.Left + 20, Rect.Top + 4, labelStr)
         else
             TextOut(Rect.Left + 2, Rect.Top + 2, labelStr);
 
@@ -4592,49 +4631,49 @@ end;
 procedure TfrmMain.ConEventListMeasureItem(Control: TWinControl; Index: Integer; var Height: Integer);
 begin
     if ConEventList.Items[Index].Contains(ET_Speech_Caption) = True then
-       Height := ConEventList.Items.ValueFromIndex[Index].ToInteger;
+        Height := Round(ConEventList.Items.ValueFromIndex[Index].ToInteger * GetDPIAsRatio());
 
     if ConEventList.Items[Index].Contains(ET_Choice_Caption) = True then
-        Height := ConEventList.Items.ValueFromIndex[Index].ToInteger;
+        Height := Round(ConEventList.Items.ValueFromIndex[Index].ToInteger * GetDPIAsRatio());
 
     if ConEventList.Items[Index].Contains(ET_SetFlag_Caption) = true then
-        Height := ConEventList.Items.ValueFromIndex[Index].ToInteger;
+        Height := Round(ConEventList.Items.ValueFromIndex[Index].ToInteger * GetDPIAsRatio());
 
     if ConEventList.Items[Index].Contains(ET_CheckFlag_Caption) = True then
-        Height := ConEventList.Items.ValueFromIndex[Index].ToInteger;
+        Height := Round(ConEventList.Items.ValueFromIndex[Index].ToInteger * GetDPIAsRatio());
 
-    if ConEventList.Items[Index] = ET_CheckObject_Caption then Height := 25; // fixed
-    if ConEventList.Items[Index] = ET_TransferObject_Caption then Height := 35; // fixed
-    if ConEventList.Items[Index] = ET_MoveCamera_Caption then Height := 25; // fixed
-    if ConEventList.Items[Index] = ET_Animation_Caption then Height := 70; // fixed
-    if ConEventList.Items[Index] = ET_Trade_Caption then Height := 44;  // fixed, also not implemented
-    if ConEventList.Items[Index] = ET_Jump_Caption then Height := 50; // fixed
+    if ConEventList.Items[Index] = ET_CheckObject_Caption then Height := Round(25 * GetDPIAsRatio()); // fixed
+    if ConEventList.Items[Index] = ET_TransferObject_Caption then Height := Round(35 * GetDPIAsRatio()); // fixed
+    if ConEventList.Items[Index] = ET_MoveCamera_Caption then Height := Round(25 * GetDPIAsRatio()); // fixed
+    if ConEventList.Items[Index] = ET_Animation_Caption then Height := Round(70 * GetDPIAsRatio()); // fixed
+    if ConEventList.Items[Index] = ET_Trade_Caption then Height := Round(44 * GetDPIAsRatio());  // fixed, also not implemented
+    if ConEventList.Items[Index] = ET_Jump_Caption then Height := Round(50 * GetDPIAsRatio()); // fixed
 
     if ConEventList.Items[Index].Contains(ET_Random_Caption) = True then
-        Height := ConEventList.Items.ValueFromIndex[Index].ToInteger; // variable
+        Height := Round(ConEventList.Items.ValueFromIndex[Index].ToInteger * GetDPIAsRatio()); // variable
 
-    if ConEventList.Items[Index] = ET_Trigger_Caption then Height := 42;  // fixed
+    if ConEventList.Items[Index] = ET_Trigger_Caption then Height := Round(42 * GetDPIAsRatio());  // fixed
 
     //if ConEventList.Items[Index] = ET_AddGoal_Caption then Height := 75;  // variable
     if ConEventList.Items[Index].Contains(ET_AddGoal_Caption) = True then
-        Height := ConEventList.Items.ValueFromIndex[Index].ToInteger; // variable
+        Height := Round(ConEventList.Items.ValueFromIndex[Index].ToInteger * GetDPIAsRatio()); // variable
 
     //if ConEventList.Items[Index] = ET_AddNote_Caption then Height := 40;  // variable
     if ConEventList.Items[Index].Contains(ET_AddNote_Caption) = True then
-        Height := ConEventList.Items.ValueFromIndex[Index].ToInteger; // variable
+        Height := Round(ConEventList.Items.ValueFromIndex[Index].ToInteger * GetDPIAsRatio()); // variable
 
     //if ConEventList.Items[Index] = ET_AddSkillPoints_Caption then Height := 58;  // variable
     if ConEventList.Items[Index].Contains(ET_AddSkillPoints_Caption) then
-        Height := ConEventList.Items.ValueFromIndex[Index].ToInteger; // variable
+        Height := Round(ConEventList.Items.ValueFromIndex[Index].ToInteger * GetDPIAsRatio()); // variable
 
-    if ConEventList.Items[Index] = ET_AddCredits_Caption then Height := 44;  // fixed
-    if ConEventList.Items[Index] = ET_CheckPersona_Caption then Height := 42;  // fixed
+    if ConEventList.Items[Index] = ET_AddCredits_Caption then Height := Round(44 * GetDPIAsRatio());  // fixed
+    if ConEventList.Items[Index] = ET_CheckPersona_Caption then Height := Round(42 * GetDPIAsRatio());  // fixed
 
     //if ConEventList.Items[Index] = ET_Comment_Caption then Height := 40; // variable
     if ConEventList.Items[Index].Contains(ET_Comment_Caption) then
-        Height := ConEventList.Items.ValueFromIndex[Index].ToInteger; // variable
+        Height := Round(ConEventList.Items.ValueFromIndex[Index].ToInteger * GetDPIAsRatio()); // variable
 
-    if ConEventList.Items[Index] = ET_End_Caption then Height := 25; // fixed
+    if ConEventList.Items[Index] = ET_End_Caption then Height := Round(25 * GetDPIAsRatio()); // fixed
 end;
 
 procedure TfrmMain.ConEventListMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -4814,16 +4853,20 @@ begin
         for var F:=0 to Length(CurrentConversation.Events) -1 do
         begin  //
             case CurrentConversation.Events[F].EventType of
-                ET_Speech: ConEventList.Items.AddPair(ET_Speech_Caption, GetSpeechEventItemHeight(CurrentConversation.Events[F]).ToString,
+                ET_Speech: ConEventList.Items.AddPair(ET_Speech_Caption,
+                                                      GetSpeechEventItemHeight(CurrentConversation.Events[F]).ToString,
                                                       CurrentConversation.Events[F]);
 
-                ET_Choice: ConEventList.Items.AddPair(ET_Choice_Caption, GetChoiceItemHeight(CurrentConversation.Events[F]).ToString,
+                ET_Choice: ConEventList.Items.AddPair(ET_Choice_Caption,
+                                                      GetChoiceItemHeight(CurrentConversation.Events[F]).ToString,
                                                       CurrentConversation.Events[F]);
 
-                ET_SetFlag: ConEventList.Items.AddPair(ET_SetFlag_Caption,GetSetFlagsItemHeight(CurrentConversation.Events[F]).ToString,
+                ET_SetFlag: ConEventList.Items.AddPair(ET_SetFlag_Caption,
+                                                       GetSetFlagsItemHeight(CurrentConversation.Events[F]).ToString,
                                                        CurrentConversation.Events[F]);
 
-                ET_CheckFlag: ConEventList.Items.AddPair(ET_CheckFlag_Caption,GetCheckFlagsItemHeight(CurrentConversation.Events[F]).ToString,
+                ET_CheckFlag: ConEventList.Items.AddPair(ET_CheckFlag_Caption,
+                                                         GetCheckFlagsItemHeight(CurrentConversation.Events[F]).ToString,
                                                          CurrentConversation.Events[F]);
 
                 ET_CheckObject: ConEventList.Items.AddObject(ET_CheckObject_Caption, CurrentConversation.Events[F]);
@@ -4833,25 +4876,30 @@ begin
                 ET_Trade: ConEventList.Items.AddObject(ET_Trade_Caption, CurrentConversation.Events[F]);
                 ET_Jump: ConEventList.Items.AddObject(ET_Jump_Caption, CurrentConversation.Events[F]);
 
-                ET_Random: ConEventList.Items.AddPair(ET_Random_Caption, GetRandomEventItemHeight(CurrentConversation.Events[F]).ToString,
+                ET_Random: ConEventList.Items.AddPair(ET_Random_Caption,
+                                                      GetRandomEventItemHeight(CurrentConversation.Events[F]).ToString,
                                                       CurrentConversation.Events[F]);
 
                 ET_Trigger: ConEventList.Items.AddObject(ET_Trigger_Caption, CurrentConversation.Events[F]);
 
                 //ET_AddGoal: ConEventList.Items.AddObject(ET_AddGoal_Caption, CurrentConversation.Events[F]);
-                ET_AddGoal: ConEventList.Items.AddPair(ET_AddGoal_Caption, GetAddGoalItemHeight([CurrentConversation.Events[F]]).ToString,
+                ET_AddGoal: ConEventList.Items.AddPair(ET_AddGoal_Caption,
+                                                       GetAddGoalItemHeight([CurrentConversation.Events[F]]).ToString,
                                                        CurrentConversation.Events[F]);
 
-                ET_AddNote: ConEventList.Items.AddPair(ET_AddNote_Caption, GetAddNoteItemHeight([CurrentConversation.Events[F]]).ToString,
+                ET_AddNote: ConEventList.Items.AddPair(ET_AddNote_Caption,
+                                                       GetAddNoteItemHeight([CurrentConversation.Events[F]]).ToString,
                                                        CurrentConversation.Events[F]);
 
-                ET_AddSkillPoints: ConEventList.Items.AddPair(ET_AddSkillPoints_Caption, GetAddSkillPtsItemHeight([CurrentConversation.Events[F]]).ToString,
+                ET_AddSkillPoints: ConEventList.Items.AddPair(ET_AddSkillPoints_Caption,
+                                                              GetAddSkillPtsItemHeight([CurrentConversation.Events[F]]).ToString,
                                                               CurrentConversation.Events[F]);
 
                 ET_AddCredits: ConEventList.Items.AddObject(ET_AddCredits_Caption, CurrentConversation.Events[F]);
                 ET_CheckPersona: ConEventList.Items.AddObject(ET_CheckPersona_Caption, CurrentConversation.Events[F]);
 
-                ET_Comment: ConEventList.Items.AddPair(ET_Comment_Caption, GetCommentItemHeight([CurrentConversation.Events[F]]).ToString,
+                ET_Comment: ConEventList.Items.AddPair(ET_Comment_Caption,
+                                                       GetCommentItemHeight([CurrentConversation.Events[F]]).ToString,
                                                        CurrentConversation.Events[F]);
 
                 ET_End: ConEventList.Items.AddObject(ET_End_Caption, CurrentConversation.Events[F]);
@@ -5000,7 +5048,11 @@ end;
 
 procedure TfrmMain.CheckDpiRatioClick(Sender: TObject);
 begin
-    ShowMessage(GetDPIAsRatio().ToString());
+    var TestString: string;
+
+    TestString := Round(25 * GetDPIAsRatio()).ToString + ' (Rounded)';
+
+    ShowMessage('25 * ' + GetDPIAsRatio().ToString() + ' = ' + TestString);
 end;
 
 procedure TfrmMain.DeleteCurrentConversation();
