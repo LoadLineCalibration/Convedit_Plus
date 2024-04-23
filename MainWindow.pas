@@ -5442,13 +5442,12 @@ begin
         end;
     end;
 
-
-    ClearForNewFile(); // free memory before loading new file
-
     FileOpenDialog.FileTypeIndex := OpenFileFilterIndex; // restore filter index
 
     if FileOpenDialog.Execute() = true then
     begin
+        ClearForNewFile(); // free memory before loading new file
+
         OpenFileFilterIndex := FileOpenDialog.FileTypeIndex; // save filter index
         currentConFile := FileOpenDialog.FileName;  // Assign filename to global variable
 

@@ -5437,8 +5437,6 @@ object frmMain: TfrmMain
       TabOrder = 1
       TextHint = 'Search in tree'
       OnChange = edtConvoTreeQSearchChange
-      ExplicitLeft = 1
-      ExplicitTop = 503
     end
   end
   object StatusBar: TStatusBar
