@@ -5388,7 +5388,7 @@ object frmMain: TfrmMain
       Left = 0
       Top = 0
       Width = 300
-      Height = 531
+      Height = 509
       Margins.Left = 0
       Margins.Top = 0
       Margins.Right = 0
@@ -5410,6 +5410,7 @@ object frmMain: TfrmMain
       ParentDoubleBuffered = False
       ParentFont = False
       RowSelect = True
+      SortType = stText
       StateImages = TreeImages
       TabOrder = 0
       OnAddition = ConvoTreeAddition
@@ -5419,7 +5420,25 @@ object frmMain: TfrmMain
       OnEdited = ConvoTreeEdited
       OnEditing = ConvoTreeEditing
       OnMouseDown = ConvoTreeMouseDown
-      ExplicitLeft = 2
+    end
+    object edtConvoTreeQSearch: TEdit
+      Left = 0
+      Top = 509
+      Width = 300
+      Height = 22
+      Align = alBottom
+      Font.Charset = RUSSIAN_CHARSET
+      Font.Color = clBtnText
+      Font.Height = -12
+      Font.Name = 'Verdana'
+      Font.Style = []
+      HideSelection = False
+      ParentFont = False
+      TabOrder = 1
+      TextHint = 'Search in tree'
+      OnChange = edtConvoTreeQSearchChange
+      ExplicitLeft = 1
+      ExplicitTop = 503
     end
   end
   object StatusBar: TStatusBar
@@ -5485,8 +5504,6 @@ object frmMain: TfrmMain
       OnEndDrag = ConEventListEndDrag
       OnMeasureItem = ConEventListMeasureItem
       OnMouseUp = ConEventListMouseUp
-      ExplicitLeft = 1
-      ExplicitTop = 16
     end
     object HeaderControl1: THeaderControl
       Left = 2
@@ -5830,6 +5847,7 @@ object frmMain: TfrmMain
         ParentFont = False
         PopupMenu = frmEventInsAdd.MemoPopup
         TabOrder = 0
+        TextHint = 'Enter text you want to find'
         OnKeyPress = edtSearchBoxKeyPress
       end
     end
@@ -5909,6 +5927,25 @@ object frmMain: TfrmMain
     object CollapseAll2: TMenuItem
       Caption = 'Collapse All'
       OnClick = CollapseAll2Click
+    end
+    object N17: TMenuItem
+      Caption = '-'
+    end
+    object reeQuickSearch1: TMenuItem
+      Caption = 'Tree QSearch'
+      object mnuTQS_Exact: TMenuItem
+        Caption = 'Exact match'
+        GroupIndex = 10
+        RadioItem = True
+        OnClick = mnuTQS_ExactClick
+      end
+      object mnuTQS_Partial: TMenuItem
+        Caption = 'Partial match'
+        Checked = True
+        GroupIndex = 10
+        RadioItem = True
+        OnClick = mnuTQS_PartialClick
+      end
     end
   end
   object MenuMain: TMainMenu
@@ -6039,7 +6076,7 @@ object frmMain: TfrmMain
       end
       object mnuEventIndex: TMenuItem
         AutoCheck = True
-        Caption = 'Show Events Index'
+        Caption = 'Show Events Index + Unknown1 [for debugging only]'
         OnClick = mnuEventIndexClick
       end
       object mnuShowAudioFiles1: TMenuItem
@@ -8720,6 +8757,10 @@ object frmMain: TfrmMain
   object pmOutput: TPopupMenu
     Left = 721
     Top = 486
+    object Copyalltext1: TMenuItem
+      Caption = 'Copy all text'
+      OnClick = Copyalltext1Click
+    end
     object Clear1: TMenuItem
       Caption = 'Clear()'
       OnClick = Clear1Click
@@ -8758,6 +8799,10 @@ object frmMain: TfrmMain
     object CurrentConversationEvents1: TMenuItem
       Caption = 'CurrentConversation.Events'
       OnClick = CurrentConversationEvents1Click
+    end
+    object RebuildConversationsIds1: TMenuItem
+      Caption = 'RebuildConversationsIds'
+      OnClick = RebuildConversationsIds1Click
     end
     object CheckDpiRatio: TMenuItem
       Caption = 'Check DPI Ratio'

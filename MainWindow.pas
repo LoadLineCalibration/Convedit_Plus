@@ -221,6 +221,13 @@ type
     Event_BrowseTo: TAction;
     CheckDpiRatio: TMenuItem;
     N10: TMenuItem;
+    Copyalltext1: TMenuItem;
+    RebuildConversationsIds1: TMenuItem;
+    edtConvoTreeQSearch: TEdit;
+    N17: TMenuItem;
+    reeQuickSearch1: TMenuItem;
+    mnuTQS_Exact: TMenuItem;
+    mnuTQS_Partial: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -280,8 +287,6 @@ type
 
     procedure GenerateAudioFileNames();
     procedure SetEventIndexes();
-    procedure CreateAudioDirectories(const InitialPath: string); // automatically creates paths and empty files
-    procedure CopyFinalMp3(CopyTo, FileName: String);
 
     // loading and saving configuration file
     procedure LoadCfg();
@@ -484,6 +489,11 @@ type
     procedure Event_CopyMp3FileExecute(Sender: TObject);
     procedure Event_BrowseToExecute(Sender: TObject);
     procedure CheckDpiRatioClick(Sender: TObject);
+    procedure Copyalltext1Click(Sender: TObject);
+    procedure RebuildConversationsIds1Click(Sender: TObject);
+    procedure edtConvoTreeQSearchChange(Sender: TObject);
+    procedure mnuTQS_PartialClick(Sender: TObject);
+    procedure mnuTQS_ExactClick(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -529,7 +539,8 @@ type
         bHighlightRelatedEvents,
         bAskForConvoDelete, bAskForEventDelete, bHglEventWithNoAudio,
         bHglEventsGradient, bFlatToolbar,
-        bUse3DSelectionFrame, bUseWhiteSelectedText, bDrawEventIdx, bUseLogging: Boolean;
+        bUse3DSelectionFrame, bUseWhiteSelectedText, bDrawEventIdx, bUseLogging,
+        bTreeQSeachExactMatch : Boolean;
 
     property bAutoSaveEnabled: Boolean read GetAutoSaveEnabled write SetAutoSaveEnabled;
 
@@ -580,7 +591,7 @@ implementation
 {$R SoundResources.res} // contains final.mp3
 
 uses frmSettings1, EditValueDialog, ConFileProperties, AboutBox1, ConvoProperties, frmFind1, AddInsertEvent,
-     ConXml.Reader, ConXML.Writer, confile.Reader, conFile.Writer, uFrmLabelErrors;
+     ConXml.Reader, ConXML.Writer, confile.Reader, conFile.Writer, uFrmLabelErrors, ufrmAudioDirectories;
 
 
 function TfrmMain.GetFileModified: Boolean;
@@ -1164,7 +1175,7 @@ end;
 
 procedure TfrmMain.BuildConvoTree();
 var
-  StartTime, EndTime: TDateTime;
+    StartTime, EndTime: TDateTime;
 begin
     StartTime := Now();
 
@@ -1232,11 +1243,11 @@ begin
     EndTime := Now();
     lblSelectedEvent.Caption := 'Tree built in ' + IntToStr(MilliSecondsBetween(EndTime, StartTime)) + ' ms';
 
+    ConvoTree.AlphaSort(True);
 
     end);
 
     SetEventIndexes();
-
 
 {
     for var cList := 0 to ConversationsList.Count -1 do
@@ -1483,63 +1494,12 @@ begin
         begin
             //con.Events[i].EventIdx := NewIndex; //i;
             Event.EventIdx := NewIndex;
+            Event.unknown1 := Event.EventIdx + 1;
             Inc(NewIndex);
         end;
     end;
-end;
 
-procedure TfrmMain.CreateAudioDirectories(const InitialPath: string);
-begin
-    GenerateAudioFileNames(); // Generate filenames and paths first
-
-    try
-        try
-            for var con in ConversationsList do
-            begin
-                for var event in con.Events do
-                begin
-                    if event is TConEventSpeech then
-                    begin
-                        var speech := TConEventSpeech(event);
-                        var dirStr := InitialPath + conFileParameters.fpAudioPackage + '\' + con.conOwnerName + '\' + con.conName + '\';
-
-                        if DirectoryExists(DirStr) = False then
-                            ForceDirectories(dirStr); // create directory if required
-
-                        var mp3FileStr := ExtractFileName(InitialPath + speech.mp3File);
-                        CopyFinalMp3(dirStr, mp3FileStr); // Extract and copy placeholder .mp3 file
-                    end;
-
-                    if event is TConEventChoice then
-                    begin
-                        var ChoiceObj := TconEventChoice(event);
-
-                        for var choiceItem in ChoiceObj.Choices do
-                        begin
-                            if choiceItem.bDisplayAsSpeech = True then
-                            begin
-                                var choicemMP3 := choiceItem.mp3;
-                                var cDirStr := InitialPath + conFileParameters.fpAudioPackage + '\' + con.conOwnerName + '\' + con.conName + '\';
-
-                                if DirectoryExists(cDirStr) = False then
-                                    ForceDirectories(cDirStr); // create directory if required
-
-                                var cMP3FileStr := ExtractFileName(InitialPath + choiceItem.mp3);
-                                CopyFinalMp3(cDirStr, cMP3FileStr);  // Extract and copy placeholder .mp3 file
-                            end;
-                        end;
-                    end;
-                end;
-            end;
-
-        except
-            raise Exception.Create(Format(strAudioDirsError, [InitialPath, SysErrorMessage(GetLastError)]));
-        end;
-
-    finally
-        if MessageDlg(strAudioDirsSuccesful, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
-            ShellExecute(0, 'open', PChar(InitialPath), nil, nil, SW_SHOWNORMAL);
-    end;
+//    bFileModified := True;
 end;
 
 procedure TfrmMain.CopyEventToClipboard(var Event: TConEvent);
@@ -2108,6 +2068,11 @@ begin
     end;
 end;
 
+procedure TfrmMain.Copyalltext1Click(Sender: TObject);
+begin
+    Clipboard.AsText := mmoOutput.Text;
+end;
+
 procedure TfrmMain.CopyConversationToClipboard(const Convo: TConversation);
 var
     hBuf: THandle;
@@ -2402,24 +2367,6 @@ begin
     begin
         PasteConvoEvent.Enabled := False; // Just in case...
         Exit();
-    end;
-end;
-
-procedure TfrmMain.CopyFinalMp3(CopyTo, FileName: String);
-var
-    ResStream: TResourceStream;
-    FileStream: TFileStream;
-begin
-    ResStream := TResourceStream.Create(HInstance, 'FINAL','MP3');
-    try
-        FileStream := TFileStream.Create(CopyTo + '\' + FileName, fmCreate);
-        try
-            FileStream.CopyFrom(ResStream, 0);
-        finally
-            FileStream.Free();
-        end;
-    finally
-        ResStream.Free();
     end;
 end;
 
@@ -3945,7 +3892,8 @@ begin
             if Event <> nil then
             begin
                labelStr:= TConEvent(ConEventList.Items.Objects[Index]).EventLabel;
-               idxStr := TConEvent(ConEventList.Items.Objects[Index]).EventIdx.toString;
+               idxStr := TConEvent(ConEventList.Items.Objects[Index]).EventIdx.toString + '>' +
+                         TConEvent(ConEventList.Items.Objects[Index]).unknown1.ToString;
             end;
         end;
 
@@ -4000,8 +3948,9 @@ begin
            Font.Color := clWhite else Font.Color := clMaroon;
 
         if bDrawEventIdx = True then
-            TextOut(Rect.Left + Round(30 * GetDPIAsRatio()), Rect.Top + 4, labelStr)
-            //TextOut(Rect.Left + 20, Rect.Top + 4, labelStr)
+            //TextOut(Rect.Left + Round(40 * GetDPIAsRatio()), Rect.Top + 4, labelStr)
+            //TextOut(Rect.Left + 20, Rect.Top + 14, labelStr)
+            TextOut(Rect.Left + 2, Rect.Top + 20, labelStr)
         else
             TextOut(Rect.Left + 2, Rect.Top + 2, labelStr);
 
@@ -4776,6 +4725,8 @@ end;
 
 procedure TfrmMain.Conversation_CheckLabelsExecute(Sender: TObject);
 begin
+    frmLabelErrors.lvLabelErrors.Clear();
+
     for var con in Conversationslist do
         frmLabelErrors.CheckLabelDuplicates(con);
 
@@ -5329,7 +5280,6 @@ begin
 
     LoadCfg();
     CreateObjectLists();
-    ConvoTree.AlphaSort(True);
 
     ToggleMenusPanels(False);
 
@@ -6208,6 +6158,34 @@ begin
     end;
 end;
 
+procedure TfrmMain.edtConvoTreeQSearchChange(Sender: TObject);
+begin
+    ConvoTree.Items.BeginUpdate();
+
+    for var Node in ConvoTree.Items do
+    begin
+        if bTreeQSeachExactMatch = True then
+        begin
+            if SameText(Node.Text, edtConvoTreeQSearch.Text) then
+            begin
+                Node.Selected := True;
+                Node.MakeVisible();
+//                Break;
+            end;
+        end else
+        begin
+            if Pos(LowerCase(edtConvoTreeQSearch.Text), LowerCase(Node.Text)) > 0 then
+            begin
+                Node.Selected := True;
+                Node.MakeVisible();
+//                Break;
+            end;
+        end;
+    end;
+
+    ConvoTree.Items.EndUpdate();
+end;
+
 procedure TfrmMain.edtSearchBoxKeyPress(Sender: TObject; var Key: Char);
 begin
     if Key = #13 then // Enter
@@ -6294,10 +6272,7 @@ end;
 
 procedure TfrmMain.tbGenerateAudioDirsClick(Sender: TObject);
 begin
-    if SelectDirDialog.Execute() = True then
-    begin
-        CreateAudioDirectories(SelectDirDialog.FileName + '\');
-    end;
+    frmAudioDirectories.ShowModal();
 end;
 
 procedure TfrmMain.btnReorderClick(Sender: TObject);
@@ -6359,6 +6334,24 @@ procedure TfrmMain.mnuToggleMainToolBarClick(Sender: TObject);
 begin
     bShowToolbar := mnuToggleMainToolBar.Checked;
     MainToolBar.Visible := mnuToggleMainToolBar.Checked;
+end;
+
+procedure TfrmMain.mnuTQS_ExactClick(Sender: TObject);
+begin
+    mnuTQS_Exact.Checked := not mnuTQS_Exact.Checked;
+
+    bTreeQSeachExactMatch := mnuTQS_Exact.Checked;
+
+    edtConvoTreeQSearchChange(Self);
+end;
+
+procedure TfrmMain.mnuTQS_PartialClick(Sender: TObject);
+begin
+    mnuTQS_Partial.Checked := not mnuTQS_Partial.Checked;
+
+    bTreeQSeachExactMatch := mnuTQS_Exact.Checked;
+
+    edtConvoTreeQSearchChange(Self);
 end;
 
 procedure TfrmMain.mnuGithubClick(Sender: TObject);
@@ -6467,6 +6460,21 @@ end;
 procedure TfrmMain.Random2Click(Sender: TObject);
 begin
     InsertEvent(Ord(ET_Random));
+end;
+
+procedure TfrmMain.RebuildConversationsIds1Click(Sender: TObject);
+var
+    NewIndex: Integer;
+begin
+    NewIndex := 0;
+
+    for var con in ConversationsList do
+    begin
+        con.id := NewIndex;
+        //Event.EventIdx := NewIndex;
+        //Event.unknown1 := Event.EventIdx + 1;
+        Inc(NewIndex);
+    end;
 end;
 
 procedure TfrmMain.RecentFile0Click(Sender: TObject);
