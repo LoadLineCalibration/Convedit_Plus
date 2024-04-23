@@ -135,7 +135,7 @@ end;
 
 TConEvent = class(TConBaseObject)
     EventIdx: Integer; // looks like Index (was Unknown0)
-    unknown1: Integer; //
+    unknown1: Integer; // Checked decompiled convos, looks like Index + 1.
     EventLabel: string; // can't use "Label"...
     EventType: TEventType; // speech, choice, etc...
 
@@ -164,7 +164,7 @@ TConEventSpeech = class(TConEvent) // 00
 end;
 
 TConEventChoice = class(TConEvent) // 01
-    unk0: Integer; // 4 bytes
+    choice_unk0: Integer; // 4 bytes
     bClearScreen: boolean;
     Choices: array of TChoiceItemObject;
     NumChoices: Integer; // for height of this item in the events list
@@ -331,7 +331,7 @@ end;
 
 // Every TConversation contains events like End, TransferObject, etc.
 TConversation = class(TConBaseObject)
-    unknown0: Integer; // for .con files (4 bytes)
+    unknown0: Integer; // Для .con файлов, 4 байта. Выглядит так будто это дубликат numEventList!
     id: Integer;
     conName: string; // Conversation Name
     conDescription: string; // missing in XML version?

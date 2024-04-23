@@ -143,6 +143,7 @@ const
     ET_End_Caption            = 'End';
 
     STATS_CHOICE_SPEAKER = 'JCDenton';
+    INFOLINK_CONVERSATION_DIRECTORY = 'InfoLink';
 
     CLIPBOARD_CONVERSATION_ID = 'id_CONVERSATION';
 

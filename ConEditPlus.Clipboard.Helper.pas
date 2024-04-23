@@ -202,7 +202,7 @@ begin
 
     WriteFirst4Fields(Choice, bw);
 
-    WriteInteger(bw, Choice.unk0); // unk0
+    WriteInteger(bw, Choice.choice_unk0); // choice_unk0
     WriteLongBool(bw, Choice.bClearScreen); // bClearScreen
     WriteInteger(bw, Choice.NumChoices); // numChoiceList
 
@@ -682,7 +682,7 @@ begin
     end;
 
     // ET_Choice
-    Choice.unk0 := br.ReadInteger(); // unk0
+    Choice.choice_unk0 := br.ReadInteger(); // choice_unk0
     Choice.bClearScreen := GetConLongBool(br);
     Choice.NumChoices := br.ReadInteger();
     Choice.NumFlagsRefs := Choice.NumChoices; // for event item height

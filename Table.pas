@@ -32,6 +32,7 @@ type
     ListContentsPopup: TPopupMenu;
     Copytoclipboard1: TMenuItem;
     edtSearchInTable: TEdit;
+    edtTableItemsCounter: TEdit;
 
     // new procedures
     procedure UpdateButtonsState();
@@ -570,6 +571,7 @@ begin
 
     // в очередной раз проверить кнопки.
     UpdateButtonsState();
+    edtTableItemsCounter.Text := 'NumItems: ' + lstTableContents.Count.ToString();
 end;
 
 procedure TfrmTableEdit.ListContentsPopupPopup(Sender: TObject);
@@ -607,6 +609,8 @@ end;
 
 procedure TfrmTableEdit.lstTableContentsClick(Sender: TObject);
 begin
+    edtTableItemsCounter.Text := 'NumItems: ' + lstTableContents.Count.ToString();
+
     lstTableContents.MultiSelect := False;
     UpdateButtonsState();
 end;

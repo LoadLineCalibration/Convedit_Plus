@@ -245,11 +245,14 @@ try
 
                 for var fr := 0 to numFlagRefList -1 do
                 begin
-                    tempConvo.conDependsOnFlags[fr].flagIndex := ConRead.ReadInteger();
+                    //tempConvo.conDependsOnFlags[fr].flagIndex := ConRead.ReadInteger();
+                    {tempConvo.conDependsOnFlags[fr].flagIndex := }ConRead.ReadInteger();
 
                     var cfRefNameSize := ConRead.ReadInteger();
                     var cfRefNameBytes := ConRead.ReadBytes(cfRefNameSize);
                     tempConvo.conDependsOnFlags[fr].flagName := TEncoding.ANSI.GetString(cfRefNameBytes);
+
+                    tempConvo.conDependsOnFlags[fr].flagIndex := frmMain.FindTableIdByName(TM_Flags, tempConvo.conDependsOnFlags[fr].flagName); // set the new proper index
 
                     var cfRefValue := ConRead.ReadInteger();
                     tempConvo.conDependsOnFlags[fr].flagValue := cfRefValue.ToBoolean;
@@ -565,8 +568,8 @@ begin
     choiceEvent.EventLabel := eventLabel;
     frmMain.AddLog('choice Label = ' + choiceEvent.EventLabel);
 
-    choiceEvent.unk0 := ConRead.ReadInteger(); // unk0
-    frmMain.AddLog('choice unk0 = ' + choiceEvent.unk0.ToString);
+    choiceEvent.choice_unk0 := ConRead.ReadInteger(); // choice_unk0
+    frmMain.AddLog('choice unk0 = ' + choiceEvent.choice_unk0.ToString);
 
     choiceEvent.bClearScreen := GetConLongBool(ConRead);
     frmMain.AddLog('choice bClearScreen = ' + BoolToStr(choiceEvent.bClearScreen, True));

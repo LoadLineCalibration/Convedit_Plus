@@ -100,7 +100,7 @@ end;
 
 procedure TfrmLabelErrors.VerifyLabels(bSilent: Boolean = False);
 begin
-    lvLabelErrors.Clear();
+//    lvLabelErrors.Clear();
 { events which use labels to jump to:
 
     TConEventCheckFlag

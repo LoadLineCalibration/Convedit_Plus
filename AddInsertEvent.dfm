@@ -5609,7 +5609,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         object chkAutoSwapSpeaker: TCheckBox
           Left = 128
           Top = 83
-          Width = 209
+          Width = 88
           Height = 17
           Cursor = crHandPoint
           Hint = 
@@ -5635,6 +5635,15 @@ object frmEventInsAdd: TfrmEventInsAdd
           TabOrder = 8
           StyleName = 'Windows'
           OnClick = chkSpeechWordWrapClick
+        end
+        object btnSwapNow: TButton
+          Left = 222
+          Top = 80
+          Width = 115
+          Height = 24
+          Caption = 'Swap now'
+          TabOrder = 9
+          OnClick = btnSwapNowClick
         end
       end
     end
@@ -7778,7 +7787,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   object MemoPopup: TPopupMenu
     OnPopup = MemoPopupPopup
     Left = 280
-    Top = 232
+    Top = 288
     object Cut1: TMenuItem
       Action = EditCut1
     end

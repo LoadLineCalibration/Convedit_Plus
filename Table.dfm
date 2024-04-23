@@ -146,7 +146,7 @@ object frmTableEdit: TfrmTableEdit
     OnClick = btnCloseClick
   end
   object chkClearAfterAdd: TCheckBox
-    Left = 203
+    Left = 195
     Top = 49
     Width = 193
     Height = 17
@@ -271,6 +271,23 @@ object frmTableEdit: TfrmTableEdit
     TabOrder = 17
     TextHint = 'Search in table (case-insensitive, partial match)'
     OnChange = edtSearchInTableChange
+  end
+  object edtTableItemsCounter: TEdit
+    Left = 363
+    Top = 243
+    Width = 102
+    Height = 23
+    Alignment = taCenter
+    AutoSize = False
+    BorderStyle = bsNone
+    Font.Charset = RUSSIAN_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = 'Verdana'
+    Font.Style = []
+    ParentColor = True
+    ParentFont = False
+    TabOrder = 18
   end
   object CustomItemsPopup: TPopupMenu
     AutoHotkeys = maManual

@@ -34,7 +34,8 @@ uses
   MainWindow in 'MainWindow.pas' {frmMain},
   Table in 'Table.pas' {frmTableEdit},
   uFrmLabelErrors in 'uFrmLabelErrors.pas' {frmLabelErrors},
-  ConEditPlus.Clipboard.Helper in 'ConEditPlus.Clipboard.Helper.pas';
+  ConEditPlus.Clipboard.Helper in 'ConEditPlus.Clipboard.Helper.pas',
+  ufrmAudioDirectories in 'ufrmAudioDirectories.pas' {frmAudioDirectories};
 
 {$R *.res}
 {$SETPEOSVERSION 5.1} // Windows XP
@@ -56,6 +57,7 @@ begin
   Application.CreateForm(TfrmHelp, frmHelp);
   Application.CreateForm(TfrmTableEdit, frmTableEdit);
   Application.CreateForm(TfrmLabelErrors, frmLabelErrors);
+  Application.CreateForm(TfrmAudioDirectories, frmAudioDirectories);
   Application.HintHidePause := 10000; // hint delay
   Application.Run;
 

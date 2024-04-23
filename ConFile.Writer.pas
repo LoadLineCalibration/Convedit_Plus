@@ -185,7 +185,7 @@ procedure SaveChoice(ConWrite: TBinaryWriter; eventChoice: TConEventChoice); // 
 begin
     WriteCommonEventFields(ConWrite, eventChoice);
 
-    WriteInteger(ConWrite, eventChoice.unk0); // unk0
+    WriteInteger(ConWrite, eventChoice.choice_unk0); // choice_unk0
     WriteLongBool(ConWrite, eventChoice.bClearScreen); // bClearScreen
     WriteInteger(ConWrite, eventChoice.NumChoices); // numChoiceList
 
@@ -304,8 +304,8 @@ begin
     WriteInteger(ConWrite, eventPlayAnim.ActorIndex); // eventOwnerName.id
     WriteString(ConWrite, eventPlayAnim.ActorValue); // eventOwnerName.Name
     WriteString(ConWrite, eventPlayAnim.AnimSequence); // seqStr
-//    WriteLongBool(ConWrite, eventPlayAnim.bAnimPlayOnce); // playMode.
-    WriteLongBool(ConWrite, not eventPlayAnim.bAnimPlayOnce); // playMode. // WTF? Maybe convert it to Enum?
+    WriteLongBool(ConWrite, eventPlayAnim.bAnimPlayOnce); // playMode.
+//    WriteLongBool(ConWrite, not eventPlayAnim.bAnimPlayOnce); // playMode. // WTF? Maybe convert it to Enum?
     WriteInteger(ConWrite, eventPlayAnim.AnimPlayForSeconds); // This field is missing in ConEventAnimation.uc (by default)
     WriteLongBool(ConWrite, eventPlayAnim.bAnimWaitToFinish); // bFinishAnim
 end;
@@ -417,7 +417,8 @@ try
 
     for var nc := 0 to numConversations -1 do
     begin
-        WriteInteger(ConWrite, convList.Items[nc].id); // unknown0
+        //WriteInteger(ConWrite, convList.Items[nc].id); // unknown0
+        WriteInteger(ConWrite, Length(convList.Items[nc].Events)); // unknown0
         WriteInteger(ConWrite, convList.Items[nc].id);
         WriteString(ConWrite, convList.Items[nc].conName);
         WriteString(ConWrite, convList.Items[nc].conDescription);
