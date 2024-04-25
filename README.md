@@ -47,6 +47,18 @@ Enhancements over OG ConEdit:
 * AutoSave. From 1 to 20 minutes. Can be disabled if you don't need it.
 * ...and other enhancements and improvements...
 
+
+How to get the "play audio" function to work:
+
+Open the program options and point to the path where your audio files are. For example, I'm working with the GameConversations package located in `C:\Games\DeusEx_RTX\` 
+
+So the correct path will look like `C:\Games\DeusEx_RTX\GameConversations\Audio`.
+![изображение](https://github.com/LoadLineCalibration/Convedit_Plus/assets/44388228/8cafd54f-1a88-492e-a322-96028ab323c7)
+
+
+
+
+
 <details> 
   <summary>Screenshot of main window with loaded conversations file:</summary>
 
