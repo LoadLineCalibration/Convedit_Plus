@@ -228,6 +228,67 @@ type
     reeQuickSearch1: TMenuItem;
     mnuTQS_Exact: TMenuItem;
     mnuTQS_Partial: TMenuItem;
+    N20: TMenuItem;
+    mnuChoiceItemSub0: TMenuItem;
+    mnuChoiceItemSub1: TMenuItem;
+    mnuChoiceItemSub2: TMenuItem;
+    mnuChoiceItemSub3: TMenuItem;
+    mnuChoiceItemSub4: TMenuItem;
+    mnuChoiceItemSub5: TMenuItem;
+    mnuChoiceItemSub6: TMenuItem;
+    mnuChoiceItemSub7: TMenuItem;
+    mnuChoiceItemSub8: TMenuItem;
+    mnuChoiceItemSub9: TMenuItem;
+    Copymp3pathfilename1: TMenuItem;
+    CopyonlyPathtomp31: TMenuItem;
+    Copyonlymp3filename1: TMenuItem;
+    Copymp3pathfilename2: TMenuItem;
+    CopyonlyPathtomp32: TMenuItem;
+    Copyonlymp3filename2: TMenuItem;
+    Copymp3pathfilename3: TMenuItem;
+    CopyonlyPathtomp33: TMenuItem;
+    Copyonlymp3filename3: TMenuItem;
+    Copymp3pathfilename4: TMenuItem;
+    CopyonlyPathtomp34: TMenuItem;
+    Copyonlymp3filename4: TMenuItem;
+    Copymp3pathfilename5: TMenuItem;
+    CopyonlyPathtomp35: TMenuItem;
+    Copyonlymp3filename5: TMenuItem;
+    Copymp3pathfilename6: TMenuItem;
+    CopyonlyPathtomp36: TMenuItem;
+    Copyonlymp3filename6: TMenuItem;
+    Copymp3pathfilename7: TMenuItem;
+    CopyonlyPathtomp37: TMenuItem;
+    Copyonlymp3filename7: TMenuItem;
+    Copymp3pathfilename8: TMenuItem;
+    CopyonlyPathtomp38: TMenuItem;
+    Copyonlymp3filename8: TMenuItem;
+    Copymp3pathfilename9: TMenuItem;
+    CopyonlyPathtomp39: TMenuItem;
+    Copyonlymp3filename9: TMenuItem;
+    Copymp3pathfilename10: TMenuItem;
+    CopyonlyPathtomp310: TMenuItem;
+    Copyonlymp3filename10: TMenuItem;
+    N21: TMenuItem;
+    CopyChoicetext1: TMenuItem;
+    CopyChoicetext2: TMenuItem;
+    N22: TMenuItem;
+    CopyChoicetext3: TMenuItem;
+    N23: TMenuItem;
+    CopyChoicetext4: TMenuItem;
+    N24: TMenuItem;
+    CopyChoicetext5: TMenuItem;
+    N25: TMenuItem;
+    CopyChoicetext6: TMenuItem;
+    N26: TMenuItem;
+    CopyChoicetext7: TMenuItem;
+    N27: TMenuItem;
+    CopyChoicetext8: TMenuItem;
+    N28: TMenuItem;
+    CopyChoicetext9: TMenuItem;
+    N29: TMenuItem;
+    CopyChoicetext10: TMenuItem;
+    N30: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -362,6 +423,8 @@ type
     // to load file using drag and drop
     procedure WMDropFiles(var Msg: TWMDropFiles); message WM_DROPFILES;
 
+    procedure CopyChoiceMp3Path(ChoiceMP3CopyMode: TChoiceMP3CopyMode; idx: Integer);
+
     procedure FormResize(Sender: TObject);
     procedure CollapseAll2Click(Sender: TObject);
     procedure ConvoTreeEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
@@ -494,6 +557,10 @@ type
     procedure edtConvoTreeQSearchChange(Sender: TObject);
     procedure mnuTQS_PartialClick(Sender: TObject);
     procedure mnuTQS_ExactClick(Sender: TObject);
+    procedure CopyChoicetext1Click(Sender: TObject);
+    procedure CopyChoiceItemObj_Path_Filename(Sender: TObject);
+    procedure CopyChoiceItemObj_Path(Sender: TObject);
+    procedure CopyChoiceItemObj_Filename(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -1667,6 +1734,24 @@ begin
     end;
 end;
 
+procedure TfrmMain.CopyChoiceItemObj_Path_Filename(Sender: TObject);
+begin
+    if Sender is TMenuItem then
+        CopyChoiceMp3Path(CM_PathAndFilename, TMenuItem(Sender).Tag);
+end;
+
+procedure TfrmMain.CopyChoiceItemObj_Filename(Sender: TObject);
+begin
+    if Sender is TMenuItem then
+        CopyChoiceMp3Path(CM_OnlyMp3, TMenuItem(Sender).Tag);
+end;
+
+procedure TfrmMain.CopyChoiceItemObj_Path(Sender: TObject);
+begin
+    if Sender is TMenuItem then
+        CopyChoiceMp3Path(CM_OnlyPath, TMenuItem(Sender).Tag);
+end;
+
 procedure TfrmMain.PasteEventFromClipboard();
 var
     hBuf: THandle;
@@ -2071,6 +2156,48 @@ end;
 procedure TfrmMain.Copyalltext1Click(Sender: TObject);
 begin
     Clipboard.AsText := mmoOutput.Text;
+end;
+
+procedure TfrmMain.CopyChoiceMp3Path(ChoiceMP3CopyMode: TChoiceMP3CopyMode; idx: Integer);
+begin
+    var ChoiceObj := ConEventList.Items.Objects[ConEventList.ItemIndex];
+
+    if ChoiceObj is TConEventChoice then
+    begin
+        case ChoiceMP3CopyMode of
+            CM_PathAndFilename:
+            begin
+                if TConEventChoice(ChoiceObj).Choices[idx] <> nil then
+                    Clipboard.AsText := IncludeTrailingPathDelimiter(ConFileAudioPath) + TConEventChoice(ChoiceObj).Choices[idx].mp3;
+            end;
+
+            CM_OnlyPath:
+            begin
+                if TConEventChoice(ChoiceObj).Choices[idx] <> nil then
+                begin
+                    var TempPath := ExtractFilePath(IncludeTrailingPathDelimiter(ConFileAudioPath) + TConEventChoice(ChoiceObj).Choices[idx].mp3);
+                    Clipboard.AsText := TempPath;
+                end;
+            end;
+
+            CM_OnlyMp3:
+            begin
+                if TConEventChoice(ChoiceObj).Choices[idx] <> nil then
+                    Clipboard.AsText := ExtractFileName(TConEventChoice(ChoiceObj).Choices[idx].mp3);
+            end;
+        end;
+    end;
+end;
+
+procedure TfrmMain.CopyChoicetext1Click(Sender: TObject);
+begin
+    if Sender is TMenuItem then
+    begin
+        var ChoiceTextMenu := TMenuItem(Sender).Parent;
+
+        if ChoiceTextMenu <> nil then
+            Clipboard.AsText := ChoiceTextMenu.Caption; // copy parent menuitem caption
+    end;
 end;
 
 procedure TfrmMain.CopyConversationToClipboard(const Convo: TConversation);
@@ -6372,7 +6499,9 @@ end;
 procedure TfrmMain.PopupConvoEventListPopup(Sender: TObject); // Enable/disable some menu items...
 begin
     var ListObject: TObject;
+    //var SpeechObj: TConEventSpeech := nil;
     var SpeechObj: TConEventSpeech := nil;
+    var ChoiceObj: TConEventChoice := nil;
     var ItemIdx := ConEventList.ItemIndex;
 
     if ItemIdx <> -1 then
@@ -6380,7 +6509,10 @@ begin
         ListObject := ConEventList.Items.Objects[ItemIdx];
 
         if ListObject is TConEventSpeech then
-            SpeechObj := TConEventSpeech(ListObject);
+            SpeechObj := TConEventSpeech(ListObject) else
+        if ListObject is TConEventChoice then
+            ChoiceObj := TConEventChoice(ListObject);
+
     end;
 
     if ItemIdx = -1 then
@@ -6398,6 +6530,13 @@ begin
         Event_CopyMp3FilePath.Visible := False;
         Event_CopyMp3File.Visible := False;
         Event_BrowseTo.Visible := False;
+
+        for var L:= 0 to 9 do
+        begin
+            var ChoiceMenuItem : TMenuItem := FindComponent('mnuChoiceItemSub' + L.ToString()) as TMenuItem;
+            ChoiceMenuItem.Visible := False;
+        end;
+
     end else
     begin
         Add2.Enabled := true;
@@ -6414,6 +6553,23 @@ begin
         Event_CopyMp3FilePath.Visible    := Event_CopyMp3FileAndPath.Visible;
         Event_CopyMp3File.Visible        := Event_CopyMp3FileAndPath.Visible;
         Event_BrowseTo.Visible           := Event_CopyMp3FileAndPath.Visible;
+
+        for var K:= 0 to 9 do
+        begin
+            var ChoiceMenuItem : TMenuItem := FindComponent('mnuChoiceItemSub' + K.ToString()) as TMenuItem;
+            ChoiceMenuItem.Visible := False;
+        end;
+
+        if ChoiceObj <> nil then // Choice has been selected, unhide menu items
+        begin
+            for var i:= 0 to ChoiceObj.NumChoices -1 do
+            begin
+                var ChoiceMenuItem : TMenuItem := FindComponent('mnuChoiceItemSub' + i.ToString()) as TMenuItem;
+
+                ChoiceMenuItem.Visible := ChoiceObj.Choices[i].textline <> ''; // unhide if not empty
+                ChoiceMenuItem.Caption := ChoiceObj.Choices[i].textline;
+            end;
+        end;
     end;
 end;
 

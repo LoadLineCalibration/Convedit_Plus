@@ -29,6 +29,13 @@ type TEventListColorsMode =
     ELCM_Dark     // for dark mode themes.
 );
 
+type TChoiceMP3CopyMode =
+(
+    CM_PathAndFilename,
+    CM_OnlyPath,
+    CM_OnlyMp3
+);
+
 
 implementation
 
