@@ -811,8 +811,8 @@ begin
        end;
     end
     else
-        //Application.MessageBox(PChar(Format(strAudioFileNotFound, [SpeechMP3File])), 'Error', MB_OK + MB_ICONSTOP + MB_TOPMOST);
-        MessageDlg(Format(strAudioFileNotFound, [SpeechMP3File]) , mtError, [mbOK], 0);
+        Application.MessageBox(PChar(Format(strAudioFileNotFound, [SpeechMP3File])), 'Error', MB_OK + MB_ICONSTOP + MB_TOPMOST);
+        //MessageDlg(Format(strAudioFileNotFound, [SpeechMP3File]) , mtError, [mbOK], 0);
 end;
 
 procedure TfrmEventInsAdd.ExchangeListViewItems(LV: TListView; const i, j: Integer);

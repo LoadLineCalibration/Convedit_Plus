@@ -5171,11 +5171,30 @@ end;
 
 procedure TfrmMain.Event_BrowseToExecute(Sender: TObject);
 begin
-    var SpeechObj := ConEventList.Items.Objects[ConEventList.ItemIndex];
+    var ConEventObj := ConEventList.Items.Objects[ConEventList.ItemIndex];
 
-    if SpeechObj is TConEventSpeech then
+    if ConEventObj is TConEventSpeech then
     begin
-        var TempPath := ExtractFilePath(IncludeTrailingPathDelimiter(ConFileAudioPath) + TConEventSpeech(SpeechObj).mp3File);
+        var TempPath := ExtractFilePath(IncludeTrailingPathDelimiter(ConFileAudioPath) + TConEventSpeech(ConEventObj).mp3File);
+
+        if DirectoryExists(TempPath) then
+            ShellExecute(0, 'open', PChar(TempPath), nil, nil, SW_SHOWNORMAL);
+    end;
+
+    if ConEventObj is TConEventChoice then
+    begin
+        var mp3File: string;
+
+        for var choiceItem in TConEventChoice(ConEventObj).Choices do
+        begin
+            if choiceItem.mp3 <> '' then
+            begin
+                mp3File := choiceItem.mp3;
+                Break;
+            end;
+        end;
+
+        var TempPath := ExtractFilePath(IncludeTrailingPathDelimiter(ConFileAudioPath) + mp3File);
 
         if DirectoryExists(TempPath) then
             ShellExecute(0, 'open', PChar(TempPath), nil, nil, SW_SHOWNORMAL);
@@ -6552,9 +6571,9 @@ begin
         Event_CopyMp3FileAndPath.Visible := (SpeechObj <> nil) and (SpeechObj.mp3File <> '');
         Event_CopyMp3FilePath.Visible    := Event_CopyMp3FileAndPath.Visible;
         Event_CopyMp3File.Visible        := Event_CopyMp3FileAndPath.Visible;
-        Event_BrowseTo.Visible           := Event_CopyMp3FileAndPath.Visible;
+        Event_BrowseTo.Visible           := (SpeechObj <> nil) or (ChoiceObj <> nil); //Event_CopyMp3FileAndPath.Visible;
 
-        for var K:= 0 to 9 do
+        for var K:= 0 to 9 do // hide these menus first
         begin
             var ChoiceMenuItem : TMenuItem := FindComponent('mnuChoiceItemSub' + K.ToString()) as TMenuItem;
             ChoiceMenuItem.Visible := False;
