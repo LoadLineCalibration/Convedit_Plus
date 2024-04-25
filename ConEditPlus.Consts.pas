@@ -219,7 +219,7 @@ ResourceString // These strings can be translated.
 
     strCommentTextIsEmpty = 'Comment text cannot be empty! Please enter some text.';
 
-    strAudioFileNotFound = 'Audio file NOT found: ';
+    strAudioFileNotFound = 'Audio file NOT found: "%s"' + #13#10 + 'Please make sure your file exists and you used the correct path in the program options.';
 
     strAskDeleteEventText = 'Are you sure you wish to Delete this event?';
     strAskDeleteEventTitle = 'Delete?';
