@@ -5442,7 +5442,7 @@ object frmEventInsAdd: TfrmEventInsAdd
     Top = 114
     Width = 556
     Height = 406
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Anchors = [akLeft, akTop, akRight, akBottom]
     DoubleBuffered = True
     ParentDoubleBuffered = False
@@ -5746,7 +5746,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object lvChoiceList: TListView
           Left = 14
-          Top = 21
+          Top = 16
           Width = 435
           Height = 132
           Anchors = [akLeft, akTop, akRight, akBottom]

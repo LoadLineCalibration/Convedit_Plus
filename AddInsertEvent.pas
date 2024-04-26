@@ -235,7 +235,6 @@ type
 
     // new functions
     function CanAddRandomLabel(): Boolean;
-    function GetChoiceItemSpeech(ChoiceItem: TChoiceItemObject): string;
 
     // new procedures
     procedure UpdateControlsState();
@@ -782,14 +781,6 @@ procedure TfrmEventInsAdd.EventWarning(bShow: Boolean;  msg: string = '');
 begin
     lblStatus.Visible := bShow;
     lblStatus.Caption := msg;
-end;
-
-function TfrmEventInsAdd.GetChoiceItemSpeech(ChoiceItem: TChoiceItemObject): string;
-begin
-    if (ChoiceItem.mp3 <> '') and (ChoiceItem.bDisplayAsSpeech = true) then // Only play audio if bDisplayAsSpeech = true and has required audio file
-       result := ChoiceItem.mp3;
-
-    result := '';
 end;
 
 procedure TfrmEventInsAdd.PlayMP3Speech(const mp3file: string);
@@ -2948,13 +2939,9 @@ procedure TfrmEventInsAdd.lvChoiceListDblClick(Sender: TObject);
 begin
     if lvChoiceList.ItemIndex = -1 then Exit();
 
-    var tempChoicemp3:= GetChoiceItemSpeech(lvChoiceList.Items[lvChoiceList.ItemIndex].Data);
+    var ChoiceItemObj:= lvChoiceList.Items[lvChoiceList.ItemIndex].Data;
 
-    if tempChoicemp3 <> '' then
-    begin
-       PlayMP3Speech(tempChoicemp3);
-       Exit();
-    end;
+    PlayMP3Speech(TChoiceItemObject(ChoiceItemObj).mp3);
 end;
 
 procedure TfrmEventInsAdd.lvSetFlagsChange(Sender: TObject; Item: TListItem; Change: TItemChange);
