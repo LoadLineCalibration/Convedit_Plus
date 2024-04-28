@@ -16,7 +16,6 @@ ToDo list:
 
 Known bugs I have not fixed yet:
 * Duplication of Choice leads to "sync" editing of both events. This is because the copy contains pointers to nested objects from an original event.
-* The bAnimPlayOnce value for PlayAnim needs to be inverted on saving and reading. Thus, Loop = 1, Once = 0.
 * For unknown reason (at least at the moment), the original ConEdit refuses to load some files, saved or created in ConEditPlus. These files, however, do work just fine in-game, and can be decompiled with DEED. I suppose this due to some "unknown" fields in  the .con files.
 
 ___
