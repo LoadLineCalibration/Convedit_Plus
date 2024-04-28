@@ -753,7 +753,8 @@ begin
            playAnimEvent.AnimSequence := conPlayAnim.ChildNodes[U].NodeValue;
 
         if UpperCase(conPlayAnim.ChildNodes[U].Name) = UpperCase('playOnce') then
-           playAnimEvent.bAnimPlayOnce := conPlayAnim.ChildNodes[U].NodeValue.ToBoolean;
+            playAnimEvent.AnimPlayMode := TAnimationModes(conPlayAnim.ChildNodes[U].NodeValue.ToInteger());
+           //playAnimEvent.bAnimPlayOnce := conPlayAnim.ChildNodes[U].NodeValue.ToBoolean;
 
         if UpperCase(conPlayAnim.ChildNodes[U].Name) = UpperCase('playForSeconds') then
            playAnimEvent.AnimPlayForSeconds := conPlayAnim.ChildNodes[U].NodeValue.ToInteger;

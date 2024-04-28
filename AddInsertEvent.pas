@@ -232,6 +232,7 @@ type
     chkFollowMainWindow: TCheckBox;
     btnSaveChoiceItem: TButton;
     btnSwapNow: TButton;
+    btnPlayChoiceAudio: TButton;
 
     // new functions
     function CanAddRandomLabel(): Boolean;
@@ -405,6 +406,7 @@ type
     procedure btnDeleteChoiceFlagClick(Sender: TObject);
     procedure btnSaveChoiceItemClick(Sender: TObject);
     procedure btnSwapNowClick(Sender: TObject);
+    procedure btnPlayChoiceAudioClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -568,16 +570,21 @@ begin
 
     editEventLabel.Text:= camEvent.EventLabel;
 
-    if camEvent.CameraType = CT_Predefined then begin
-       rbPredefinedCameraPos.Checked := true;
-       rbPredefinedCameraPosClick(rbPredefinedCameraPos);
-       cbbPredefinedCameraPos.ItemIndex := Ord(camEvent.CameraAngle); // Predefined camera position
-    end else
-    if camEvent.CameraType = CT_Actor then begin // Not implemented, only for compatibility
-      rbSpecialCameraPos.Checked := True;
-    end else
-    if camEvent.CameraType = CT_Random then begin
-      rbRandomCameraPos.Checked := True;
+    if camEvent.CameraType = CT_Predefined then
+    begin
+        rbPredefinedCameraPos.Checked := true;
+        rbPredefinedCameraPosClick(rbPredefinedCameraPos);
+        cbbPredefinedCameraPos.ItemIndex := Ord(camEvent.CameraAngle); // Predefined camera position
+    end
+    else
+    if camEvent.CameraType = CT_Actor then
+    begin // Not implemented, only for compatibility
+        rbSpecialCameraPos.Checked := True;
+    end
+    else
+    if camEvent.CameraType = CT_Random then
+    begin
+        rbRandomCameraPos.Checked := True;
     end;
 end;
 
@@ -595,18 +602,34 @@ begin
 
     chkWaitFinishAnim.Checked := playAnim.bAnimWaitToFinish; // set the checkbox first, it can be disabled by other options.
 
-    if playAnim.bAnimPlayOnce = true then
+    case playAnim.AnimPlayMode of
+        AM_Once:
+        begin
+            rbPlayAnimOnce.Checked := True;
+            rbPlayAnimOnceClick(self);
+        end;
+
+        AM_Loop:
+        begin
+            rbLoopAnim.Checked := True;
+            rbLoopAnimClick(self);
+        end;
+    end;
+
+{    if playAnim.bAnimPlayOnce = true then
     begin
        rbPlayAnimOnce.Checked := playAnim.bAnimPlayOnce;
         rbPlayAnimOnceClick(self);
     end else begin
        rbLoopAnim.Checked := playAnim.bAnimPlayOnce;
        rbLoopAnimClick(self);
-    end;
+    end;}
 
     chkAnimTimed.Checked := playAnim.AnimPlayForSeconds > 0;
     edtPlayAnimSeconds.Value := playAnim.AnimPlayForSeconds;
     chkAnimTimedClick(Self);
+
+    cmbPawnToAnimateChange(cmbPawnToAnimate);
 end;
 
 procedure TfrmEventInsAdd.FillBuySellTrade(buySell: TConEventTrade); // not implemented
@@ -1036,8 +1059,11 @@ begin
 
     playAnim.AnimSequence := cmbAnimSeq.Text;
 
-    playAnim.bAnimPlayOnce := rbPlayAnimOnce.Checked;
-    playAnim.bAnimPlayOnce := not rbLoopAnim.Checked;
+    if rbPlayAnimOnce.Checked = True then playAnim.AnimPlayMode := AM_Once
+    else if rbLoopAnim.Checked = True then playAnim.AnimPlayMode := AM_Loop;
+
+//    playAnim.bAnimPlayOnce := rbPlayAnimOnce.Checked;
+//    playAnim.bAnimPlayOnce := not rbLoopAnim.Checked;
 
     playAnim.bAnimWaitToFinish := chkWaitFinishAnim.Checked;
 
@@ -2432,6 +2458,11 @@ begin
         btnPlayAudioFile.Caption := strPlayMP3;
 end;
 
+procedure TfrmEventInsAdd.btnPlayChoiceAudioClick(Sender: TObject);
+begin
+    lvChoiceListDblClick(self);
+end;
+
 procedure TfrmEventInsAdd.btnRemoveAllRandomLabelsClick(Sender: TObject); // Удаляет метки перехода
 begin
     lstRandomLabels.Items.Clear();
@@ -2666,8 +2697,6 @@ begin
     begin
         cmbPawnToAnimate.Clear();
         cmbPawnToAnimate.Items.Assign(frmMain.listPawnsActors);
-
-        cmbPawnToAnimateChange(self);
     end;
     8: ;
 
@@ -2942,6 +2971,11 @@ begin
     var ChoiceItemObj:= lvChoiceList.Items[lvChoiceList.ItemIndex].Data;
 
     PlayMP3Speech(TChoiceItemObject(ChoiceItemObj).mp3);
+
+    if mp1.Mode = mpPlaying then
+        btnPlayChoiceAudio.Caption := strStopMP3
+    else
+        btnPlayChoiceAudio.Caption := strPlayMP3;
 end;
 
 procedure TfrmEventInsAdd.lvSetFlagsChange(Sender: TObject; Item: TListItem; Change: TItemChange);
@@ -3009,11 +3043,15 @@ begin
     begin
         mp3posUpdateTimer.Enabled := False;
         btnPlayAudioFile.Caption := strPlayMP3;
+        btnPlayChoiceAudio.Caption := strPlayMP3;
         mp1.Close();
     end;
 
     if mp1.Mode = mpPlaying then
+    begin
         btnPlayAudioFile.Caption := strStopMP3;
+        btnPlayChoiceAudio.Caption := strStopMP3;
+    end;
 end;
 
 procedure TfrmEventInsAdd.mp3posUpdateTimerTimer(Sender: TObject);

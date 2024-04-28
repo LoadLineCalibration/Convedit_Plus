@@ -339,7 +339,8 @@ begin
     WriteInteger(bw, Anim.ActorIndex); // eventOwnerName.id
     WriteString(bw, Anim.ActorValue); // eventOwnerName.Name
     WriteString(bw, Anim.AnimSequence); // seqStr
-    WriteLongBool(bw, Anim.bAnimPlayOnce); // playMode.
+    //WriteLongBool(bw, Anim.bAnimPlayOnce); // playMode.
+    WriteInteger(bw, Ord(Anim.AnimPlayMode)); // playMode.
     WriteInteger(bw, Anim.AnimPlayForSeconds); // This field is missing in ConEventAnimation.uc (by default)
     WriteLongBool(bw, Anim.bAnimWaitToFinish); // bFinishAnim
 end;
@@ -877,8 +878,9 @@ begin
     NewAnim.ActorValue := GetConString(br);
     NewAnim.AnimSequence := GetConString(br);
 
-    // loop = 0, Once = 1
-    NewAnim.bAnimPlayOnce := GetConLongBool(br);
+    // loop = 1, Once = 0
+    //NewAnim.bAnimPlayOnce := GetConLongBool(br);
+    NewAnim.AnimPlayMode := TAnimationModes(br.ReadInteger());
     NewAnim.AnimPlayForSeconds := br.ReadInteger();
     NewAnim.bAnimWaitToFinish := GetConLongBool(br);
 end;

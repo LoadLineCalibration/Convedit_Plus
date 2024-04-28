@@ -732,9 +732,10 @@ begin
     animEvent.ActorIndex := frmMain.FindTableIdByName(TM_ActorsPawns, animEvent.ActorValue);
     animEvent.AnimSequence := GetConString(ConRead);
 
-    // loop = 0, Once = 1
+    // Once = 0, Loop = 1
     //animEvent.bAnimPlayOnce := not GetConLongBool(ConRead); // Invert the value, so it will look correctly for user.
-    animEvent.bAnimPlayOnce := GetConLongBool(ConRead);
+    //animEvent.bAnimPlayOnce := GetConLongBool(ConRead);
+    animEvent.AnimPlayMode := TAnimationModes(ConRead.ReadInteger());
     animEvent.AnimPlayForSeconds := ConRead.ReadInteger();
     animEvent.bAnimWaitToFinish := GetConLongBool(ConRead);
 end;

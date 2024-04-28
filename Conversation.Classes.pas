@@ -74,8 +74,8 @@ type TCameraTransitions =
 
 type TAnimationModes =
 (
-    AM_Loop,
-    AM_Once
+    AM_Loop, // 0 = Loop
+    AM_Once  // 1 = Once. Integer, 4 bytes.
 );
 
 type TConditions =
@@ -228,7 +228,8 @@ TConEventAnimation = class(TConEvent) // 07
     ActorValue: string;
 
     AnimSequence: string;
-    bAnimPlayOnce: Boolean;
+    //bAnimPlayOnce: Boolean;
+    AnimPlayMode: TAnimationModes;
     AnimPlayForSeconds: Integer;
     bAnimWaitToFinish: Boolean;
 

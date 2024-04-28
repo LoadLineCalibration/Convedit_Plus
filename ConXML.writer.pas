@@ -309,7 +309,8 @@ try
                              PlayAnimActor.SetAttribute('Value', PlayAnimEvent.ActorValue);
 
                              ConEvent.AddChild('sequence').SetText(PlayAnimEvent.AnimSequence);
-                             ConEvent.AddChild('playOnce').SetText(PlayAnimEvent.bAnimPlayOnce.ToString);
+                             //ConEvent.AddChild('playOnce').SetText(PlayAnimEvent.bAnimPlayOnce.ToString);
+                             ConEvent.AddChild('playOnce').SetText(Ord(PlayAnimEvent.AnimPlayMode).ToString);
                              ConEvent.AddChild('playForSeconds').SetText(PlayAnimEvent.AnimPlayForSeconds.ToString);
                              ConEvent.AddChild('waitToFinish').SetText(BoolToStr(PlayAnimEvent.bAnimWaitToFinish, True));
                       end;

@@ -3281,11 +3281,12 @@ var
     EventPlayAnim: TConEventAnimation;
     PlayAnimActor: string;
     PlayAnimSeq: string;
-    bPlayAnimOnce: Boolean;
+    //bPlayAnimOnce: Boolean;
+    PlayAnimMode: string;
     PlayAnimDurationSec: Integer;
     bPlayAnimWaitToFinish: Boolean;
 begin
-    bPlayAnimOnce:= False;
+    //bPlayAnimOnce:= False;
     bPlayAnimWaitToFinish:= False;
 
     if ((CurrentConversation <> nil) and (TConEventAnimation(ConEventList.Items.Objects[Index]) <> nil)) then
@@ -3294,7 +3295,8 @@ begin
 
         PlayAnimActor:= EventPlayAnim.ActorValue;
         PlayAnimSeq:= EventPlayAnim.AnimSequence;
-        bPlayAnimOnce:= EventPlayAnim.bAnimPlayOnce;
+        //bPlayAnimOnce:= EventPlayAnim.bAnimPlayOnce;
+        PlayAnimMode := GetEnumName(TypeInfo(TAnimationModes), Ord(EventPlayAnim.AnimPlayMode));
         PlayAnimDurationSec:= EventPlayAnim.AnimPlayForSeconds;
         bPlayAnimWaitToFinish:= EventPlayAnim.bAnimWaitToFinish;
     end;
@@ -3333,8 +3335,9 @@ begin
         DrawText(Handle, 'Play Animation: ' + PlayAnimSeq, -1, tempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
 
         //Inc(tempRect.Top, 16);
-        Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));
-        DrawText(Handle, 'Play Once: ' + BoolToStr(bPlayAnimOnce, true) + '', -1, tempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
+        Inc(tempRect.Top, Round(16 * GetDPIAsRatio())); //
+        DrawText(Handle, 'Play mode: ' + PlayAnimMode, -1, tempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
+        //DrawText(Handle, 'Play Once: ' + BoolToStr(bPlayAnimOnce, true) + '', -1, tempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
 
         //Inc(tempRect.Top, 16);
         Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));

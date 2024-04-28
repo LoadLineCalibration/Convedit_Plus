@@ -5442,7 +5442,7 @@ object frmEventInsAdd: TfrmEventInsAdd
     Top = 114
     Width = 556
     Height = 406
-    ActivePage = TabSheet2
+    ActivePage = TabSheet8
     Anchors = [akLeft, akTop, akRight, akBottom]
     DoubleBuffered = True
     ParentDoubleBuffered = False
@@ -5667,7 +5667,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           373)
         object btnAddChoice: TButton
           Left = 455
-          Top = 24
+          Top = 55
           Width = 80
           Height = 25
           Anchors = [akTop, akRight]
@@ -5679,7 +5679,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           OnClick = btnAddChoiceClick
         end
         object btnMoveDownChoice: TButton
-          Left = 455
+          Left = 486
           Top = 117
           Width = 25
           Height = 25
@@ -5701,7 +5701,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object btnDeleteChoice: TButton
           Left = 455
-          Top = 55
+          Top = 86
           Width = 80
           Height = 25
           Anchors = [akTop, akRight]
@@ -5715,7 +5715,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object btnMoveUpChoice: TButton
           Left = 455
-          Top = 86
+          Top = 117
           Width = 25
           Height = 25
           Hint = 'Move up (change order)'
@@ -5772,6 +5772,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           FullDrag = True
           GridLines = True
           HideSelection = False
+          Items.ItemData = {}
           StyleName = 'Windows'
           RowSelect = True
           ParentDoubleBuffered = False
@@ -5902,6 +5903,7 @@ object frmEventInsAdd: TfrmEventInsAdd
                 FullDrag = True
                 GridLines = True
                 HideSelection = False
+                Items.ItemData = {}
                 StyleName = 'Windows'
                 ReadOnly = True
                 RowSelect = True
@@ -6056,6 +6058,17 @@ object frmEventInsAdd: TfrmEventInsAdd
           TabOrder = 7
           StyleName = 'Windows'
         end
+        object btnPlayChoiceAudio: TButton
+          Left = 455
+          Top = 16
+          Width = 56
+          Height = 22
+          Cursor = crHandPoint
+          Anchors = [akTop, akRight]
+          Caption = 'Play'
+          TabOrder = 8
+          OnClick = btnPlayChoiceAudioClick
+        end
       end
     end
     object TabSheet3: TTabSheet
@@ -6118,6 +6131,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           FullDrag = True
           GridLines = True
           HideSelection = False
+          Items.ItemData = {}
           MultiSelect = True
           StyleName = 'Windows'
           RowSelect = True
@@ -6221,6 +6235,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           FullDrag = True
           GridLines = True
           HideSelection = False
+          Items.ItemData = {}
           MultiSelect = True
           StyleName = 'Windows'
           RowSelect = True
@@ -6668,7 +6683,7 @@ object frmEventInsAdd: TfrmEventInsAdd
         Width = 548
         Height = 373
         Align = alClient
-        Caption = ' Play Animation (Implemented in TNM?): '
+        Caption = ' Play Animation:  '
         Color = 13226452
         ParentBackground = False
         ParentColor = False
@@ -6717,16 +6732,10 @@ object frmEventInsAdd: TfrmEventInsAdd
           Top = 128
           Width = 399
           Height = 23
-          AutoCloseUp = True
           Anchors = [akLeft, akTop, akRight]
-          Ctl3D = True
-          ParentCtl3D = False
           TabOrder = 1
-          StyleName = 'Windows'
           OnChange = cmbPawnToAnimateChange
           OnKeyPress = AllowFNameInput
-          Items.Strings = (
-            'ToDo: Add list of animations here')
         end
         object GroupBox21: TGroupBox
           Left = 32
