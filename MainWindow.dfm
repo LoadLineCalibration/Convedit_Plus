@@ -5551,6 +5551,7 @@ object frmMain: TfrmMain
         end>
       OnDrawSection = HeaderControl1DrawSection
       OnSectionResize = HeaderControl1SectionResize
+      StyleElements = []
     end
     object mmoOutput: TMemo
       Left = 2
@@ -5579,7 +5580,6 @@ object frmMain: TfrmMain
       TabOrder = 2
       Visible = False
       WordWrap = False
-      StyleName = ''
     end
     object btnCloseLog: TButton
       Left = 645
@@ -5601,7 +5601,6 @@ object frmMain: TfrmMain
       ParentFont = False
       TabOrder = 3
       Visible = False
-      StyleName = ''
       OnClick = ViewoutputTMemo1Click
     end
   end
@@ -6102,31 +6101,36 @@ object frmMain: TfrmMain
       end
       object Darkmode1: TMenuItem
         Caption = 'Theme'
-        object GoldenGraphiteDark1: TMenuItem
+        object mnuCharcoalDarkSlate: TMenuItem
           Caption = 'Charcoal Dark State (Dark)'
-          OnClick = GoldenGraphiteDark1Click
+          RadioItem = True
+          OnClick = mnuCharcoalDarkSlateClick
         end
-        object OnyxBlueDark1: TMenuItem
+        object mnuOnyxBlueTheme: TMenuItem
           Caption = 'Onyx Blue (Dark)'
-          OnClick = OnyxBlueDark1Click
+          RadioItem = True
+          OnClick = mnuOnyxBlueThemeClick
         end
         object N31: TMenuItem
           Caption = '-'
         end
-        object CyanNight1: TMenuItem
+        object mnuCyanNightTheme: TMenuItem
           Caption = 'Cyan Night (Light)'
-          OnClick = CyanNight1Click
+          RadioItem = True
+          OnClick = mnuCyanNightThemeClick
         end
-        object LavenderClassico1: TMenuItem
+        object mnuLavenderClassicoTheme: TMenuItem
           Caption = 'Lavender Classico (Light)'
-          OnClick = LavenderClassico1Click
+          RadioItem = True
+          OnClick = mnuLavenderClassicoThemeClick
         end
         object N32: TMenuItem
           Caption = '-'
         end
-        object System1: TMenuItem
+        object mnuSystemTheme: TMenuItem
           Caption = 'System'
-          OnClick = System1Click
+          RadioItem = True
+          OnClick = mnuSystemThemeClick
         end
       end
       object Options1: TMenuItem

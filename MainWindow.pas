@@ -290,11 +290,11 @@ type
     CopyChoicetext10: TMenuItem;
     N30: TMenuItem;
     btnStartSearch: TButton;
-    GoldenGraphiteDark1: TMenuItem;
-    CyanNight1: TMenuItem;
-    LavenderClassico1: TMenuItem;
-    System1: TMenuItem;
-    OnyxBlueDark1: TMenuItem;
+    mnuCharcoalDarkSlate: TMenuItem;
+    mnuCyanNightTheme: TMenuItem;
+    mnuLavenderClassicoTheme: TMenuItem;
+    mnuSystemTheme: TMenuItem;
+    mnuOnyxBlueTheme: TMenuItem;
     N31: TMenuItem;
     N32: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
@@ -569,11 +569,11 @@ type
     procedure CopyChoiceItemObj_Path(Sender: TObject);
     procedure CopyChoiceItemObj_Filename(Sender: TObject);
     procedure btnStartSearchClick(Sender: TObject);
-    procedure GoldenGraphiteDark1Click(Sender: TObject);
-    procedure CyanNight1Click(Sender: TObject);
-    procedure LavenderClassico1Click(Sender: TObject);
-    procedure System1Click(Sender: TObject);
-    procedure OnyxBlueDark1Click(Sender: TObject);
+    procedure mnuCharcoalDarkSlateClick(Sender: TObject);
+    procedure mnuCyanNightThemeClick(Sender: TObject);
+    procedure mnuLavenderClassicoThemeClick(Sender: TObject);
+    procedure mnuSystemThemeClick(Sender: TObject);
+    procedure mnuOnyxBlueThemeClick(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -884,9 +884,11 @@ begin
     Result := dResult;
 end;
 
-procedure TfrmMain.GoldenGraphiteDark1Click(Sender: TObject);
+procedure TfrmMain.mnuCharcoalDarkSlateClick(Sender: TObject);
 begin
+    EventListColorsMode := ELCM_Dark;
     TStyleManager.SetStyle('Charcoal Dark Slate');
+    ViewoutputTMemo1Click(self);
 end;
 
 function TfrmMain.GetRandomEventItemHeight(events: array of TConEvent): Integer;
@@ -2615,9 +2617,11 @@ begin
     ClearForNewFile();
 end;
 
-procedure TfrmMain.LavenderClassico1Click(Sender: TObject);
+procedure TfrmMain.mnuLavenderClassicoThemeClick(Sender: TObject);
 begin
+    EventListColorsMode := ELCM_Default;
     TStyleManager.SetStyle('Lavender Classico');
+    ViewoutputTMemo1Click(self);
 end;
 
 procedure TfrmMain.LoadCfg();
@@ -4492,11 +4496,16 @@ begin
     begin
         Font.Name := CEP_EVENT_HEADER_LIST_FONT_NAME; // Шрифт
         Font.Size := CEP_EVENT_HEADER_LIST_FONT_SIZE;
-        Font.Color := clBtnText;
 
         SetBkMode(Handle, TRANSPARENT); // Прозрачный фон.
         TempRect.Left := Rect.Left + 4; // Отступ
         TempRect.Top := Rect.Top + 1;
+
+        // Handle style colors manually... because only first section is themed correctly.
+        Font.Color := StyleServices.GetStyleFontColor(sfButtonTextNormal);
+        Brush.Color := StyleServices.GetStyleColor(scButtonNormal);
+        FillRect(Rect);
+
         DrawText(Handle, Section.Text, -1, TempRect, DT_END_ELLIPSIS); // Название
     end;
 
@@ -5543,9 +5552,11 @@ begin
         AddLog('Event[' + i.ToString + '] ' + CurrentConversation.Events[i].ClassName);
 end;
 
-procedure TfrmMain.CyanNight1Click(Sender: TObject);
+procedure TfrmMain.mnuCyanNightThemeClick(Sender: TObject);
 begin
+    EventListColorsMode := ELCM_Default;
     TStyleManager.SetStyle('Cyan Night');
+    ViewoutputTMemo1Click(self);
 end;
 
 procedure TfrmMain.FileCloseExecute(Sender: TObject);
@@ -5822,8 +5833,9 @@ begin
     StatusBar.Panels[0].Width := ConvoTree.Width;
 end;
 
-procedure TfrmMain.System1Click(Sender: TObject);
+procedure TfrmMain.mnuSystemThemeClick(Sender: TObject);
 begin
+    EventListColorsMode := ELCM_Default;
     TStyleManager.SetStyle('Windows');
 end;
 
@@ -6514,9 +6526,11 @@ begin
     frmTableEdit.ShowModal();
 end;
 
-procedure TfrmMain.OnyxBlueDark1Click(Sender: TObject);
+procedure TfrmMain.mnuOnyxBlueThemeClick(Sender: TObject);
 begin
+    EventListColorsMode := ELCM_Dark;
     TStyleManager.SetStyle('Onyx Blue');
+    ViewoutputTMemo1Click(self);
 end;
 
 procedure TfrmMain.mnuToggleMainToolBarClick(Sender: TObject);
