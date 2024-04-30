@@ -51,7 +51,7 @@ object frmFind: TfrmFind
     00008FFF0000001F0000000F0000000900000001000000000000000000000000
     0000000000000000000000000000F0000000F0000000F0000000F8000000}
   Position = poMainFormCenter
-  StyleName = 'Windows'
+  StyleName = ''
   OnClose = FormClose
   DesignSize = (
     484
@@ -80,7 +80,7 @@ object frmFind: TfrmFind
     Width = 294
     Height = 23
     TabOrder = 0
-    StyleName = 'Windows'
+    StyleName = ''
   end
   object btnFind: TButton
     Left = 374
@@ -90,7 +90,7 @@ object frmFind: TfrmFind
     Caption = 'Find All'
     Default = True
     TabOrder = 1
-    StyleName = 'Windows'
+    StyleName = ''
     OnClick = btnFindClick
   end
   object btnClose: TButton
@@ -101,7 +101,7 @@ object frmFind: TfrmFind
     Cancel = True
     Caption = 'Close [ESC]'
     TabOrder = 2
-    StyleName = 'Windows'
+    StyleName = ''
     OnClick = btnCloseClick
   end
   object GroupBox1: TGroupBox
@@ -111,7 +111,7 @@ object frmFind: TfrmFind
     Height = 76
     Caption = 'Search in:'
     TabOrder = 3
-    StyleName = 'Windows'
+    StyleName = ''
     object rbAllConvos: TRadioButton
       Left = 16
       Top = 24
@@ -140,7 +140,7 @@ object frmFind: TfrmFind
     Height = 76
     Caption = 'Options:'
     TabOrder = 4
-    StyleName = 'Windows'
+    StyleName = ''
     object chkFindWholeWordOnly: TCheckBox
       Left = 16
       Top = 47
@@ -192,7 +192,7 @@ object frmFind: TfrmFind
     Height = 98
     Caption = 'Look in these events:'
     TabOrder = 7
-    StyleName = 'Windows'
+    StyleName = ''
     object chkLookInSpeech: TCheckBox
       Left = 12
       Top = 24

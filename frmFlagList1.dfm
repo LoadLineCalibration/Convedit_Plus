@@ -13,7 +13,7 @@ object frmFlagList: TfrmFlagList
   Font.Style = []
   Position = poMainFormCenter
   ShowHint = True
-  StyleName = 'Windows'
+  StyleName = ''
   TextHeight = 15
   object lbl1: TLabel
     Left = 8

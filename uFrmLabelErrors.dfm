@@ -74,7 +74,7 @@ object frmLabelErrors: TfrmLabelErrors
     DoubleBuffered = True
     GridLines = True
     HideSelection = False
-    StyleName = 'Windows'
+    StyleName = ''
     ReadOnly = True
     RowSelect = True
     ParentDoubleBuffered = False

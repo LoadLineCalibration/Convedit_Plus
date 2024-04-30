@@ -12,7 +12,6 @@ object frmEditValue: TfrmEditValue
   Font.Name = 'Segoe UI'
   Font.Style = []
   Position = poMainFormCenter
-  StyleElements = []
   OnShow = FormShow
   TextHeight = 15
   object lblText: TLabel
@@ -24,7 +23,6 @@ object frmEditValue: TfrmEditValue
     Caption = 'lblText'
     Layout = tlBottom
     WordWrap = True
-    StyleElements = []
   end
   object Panel1: TPanel
     Left = 0
@@ -34,7 +32,6 @@ object frmEditValue: TfrmEditValue
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
-    StyleElements = []
     DesignSize = (
       373
       37)
@@ -48,7 +45,6 @@ object frmEditValue: TfrmEditValue
       Default = True
       ModalResult = 1
       TabOrder = 0
-      StyleElements = []
       OnClick = btnOkClick
     end
     object btnCancel: TButton
@@ -61,7 +57,6 @@ object frmEditValue: TfrmEditValue
       Caption = 'Cancel'
       ModalResult = 2
       TabOrder = 1
-      StyleElements = [seBorder]
     end
   end
   object editValue: TEdit
@@ -72,7 +67,6 @@ object frmEditValue: TfrmEditValue
     AutoSize = False
     TabOrder = 1
     Text = 'editValue'
-    StyleElements = []
     OnKeyPress = editValueKeyPress
   end
 end

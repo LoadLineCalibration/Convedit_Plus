@@ -77,7 +77,7 @@ object frmConvoProperties: TfrmConvoProperties
       Style = tsFlatButtons
       TabOrder = 0
       TabWidth = 65
-      StyleName = 'Windows'
+      StyleName = ''
       OnChange = pgcConvoPropertiesTabsChange
       object TabSheet1: TTabSheet
         Caption = 'General'
@@ -206,7 +206,7 @@ object frmConvoProperties: TfrmConvoProperties
             end>
           GridLines = True
           HideSelection = False
-          StyleName = 'Windows'
+          StyleName = ''
           RowSelect = True
           SmallImages = frmEventInsAdd.ilSpecial
           TabOrder = 0
@@ -308,7 +308,7 @@ object frmConvoProperties: TfrmConvoProperties
           Enabled = False
           MaxValue = 0
           MinValue = 0
-          StyleName = 'Windows'
+          StyleName = ''
           TabOrder = 4
           Value = 0
           OnChange = editDistFromPlayerChange

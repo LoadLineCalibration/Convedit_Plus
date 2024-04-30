@@ -5,7 +5,7 @@ object frmMain: TfrmMain
   BorderWidth = 1
   Caption = 'ConEditPlus'
   ClientHeight = 585
-  ClientWidth = 1002
+  ClientWidth = 969
   Color = clAppWorkSpace
   CustomTitleBar.Height = 8
   CustomTitleBar.SystemColors = False
@@ -5442,7 +5442,7 @@ object frmMain: TfrmMain
   object StatusBar: TStatusBar
     Left = 0
     Top = 565
-    Width = 1002
+    Width = 969
     Height = 20
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBtnText
@@ -5463,7 +5463,7 @@ object frmMain: TfrmMain
   object pnlEventList: TEsPanel
     Left = 305
     Top = 34
-    Width = 697
+    Width = 664
     Height = 531
     Align = alClient
     Color = 3947580
@@ -5473,12 +5473,12 @@ object frmMain: TfrmMain
     CaptionVisible = False
     FrameStyle = Bump
     DesignSize = (
-      697
+      664
       531)
     object ConEventList: TListBox
       Left = 2
       Top = 22
-      Width = 693
+      Width = 660
       Height = 221
       Style = lbOwnerDrawVariable
       Align = alClient
@@ -5506,7 +5506,7 @@ object frmMain: TfrmMain
     object HeaderControl1: THeaderControl
       Left = 2
       Top = 2
-      Width = 693
+      Width = 660
       Height = 20
       FullDrag = False
       HotTrack = True
@@ -5555,7 +5555,7 @@ object frmMain: TfrmMain
     object mmoOutput: TMemo
       Left = 2
       Top = 243
-      Width = 693
+      Width = 660
       Height = 286
       Align = alBottom
       BevelEdges = [beTop]
@@ -5579,10 +5579,10 @@ object frmMain: TfrmMain
       TabOrder = 2
       Visible = False
       WordWrap = False
-      StyleName = 'Windows'
+      StyleName = ''
     end
     object btnCloseLog: TButton
-      Left = 678
+      Left = 645
       Top = 353
       Width = 20
       Height = 20
@@ -5601,14 +5601,14 @@ object frmMain: TfrmMain
       ParentFont = False
       TabOrder = 3
       Visible = False
-      StyleName = 'Windows'
+      StyleName = ''
       OnClick = ViewoutputTMemo1Click
     end
   end
   object mainToolBar: TToolBar
     Left = 0
     Top = 0
-    Width = 1002
+    Width = 969
     Height = 31
     AutoSize = True
     ButtonHeight = 30
@@ -5807,7 +5807,7 @@ object frmMain: TfrmMain
     object EsPanel1: TEsPanel
       Left = 516
       Top = 0
-      Width = 367
+      Width = 404
       Height = 30
       Ctl3D = True
       ParentBackground = False
@@ -5827,8 +5827,8 @@ object frmMain: TfrmMain
         Layout = tlCenter
       end
       object edtSearchBox: TEdit
-        Left = 88
-        Top = 4
+        Left = 87
+        Top = 2
         Width = 277
         Height = 22
         Hint = 
@@ -5848,9 +5848,24 @@ object frmMain: TfrmMain
         TextHint = 'Search in conversations'
         OnKeyPress = edtSearchBoxKeyPress
       end
+      object btnStartSearch: TButton
+        Left = 363
+        Top = 2
+        Width = 22
+        Height = 22
+        Caption = #1080
+        Font.Charset = SYMBOL_CHARSET
+        Font.Color = clBlack
+        Font.Height = -16
+        Font.Name = 'Wingdings'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 1
+        OnClick = btnStartSearchClick
+      end
     end
     object lblSelectedEvent: TLabel
-      Left = 883
+      Left = 920
       Top = 0
       Width = 400
       Height = 30
@@ -5863,7 +5878,7 @@ object frmMain: TfrmMain
   object StaticText1: TStaticText
     Left = 0
     Top = 31
-    Width = 1002
+    Width = 969
     Height = 3
     Align = alTop
     AutoSize = False
@@ -5949,8 +5964,8 @@ object frmMain: TfrmMain
   object MenuMain: TMainMenu
     Images = MenusImageList
     OnChange = MenuMainChange
-    Left = 884
-    Top = 7
+    Left = 812
+    Top = 71
     object File1: TMenuItem
       Caption = 'File'
       object New1: TMenuItem
@@ -6087,7 +6102,32 @@ object frmMain: TfrmMain
       end
       object Darkmode1: TMenuItem
         Caption = 'Theme'
-        OnClick = Darkmode1Click
+        object GoldenGraphiteDark1: TMenuItem
+          Caption = 'Charcoal Dark State (Dark)'
+          OnClick = GoldenGraphiteDark1Click
+        end
+        object OnyxBlueDark1: TMenuItem
+          Caption = 'Onyx Blue (Dark)'
+          OnClick = OnyxBlueDark1Click
+        end
+        object N31: TMenuItem
+          Caption = '-'
+        end
+        object CyanNight1: TMenuItem
+          Caption = 'Cyan Night (Light)'
+          OnClick = CyanNight1Click
+        end
+        object LavenderClassico1: TMenuItem
+          Caption = 'Lavender Classico (Light)'
+          OnClick = LavenderClassico1Click
+        end
+        object N32: TMenuItem
+          Caption = '-'
+        end
+        object System1: TMenuItem
+          Caption = 'System'
+          OnClick = System1Click
+        end
       end
       object Options1: TMenuItem
         Action = ShowOptions

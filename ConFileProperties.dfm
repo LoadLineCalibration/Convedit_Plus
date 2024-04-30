@@ -14,7 +14,7 @@ object frmConvoFileProperties: TfrmConvoFileProperties
   Font.Style = []
   Position = poOwnerFormCenter
   ShowHint = True
-  StyleName = 'Windows'
+  StyleName = ''
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
@@ -78,7 +78,7 @@ object frmConvoFileProperties: TfrmConvoFileProperties
           ItemHeight = 15
           MultiSelect = True
           TabOrder = 0
-          StyleName = 'Windows'
+          StyleName = ''
           OnDblClick = btnRemoveClick
           OnDrawItem = lstAllMissionsDrawItem
         end
@@ -91,7 +91,7 @@ object frmConvoFileProperties: TfrmConvoFileProperties
           ItemHeight = 15
           MultiSelect = True
           TabOrder = 1
-          StyleName = 'Windows'
+          StyleName = ''
           OnDblClick = btnAddToLeftClick
           OnDrawItem = lstAllMissionsDrawItem
         end
@@ -221,7 +221,7 @@ object frmConvoFileProperties: TfrmConvoFileProperties
             item
               Caption = 'Lines'
             end>
-          StyleName = 'Windows'
+          StyleName = ''
           ReadOnly = True
           RowSelect = True
           SortType = stText

@@ -49,7 +49,7 @@ object frmEditChoice: TfrmEditChoice
     00008FFF0000001F0000000F0000000900000001000000000000000000000000
     0000000000000000000000000000F0000000F0000000F0000000F8000000}
   Position = poMainFormCenter
-  StyleName = 'Windows'
+  StyleName = ''
   OnClose = FormClose
   OnShow = FormShow
   TextHeight = 15
@@ -185,7 +185,7 @@ object frmEditChoice: TfrmEditChoice
           FullDrag = True
           GridLines = True
           HideSelection = False
-          StyleName = 'Windows'
+          StyleName = ''
           ReadOnly = True
           RowSelect = True
           ParentFont = False
