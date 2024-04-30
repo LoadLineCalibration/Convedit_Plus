@@ -9,7 +9,7 @@ uses
   Conversation.Classes, System.ImageList, Vcl.ImgList, Table, Vcl.GraphUtil, ES.BaseControls, ES.Layouts,
   System.Actions, Vcl.ActnList, System.Generics.Collections, System.TypInfo, xml.VerySimple, System.StrUtils,
   system.Math, Vcl.MPlayer, ConEditPlus.Enums, Winapi.ShellAPI, ConEditPlus.Helpers, Vcl.Clipbrd, system.Rtti,
-  ConEditPlus.Clipboard.Helper, Vcl.AppEvnts, System.Threading, system.DateUtils;
+  ConEditPlus.Clipboard.Helper, Vcl.AppEvnts, System.Threading, system.DateUtils, vcl.Styles, vcl.Themes;
 
 
 type
@@ -289,6 +289,14 @@ type
     N29: TMenuItem;
     CopyChoicetext10: TMenuItem;
     N30: TMenuItem;
+    btnStartSearch: TButton;
+    GoldenGraphiteDark1: TMenuItem;
+    CyanNight1: TMenuItem;
+    LavenderClassico1: TMenuItem;
+    System1: TMenuItem;
+    OnyxBlueDark1: TMenuItem;
+    N31: TMenuItem;
+    N32: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -538,7 +546,6 @@ type
     procedure ConvoTreeAddition(Sender: TObject; Node: TTreeNode);
     procedure ConvoTreeDeletion(Sender: TObject; Node: TTreeNode);
     procedure Conversation_RenameExecute(Sender: TObject);
-    procedure Darkmode1Click(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Conversation_FindExecute(Sender: TObject);
     procedure AutoSaveTimerTimer(Sender: TObject);
@@ -561,6 +568,12 @@ type
     procedure CopyChoiceItemObj_Path_Filename(Sender: TObject);
     procedure CopyChoiceItemObj_Path(Sender: TObject);
     procedure CopyChoiceItemObj_Filename(Sender: TObject);
+    procedure btnStartSearchClick(Sender: TObject);
+    procedure GoldenGraphiteDark1Click(Sender: TObject);
+    procedure CyanNight1Click(Sender: TObject);
+    procedure LavenderClassico1Click(Sender: TObject);
+    procedure System1Click(Sender: TObject);
+    procedure OnyxBlueDark1Click(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -869,6 +882,11 @@ begin
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
 
     Result := dResult;
+end;
+
+procedure TfrmMain.GoldenGraphiteDark1Click(Sender: TObject);
+begin
+    TStyleManager.SetStyle('Charcoal Dark Slate');
 end;
 
 function TfrmMain.GetRandomEventItemHeight(events: array of TConEvent): Integer;
@@ -2595,6 +2613,11 @@ end;
 procedure TfrmMain.Close1Click(Sender: TObject);
 begin
     ClearForNewFile();
+end;
+
+procedure TfrmMain.LavenderClassico1Click(Sender: TObject);
+begin
+    TStyleManager.SetStyle('Lavender Classico');
 end;
 
 procedure TfrmMain.LoadCfg();
@@ -5097,11 +5120,6 @@ begin
     InsertEvent(Ord(ET_End));
 end;
 
-procedure TfrmMain.Darkmode1Click(Sender: TObject);
-begin
-    ShowMessage('Not implemented yet');
-end;
-
 procedure TfrmMain.DateTimeToDouble1Click(Sender: TObject);
 begin
     var testDT := Now();
@@ -5511,6 +5529,7 @@ begin
 
     lblQSearch.Enabled   := bVisible;
     edtSearchBox.Enabled := bVisible;
+    btnStartSearch.Enabled := bVisible;
 end;
 
 procedure TfrmMain.CreateTestFile1Click(Sender: TObject);
@@ -5522,6 +5541,11 @@ procedure TfrmMain.CurrentConversationEvents1Click(Sender: TObject);
 begin
     for var i:= 0 to High(CurrentConversation.Events) do
         AddLog('Event[' + i.ToString + '] ' + CurrentConversation.Events[i].ClassName);
+end;
+
+procedure TfrmMain.CyanNight1Click(Sender: TObject);
+begin
+    TStyleManager.SetStyle('Cyan Night');
 end;
 
 procedure TfrmMain.FileCloseExecute(Sender: TObject);
@@ -5796,6 +5820,11 @@ begin
     ConEventList.Invalidate();
 
     StatusBar.Panels[0].Width := ConvoTree.Width;
+end;
+
+procedure TfrmMain.System1Click(Sender: TObject);
+begin
+    TStyleManager.SetStyle('Windows');
 end;
 
 procedure TfrmMain.mnuStatusbarClick(Sender: TObject);
@@ -6429,6 +6458,13 @@ begin
         else ConEventList.DragMode := TDragMode.dmManual;
 end;
 
+procedure TfrmMain.btnStartSearchClick(Sender: TObject);
+begin
+    var charToSend:= #13;
+
+    edtSearchBoxKeyPress(Self, charToSend);
+end;
+
 procedure TfrmMain.tbStickyWindowClick(Sender: TObject);
 begin
     ScreenSnap := tbStickyWindow.Down;
@@ -6476,6 +6512,11 @@ begin
     frmTableEdit.lstTableContents.Items := frmMain.listObjects;
 
     frmTableEdit.ShowModal();
+end;
+
+procedure TfrmMain.OnyxBlueDark1Click(Sender: TObject);
+begin
+    TStyleManager.SetStyle('Onyx Blue');
 end;
 
 procedure TfrmMain.mnuToggleMainToolBarClick(Sender: TObject);
