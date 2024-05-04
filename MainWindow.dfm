@@ -6698,6 +6698,10 @@ object frmMain: TfrmMain
         OnClick = CopyChoiceItemObj_Filename
       end
     end
+    object mnuChoiceItemSub10: TMenuItem
+      Caption = 'Error! More than 10 choices!'
+      Visible = False
+    end
   end
   object ImageListToolbar: TImageList
     GrayscaleFactor = 50

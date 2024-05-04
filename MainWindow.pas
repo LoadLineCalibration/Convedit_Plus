@@ -297,6 +297,7 @@ type
     mnuOnyxBlueTheme: TMenuItem;
     N31: TMenuItem;
     N32: TMenuItem;
+    mnuChoiceItemSub10: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -5206,7 +5207,11 @@ begin
     if ConEventObj is TConEventSpeech then
     begin
         var TempPath := ExtractFilePath(IncludeTrailingPathDelimiter(ConFileAudioPath) + TConEventSpeech(ConEventObj).mp3File);
+        var TempFile := IncludeTrailingPathDelimiter(ConFileAudioPath) + TConEventSpeech(ConEventObj).mp3File;
 
+        if FileExists(TempFile) then
+           ShellExecute(0, 'open', 'explorer.exe', PChar('/select,' + TempFile), nil, SW_SHOWNORMAL)
+        else
         if DirectoryExists(TempPath) then
             ShellExecute(0, 'open', PChar(TempPath), nil, nil, SW_SHOWNORMAL);
     end;
@@ -5225,7 +5230,11 @@ begin
         end;
 
         var TempPath := ExtractFilePath(IncludeTrailingPathDelimiter(ConFileAudioPath) + mp3File);
+//        var TempFile := IncludeTrailingPathDelimiter(ConFileAudioPath) + mp3File;
 
+//        if FileExists(TempFile) then
+//            ShellExecute(0, 'open', 'explorer.exe', PChar('/select,' + TempFile), nil, SW_SHOWNORMAL)
+//        else
         if DirectoryExists(TempPath) then
             ShellExecute(0, 'open', PChar(TempPath), nil, nil, SW_SHOWNORMAL);
     end;
