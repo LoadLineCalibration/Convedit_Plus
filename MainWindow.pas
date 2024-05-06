@@ -6617,7 +6617,7 @@ begin
         Event_CopyMp3File.Visible := False;
         Event_BrowseTo.Visible := False;
 
-        for var L:= 0 to 9 do
+        for var L:= 0 to 10 do
         begin
             var ChoiceMenuItem : TMenuItem := FindComponent('mnuChoiceItemSub' + L.ToString()) as TMenuItem;
             ChoiceMenuItem.Visible := False;
@@ -6640,7 +6640,7 @@ begin
         Event_CopyMp3File.Visible        := Event_CopyMp3FileAndPath.Visible;
         Event_BrowseTo.Visible           := (SpeechObj <> nil) or (ChoiceObj <> nil); //Event_CopyMp3FileAndPath.Visible;
 
-        for var K:= 0 to 9 do // hide these menus first
+        for var K:= 0 to 10 do // hide these menus first
         begin
             var ChoiceMenuItem : TMenuItem := FindComponent('mnuChoiceItemSub' + K.ToString()) as TMenuItem;
             ChoiceMenuItem.Visible := False;
