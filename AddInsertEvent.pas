@@ -1003,7 +1003,7 @@ begin
     transObj.ActorFromValue := cmbTransferObjectFrom.Items[cmbTransferObjectFrom.ItemIndex];
     transObj.ActorFromIndex := frmMain.FindTableIdByName(TM_ActorsPawns, transObj.ActorFromValue);
 
-    transObj.GotoLabel := cmbTransferObjectFailLabel.Items[cmbTransferObjectFailLabel.ItemIndex];
+    transObj.GotoLabel := cmbTransferObjectFailLabel.Text; //cmbTransferObjectFailLabel.Items[cmbTransferObjectFailLabel.ItemIndex];
 
     RepaintCurrentEvent();
 
@@ -2735,8 +2735,8 @@ procedure TfrmEventInsAdd.cmbObjectToTransferChange(Sender: TObject);
 begin
     btnUpdate.Enabled := (cmbObjectToTransfer.ItemIndex <> -1) and
                          (cmbTransferObjectTo.ItemIndex <> -1) and
-                         (cmbTransferObjectFrom.ItemIndex <> -1) and
-                         (cmbTransferObjectFailLabel.ItemIndex <> -1);
+                         (cmbTransferObjectFrom.ItemIndex <> -1);{ and
+                         (cmbTransferObjectFailLabel.ItemIndex <> -1); }
 end;
 
 procedure TfrmEventInsAdd.cmbPawnToAnimateChange(Sender: TObject);

@@ -5436,7 +5436,7 @@ object frmEventInsAdd: TfrmEventInsAdd
     Top = 114
     Width = 556
     Height = 406
-    ActivePage = TabSheet13
+    ActivePage = TabSheet6
     Anchors = [akLeft, akTop, akRight, akBottom]
     DoubleBuffered = True
     ParentDoubleBuffered = False
@@ -6434,7 +6434,6 @@ object frmEventInsAdd: TfrmEventInsAdd
           Width = 367
           Height = 23
           AutoCloseUp = True
-          Style = csDropDownList
           Anchors = [akLeft, akTop, akRight]
           Ctl3D = True
           ParentCtl3D = False
