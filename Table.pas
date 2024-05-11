@@ -482,6 +482,38 @@ end;
 
 procedure TfrmTableEdit.btnEditClick(Sender: TObject);
 begin
+    var ItemIdx := lstTableContents.ItemIndex;
+
+    case TableMode of     //Don't allow renaming table item if it in use.
+        TM_ActorsPawns:
+        if CheckActorIsUsed(lstTableContents.Items[ItemIdx]) = true then
+        begin
+            MessageDlg(strCannotRenameTableItem,  mtWarning, [mbOK], 0);
+            Exit();
+        end;
+
+        TM_Flags:
+        if CheckFlagIsUsed(lstTableContents.Items[ItemIdx]) = true then
+        begin
+            MessageDlg(strCannotRenameTableItem,  mtWarning, [mbOK], 0);
+            Exit();
+        end;
+
+        TM_Skills:
+        if CheckSkillIsUsed(lstTableContents.Items[ItemIdx]) = true then
+        begin
+            MessageDlg(strCannotRenameTableItem,  mtWarning, [mbOK], 0);
+            Exit();
+        end;
+
+        TM_Objects:
+        if CheckObjectIsUsed(lstTableContents.Items[ItemIdx]) = true then
+        begin
+            MessageDlg(strCannotRenameTableItem,  mtWarning, [mbOK], 0);
+            Exit();
+        end;
+    end;
+
     case TableMode of
       TM_ActorsPawns: frmEditValue.lblText.Caption := strActorPawn;
       TM_Flags:       frmEditValue.lblText.Caption := strFlagName;

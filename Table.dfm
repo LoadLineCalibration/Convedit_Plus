@@ -50,7 +50,6 @@ object frmTableEdit: TfrmTableEdit
     0000000000000000000000000000F0000000F0000000F0000000F8000000}
   Position = poOwnerFormCenter
   ShowHint = True
-  StyleName = ''
   OnClose = FormClose
   OnShow = FormShow
   DesignSize = (
@@ -66,7 +65,6 @@ object frmTableEdit: TfrmTableEdit
     ItemHeight = 15
     PopupMenu = ListContentsPopup
     TabOrder = 0
-    StyleName = ''
     OnClick = lstTableContentsClick
     OnDblClick = lstTableContentsDblClick
     OnEnter = lstTableContentsEnter
@@ -81,7 +79,6 @@ object frmTableEdit: TfrmTableEdit
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 1
     TextHint = 'Add new item'
-    StyleName = ''
     OnChange = editTableChange
     OnKeyPress = editTableKeyPress
   end
@@ -95,7 +92,6 @@ object frmTableEdit: TfrmTableEdit
     Default = True
     Enabled = False
     TabOrder = 2
-    StyleName = ''
     OnClick = btnAddItemClick
   end
   object btnEdit: TButton
@@ -107,7 +103,6 @@ object frmTableEdit: TfrmTableEdit
     Caption = '&Edit'
     Enabled = False
     TabOrder = 3
-    StyleName = ''
     OnClick = btnEditClick
   end
   object btnDelete: TButton
@@ -119,7 +114,6 @@ object frmTableEdit: TfrmTableEdit
     Caption = '&Delete'
     Enabled = False
     TabOrder = 4
-    StyleName = ''
     OnClick = btnDeleteClick
   end
   object btnDeleteUnused: TButton
@@ -130,7 +124,6 @@ object frmTableEdit: TfrmTableEdit
     Anchors = [akTop, akRight]
     Caption = '&Delete Unused'
     TabOrder = 5
-    StyleName = ''
     OnClick = btnDeleteUnusedClick
   end
   object btnClose: TButton
@@ -142,7 +135,6 @@ object frmTableEdit: TfrmTableEdit
     Cancel = True
     Caption = '&Close'
     TabOrder = 6
-    StyleName = ''
     OnClick = btnCloseClick
   end
   object chkClearAfterAdd: TCheckBox
@@ -154,7 +146,6 @@ object frmTableEdit: TfrmTableEdit
     Checked = True
     State = cbChecked
     TabOrder = 7
-    StyleName = ''
   end
   object chkDoubleClickEditItem: TCheckBox
     Left = 8
@@ -166,7 +157,6 @@ object frmTableEdit: TfrmTableEdit
     Checked = True
     State = cbChecked
     TabOrder = 8
-    StyleName = ''
   end
   object btnAddDefSkills: TButton
     Left = 300
@@ -188,7 +178,6 @@ object frmTableEdit: TfrmTableEdit
     Caption = 'Add default long-range weapons'
     TabOrder = 10
     WordWrap = True
-    StyleName = ''
     OnClick = btnAddDef_LR_WeaponsClick
   end
   object btnAddDef_CR_weapons: TButton
@@ -200,7 +189,6 @@ object frmTableEdit: TfrmTableEdit
     Caption = 'Add default close-range weapons'
     TabOrder = 11
     WordWrap = True
-    StyleName = ''
     OnClick = btnAddDef_CR_weaponsClick
   end
   object btnAddDefGrenades: TButton
@@ -212,7 +200,6 @@ object frmTableEdit: TfrmTableEdit
     Caption = 'Add default grenades'
     TabOrder = 12
     WordWrap = True
-    StyleName = ''
     OnClick = btnAddDefGrenadesClick
   end
   object btnAddDefMiscItems: TButton
@@ -224,7 +211,6 @@ object frmTableEdit: TfrmTableEdit
     Caption = 'Add default misc items'
     TabOrder = 13
     WordWrap = True
-    StyleName = ''
     OnClick = btnAddDefMiscItemsClick
   end
   object btn_CustomClassList: TButton
@@ -237,7 +223,6 @@ object frmTableEdit: TfrmTableEdit
     Caption = '...'
     TabOrder = 14
     WordWrap = True
-    StyleName = ''
     OnClick = btn_CustomClassListClick
   end
   object btnAddDefInfolinkNames: TButton
