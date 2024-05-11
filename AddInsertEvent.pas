@@ -1090,7 +1090,7 @@ end;
 function TfrmEventInsAdd.ValidateJump(var jump: TConEventJump): Boolean;
 begin
     jump.conversationId := frmMain.FindConversationObjByString(cboJumpConv.Items[cboJumpConv.ItemIndex]).id; //TConversation(cboJumpConv.Items.Objects[cboJumpConv.ItemIndex]).id;
-    jump.gotoLabel := cboJumpLabel.Items[cboJumpLabel.ItemIndex];
+    jump.gotoLabel := cboJumpLabel.Text; //cboJumpLabel.Items[cboJumpLabel.ItemIndex];
 
     RepaintCurrentEvent();
 
@@ -2535,12 +2535,12 @@ begin
     if cboJumpLabel.Items.Count > 0 then
         cboJumpLabel.ItemIndex := 0;
 
-    btnUpdate.Enabled := (cboJumpConv.ItemIndex <> -1) and (cboJumpLabel.ItemIndex <> -1);
+    btnUpdate.Enabled := (cboJumpConv.ItemIndex <> -1);// and (cboJumpLabel.ItemIndex <> -1);
 end;
 
 procedure TfrmEventInsAdd.cboJumpLabelChange(Sender: TObject);
 begin
-    btnUpdate.Enabled := (cboJumpConv.ItemIndex <> -1) and (cboJumpLabel.ItemIndex <> -1);
+    btnUpdate.Enabled := (cboJumpConv.ItemIndex <> -1);// and (cboJumpLabel.ItemIndex <> -1);
 end;
 
 procedure TfrmEventInsAdd.chAlphaBlendClick(Sender: TObject);
@@ -2820,12 +2820,11 @@ begin
 end;
 
 procedure TfrmEventInsAdd.FormCreate(Sender: TObject);
-  var i: Integer;
 begin
-  lblStatus.Caption := '';
+    lblStatus.Caption := '';
 
-  for i:=0 to EventsPages.PageCount -1 do // Убрать вкладки, нам они не нужны, только страницы.
-      EventsPages.Pages[i].TabVisible := false;
+    for var i:=0 to EventsPages.PageCount -1 do // Убрать вкладки, нам они не нужны, только страницы.
+        EventsPages.Pages[i].TabVisible := false;
 
     cmbEventTypeChange(self);
     UpdateControlsState();
