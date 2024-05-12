@@ -1,6 +1,7 @@
 object frmSpeechGenerator: TfrmSpeechGenerator
   Left = 0
   Top = 0
+  BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'Speech generation [ElevenLabs API test]'
   ClientHeight = 611
   ClientWidth = 735
@@ -94,6 +95,16 @@ object frmSpeechGenerator: TfrmSpeechGenerator
       Height = 15
       Caption = 'Style Exaggeration (more that 50 can lead to artifacts)'
     end
+    object Label4: TLabel
+      Left = 17
+      Top = 240
+      Width = 105
+      Height = 22
+      AutoSize = False
+      Caption = 'Select Model:'
+      Layout = tlCenter
+      OnClick = Label4Click
+    end
     object tbStyleExag: TTrackBar
       Left = 11
       Top = 157
@@ -159,6 +170,16 @@ object frmSpeechGenerator: TfrmSpeechGenerator
       TabOrder = 4
       Text = '123'
     end
+    object cmbModels: TComboBox
+      Left = 16
+      Top = 264
+      Width = 297
+      Height = 22
+      Style = csOwnerDrawFixed
+      TabOrder = 5
+      OnChange = cmbModelsChange
+      OnDrawItem = cmbModelsDrawItem
+    end
   end
   object btnGenerate: TButton
     Left = 8
@@ -200,7 +221,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
   object edtCharsQuota: TEdit
     Left = 89
     Top = 581
-    Width = 209
+    Width = 250
     Height = 22
     Anchors = [akLeft, akBottom]
     Color = clBtnFace
@@ -213,7 +234,6 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     ReadOnly = True
     TabOrder = 6
     TextHint = 'Characters remaining'
-    OnDblClick = edtCharsQuotaDblClick
   end
   object PageControl1: TPageControl
     Left = 8
@@ -226,6 +246,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     ParentDoubleBuffered = False
     Style = tsFlatButtons
     TabOrder = 7
+    OnChange = PageControl1Change
     object TabSheet1: TTabSheet
       Caption = 'Voices'
       DesignSize = (
@@ -233,7 +254,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
         200)
       object lbVoices: TListBox
         Left = 0
-        Top = 3
+        Top = 5
         Width = 713
         Height = 196
         Style = lbOwnerDrawFixed
@@ -274,7 +295,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     end
   end
   object edtVoiceQSearch: TEdit
-    Left = 395
+    Left = 399
     Top = 342
     Width = 328
     Height = 23
