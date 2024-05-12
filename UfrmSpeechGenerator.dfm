@@ -103,7 +103,6 @@ object frmSpeechGenerator: TfrmSpeechGenerator
       AutoSize = False
       Caption = 'Select Model:'
       Layout = tlCenter
-      OnClick = Label4Click
     end
     object tbStyleExag: TTrackBar
       Left = 11
@@ -171,9 +170,9 @@ object frmSpeechGenerator: TfrmSpeechGenerator
       Text = '123'
     end
     object cmbModels: TComboBox
-      Left = 16
-      Top = 264
-      Width = 297
+      Left = 104
+      Top = 240
+      Width = 209
       Height = 22
       Style = csOwnerDrawFixed
       TabOrder = 5

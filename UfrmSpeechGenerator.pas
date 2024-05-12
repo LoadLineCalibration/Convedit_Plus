@@ -74,7 +74,6 @@ type
     procedure RESTClient1HTTPProtocolError(Sender: TCustomRESTClient);
     procedure RESTRequest1AfterExecute(Sender: TCustomRESTRequest);
     procedure PageControl1Change(Sender: TObject);
-    procedure Label4Click(Sender: TObject);
     procedure cmbModelsDrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
     procedure cmbModelsChange(Sender: TObject);
   private
@@ -122,8 +121,8 @@ begin
     var itemIdx: Integer;
 
     itemIdx := cmbModels.ItemIndex;
-    CurrentVoiceModel := cmbModels.Items.ValueFromIndex[itemIdx];
-    cmbModels.Hint := CurrentVoiceModel;
+    CurrentVoiceModel := cmbModels.Items[itemIdx];
+    cmbModels.Hint := cmbModels.Items.ValueFromIndex[itemIdx];
 end;
 
 procedure TfrmSpeechGenerator.cmbModelsDrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
@@ -166,11 +165,6 @@ begin
     RESTRequest1.Body.Add('', TRESTContentType.ctAPPLICATION_JSON);
 
     RESTRequest1.Execute();
-end;
-
-procedure TfrmSpeechGenerator.Label4Click(Sender: TObject);
-begin
-    GetModels();
 end;
 
 procedure TfrmSpeechGenerator.FillVoices();
@@ -268,7 +262,9 @@ begin
         model_name := modelObject.GetValue('name').Value;
         model_desc := modelObject.GetValue('description').Value;
 
-        cmbModels.Items.AddPair(model_name + ';' + model_id, model_desc);
+        if (model_id <> 'eleven_english_sts_v2') and
+           (model_id <> 'eleven_multilingual_sts_v2') then
+            cmbModels.Items.AddPair({model_name + ';' +} model_id, model_desc);
     end;
 end;
 
