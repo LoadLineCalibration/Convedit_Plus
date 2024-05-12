@@ -35,7 +35,10 @@ uses
   Table in 'Table.pas' {frmTableEdit},
   uFrmLabelErrors in 'uFrmLabelErrors.pas' {frmLabelErrors},
   ConEditPlus.Clipboard.Helper in 'ConEditPlus.Clipboard.Helper.pas',
-  ufrmAudioDirectories in 'ufrmAudioDirectories.pas' {frmAudioDirectories};
+  ufrmAudioDirectories in 'ufrmAudioDirectories.pas' {frmAudioDirectories},
+  Vcl.Themes,
+  Vcl.Styles,
+  UfrmSpeechGenerator in 'UfrmSpeechGenerator.pas' {frmSpeechGenerator};
 
 {$R *.res}
 {$SETPEOSVERSION 5.1} // Windows XP
@@ -58,6 +61,7 @@ begin
   Application.CreateForm(TfrmTableEdit, frmTableEdit);
   Application.CreateForm(TfrmLabelErrors, frmLabelErrors);
   Application.CreateForm(TfrmAudioDirectories, frmAudioDirectories);
+  Application.CreateForm(TfrmSpeechGenerator, frmSpeechGenerator);
   Application.HintHidePause := 10000; // hint delay
   Application.Run;
 
