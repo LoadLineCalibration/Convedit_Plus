@@ -2659,6 +2659,8 @@ begin
     begin
         lvCheckFlags.Clear();
         lvCheckFlagsChange(lvCheckFlags, lvCheckFlags.Selected, ctState);
+
+        frmMain.FillEventLabels(frmMain.CurrentConversation, cmbChkFlgJumpToLabel);
     end;
 
     4:
@@ -2714,13 +2716,22 @@ begin
         cboJumpConvChange(self);
     //    cboJumpLabelChange(self);
     end;
-    10:;
+    10:
+    begin
+        frmMain.FillEventLabels(frmMain.CurrentConversation, cmbEventRandomLabels);
+        cmbEventRandomLabelsChange(self);
+    end;
+
     11:editTriggerTagChange(self);
     12:editGoalNameChange(self);
     13:memoNoteTextChange(Self);
     14:;
     15:;
-    16:cmbCheckLabelJumpChange(Self);
+    16:
+    begin
+        frmMain.FillEventLabels(frmMain.CurrentConversation, cmbCheckLabelJump);
+        cmbCheckLabelJumpChange(Self);
+    end;
     17:memoCommentTextChange(Self);
     18:btnUpdate.Enabled := True;
     end;

@@ -761,7 +761,9 @@ begin
     begin
         var cmbReceiver := TComboBox(TableItemReceiver);
 
-        cmbReceiver.SetFocus();
+//        if cmbReceiver.Visible = True then
+//            cmbReceiver.SetFocus();
+
         cmbReceiver.ItemIndex := cmbReceiver.Items.IndexOf(lstTableContents.Items[current]);
     end;
 end;

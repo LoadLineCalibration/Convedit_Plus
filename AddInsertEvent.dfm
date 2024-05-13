@@ -5436,7 +5436,7 @@ object frmEventInsAdd: TfrmEventInsAdd
     Top = 114
     Width = 556
     Height = 406
-    ActivePage = Jump
+    ActivePage = TabSheet17
     Anchors = [akLeft, akTop, akRight, akBottom]
     DoubleBuffered = True
     ParentDoubleBuffered = False
@@ -6382,11 +6382,11 @@ object frmEventInsAdd: TfrmEventInsAdd
         end
         object Label16: TLabel
           Left = 16
-          Top = 97
+          Top = 120
           Width = 297
           Height = 22
           AutoSize = False
-          Caption = 'Number of items to transfer (only if stackable!)'
+          Caption = 'Number of items to transfer (only if stackable!):'
           Layout = tlCenter
         end
         object cmbObjectToTransfer: TComboBox
@@ -6441,9 +6441,9 @@ object frmEventInsAdd: TfrmEventInsAdd
           OnChange = cmbObjectToTransferChange
         end
         object seAmountToTransfer: TSpinEdit
-          Left = 16
+          Left = 286
           Top = 120
-          Width = 367
+          Width = 97
           Height = 24
           Anchors = [akLeft, akTop, akRight]
           EditorEnabled = False
@@ -7697,8 +7697,8 @@ object frmEventInsAdd: TfrmEventInsAdd
     end
   end
   object ActionList1: TActionList
-    Left = 16
-    Top = 224
+    Left = 24
+    Top = 184
     object EditCut1: TEditCut
       Category = 'Edit'
       Caption = 'Cu&t'
@@ -7747,8 +7747,8 @@ object frmEventInsAdd: TfrmEventInsAdd
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = []
-    Left = 96
-    Top = 224
+    Left = 104
+    Top = 168
   end
   object ilSpecial: TImageList
     Height = 20
@@ -7974,7 +7974,7 @@ object frmEventInsAdd: TfrmEventInsAdd
     Enabled = False
     Interval = 35
     OnTimer = mp3posUpdateTimerTimer
-    Left = 176
-    Top = 246
+    Left = 192
+    Top = 166
   end
 end
