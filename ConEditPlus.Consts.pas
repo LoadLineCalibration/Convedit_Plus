@@ -162,6 +162,8 @@ ResourceString // These strings can be translated.
     strAskRemoveUnusedTitle = 'Remove unused entries?';
     strAskDeleteTableItem = 'Are you sure you want to delete this table item?';
     strCannotDeleteTableItem = 'This item cannot be removed because it is referenced in at least one conversation.' + #13#10 + 'You must first remove the references.';
+    strCannotRenameTableItem = 'This item cannot be renamed because it is referenced in at least one conversation.' + #13#10 + 'You must first remove the references.';
+
 
     strAddDefaultSkillsQuestion = 'This will add default skills from the original Deus Ex game (SkillSwimming, SkillWeaponHeavy, etc.) into the table. ' +
                                   'Existing items will not be lost. Do you want to proceed?';
@@ -219,7 +221,8 @@ ResourceString // These strings can be translated.
 
     strCommentTextIsEmpty = 'Comment text cannot be empty! Please enter some text.';
 
-    strAudioFileNotFound = 'Audio file NOT found: "%s"' + #13#10 + 'Please make sure your file exists and you used the correct path in the program options.';
+    strAudioFileNotFound = 'Audio file NOT found:'  + #13#10 + #13#10 + '"%s"'
+                         + #13#10 + #13#10 + 'Please make sure your file exists and you used the correct path in the program options.';
 
     strAskDeleteEventText = 'Are you sure you wish to Delete this event?';
     strAskDeleteEventTitle = 'Delete?';
