@@ -3074,13 +3074,13 @@ end;
 
 procedure TfrmEventInsAdd.mp3VolumeControlChange(Sender: TObject);
 var
-    Volume: Integer;
+    Volume: Word;
 begin
     // Get the current volume from the TTrackBar
     Volume := mp3VolumeControl.Position;
 
-    // Set the volume for your program using the Windows Multimedia API function
-    waveOutSetVolume(0, Volume);
+    // Set the volume for both channels
+    waveOutSetVolume(0, MakeLong(Volume, Volume));
 end;
 
 procedure TfrmEventInsAdd.rbAddGoalClick(Sender: TObject);
