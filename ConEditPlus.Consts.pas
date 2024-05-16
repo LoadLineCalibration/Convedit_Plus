@@ -284,7 +284,7 @@ ResourceString // These strings can be translated.
     tbVerifyLabelsHint = 'Verify if references to labels are valid.';
     tbPropertiesHint = 'Displays properties of current conversations, also allows to modify some fields, like name, flags, etc.';
     tbGenAudioHint = 'Generate audio filenames for Speech and Choice events.';
-    tbGenerateAudioDirsHint = 'Create all required directories with placeholder .mp3 files.' + #10#13 +
+    tbGenerateAudioDirsHint = 'Create all required directories with placeholder .mp3 files (optional)' + #10#13 +
                               'You will need to replace these placeholder files with real speech files.';
     tbSettingsHint = 'Change program settings';
     tbReorderHint = 'Enable changing order of events. Hold the %s key and drag one of the items.';
