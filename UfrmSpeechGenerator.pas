@@ -8,15 +8,17 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls, ES.Labels, vcl.GraphUtil,
-  system.UITypes, system.Types, Vcl.Mask, Vcl.ExtCtrls, REST.Types, REST.Client,
-  Data.Bind.ObjectScope, system.Generics.Collections, System.JSON, Data.Bind.Components;
+  system.UITypes, system.Types, Vcl.Mask, Vcl.ExtCtrls, REST.Types, REST.Client, vcl.Clipbrd,
+  Data.Bind.ObjectScope, system.Generics.Collections, System.JSON, Data.Bind.Components,
+  system.Net.HttpClientComponent, Vcl.MPlayer, system.Threading;
 
 type TElevenLabsRequest =
 (
     rqNone,
     rqGetVoices,
     rqGetCharacters,
-    rqGetModels
+    rqGetModels,
+    rqGetTTS
 );
 
 type
@@ -27,9 +29,9 @@ type
     tbStability: TTrackBar;
     edtAPIKey: TEdit;
     GroupBox1: TGroupBox;
-    btnGenerate: TButton;
+    btnGenerateSpeech: TButton;
     btnClose: TButton;
-    chkSpeakekBoost: TCheckBox;
+    chkSpeakerBoost: TCheckBox;
     Label1: TLabel;
     EsLinkLabel1: TEsLinkLabel;
     Label2: TLabel;
@@ -38,7 +40,7 @@ type
     lbVoices: TListBox;
     edtVoiceQSearch: TEdit;
     mmoLog: TMemo;
-    LabeledEdit1: TLabeledEdit;
+    edtRandSeed: TLabeledEdit;
     edtCharsQuota: TEdit;
     RESTClient1: TRESTClient;
     RESTRequest1: TRESTRequest;
@@ -49,9 +51,13 @@ type
     btnPlayVoiceDemo: TButton;
     cmbModels: TComboBox;
     Label4: TLabel;
+    pb_mp3: TProgressBar;
+    SGPlayer: TMediaPlayer;
+    PlayVoiceUpdateTimer: TTimer;
+    SaveDlg: TSaveDialog;
 
-    // New procedures
-    procedure GenerateSpeech();
+    procedure ClearData(); // remove API key, voices, etc.
+
     procedure FillFields();
     procedure SetLogin();
 
@@ -65,10 +71,17 @@ type
     procedure GetModels();
     procedure FillModels();
 
+    procedure SendTTS();
+    procedure ReceiveTTS();
+
+    procedure DownloadFile(const aFileName: string); //https://stackoverflow.com/questions/3506251/downloading-a-file-in-delphi
+    procedure PlayMp3File(const FileName: string);
+
+
     procedure btnCloseClick(Sender: TObject);
     procedure btnGetStartedClick(Sender: TObject);
     procedure lbVoicesDrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
-    procedure btnGenerateClick(Sender: TObject);
+    procedure btnGenerateSpeechClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure RESTClient1HTTPProtocolError(Sender: TCustomRESTClient);
@@ -76,13 +89,21 @@ type
     procedure PageControl1Change(Sender: TObject);
     procedure cmbModelsDrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
     procedure cmbModelsChange(Sender: TObject);
+    procedure btnPlayVoiceDemoClick(Sender: TObject);
+    procedure lbVoicesClick(Sender: TObject);
+    procedure SGPlayerNotify(Sender: TObject);
+    procedure PlayVoiceUpdateTimerTimer(Sender: TObject);
+    procedure edtVoiceQSearchChange(Sender: TObject);
   private
-
     { Private declarations }
   public
      Voices: TDictionary<String, String>; // voice string and voice id
+     CurrentVoiceid: string;
      LastRequest: TElevenLabsRequest;
      CurrentVoiceModel: string;
+     PreviewVoiceFile: string; // preview voice?
+     TempPreviewVoiceFile: string;
+     TaskPrepareForWork: iTask;
     { Public declarations }
 
   end;
@@ -94,26 +115,159 @@ implementation
 
 {$R *.dfm}
 
+uses AddInsertEvent;
+
+// https://stackoverflow.com/questions/2183960/programatically-extract-the-file-name-from-a-download-link-using-delphi
+function HexToInt(HexStr: String): Int64;
+var RetVar : Int64;
+    i : byte;
+begin
+    HexStr := UpperCase(HexStr);
+    if HexStr[length(HexStr)] = 'H' then
+       Delete(HexStr,length(HexStr),1);
+    RetVar := 0;
+
+    for i := 1 to length(HexStr) do begin
+        RetVar := RetVar shl 4;
+        if HexStr[i] in ['0'..'9'] then
+           RetVar := RetVar + (byte(HexStr[i]) - 48)
+        else
+        if HexStr[i] in ['A'..'F'] then
+            RetVar := RetVar + (byte(HexStr[i]) - 55)
+        else
+        begin
+            Retvar := 0;
+            break;
+        end;
+    end;
+
+    Result := RetVar;
+end;
+
+function UrlDecode(const EncodedStr: String): String;
+var
+    I: Integer;
+begin
+    Result := '';
+    if Length(EncodedStr) > 0 then
+    begin
+        I := 1;
+        while I <= Length(EncodedStr) do
+        begin
+            if EncodedStr[I] = '%' then
+            begin
+                Result := Result + Chr(HexToInt(EncodedStr[I+1] + EncodedStr[I+2]));
+                I := Succ(Succ(I));
+            end
+            else if EncodedStr[I] = '+' then
+              Result := Result + ' '
+            else
+              Result := Result + EncodedStr[I];
+
+            I := Succ(I);
+        end;
+    end;
+end;
+
+function GetURLFilename(const FilePath:String;Const Delimiter:String='/'):String;
+    var I: Integer;
+begin
+    I := LastDelimiter(Delimiter, FILEPATH);
+    Result := Copy(FILEPATH, I + 1, MaxInt);
+    Result := UrlDecode(Result);
+end;
+
+
 procedure TfrmSpeechGenerator.btnCloseClick(Sender: TObject);
 begin
     Close();
 end;
 
-procedure TfrmSpeechGenerator.btnGenerateClick(Sender: TObject);
+procedure TfrmSpeechGenerator.btnGenerateSpeechClick(Sender: TObject);
 begin
-    GenerateSpeech();
+{    if Trim(edtAPIKey.Text) = '' then
+    begin
+        MessageDlg('Please type in or paste your API key first! Text-to-speech won''t work without valid API key!',  mtWarning, [mbOK], 0);
+        Exit();
+    end; }
+
+    SendTTS();
 end;
 
 procedure TfrmSpeechGenerator.btnGetStartedClick(Sender: TObject);
 begin
-{    if Trim(edtAPIKey.Text) = '' then
-    begin
-        MessageDlg('Please type in or paste your API key first! This tool cannot work without valid API key!',  mtWarning, [mbOK], 0);
-        Exit();
-    end;}
+    btnGetStarted.Enabled := False;
+    btnGetStarted.Caption := 'Please wait, sending API requests...';
 
-    GetVoices();
-    GetModels();
+    pb_mp3.Max := 100;
+
+    TaskPrepareForWork := TTask.Run(
+    procedure
+    begin
+        if TTask.CurrentTask.Status = TTaskStatus.Canceled then Exit;
+
+        TThread.Queue(nil,
+        procedure
+        begin
+            pb_mp3.Position := 25;
+        end);
+        GetVoices();
+
+        if TTask.CurrentTask.Status = TTaskStatus.Canceled then Exit;
+
+        TThread.Queue(nil,
+        procedure
+        begin
+            pb_mp3.Position := 50;
+        end);
+        GetModels();
+
+        if TTask.CurrentTask.Status = TTaskStatus.Canceled then Exit;
+
+        TThread.Queue(nil,
+        procedure
+        begin
+            pb_mp3.Position := 75;
+        end);
+        GetCharactersCount();
+
+        if TTask.CurrentTask.Status = TTaskStatus.Canceled then Exit;
+
+        TThread.Queue(nil,
+        procedure
+        begin
+            pb_mp3.Position := 100;
+            btnGetStarted.Enabled := True;
+            btnGetStarted.Caption := 'Click here first: Get Started and fill data';
+
+            if cmbModels.Items.Count > 0 then
+                cmbModels.ItemIndex := 0;
+
+            cmbModelsChange(self);
+        end);
+    end);
+end;
+
+procedure TfrmSpeechGenerator.btnPlayVoiceDemoClick(Sender: TObject);
+begin
+    var TempString := lbVoices.Items[lbVoices.ItemIndex];
+    var SemicolonPos := Pos(';', TempString);
+
+    PreviewVoiceFile := Copy(TempString, SemicolonPos +1, Length(TempString) - SemicolonPos);
+
+    DownloadFile(PreviewVoiceFile);
+
+    if FileExists(TempPreviewVoiceFile) = False then Exit();
+
+    PlayMp3File(TempPreviewVoiceFile);
+end;
+
+procedure TfrmSpeechGenerator.ClearData();
+begin
+    mmoLog.Clear();
+    Voices.Clear();
+    lbVoices.Clear();
+    edtAPIKey.Clear();
 end;
 
 procedure TfrmSpeechGenerator.cmbModelsChange(Sender: TObject);
@@ -151,6 +305,48 @@ begin
             Font.Color := clBlack;
             DrawText(Handle, ItemText2, -1, tempRect, DT_LEFT);
         end;
+    end;
+end;
+
+procedure TfrmSpeechGenerator.DownloadFile(const aFileName: string);
+var
+    http : TNetHTTPClient;
+    url : string;
+    stream: TMemoryStream;
+begin
+    http := TNetHTTPClient.Create(nil);
+    stream := TMemoryStream.Create;
+
+    try
+        url := PreviewVoiceFile;
+        http.Get(url, stream);
+        var FileName := GetURLFilename(url);
+
+        var tempDirectory := GetEnvironmentVariable('TEMP');
+
+        TempPreviewVoiceFile:= IncludeTrailingPathDelimiter(tempDirectory) + FileName;
+        stream.SaveToFile(TempPreviewVoiceFile);
+
+    finally
+        stream.Free();
+        http.Free();
+    end;
+end;
+
+procedure TfrmSpeechGenerator.edtVoiceQSearchChange(Sender: TObject);
+begin
+    lbVoices.Items.BeginUpdate();
+
+    try
+        lbVoices.ClearSelection();
+
+        for var i:= 0 to lbVoices.Items.Count -1 do
+        begin
+            if Pos(UpperCase(edtVoiceQSearch.Text), UpperCase(lbVoices.Items[i])) > 0 then
+                lbVoices.Selected[i] := True;
+        end;
+    finally
+        lbVoices.Items.EndUpdate();
     end;
 end;
 
@@ -205,7 +401,7 @@ begin
     RESTRequest1.Resource := '/user/subscription';
     RESTRequest1.Body.Add('', TRESTContentType.ctAPPLICATION_JSON);
 
-    RESTRequest1.ExecuteAsync();
+    RESTRequest1.Execute();
 end;
 
 procedure TfrmSpeechGenerator.FillCharactersCount();
@@ -242,7 +438,7 @@ begin
     RESTRequest1.Resource := '/models';
     RESTRequest1.Body.Add('', TRESTContentType.ctAPPLICATION_JSON);
 
-    RESTRequest1.ExecuteAsync();
+    RESTRequest1.Execute();
 end;
 
 procedure TfrmSpeechGenerator.FillModels();
@@ -262,10 +458,54 @@ begin
         model_name := modelObject.GetValue('name').Value;
         model_desc := modelObject.GetValue('description').Value;
 
-        if (model_id <> 'eleven_english_sts_v2') and
+        if (model_id <> 'eleven_english_sts_v2') and // skip STS models
            (model_id <> 'eleven_multilingual_sts_v2') then
             cmbModels.Items.AddPair({model_name + ';' +} model_id, model_desc);
     end;
+end;
+
+procedure TfrmSpeechGenerator.SendTTS();
+var
+    JSONBody: TJSONObject;
+begin
+    LastRequest := rqGetTTS;
+
+    SetLogin();
+    RESTRequest1.Method := rmPOST;
+    RESTRequest1.Resource := '/text-to-speech/' + CurrentVoiceid + '?mp3_44100_128';
+
+    RESTRequest1.AddParameter('accept', 'audio/mpeg', pkHTTPHEADER, [poDoNotEncode]);
+    JsonBody := TJSONObject.Create;
+
+    try
+        JsonBody.AddPair('text', mmoSpeechText.Text);
+        JsonBody.AddPair('model_id', cmbModels.Items.Names[cmbModels.ItemIndex]);
+
+
+        JSONBody.AddPair('voice_settings:', TJSONObject.Create
+          .AddPair('stability', TJSONNumber.Create(tbStability.Position))
+          .AddPair('style', TJSONNumber.Create(tbStyleExag.Position))
+          .AddPair('similarity_boost', TJSONNumber.Create(tbSimilarity.Position))
+          .AddPair('use_speaker_boost', TJSONBool.Create(chkSpeakerBoost.Checked))
+        );
+
+        MessageBox(Handle, PChar(JSONBody.ToJSON()), 'voice_settings', MB_OK + MB_TOPMOST);
+        RESTRequest1.AddBody(JsonBody.ToJson, ctAPPLICATION_JSON);
+        RESTRequest1.Execute();
+
+    finally
+        FreeAndNil(JSONBody);
+        //JSONBody.Free();
+    end;
+
+
+
+end;
+
+procedure TfrmSpeechGenerator.ReceiveTTS();
+begin
+    // in this case we will receive data we have to save as .mp3 file!
+
 end;
 
 procedure TfrmSpeechGenerator.FillFields();
@@ -292,9 +532,15 @@ end;
 
 procedure TfrmSpeechGenerator.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-    mmoLog.Clear();
-    Voices.Clear();
-    edtAPIKey.Clear();
+    if (TaskPrepareForWork <> nil) and (TaskPrepareForWork.Status = TTaskStatus.Running) then
+    begin
+        TaskPrepareForWork.Cancel();
+        btnGetStarted.Enabled := True;
+        btnGetStarted.Caption := 'Click here first: Get Started and fill data';
+        pb_mp3.Position := 0;
+    end;
+
+    ClearData();
 end;
 
 procedure TfrmSpeechGenerator.FormCreate(Sender: TObject);
@@ -302,17 +548,24 @@ begin
     Voices := TDictionary<String, String>.Create; // Create list for voices
     FillFields();
     PageControl1Change(self);
+    lbVoicesClick(self);
 end;
 
-procedure TfrmSpeechGenerator.GenerateSpeech();
+procedure TfrmSpeechGenerator.lbVoicesClick(Sender: TObject);
 begin
     var ItemIdx := lbVoices.ItemIndex;
 
-    if ItemIdx = -1 then
-    begin
-        MessageDlg('Select voice from Library first!',  mtWarning, [mbOK], 0);
-        Exit();
-    end;
+    btnPlayVoiceDemo.Enabled := ItemIdx <> -1;
+    btnGenerateSpeech.Enabled := ItemIdx <> -1;
+
+    if lbVoices.ItemIndex = -1 then Exit();
+
+    var StartPos := Pos('=', lbVoices.Items[ItemIdx]) + 1;
+    var EndPos := Pos(';', lbVoices.Items[ItemIdx]);
+
+    CurrentVoiceid := Copy(lbVoices.Items[ItemIdx], StartPos, EndPos - StartPos);
+
+    ShowMessage(CurrentVoiceid);
 end;
 
 procedure TfrmSpeechGenerator.lbVoicesDrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
@@ -350,6 +603,24 @@ begin
     edtVoiceQSearch.Visible := PageControl1.TabIndex < 1;
 end;
 
+procedure TfrmSpeechGenerator.PlayMp3File(const FileName: string);
+begin
+    PlayVoiceUpdateTimer.Enabled := True;
+    SGPlayer.FileName := FileName;
+    SGPlayer.Open();
+    pb_mp3.Position := 0;
+    pb_mp3.Max := SGPlayer.Length;
+    SGPlayer.Play();
+end;
+
+procedure TfrmSpeechGenerator.PlayVoiceUpdateTimerTimer(Sender: TObject);
+begin
+    pb_mp3.Position := SGPlayer.Position;
+
+    if SGPlayer.Mode = mpStopped then
+        PlayVoiceUpdateTimer.Enabled := False;
+end;
+
 procedure TfrmSpeechGenerator.RESTClient1HTTPProtocolError(Sender: TCustomRESTClient);
 begin
   //
@@ -368,6 +639,7 @@ begin
         rqGetVoices: FillVoices();
         rqGetCharacters: FillCharactersCount();
         rqGetModels: FillModels();
+        rqGetTTS: ReceiveTTS();
     end;
 
     mmoLog.Lines.Add(#13#10 + DateTimeToStr(Now()) + ':---------------------------------------------------');
@@ -379,6 +651,12 @@ begin
     RESTRequest1.Params.Clear();
     RESTRequest1.Params.AddHeader('xi-api-key', edtAPIKey.Text);
     RESTRequest1.Params.ParameterByName('xi-api-key').Options := [poDoNotEncode];
+end;
+
+procedure TfrmSpeechGenerator.SGPlayerNotify(Sender: TObject);
+begin
+    pb_mp3.Max := SGPlayer.Length;
+    pb_mp3.Position := SGPlayer.Position;
 end;
 
 end.

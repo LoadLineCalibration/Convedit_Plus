@@ -37,7 +37,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     Left = 8
     Top = 37
     Width = 385
-    Height = 268
+    Height = 261
     Anchors = [akLeft, akTop, akRight, akBottom]
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -142,7 +142,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
       TickMarks = tmBoth
       TickStyle = tsNone
     end
-    object chkSpeakekBoost: TCheckBox
+    object chkSpeakerBoost: TCheckBox
       Left = 16
       Top = 200
       Width = 97
@@ -155,11 +155,16 @@ object frmSpeechGenerator: TfrmSpeechGenerator
       State = cbChecked
       TabOrder = 3
     end
-    object LabeledEdit1: TLabeledEdit
+    object edtRandSeed: TLabeledEdit
       Left = 224
       Top = 197
       Width = 89
       Height = 23
+      Hint = 
+        'If specified, our system will make a best '#13#10'effort to sample det' +
+        'erministically, '#13#10'such that repeated requests with the same '#13#10'se' +
+        'ed and parameters should return the '#13#10'same result. Determinism i' +
+        's not guaranteed.'
       EditLabel.Width = 58
       EditLabel.Height = 23
       EditLabel.Caption = 'RandSeed: '
@@ -180,7 +185,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
       OnDrawItem = cmbModelsDrawItem
     end
   end
-  object btnGenerate: TButton
+  object btnGenerateSpeech: TButton
     Left = 8
     Top = 311
     Width = 128
@@ -194,7 +199,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 3
-    OnClick = btnGenerateClick
+    OnClick = btnGenerateSpeechClick
   end
   object btnClose: TButton
     Left = 8
@@ -209,7 +214,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
   end
   object btnGetStarted: TButton
     Left = 479
-    Top = 578
+    Top = 577
     Width = 248
     Height = 25
     Anchors = [akRight, akBottom]
@@ -232,7 +237,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     ParentFont = False
     ReadOnly = True
     TabOrder = 6
-    TextHint = 'Characters remaining'
+    Text = '<Characters remaining>'
   end
   object PageControl1: TPageControl
     Left = 8
@@ -248,24 +253,20 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     OnChange = PageControl1Change
     object TabSheet1: TTabSheet
       Caption = 'Voices'
-      DesignSize = (
-        711
-        200)
       object lbVoices: TListBox
         Left = 0
-        Top = 5
-        Width = 713
-        Height = 196
-        Style = lbOwnerDrawFixed
-        Anchors = [akLeft, akTop, akRight, akBottom]
+        Top = 0
+        Width = 711
+        Height = 200
+        Align = alClient
         Font.Charset = RUSSIAN_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
         Font.Name = 'Verdana'
         Font.Style = []
-        ItemHeight = 20
         ParentFont = False
         TabOrder = 0
+        OnClick = lbVoicesClick
         OnDrawItem = lbVoicesDrawItem
       end
     end
@@ -301,14 +302,38 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     Anchors = [akRight, akBottom]
     TabOrder = 8
     TextHint = 'Search for voice'
+    OnChange = edtVoiceQSearchChange
   end
   object btnPlayVoiceDemo: TButton
-    Left = 272
+    Left = 276
     Top = 342
     Width = 117
     Height = 23
+    Anchors = [akLeft, akBottom]
     Caption = 'Play Voice demo'
     TabOrder = 9
+    OnClick = btnPlayVoiceDemoClick
+  end
+  object SGPlayer: TMediaPlayer
+    Left = 26
+    Top = 89
+    Width = 57
+    Height = 30
+    VisibleButtons = [btPlay, btPause]
+    DoubleBuffered = True
+    Visible = False
+    ParentDoubleBuffered = False
+    TabOrder = 10
+    OnNotify = SGPlayerNotify
+  end
+  object pb_mp3: TProgressBar
+    Left = 8
+    Top = 298
+    Width = 385
+    Height = 8
+    Anchors = [akLeft, akRight, akBottom]
+    Smooth = True
+    TabOrder = 11
   end
   object RESTClient1: TRESTClient
     Params = <>
@@ -329,5 +354,19 @@ object frmSpeechGenerator: TfrmSpeechGenerator
   object RESTResponse1: TRESTResponse
     Left = 296
     Top = 160
+  end
+  object PlayVoiceUpdateTimer: TTimer
+    Enabled = False
+    Interval = 35
+    OnTimer = PlayVoiceUpdateTimerTimer
+    Left = 168
+    Top = 80
+  end
+  object SaveDlg: TSaveDialog
+    Filter = 'mp3 files|*.mp3'
+    Options = [ofHideReadOnly, ofPathMustExist, ofEnableSizing]
+    Title = 'Save file as...'
+    Left = 256
+    Top = 240
   end
 end
