@@ -6145,6 +6145,13 @@ object frmMain: TfrmMain
         Caption = 'View Log'
         OnClick = ViewoutputTMemo1Click
       end
+      object N33: TMenuItem
+        Caption = '-'
+      end
+      object SpeechGeneratortest1: TMenuItem
+        Caption = 'Speech Generator test'
+        OnClick = SpeechGeneratortest1Click
+      end
     end
     object mnuHelp: TMenuItem
       Caption = 'Help'

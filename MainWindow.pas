@@ -298,6 +298,8 @@ type
     N31: TMenuItem;
     N32: TMenuItem;
     mnuChoiceItemSub10: TMenuItem;
+    N33: TMenuItem;
+    SpeechGeneratortest1: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -575,6 +577,7 @@ type
     procedure mnuLavenderClassicoThemeClick(Sender: TObject);
     procedure mnuSystemThemeClick(Sender: TObject);
     procedure mnuOnyxBlueThemeClick(Sender: TObject);
+    procedure SpeechGeneratortest1Click(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -672,7 +675,7 @@ implementation
 {$R SoundResources.res} // contains final.mp3
 
 uses frmSettings1, EditValueDialog, ConFileProperties, AboutBox1, ConvoProperties, frmFind1, AddInsertEvent,
-     ConXml.Reader, ConXML.Writer, confile.Reader, conFile.Writer, uFrmLabelErrors, ufrmAudioDirectories;
+     ConXml.Reader, ConXML.Writer, confile.Reader, conFile.Writer, uFrmLabelErrors, ufrmAudioDirectories, UfrmSpeechGenerator;
 
 
 function TfrmMain.GetFileModified: Boolean;
@@ -5486,6 +5489,9 @@ begin
     if ParamStr(1).IsEmpty = False then // open file from commandline
         ProcessCommandline(ParamStr(1));
 
+    var aHintInfo: Vcl.Controls.THintInfo;
+
+    aHintInfo.HintMaxWidth := 400;
     Screen.HintFont.Name := 'Verdana';
 end;
 
@@ -5827,6 +5833,11 @@ end;
 procedure TfrmMain.Speech2Click(Sender: TObject);
 begin
     InsertEvent(Ord(ET_Speech));
+end;
+
+procedure TfrmMain.SpeechGeneratortest1Click(Sender: TObject);
+begin
+    frmSpeechGenerator.show();
 end;
 
 procedure TfrmMain.Splitter1CanResize(Sender: TObject; var NewSize: Integer; var Accept: Boolean);
