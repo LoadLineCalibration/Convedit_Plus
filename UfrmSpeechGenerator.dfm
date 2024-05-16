@@ -2,7 +2,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu, biMaximize]
-  Caption = 'Speech generation [ElevenLabs API test]'
+  Caption = 'strSpeechGenTitle'
   ClientHeight = 611
   ClientWidth = 735
   Color = clBtnFace

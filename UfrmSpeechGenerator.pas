@@ -10,7 +10,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls, ES.Labels, vcl.GraphUtil,
   system.UITypes, system.Types, Vcl.Mask, Vcl.ExtCtrls, REST.Types, REST.Client, vcl.Clipbrd,
   Data.Bind.ObjectScope, system.Generics.Collections, System.JSON, Data.Bind.Components,
-  system.Net.HttpClientComponent, Vcl.MPlayer, system.Threading;
+  system.Net.HttpClientComponent, system.IOUtils, Vcl.MPlayer, system.Threading, coneditplus.Consts;
 
 type TElevenLabsRequest =
 (
@@ -197,7 +197,7 @@ end;
 procedure TfrmSpeechGenerator.btnGetStartedClick(Sender: TObject);
 begin
     btnGetStarted.Enabled := False;
-    btnGetStarted.Caption := 'Please wait, sending API requests...';
+    Caption := strSpeechGenTitle + ' Please wait, sending API requests...';
 
     pb_mp3.Max := 100;
 
@@ -238,7 +238,7 @@ begin
         begin
             pb_mp3.Position := 100;
             btnGetStarted.Enabled := True;
-            btnGetStarted.Caption := 'Click here first: Get Started and fill data';
+            Caption := strSpeechGenTitle;
 
             if cmbModels.Items.Count > 0 then
                 cmbModels.ItemIndex := 0;
@@ -460,7 +460,7 @@ begin
 
         if (model_id <> 'eleven_english_sts_v2') and // skip STS models
            (model_id <> 'eleven_multilingual_sts_v2') then
-            cmbModels.Items.AddPair({model_name + ';' +} model_id, model_desc);
+            cmbModels.Items.AddPair(model_id, model_desc);
     end;
 end;
 
@@ -489,23 +489,26 @@ begin
           .AddPair('use_speaker_boost', TJSONBool.Create(chkSpeakerBoost.Checked))
         );
 
-        MessageBox(Handle, PChar(JSONBody.ToJSON()), 'voice_settings', MB_OK + MB_TOPMOST);
+        //MessageBox(Handle, PChar(JSONBody.ToJSON()), 'voice_settings', MB_OK + MB_TOPMOST);
         RESTRequest1.AddBody(JsonBody.ToJson, ctAPPLICATION_JSON);
         RESTRequest1.Execute();
 
     finally
         FreeAndNil(JSONBody);
-        //JSONBody.Free();
     end;
-
-
-
 end;
 
 procedure TfrmSpeechGenerator.ReceiveTTS();
+var
+    ResponseStream: TFileStream;
 begin
-    // in this case we will receive data we have to save as .mp3 file!
+    ResponseStream := TFileStream.Create('c:\temp\audioResponse.mp3', fmCreate);
 
+    try
+        ResponseStream.WriteBuffer(RESTResponse1.RawBytes, Length(RESTResponse1.RawBytes));
+    finally
+        ResponseStream.Free();
+    end;
 end;
 
 procedure TfrmSpeechGenerator.FillFields();
@@ -536,7 +539,7 @@ begin
     begin
         TaskPrepareForWork.Cancel();
         btnGetStarted.Enabled := True;
-        btnGetStarted.Caption := 'Click here first: Get Started and fill data';
+        Caption := strSpeechGenTitle;
         pb_mp3.Position := 0;
     end;
 
@@ -545,6 +548,7 @@ end;
 
 procedure TfrmSpeechGenerator.FormCreate(Sender: TObject);
 begin
+    Caption := strSpeechGenTitle;
     Voices := TDictionary<String, String>.Create; // Create list for voices
     FillFields();
     PageControl1Change(self);
@@ -565,7 +569,7 @@ begin
 
     CurrentVoiceid := Copy(lbVoices.Items[ItemIdx], StartPos, EndPos - StartPos);
 
-    ShowMessage(CurrentVoiceid);
+//    ShowMessage(CurrentVoiceid);
 end;
 
 procedure TfrmSpeechGenerator.lbVoicesDrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
