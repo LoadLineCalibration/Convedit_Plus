@@ -28,7 +28,7 @@ type
     tbSimilarity: TTrackBar;
     tbStability: TTrackBar;
     edtAPIKey: TEdit;
-    GroupBox1: TGroupBox;
+    gbVoiceParameters: TGroupBox;
     btnGenerateSpeech: TButton;
     btnClose: TButton;
     chkSpeakerBoost: TCheckBox;
@@ -55,6 +55,9 @@ type
     SGPlayer: TMediaPlayer;
     PlayVoiceUpdateTimer: TTimer;
     SaveDlg: TSaveDialog;
+    pgcVoiceOptions_History: TPageControl;
+    TabSheet3: TTabSheet;
+    TabSheet4: TTabSheet;
 
     procedure ClearData(); // remove API key, voices, etc.
 

@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.ExtCtrls, Vcl.StdCtrls, ConEditPlus.Consts,
+  Vcl.Forms, Vcl.Controls, Vcl.Dialogs, Vcl.Menus, Vcl.ExtCtrls, Vcl.StdCtrls, ConEditPlus.Consts,
   system.UITypes, Vcl.ComCtrls, System.Types, Vcl.Buttons, Vcl.ToolWin, System.IniFiles, System.IOUtils,
   Conversation.Classes, System.ImageList, Vcl.ImgList, Table, Vcl.GraphUtil, ES.BaseControls, ES.Layouts,
   System.Actions, Vcl.ActnList, System.Generics.Collections, System.TypInfo, xml.VerySimple, System.StrUtils,
@@ -300,6 +300,7 @@ type
     mnuChoiceItemSub10: TMenuItem;
     N33: TMenuItem;
     SpeechGeneratortest1: TMenuItem;
+    ApplicationEvents1: TApplicationEvents;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -578,6 +579,7 @@ type
     procedure mnuSystemThemeClick(Sender: TObject);
     procedure mnuOnyxBlueThemeClick(Sender: TObject);
     procedure SpeechGeneratortest1Click(Sender: TObject);
+    procedure ApplicationEvents1ShowHint(var HintStr: string; var CanShow: Boolean; var HintInfo: THintInfo);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -4586,8 +4588,16 @@ begin
 
     HighlightRelatedEvents();
 
-    if frmEventInsAdd.Visible = true then
-       ConEventListDblClick(Sender);
+    if frmEventInsAdd.Visible = True then
+        ConEventListDblClick(Sender)
+    else
+    if frmSpeechGenerator.Visible = True then // load text into speech generator
+    begin
+        if CurrentEvent is TConEventSpeech then
+            frmSpeechGenerator.mmoSpeechText.Text := TConEventSpeech(CurrentEvent).TextLine;
+    end;
+
+
 
     ConEventList.Repaint();
 
@@ -5489,9 +5499,6 @@ begin
     if ParamStr(1).IsEmpty = False then // open file from commandline
         ProcessCommandline(ParamStr(1));
 
-    var aHintInfo: Vcl.Controls.THintInfo;
-
-    aHintInfo.HintMaxWidth := 400;
     Screen.HintFont.Name := 'Verdana';
 end;
 
@@ -6422,6 +6429,11 @@ end;
 procedure TfrmMain.AddSkillPoints2Click(Sender: TObject);
 begin
     InsertEvent(Ord(ET_AddSkillPoints));
+end;
+
+procedure TfrmMain.ApplicationEvents1ShowHint(var HintStr: string; var CanShow: Boolean; var HintInfo: THintInfo);
+begin
+    HintInfo.HintMaxWidth := 400;
 end;
 
 procedure TfrmMain.AutoSaveFile(const aFileName: string); // Label errors should be ignored in this case.

@@ -60,131 +60,6 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     TabOrder = 1
     TextHint = 'Enter API key here'
   end
-  object GroupBox1: TGroupBox
-    Left = 399
-    Top = 8
-    Width = 328
-    Height = 328
-    Anchors = [akTop, akRight]
-    Caption = 'Parameters'
-    DefaultHeaderFont = False
-    HeaderFont.Charset = DEFAULT_CHARSET
-    HeaderFont.Color = clWindowText
-    HeaderFont.Height = -12
-    HeaderFont.Name = 'Segoe UI'
-    HeaderFont.Style = [fsBold]
-    TabOrder = 2
-    object Label1: TLabel
-      Left = 16
-      Top = 29
-      Width = 276
-      Height = 15
-      Caption = 'Stability. Lower - More variable, higher - more stable'
-    end
-    object Label2: TLabel
-      Left = 16
-      Top = 81
-      Width = 142
-      Height = 15
-      Caption = 'Similarity (Similarity boost)'
-    end
-    object Label3: TLabel
-      Left = 16
-      Top = 136
-      Width = 281
-      Height = 15
-      Caption = 'Style Exaggeration (more that 50 can lead to artifacts)'
-    end
-    object Label4: TLabel
-      Left = 17
-      Top = 240
-      Width = 105
-      Height = 22
-      AutoSize = False
-      Caption = 'Select Model:'
-      Layout = tlCenter
-    end
-    object tbStyleExag: TTrackBar
-      Left = 11
-      Top = 157
-      Width = 302
-      Height = 21
-      Max = 100
-      PositionToolTip = ptLeft
-      ShowSelRange = False
-      TabOrder = 0
-      TickMarks = tmBoth
-      TickStyle = tsNone
-    end
-    object tbSimilarity: TTrackBar
-      Left = 11
-      Top = 102
-      Width = 302
-      Height = 21
-      Max = 100
-      Position = 70
-      PositionToolTip = ptLeft
-      ShowSelRange = False
-      TabOrder = 1
-      TickMarks = tmBoth
-      TickStyle = tsNone
-    end
-    object tbStability: TTrackBar
-      Left = 11
-      Top = 50
-      Width = 302
-      Height = 21
-      Max = 100
-      Position = 50
-      PositionToolTip = ptLeft
-      ShowSelRange = False
-      TabOrder = 2
-      TickMarks = tmBoth
-      TickStyle = tsNone
-    end
-    object chkSpeakerBoost: TCheckBox
-      Left = 16
-      Top = 200
-      Width = 97
-      Height = 17
-      Hint = 
-        'Boost the similarity of the synthesized speech and '#13#10'the voice a' +
-        't the cost of some generation speed.'
-      Caption = 'Speaker Boost'
-      Checked = True
-      State = cbChecked
-      TabOrder = 3
-    end
-    object edtRandSeed: TLabeledEdit
-      Left = 224
-      Top = 197
-      Width = 89
-      Height = 23
-      Hint = 
-        'If specified, our system will make a best '#13#10'effort to sample det' +
-        'erministically, '#13#10'such that repeated requests with the same '#13#10'se' +
-        'ed and parameters should return the '#13#10'same result. Determinism i' +
-        's not guaranteed.'
-      EditLabel.Width = 58
-      EditLabel.Height = 23
-      EditLabel.Caption = 'RandSeed: '
-      HideSelection = False
-      LabelPosition = lpLeft
-      NumbersOnly = True
-      TabOrder = 4
-      Text = '123'
-    end
-    object cmbModels: TComboBox
-      Left = 104
-      Top = 240
-      Width = 209
-      Height = 22
-      Style = csOwnerDrawFixed
-      TabOrder = 5
-      OnChange = cmbModelsChange
-      OnDrawItem = cmbModelsDrawItem
-    end
-  end
   object btnGenerateSpeech: TButton
     Left = 8
     Top = 311
@@ -198,7 +73,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     Font.Name = 'Segoe UI'
     Font.Style = [fsBold]
     ParentFont = False
-    TabOrder = 3
+    TabOrder = 2
     OnClick = btnGenerateSpeechClick
   end
   object btnClose: TButton
@@ -209,7 +84,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     Anchors = [akLeft, akBottom]
     Cancel = True
     Caption = 'Close'
-    TabOrder = 4
+    TabOrder = 3
     OnClick = btnCloseClick
   end
   object btnGetStarted: TButton
@@ -219,7 +94,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = 'Click here first: Get Started and fill data'
-    TabOrder = 5
+    TabOrder = 4
     OnClick = btnGetStartedClick
   end
   object edtCharsQuota: TEdit
@@ -236,7 +111,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     Font.Style = []
     ParentFont = False
     ReadOnly = True
-    TabOrder = 6
+    TabOrder = 5
     Text = '<Characters remaining>'
   end
   object PageControl1: TPageControl
@@ -249,7 +124,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     DoubleBuffered = False
     ParentDoubleBuffered = False
     Style = tsFlatButtons
-    TabOrder = 7
+    TabOrder = 6
     OnChange = PageControl1Change
     object TabSheet1: TTabSheet
       Caption = 'Voices'
@@ -300,7 +175,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     Width = 328
     Height = 23
     Anchors = [akRight, akBottom]
-    TabOrder = 8
+    TabOrder = 7
     TextHint = 'Search for voice'
     OnChange = edtVoiceQSearchChange
   end
@@ -311,7 +186,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     Height = 23
     Anchors = [akLeft, akBottom]
     Caption = 'Play Voice demo'
-    TabOrder = 9
+    TabOrder = 8
     OnClick = btnPlayVoiceDemoClick
   end
   object SGPlayer: TMediaPlayer
@@ -323,7 +198,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     DoubleBuffered = True
     Visible = False
     ParentDoubleBuffered = False
-    TabOrder = 10
+    TabOrder = 9
     OnNotify = SGPlayerNotify
   end
   object pb_mp3: TProgressBar
@@ -333,7 +208,152 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     Height = 8
     Anchors = [akLeft, akRight, akBottom]
     Smooth = True
+    TabOrder = 10
+  end
+  object pgcVoiceOptions_History: TPageControl
+    Left = 399
+    Top = 8
+    Width = 338
+    Height = 328
+    ActivePage = TabSheet3
+    Anchors = [akTop, akRight]
+    Style = tsFlatButtons
     TabOrder = 11
+    object TabSheet3: TTabSheet
+      Caption = 'Voice parameters'
+      DesignSize = (
+        330
+        295)
+      object gbVoiceParameters: TGroupBox
+        Left = 1
+        Top = 0
+        Width = 325
+        Height = 293
+        Anchors = [akTop, akRight]
+        Caption = 'Parameters'
+        DefaultHeaderFont = False
+        HeaderFont.Charset = DEFAULT_CHARSET
+        HeaderFont.Color = clWindowText
+        HeaderFont.Height = -12
+        HeaderFont.Name = 'Segoe UI'
+        HeaderFont.Style = [fsBold]
+        TabOrder = 0
+        object Label1: TLabel
+          Left = 16
+          Top = 29
+          Width = 276
+          Height = 15
+          Caption = 'Stability. Lower - More variable, higher - more stable'
+        end
+        object Label2: TLabel
+          Left = 16
+          Top = 81
+          Width = 142
+          Height = 15
+          Caption = 'Similarity (Similarity boost)'
+        end
+        object Label3: TLabel
+          Left = 16
+          Top = 136
+          Width = 281
+          Height = 15
+          Caption = 'Style Exaggeration (more that 50 can lead to artifacts)'
+        end
+        object Label4: TLabel
+          Left = 17
+          Top = 240
+          Width = 105
+          Height = 22
+          AutoSize = False
+          Caption = 'Select Model:'
+          Layout = tlCenter
+        end
+        object tbStyleExag: TTrackBar
+          Left = 11
+          Top = 157
+          Width = 302
+          Height = 21
+          Max = 100
+          PositionToolTip = ptLeft
+          ShowSelRange = False
+          TabOrder = 0
+          TickMarks = tmBoth
+          TickStyle = tsNone
+        end
+        object tbSimilarity: TTrackBar
+          Left = 11
+          Top = 102
+          Width = 302
+          Height = 21
+          Max = 100
+          Position = 70
+          PositionToolTip = ptLeft
+          ShowSelRange = False
+          TabOrder = 1
+          TickMarks = tmBoth
+          TickStyle = tsNone
+        end
+        object tbStability: TTrackBar
+          Left = 11
+          Top = 50
+          Width = 302
+          Height = 21
+          Max = 100
+          Position = 50
+          PositionToolTip = ptLeft
+          ShowSelRange = False
+          TabOrder = 2
+          TickMarks = tmBoth
+          TickStyle = tsNone
+        end
+        object chkSpeakerBoost: TCheckBox
+          Left = 16
+          Top = 200
+          Width = 97
+          Height = 17
+          Hint = 
+            'Boost the similarity of the synthesized speech and '#13#10'the voice a' +
+            't the cost of some generation speed.'
+          Caption = 'Speaker Boost'
+          Checked = True
+          State = cbChecked
+          TabOrder = 3
+        end
+        object edtRandSeed: TLabeledEdit
+          Left = 224
+          Top = 197
+          Width = 89
+          Height = 23
+          Hint = 
+            'If specified, our system will make a best '#13#10'effort to sample det' +
+            'erministically, '#13#10'such that repeated requests with the same '#13#10'se' +
+            'ed and parameters should return the '#13#10'same result. Determinism i' +
+            's not guaranteed.'
+          EditLabel.Width = 58
+          EditLabel.Height = 23
+          EditLabel.Caption = 'RandSeed: '
+          HideSelection = False
+          LabelPosition = lpLeft
+          NumbersOnly = True
+          TabOrder = 4
+          Text = '123'
+        end
+        object cmbModels: TComboBox
+          Left = 104
+          Top = 240
+          Width = 209
+          Height = 22
+          Style = csOwnerDrawFixed
+          TabOrder = 5
+          OnChange = cmbModelsChange
+          OnDrawItem = cmbModelsDrawItem
+        end
+      end
+    end
+    object TabSheet4: TTabSheet
+      Caption = 'History'
+      ImageIndex = 1
+    end
   end
   object RESTClient1: TRESTClient
     Params = <>
