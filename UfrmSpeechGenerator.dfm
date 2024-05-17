@@ -41,7 +41,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     Anchors = [akLeft, akTop, akRight, akBottom]
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -12
+    Font.Height = -16
     Font.Name = 'Verdana'
     Font.Style = []
     HideSelection = False
@@ -141,6 +141,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
         Font.Height = -13
         Font.Name = 'Verdana'
         Font.Style = []
+        ItemHeight = 18
         ParentFont = False
         TabOrder = 0
         OnClick = lbVoicesClick
@@ -219,7 +220,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     Top = 8
     Width = 334
     Height = 328
-    ActivePage = TabSheet3
+    ActivePage = TabSheet4
     Anchors = [akTop, akRight, akBottom]
     Style = tsFlatButtons
     TabOrder = 11
@@ -369,9 +370,10 @@ object frmSpeechGenerator: TfrmSpeechGenerator
         Font.Height = -12
         Font.Name = 'Verdana'
         Font.Style = []
-        ItemHeight = 40
+        ItemHeight = 64
         ParentFont = False
         TabOrder = 0
+        OnDrawItem = lbHistoryDrawItem
       end
       object EsPanel1: TEsPanel
         Left = 0

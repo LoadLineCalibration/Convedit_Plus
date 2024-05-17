@@ -11,7 +11,7 @@ uses
   system.UITypes, system.Types, Vcl.Mask, Vcl.ExtCtrls, REST.Types, REST.Client, vcl.Clipbrd,
   Data.Bind.ObjectScope, system.Generics.Collections, System.JSON, Data.Bind.Components,
   system.Net.HttpClientComponent, system.IOUtils, Vcl.MPlayer, system.Threading, coneditplus.Consts,
-  ES.BaseControls, ES.Layouts;
+  ES.BaseControls, ES.Layouts, coneditplus.Helpers;
 
 type TElevenLabsRequest =
 (
@@ -110,6 +110,7 @@ type
     procedure PlayVoiceUpdateTimerTimer(Sender: TObject);
     procedure edtVoiceQSearchChange(Sender: TObject);
     procedure btnLoadHistoryClick(Sender: TObject);
+    procedure lbHistoryDrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
   private
     { Private declarations }
   public
@@ -117,6 +118,7 @@ type
      CurrentVoiceid: string; // id
      CurrentVoiceName: string; // voice name, e.g. Daniel or Dorothy
      LastRequest: TElevenLabsRequest;
+     LastGeneratedFile: string;
      CurrentVoiceModel: string;
      PreviewVoiceFile: string; // preview voice?
      TempPreviewVoiceFile: string;
@@ -132,7 +134,7 @@ implementation
 
 {$R *.dfm}
 
-uses AddInsertEvent;
+uses AddInsertEvent, MainWindow;
 
 function GenerateFilename(const param1, param2, param3, param4: string): string;
 const
@@ -355,12 +357,13 @@ begin
     lbVoices.Items.BeginUpdate();
 
     try
-        lbVoices.ClearSelection();
-
         for var i:= 0 to lbVoices.Items.Count -1 do
         begin
             if Pos(UpperCase(edtVoiceQSearch.Text), UpperCase(lbVoices.Items[i])) > 0 then
-                lbVoices.Selected[i] := True;
+            begin
+                lbVoices.ItemIndex := i; //Selected[i] := True;
+                Break;
+            end;
         end;
     finally
         lbVoices.Items.EndUpdate();
@@ -521,12 +524,12 @@ var
 begin
     var aFileName := GenerateFilename('ElevenLabs', DateTimeToStr(Now), CurrentVoiceName,
                                       'gen_s' + tbStability.Position.ToString + '_sb' + tbSimilarity.Position.ToString +
-                                      '_se' + tbStyleExag.Position.ToString + BoolToStr(chkSpeakerBoost.Checked));
+                                      '_se' + tbStyleExag.Position.ToString + BoolToStr(chkSpeakerBoost.Checked, True));
 
     var tempDirectory := GetEnvironmentVariable('TEMP');
 
-    var PathAndFile := IncludeTrailingPathDelimiter(tempDirectory) + aFileName + '.mp3';
-    ResponseStream := TFileStream.Create(PathAndFile, fmCreate);
+    LastGeneratedFile := IncludeTrailingPathDelimiter(tempDirectory) + aFileName + '.mp3';
+    ResponseStream := TFileStream.Create(LastGeneratedFile, fmCreate);
 
     try
         ResponseStream.WriteBuffer(RESTResponse1.RawBytes, Length(RESTResponse1.RawBytes));
@@ -612,6 +615,55 @@ begin
     FillFields();
     PageControl1Change(self);
     lbVoicesClick(self);
+end;
+
+procedure TfrmSpeechGenerator.lbHistoryDrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
+begin
+    var HistoryVoice, HistoryText: String;
+    var tempRect := Rect;
+
+    tempRect.Left := Rect.Left + 2;
+
+    HistoryVoice := (Control as TListBox).Items.Names[Index];
+    HistoryText := (Control as TListBox).Items.ValueFromIndex[Index];
+
+    with (Control as TListBox).Canvas do
+    begin
+        Pen.Style := psInsideFrame;
+        Frame3D(TListBox(Control).Canvas, Rect, clWhite, frmMain.clrGrid, 1); // разделитель
+        Font.Name := 'Tahoma';
+
+        if odSelected in State then
+        begin
+            Brush.Style := bsClear;
+            GradientFillCanvas((Control as TListBox).Canvas, clPurple, clBlack, Rect, gdHorizontal);
+            Font.Color := clWhite;
+            Font.Size := 8;
+            Font.Style := [fsBold];
+            DrawText(Handle, HistoryVoice, -1, tempRect, DT_LEFT or DT_END_ELLIPSIS);
+
+            tempRect.Top := Rect.Top + Round(14 * GetDPIAsRatio());
+            tempRect.Right := Rect.Right - frmMain.SysScrollBarWidth; // right offset
+            Font.Size := 9;
+//            Font.Name := 'Tahoma';
+            Font.Style := [];
+            DrawText(Handle, HistoryText, -1, TempRect,  DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
+        end else
+        begin
+            FillRect(Rect);
+            Font.Color := clBlack;
+            Font.Style := [fsBold];
+            Font.Size := 8;
+            DrawText(Handle, HistoryVoice, -1, tempRect, DT_LEFT or DT_END_ELLIPSIS);
+
+            tempRect.Top := Rect.Top + Round(14 * GetDPIAsRatio());
+            tempRect.Right := Rect.Right - frmMain.SysScrollBarWidth; // right offset
+            Font.Style := [];
+//            Font.Name := 'Tahoma';
+            Font.Size := 9;
+            DrawText(Handle, HistoryText, -1, TempRect,  DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
+        end;
+    end;
 end;
 
 procedure TfrmSpeechGenerator.lbVoicesClick(Sender: TObject);
