@@ -57,13 +57,14 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     Width = 385
     Height = 23
     PasswordChar = '*'
+    PopupMenu = frmEventInsAdd.MemoPopup
     TabOrder = 1
     TextHint = 'Enter API key here'
   end
   object btnGenerateSpeech: TButton
     Left = 8
     Top = 311
-    Width = 128
+    Width = 121
     Height = 25
     Anchors = [akLeft, akBottom]
     Caption = 'Generate Speech'
@@ -133,6 +134,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
         Top = 0
         Width = 711
         Height = 200
+        Style = lbOwnerDrawFixed
         Align = alClient
         Font.Charset = RUSSIAN_CHARSET
         Font.Color = clWindowText
@@ -164,6 +166,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
         Lines.Strings = (
           'mmoLog')
         ParentFont = False
+        PopupMenu = frmEventInsAdd.MemoPopup
         ScrollBars = ssVertical
         TabOrder = 0
       end
@@ -175,6 +178,7 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     Width = 328
     Height = 23
     Anchors = [akRight, akBottom]
+    PopupMenu = frmEventInsAdd.MemoPopup
     TabOrder = 7
     TextHint = 'Search for voice'
     OnChange = edtVoiceQSearchChange
@@ -213,22 +217,22 @@ object frmSpeechGenerator: TfrmSpeechGenerator
   object pgcVoiceOptions_History: TPageControl
     Left = 399
     Top = 8
-    Width = 338
+    Width = 334
     Height = 328
     ActivePage = TabSheet3
-    Anchors = [akTop, akRight]
+    Anchors = [akTop, akRight, akBottom]
     Style = tsFlatButtons
     TabOrder = 11
     object TabSheet3: TTabSheet
       Caption = 'Voice parameters'
       DesignSize = (
-        330
+        326
         295)
       object gbVoiceParameters: TGroupBox
-        Left = 1
-        Top = 0
+        Left = 0
+        Top = -1
         Width = 325
-        Height = 293
+        Height = 295
         Anchors = [akTop, akRight]
         Caption = 'Parameters'
         DefaultHeaderFont = False
@@ -353,12 +357,93 @@ object frmSpeechGenerator: TfrmSpeechGenerator
     object TabSheet4: TTabSheet
       Caption = 'History'
       ImageIndex = 1
+      object lbHistory: TListBox
+        Left = 0
+        Top = 33
+        Width = 326
+        Height = 262
+        Style = lbOwnerDrawFixed
+        Align = alClient
+        Font.Charset = RUSSIAN_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'Verdana'
+        Font.Style = []
+        ItemHeight = 40
+        ParentFont = False
+        TabOrder = 0
+      end
+      object EsPanel1: TEsPanel
+        Left = 0
+        Top = 0
+        Width = 326
+        Height = 33
+        Align = alTop
+        TabOrder = 1
+        BevelInner = bvNone
+        BevelOuter = bvNone
+        FrameStyle = Down
+        object btnLoadHistory: TButton
+          Left = 5
+          Top = 2
+          Width = 90
+          Height = 25
+          Caption = 'Load History'
+          TabOrder = 0
+          OnClick = btnLoadHistoryClick
+        end
+        object btnPlayHistoryItem: TButton
+          Left = 101
+          Top = 2
+          Width = 35
+          Height = 25
+          Caption = '4'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -19
+          Font.Name = 'Marlett'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 1
+        end
+        object btnDownloadHistoryItem: TButton
+          Left = 231
+          Top = 2
+          Width = 90
+          Height = 25
+          Caption = 'Download'
+          TabOrder = 2
+        end
+      end
     end
+  end
+  object btnDownloadGeneratedSpeech: TButton
+    Left = 176
+    Top = 311
+    Width = 75
+    Height = 25
+    Anchors = [akLeft, akBottom]
+    Caption = 'Download...'
+    TabOrder = 12
+  end
+  object btnPlayGeneratedSpeech: TButton
+    Left = 135
+    Top = 311
+    Width = 35
+    Height = 25
+    Anchors = [akLeft, akBottom]
+    Caption = '4'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -19
+    Font.Name = 'Marlett'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 13
   end
   object RESTClient1: TRESTClient
     Params = <>
     SynchronizedEvents = False
-    OnHTTPProtocolError = RESTClient1HTTPProtocolError
     Left = 64
     Top = 160
   end
