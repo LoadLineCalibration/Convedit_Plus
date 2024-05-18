@@ -78,7 +78,7 @@ type
     procedure GetVoices();
     procedure FillVoices();
 
-    procedure GetCharactersCount();
+    procedure GetCharactersCount(bUseAsync: Boolean = False);
     procedure FillCharactersCount();
 
     procedure GetModels();
@@ -111,6 +111,7 @@ type
     procedure edtVoiceQSearchChange(Sender: TObject);
     procedure btnLoadHistoryClick(Sender: TObject);
     procedure lbHistoryDrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
+    procedure btnPlayGeneratedSpeechClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -225,6 +226,8 @@ begin
         Exit();
     end;
 
+    btnGenerateSpeech.Caption := 'Wait, working...';
+    btnGenerateSpeech.Enabled := False;
     SendTTS();
 end;
 
@@ -254,6 +257,12 @@ end;
 procedure TfrmSpeechGenerator.btnLoadHistoryClick(Sender: TObject);
 begin
     GetHistory();
+end;
+
+procedure TfrmSpeechGenerator.btnPlayGeneratedSpeechClick(Sender: TObject);
+begin
+    if FileExists(LastGeneratedFile) then
+        PlayMp3File(LastGeneratedFile);
 end;
 
 procedure TfrmSpeechGenerator.btnPlayVoiceDemoClick(Sender: TObject);
@@ -411,7 +420,7 @@ begin
         lbVoices.Items.AddPair(voice.Key, voice.Value);
 end;
 
-procedure TfrmSpeechGenerator.GetCharactersCount();
+procedure TfrmSpeechGenerator.GetCharactersCount(bUseAsync: Boolean = False);
 begin
     LastRequest := rqGetCharacters;
 
@@ -421,7 +430,10 @@ begin
     RESTRequest1.Resource := '/user/subscription';
     RESTRequest1.Body.Add('', TRESTContentType.ctAPPLICATION_JSON);
 
-    RESTRequest1.Execute();
+    if bUseAsync = True then
+        RESTRequest1.ExecuteAsync()
+    else
+        RESTRequest1.Execute();
 end;
 
 procedure TfrmSpeechGenerator.FillCharactersCount();
@@ -536,6 +548,12 @@ begin
     finally
         ResponseStream.Free();
     end;
+
+    GetCharactersCount(True); // Async if true
+
+    btnGenerateSpeech.Enabled := True;
+    btnGenerateSpeech.Caption := 'Generate Speech';
+    btnPlayGeneratedSpeechClick(self);
 end;
 
 procedure TfrmSpeechGenerator.GetHistory();
