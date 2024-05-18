@@ -87,7 +87,7 @@ type
     procedure SendTTS();
     procedure ReceiveTTS();
 
-    procedure GetHistory();
+    procedure GetHistory(bUseAsync: Boolean = False);
     procedure FillHistory();
 
     procedure DownloadFile(const aFileName: string); //https://stackoverflow.com/questions/3506251/downloading-a-file-in-delphi
@@ -550,13 +550,14 @@ begin
     end;
 
     GetCharactersCount(True); // Async if true
+    GetHistory(True);
 
     btnGenerateSpeech.Enabled := True;
     btnGenerateSpeech.Caption := 'Generate Speech';
     btnPlayGeneratedSpeechClick(self);
 end;
 
-procedure TfrmSpeechGenerator.GetHistory();
+procedure TfrmSpeechGenerator.GetHistory(bUseAsync: Boolean = False);
 begin
     LastRequest := rqGetHistory;
 
@@ -566,7 +567,10 @@ begin
     RESTRequest1.Resource := '/history?page_size=500'; // max = 1000, default = 100
     RESTRequest1.Body.Add('', TRESTContentType.ctAPPLICATION_JSON);
 
-    RESTRequest1.Execute();
+    if bUseAsync = True then
+        RESTRequest1.ExecuteAsync()
+    else
+        RESTRequest1.Execute();
 end;
 
 procedure TfrmSpeechGenerator.FillHistory();
@@ -737,6 +741,13 @@ end;
 
 procedure TfrmSpeechGenerator.PlayMp3File(const FileName: string);
 begin
+    if SGPlayer.Mode = mpPlaying then
+    begin
+        SGPlayer.Stop();
+        Exit();
+    end;
+
+
     PlayVoiceUpdateTimer.Enabled := True;
     SGPlayer.FileName := FileName;
     SGPlayer.Open();
