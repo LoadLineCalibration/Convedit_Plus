@@ -68,8 +68,11 @@ begin
 end;
 
 procedure TfrmAudioDirectories.CreateAudioDirectories(const InitialPath: string);
+var
+    DirStr: string;
 begin
     var bTryToCreateDir: Boolean := false;
+
 
     mmoResults.Lines.Add('Generating audio filenames...');
     frmMain.GenerateAudioFileNames(); // Generate filenames and paths first
@@ -82,12 +85,19 @@ begin
     try
         for var con in frmMain.ConversationsList do
         begin
+            var ConNameDirectory: string;
+
+            if con.bInfoLink = True then
+                ConNameDirectory := INFOLINK_CONVERSATION_DIRECTORY
+            else
+                ConNameDirectory := con.conOwnerName;
+
             for var event in con.Events do
             begin
                 if event is TConEventSpeech then
                 begin
                     var speech := TConEventSpeech(event);
-                    var DirStr := InitialPath + frmMain.conFileParameters.fpAudioPackage + '\' + con.conOwnerName + '\' + con.conName + '\';
+                    DirStr := InitialPath + frmMain.conFileParameters.fpAudioPackage + '\' + ConNameDirectory + '\' + con.conName + '\';
 
                     if DirectoryExists(DirStr) = False then
                         bTryToCreateDir := ForceDirectories(DirStr); // create directory if required
