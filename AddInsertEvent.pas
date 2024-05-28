@@ -428,6 +428,9 @@ uses Table, ConvoProperties, EditValueDialog, HelpWindow,
      frmFlagList1, MainWindow;
 
 
+
+
+
 procedure TfrmEventInsAdd.FillSpeech(speech: TConEventSpeech);
 begin
     cmbEventType.ItemIndex := 0;
@@ -3074,13 +3077,14 @@ end;
 
 procedure TfrmEventInsAdd.mp3VolumeControlChange(Sender: TObject);
 var
-    Volume: Word;
+    Volume: LongInt;
 begin
     // Get the current volume from the TTrackBar
     Volume := mp3VolumeControl.Position;
 
     // Set the volume for both channels
-    waveOutSetVolume(0, MakeLong(Volume, Volume));
+    //waveOutSetVolume(0, MakeLong(Volume, Volume));
+    waveOutSetVolume(0, (DWORD(Volume) shl 16) or DWORD(Volume));
 end;
 
 procedure TfrmEventInsAdd.rbAddGoalClick(Sender: TObject);
