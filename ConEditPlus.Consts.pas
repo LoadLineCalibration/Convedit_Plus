@@ -23,7 +23,7 @@ const CEP_MIN_CONVO_TREE_PANEL_WIDTH = 50; { To avoid situation when tree panel 
                                              reduced to zero and user cannot resize it back.
                                              Works in both directions!}
 
-const CEP_MAX_CHOICES = 10;
+const CEP_MAX_CHOICES = 25;
 
 const CUSTOM_CLASSES_SKILLS = 'Skills_Custom.txt';
 const CUSTOM_CLASSES_OBJECTS = 'Objects_Custom.txt';
@@ -297,7 +297,7 @@ ResourceString // These strings can be translated.
 
     strEmptyValue = '<empty>';
 
-    strMax10ChoiceItems = 'DeusEx hardcoded to use max 10 choice items per ConEventChoice. Cannot add any more, sorry!';
+    strMax10ChoiceItems = 'Cannot add more than 25 choice items!';
     strDefaultChoiceText = 'Default Choice Text. Modify it, add jump label and set other parameters you need. Then click "Save Item" button and then "Update".';
 
     strUnknownFile = 'Unknown file!';
@@ -365,6 +365,8 @@ ResourceString // These strings can be translated.
     strClipboardReadError = 'Error reading data from Clipboard!';
 
     strRecentFileNotFound = 'Such file does not exists!';
+
+    strSpeechGenTitle = 'Text-to-speech (using ElevenLabs API)';
 
 
 

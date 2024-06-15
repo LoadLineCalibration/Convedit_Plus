@@ -297,10 +297,39 @@ type
     mnuOnyxBlueTheme: TMenuItem;
     N31: TMenuItem;
     N32: TMenuItem;
-    mnuChoiceItemSub10: TMenuItem;
     N33: TMenuItem;
     SpeechGeneratortest1: TMenuItem;
     ApplicationEvents1: TApplicationEvents;
+    mnuChoiceItemSub10: TMenuItem;
+    Copyonlymp3filename11: TMenuItem;
+    CopyonlyPathtomp311: TMenuItem;
+    Copymp3pathfilename11: TMenuItem;
+    N34: TMenuItem;
+    CopyChoicetext11: TMenuItem;
+    mnuChoiceItemSub11: TMenuItem;
+    Copyonlymp3filename12: TMenuItem;
+    CopyonlyPathtomp312: TMenuItem;
+    Copymp3pathfilename12: TMenuItem;
+    N35: TMenuItem;
+    CopyChoicetext12: TMenuItem;
+    mnuChoiceItemSub12: TMenuItem;
+    Copyonlymp3filename13: TMenuItem;
+    CopyonlyPathtomp313: TMenuItem;
+    Copymp3pathfilename13: TMenuItem;
+    N36: TMenuItem;
+    CopyChoicetext13: TMenuItem;
+    mnuChoiceItemSub13: TMenuItem;
+    Copyonlymp3filename14: TMenuItem;
+    CopyonlyPathtomp314: TMenuItem;
+    Copymp3pathfilename14: TMenuItem;
+    N37: TMenuItem;
+    CopyChoicetext14: TMenuItem;
+    mnuChoiceItemSub14: TMenuItem;
+    Copyonlymp3filename15: TMenuItem;
+    CopyonlyPathtomp315: TMenuItem;
+    Copymp3pathfilename15: TMenuItem;
+    N38: TMenuItem;
+    CopyChoicetext15: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -4597,8 +4626,6 @@ begin
             frmSpeechGenerator.mmoSpeechText.Text := TConEventSpeech(CurrentEvent).TextLine;
     end;
 
-
-
     ConEventList.Repaint();
 
     frmEventInsAdd.btnInsertEvent.Enabled := ConEventList.Count > 1;
@@ -6640,7 +6667,7 @@ begin
         Event_CopyMp3File.Visible := False;
         Event_BrowseTo.Visible := False;
 
-        for var L:= 0 to 10 do
+        for var L:= 0 to 14 do
         begin
             var ChoiceMenuItem : TMenuItem := FindComponent('mnuChoiceItemSub' + L.ToString()) as TMenuItem;
             ChoiceMenuItem.Visible := False;
@@ -6663,7 +6690,7 @@ begin
         Event_CopyMp3File.Visible        := Event_CopyMp3FileAndPath.Visible;
         Event_BrowseTo.Visible           := (SpeechObj <> nil) or (ChoiceObj <> nil); //Event_CopyMp3FileAndPath.Visible;
 
-        for var K:= 0 to 10 do // hide these menus first
+        for var K:= 0 to 14 do // hide these menus first
         begin
             var ChoiceMenuItem : TMenuItem := FindComponent('mnuChoiceItemSub' + K.ToString()) as TMenuItem;
             ChoiceMenuItem.Visible := False;

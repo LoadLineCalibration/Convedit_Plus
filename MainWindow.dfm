@@ -6706,8 +6706,144 @@ object frmMain: TfrmMain
       end
     end
     object mnuChoiceItemSub10: TMenuItem
-      Caption = 'Error! More than 10 choices!'
+      Caption = 'ChoiceItemSub10'
       Visible = False
+      object CopyChoicetext11: TMenuItem
+        Caption = 'Copy Choice text'
+        ImageIndex = 15
+        OnClick = CopyChoicetext1Click
+      end
+      object N34: TMenuItem
+        Caption = '-'
+      end
+      object Copymp3pathfilename11: TMenuItem
+        Tag = 9
+        Caption = 'Copy .mp3 path\ + filename'
+        OnClick = CopyChoiceItemObj_Path_Filename
+      end
+      object CopyonlyPathtomp311: TMenuItem
+        Tag = 9
+        Caption = 'Copy only Path\ to .mp3'
+        OnClick = CopyChoiceItemObj_Path
+      end
+      object Copyonlymp3filename11: TMenuItem
+        Tag = 9
+        Caption = 'Copy only .mp3 filename'
+        ImageIndex = 14
+        OnClick = CopyChoiceItemObj_Filename
+      end
+    end
+    object mnuChoiceItemSub11: TMenuItem
+      Caption = 'ChoiceItemSub11'
+      Visible = False
+      object CopyChoicetext12: TMenuItem
+        Caption = 'Copy Choice text'
+        ImageIndex = 15
+        OnClick = CopyChoicetext1Click
+      end
+      object N35: TMenuItem
+        Caption = '-'
+      end
+      object Copymp3pathfilename12: TMenuItem
+        Tag = 9
+        Caption = 'Copy .mp3 path\ + filename'
+        OnClick = CopyChoiceItemObj_Path_Filename
+      end
+      object CopyonlyPathtomp312: TMenuItem
+        Tag = 9
+        Caption = 'Copy only Path\ to .mp3'
+        OnClick = CopyChoiceItemObj_Path
+      end
+      object Copyonlymp3filename12: TMenuItem
+        Tag = 9
+        Caption = 'Copy only .mp3 filename'
+        ImageIndex = 14
+        OnClick = CopyChoiceItemObj_Filename
+      end
+    end
+    object mnuChoiceItemSub12: TMenuItem
+      Caption = 'ChoiceItemSub12'
+      Visible = False
+      object CopyChoicetext13: TMenuItem
+        Caption = 'Copy Choice text'
+        ImageIndex = 15
+        OnClick = CopyChoicetext1Click
+      end
+      object N36: TMenuItem
+        Caption = '-'
+      end
+      object Copymp3pathfilename13: TMenuItem
+        Tag = 9
+        Caption = 'Copy .mp3 path\ + filename'
+        OnClick = CopyChoiceItemObj_Path_Filename
+      end
+      object CopyonlyPathtomp313: TMenuItem
+        Tag = 9
+        Caption = 'Copy only Path\ to .mp3'
+        OnClick = CopyChoiceItemObj_Path
+      end
+      object Copyonlymp3filename13: TMenuItem
+        Tag = 9
+        Caption = 'Copy only .mp3 filename'
+        ImageIndex = 14
+        OnClick = CopyChoiceItemObj_Filename
+      end
+    end
+    object mnuChoiceItemSub13: TMenuItem
+      Caption = 'ChoiceItemSub13'
+      Visible = False
+      object CopyChoicetext14: TMenuItem
+        Caption = 'Copy Choice text'
+        ImageIndex = 15
+        OnClick = CopyChoicetext1Click
+      end
+      object N37: TMenuItem
+        Caption = '-'
+      end
+      object Copymp3pathfilename14: TMenuItem
+        Tag = 9
+        Caption = 'Copy .mp3 path\ + filename'
+        OnClick = CopyChoiceItemObj_Path_Filename
+      end
+      object CopyonlyPathtomp314: TMenuItem
+        Tag = 9
+        Caption = 'Copy only Path\ to .mp3'
+        OnClick = CopyChoiceItemObj_Path
+      end
+      object Copyonlymp3filename14: TMenuItem
+        Tag = 9
+        Caption = 'Copy only .mp3 filename'
+        ImageIndex = 14
+        OnClick = CopyChoiceItemObj_Filename
+      end
+    end
+    object mnuChoiceItemSub14: TMenuItem
+      Caption = 'ChoiceItemSub14'
+      Visible = False
+      object CopyChoicetext15: TMenuItem
+        Caption = 'Copy Choice text'
+        ImageIndex = 15
+        OnClick = CopyChoicetext1Click
+      end
+      object N38: TMenuItem
+        Caption = '-'
+      end
+      object Copymp3pathfilename15: TMenuItem
+        Tag = 9
+        Caption = 'Copy .mp3 path\ + filename'
+        OnClick = CopyChoiceItemObj_Path_Filename
+      end
+      object CopyonlyPathtomp315: TMenuItem
+        Tag = 9
+        Caption = 'Copy only Path\ to .mp3'
+        OnClick = CopyChoiceItemObj_Path
+      end
+      object Copyonlymp3filename15: TMenuItem
+        Tag = 9
+        Caption = 'Copy only .mp3 filename'
+        ImageIndex = 14
+        OnClick = CopyChoiceItemObj_Filename
+      end
     end
   end
   object ImageListToolbar: TImageList
@@ -8911,7 +9047,7 @@ object frmMain: TfrmMain
       Category = 'File'
       Caption = 'Save As...'
       Hint = 'Save current file with diffenent name or format (.con or .xml)'
-      ShortCut = 16449
+      ShortCut = 24659
       OnExecute = FileSaveAsExecute
     end
     object FileGenerateAudioNames: TAction
@@ -11567,5 +11703,10 @@ object frmMain: TfrmMain
     OnTimer = AutoSaveTimerTimer
     Left = 641
     Top = 347
+  end
+  object ApplicationEvents1: TApplicationEvents
+    OnShowHint = ApplicationEvents1ShowHint
+    Left = 409
+    Top = 378
   end
 end
