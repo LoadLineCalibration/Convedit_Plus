@@ -5642,6 +5642,8 @@ begin
 
     CreateConFile(False);
     ToggleMenusPanels(False);
+
+    if frmEventInsAdd.Visible = True then frmEventInsAdd.Close();
 end;
 
 procedure TfrmMain.FileGenerateAudioNamesExecute(Sender: TObject);
@@ -5668,6 +5670,8 @@ begin
 
     ToggleMenusPanels(True);
     CreateConFile(True);
+
+    if frmEventInsAdd.Visible = True then frmEventInsAdd.Close();
 end;
 
 procedure TfrmMain.FileOpenDialogTypeChange(Sender: TObject);
