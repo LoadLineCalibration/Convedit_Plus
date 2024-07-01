@@ -5500,6 +5500,7 @@ object frmMain: TfrmMain
       OnDragOver = ConEventListDragOver
       OnDrawItem = ConEventListDrawItem
       OnEndDrag = ConEventListEndDrag
+      OnKeyPress = ConEventListKeyPress
       OnMeasureItem = ConEventListMeasureItem
       OnMouseUp = ConEventListMouseUp
     end

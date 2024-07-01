@@ -609,6 +609,7 @@ type
     procedure mnuOnyxBlueThemeClick(Sender: TObject);
     procedure SpeechGeneratortest1Click(Sender: TObject);
     procedure ApplicationEvents1ShowHint(var HintStr: string; var CanShow: Boolean; var HintInfo: THintInfo);
+    procedure ConEventListKeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -4778,6 +4779,14 @@ begin
     SetEventIndexes();
     UpdateEventListHeights();
     ConEventList.Repaint();
+end;
+
+procedure TfrmMain.ConEventListKeyPress(Sender: TObject; var Key: Char);
+begin
+    if (Key = #32) and (CurrentEvent is TConEventSpeech) and (frmEventInsAdd.Visible = True) then
+    begin
+        frmEventInsAdd.btnPlayAudioFile.Click();
+    end;
 end;
 
 procedure TfrmMain.ConEventListMeasureItem(Control: TWinControl; Index: Integer; var Height: Integer);
