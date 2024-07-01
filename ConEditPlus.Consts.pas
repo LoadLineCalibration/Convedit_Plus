@@ -368,6 +368,8 @@ ResourceString // These strings can be translated.
 
     strSpeechGenTitle = 'Text-to-speech (using ElevenLabs API)';
 
+    strDEED = 'Deus Ex Extractor and Decompiler'; // for testing
+
 
 
 

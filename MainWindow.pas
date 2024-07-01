@@ -5192,8 +5192,6 @@ end;
 
 procedure TfrmMain.DeleteCurrentEvent();
 begin
-    if not Focused then Exit();
-
     Delete(CurrentConversation.Events, ConEventList.ItemIndex, 1); // Delete from array
     ConEventList.DeleteSelected(); // also delete from list
 
