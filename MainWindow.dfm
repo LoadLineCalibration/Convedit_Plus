@@ -9270,9 +9270,9 @@ object frmMain: TfrmMain
       Caption = 'CurrentConversation.Events'
       OnClick = CurrentConversationEvents1Click
     end
-    object RebuildConversationsIds1: TMenuItem
-      Caption = 'RebuildConversationsIds'
-      OnClick = RebuildConversationsIds1Click
+    object SimulateDEED: TMenuItem
+      Caption = 'Simulate DEED'
+      OnClick = SimulateDEEDClick
     end
     object CheckDpiRatio: TMenuItem
       Caption = 'Check DPI Ratio'

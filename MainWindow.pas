@@ -222,7 +222,7 @@ type
     CheckDpiRatio: TMenuItem;
     N10: TMenuItem;
     Copyalltext1: TMenuItem;
-    RebuildConversationsIds1: TMenuItem;
+    SimulateDEED: TMenuItem;
     edtConvoTreeQSearch: TEdit;
     N17: TMenuItem;
     reeQuickSearch1: TMenuItem;
@@ -593,7 +593,7 @@ type
     procedure Event_BrowseToExecute(Sender: TObject);
     procedure CheckDpiRatioClick(Sender: TObject);
     procedure Copyalltext1Click(Sender: TObject);
-    procedure RebuildConversationsIds1Click(Sender: TObject);
+    procedure SimulateDEEDClick(Sender: TObject);
     procedure edtConvoTreeQSearchChange(Sender: TObject);
     procedure mnuTQS_PartialClick(Sender: TObject);
     procedure mnuTQS_ExactClick(Sender: TObject);
@@ -5179,6 +5179,9 @@ end;
 
 procedure TfrmMain.DeleteConversationExecute(Sender: TObject);
 begin
+    // Don't execute this action if mainForm and ConvoTree are not focused.
+    if Focused = False and ConvoTree.Focused = False then Exit();
+
     if bAskForConvoDelete = true then
     begin
         if MessageDlg(PChar(strAskDeleteConvoText),  mtConfirmation, [mbYes, mbNo], 0) = mrYes then
@@ -5189,6 +5192,8 @@ end;
 
 procedure TfrmMain.DeleteCurrentEvent();
 begin
+    if not Focused then Exit();
+
     Delete(CurrentConversation.Events, ConEventList.ItemIndex, 1); // Delete from array
     ConEventList.DeleteSelected(); // also delete from list
 
@@ -5334,6 +5339,10 @@ end;
 
 procedure TfrmMain.Event_DeleteExecute(Sender: TObject);
 begin
+    // Don't execute this action if mainForm and EventList are not focused.
+    if Focused = False and ConEventList.Focused = False then Exit();
+
+
     if bAskForEventDelete = true then
     begin
         if MessageDlg(strAskDeleteEventText, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
@@ -6753,18 +6762,15 @@ begin
     InsertEvent(Ord(ET_Random));
 end;
 
-procedure TfrmMain.RebuildConversationsIds1Click(Sender: TObject);
-var
-    NewIndex: Integer;
+procedure TfrmMain.SimulateDEEDClick(Sender: TObject); // fill all "created/modified by" like DeusExExtractor does.
 begin
-    NewIndex := 0;
+    conFileParameters.fpCreatedByName := strDEED;
+    conFileParameters.fpCreatedByDate := strDEED;
 
     for var con in ConversationsList do
     begin
-        con.id := NewIndex;
-        //Event.EventIdx := NewIndex;
-        //Event.unknown1 := Event.EventIdx + 1;
-        Inc(NewIndex);
+        con.conCreatedByName := strDEED;
+        con.conModifiedByName := strDEED;
     end;
 end;
 
