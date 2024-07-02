@@ -2339,6 +2339,7 @@ begin
     begin
         lstRandomLabels.Items.Add(cmbEventRandomLabels.Text);
         lblStatus.Caption := '';
+        cmbEventRandomLabels.SetFocus(); // set focus back, so user can continue adding remaining labels.
     end;
 end;
 

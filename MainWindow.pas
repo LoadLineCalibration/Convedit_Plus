@@ -341,6 +341,8 @@ type
     procedure EditCurrentEvent(EventToEdit: TConEvent);
     procedure ToggleLV_FlagValue(lstv: TListView);
 
+    procedure SetEventsListScrollbars();
+
     procedure SendStringToEditValue(control: TControl);
 
     procedure FillEventLabels(const con: TConversation; listToFill: TCustomListControl);
@@ -1623,6 +1625,27 @@ begin
     end;
 
 //    bFileModified := True;
+end;
+
+procedure TfrmMain.SetEventsListScrollbars();
+var
+    Style: Longint;
+begin
+   // ѕолучение текущего стил€ окна
+    Style := GetWindowLong(ConEventList.Handle, GWL_STYLE);
+
+    // ѕроверка, есть ли уже вертикальна€ полоса прокрутки
+    if (Style and WS_VSCROLL = 0) then
+    begin
+        // ”становка нового стил€ окна с вертикальной полосой прокрутки
+        SetWindowLong(ConEventList.Handle, GWL_STYLE, Style or WS_VSCROLL);
+
+        // ќбновление окна дл€ применени€ изменений
+        SetWindowPos(ConEventList.Handle, 0, 0, 0, 0, 0,
+            SWP_NOMOVE or SWP_NOSIZE or SWP_NOZORDER or SWP_FRAMECHANGED);
+    end;
+//    Style := GetWindowLong(ConEventList.Handle, GWL_STYLE);
+//    SetWindowLong(ConEventList.Handle, GWL_STYLE, Style or WS_VSCROLL);
 end;
 
 procedure TfrmMain.CopyEventToClipboard(var Event: TConEvent);
@@ -4602,6 +4625,8 @@ end;
 procedure TfrmMain.ConEventListClick(Sender: TObject);
     var objStr: string;
 begin
+    SetEventsListScrollbars();
+
     UnhighlightRelatedEvents();
 
     if frmEventInsAdd.mp1.Mode = mpPlaying then // if we are playing some speech, stop it.
@@ -5512,12 +5537,7 @@ begin
 end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
-var
-    Style: Longint;
 begin
-    Style := GetWindowLong(ConEventList.Handle, GWL_STYLE);
-    SetWindowLong(ConEventList.Handle, GWL_STYLE, Style or WS_VSCROLL);
-
     // register new clipboard format
     CF_ConEditPlus := RegisterClipboardFormat('CF_ConEditPlus');
 
