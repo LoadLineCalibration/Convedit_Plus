@@ -1940,6 +1940,8 @@ begin
 
                         DeSerializeCheckFlag(BinReader, NewCheckFlag);
 
+                        NewCheckFlag.GotoLabel := ''; // Test
+
                         for var i:= 0 to High(NewCheckFlag.FlagsToCheck) do
                         begin
                             if FindTableIdByName(TM_Flags, NewCheckFlag.FlagsToCheck[i].flagName) = -1 then
@@ -1952,10 +1954,11 @@ begin
                             end;
                         end;
 
-                        Insert(NewCheckFlag, CurrentConversation.Events, ItemIdx);
+                        Insert(NewCheckFlag, CurrentConversation.Events, ItemIdx); // Add to array
 
                         var ListItemHeight := GetCheckFlagsItemHeight([NewCheckFlag]);
                         var HeightStr := '=' + ListItemHeight.ToString();
+
                         ConEventList.Items.InsertObject(ItemIdx, ET_CheckFlag_Caption+HeightStr, NewCheckFlag);
                         ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewCheckFlag);
 
@@ -3146,8 +3149,9 @@ begin
         Font.Style := [fsBold];
         TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top, ET_CheckFlag_Caption);
 
-        TextOut(Rect.Left + HeaderControl1.Sections[0].Width + HeaderControl1.Sections[1].Width +
-                            HeaderControl1.Sections[2].Width, Rect.Top, strChkFlgJumpToLabel + EventCheckFlag.GotoLabel);
+        var Indent := Rect.Left + HeaderControl1.Sections[0].Width + HeaderControl1.Sections[1].Width + HeaderControl1.Sections[2].Width;
+
+        TextOut(Indent, Rect.Top, strChkFlgJumpToLabel + EventCheckFlag.GotoLabel);
         tempRect := Rect;
 
         Font.Style := [];
@@ -5508,7 +5512,12 @@ begin
 end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
+var
+    Style: Longint;
 begin
+    Style := GetWindowLong(ConEventList.Handle, GWL_STYLE);
+    SetWindowLong(ConEventList.Handle, GWL_STYLE, Style or WS_VSCROLL);
+
     // register new clipboard format
     CF_ConEditPlus := RegisterClipboardFormat('CF_ConEditPlus');
 

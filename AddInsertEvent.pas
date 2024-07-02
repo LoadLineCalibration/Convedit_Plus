@@ -693,6 +693,8 @@ begin
     chkRandomAfterCycle.Checked := EventRandom.bCycleRandom;
 
     chkCycleEventsClick(self);
+
+    UpdateAddRandomLabelButtonState();
 end;
 
 procedure TfrmEventInsAdd.FillTrigger(Trigger: TConEventTrigger);
@@ -960,6 +962,13 @@ begin
        Exit(False);
     end;
 
+    if cmbChkFlgJumpToLabel.ItemIndex = -1 then
+    begin
+       EventWarning(True, 'Please select event to jump to!');
+       Exit(False);
+    end;
+
+
     checkFlags.numFlags := lvCheckFlags.Items.Count;
     SetLength(checkFlags.FlagsToCheck, checkFlags.numFlags);
 
@@ -969,6 +978,8 @@ begin
         checkFlags.FlagsToCheck[newCheckFlg].flagValue:= lvCheckFlags.Items[newCheckFlg].SubItems[0].ToBoolean; // value
         checkFlags.FlagsToCheck[newCheckFlg].flagIndex:= lvCheckFlags.Items[newCheckFlg].SubItems[1].ToInteger; // index
     end;
+
+    checkFlags.GotoLabel := cmbChkFlgJumpToLabel.Items[cmbChkFlgJumpToLabel.ItemIndex];
 
     frmMain.ConEventList.Items.ValueFromIndex[frmMain.ConEventList.ItemIndex] := frmMain.GetCheckFlagsItemHeight([checkFlags]).ToString;
     RepaintCurrentEvent();
@@ -3236,7 +3247,8 @@ end;
 
 procedure TfrmEventInsAdd.UpdateAddRandomLabelButtonState();
 begin
-    btnAddRandomLabel.Enabled := Length(Trim(cmbEventRandomLabels.Text)) > 0;
+    btnAddRandomLabel.Enabled := cmbEventRandomLabels.ItemIndex <> -1;  //Length(Trim(cmbEventRandomLabels.Text)) > 0;
+    btnUpdate.Enabled := lstRandomLabels.Count > 0;
 end;
 
 

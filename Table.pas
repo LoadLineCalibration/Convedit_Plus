@@ -48,6 +48,12 @@ type
     function CheckSkillIsUsed(skillName: string): Boolean;
     function CheckObjectIsUsed(objName: string): Boolean;
 
+    procedure TableItemRenamed(renameFrom: string; renameTo: string);
+    procedure RenameFlag(renameFrom: string; renameTo: string);
+    procedure RenameActor(renameFrom: string; renameTo: string);
+    procedure RenameSkill(renameFrom: string; renameTo: string);
+    procedure RenameObject(renameFrom: string; renameTo: string);
+
     procedure editTableKeyPress(Sender: TObject; var Key: Char);
     procedure btnCloseClick(Sender: TObject);
     procedure lstTableContentsClick(Sender: TObject);
@@ -482,8 +488,9 @@ end;
 
 procedure TfrmTableEdit.btnEditClick(Sender: TObject);
 begin
-    var ItemIdx := lstTableContents.ItemIndex;
+//    var ItemIdx := lstTableContents.ItemIndex;
 
+{
     case TableMode of     //Don't allow renaming table item if it in use.
         TM_ActorsPawns:
         if CheckActorIsUsed(lstTableContents.Items[ItemIdx]) = true then
@@ -512,7 +519,7 @@ begin
             MessageDlg(strCannotRenameTableItem,  mtWarning, [mbOK], 0);
             Exit();
         end;
-    end;
+    end;}
 
     case TableMode of
       TM_ActorsPawns: frmEditValue.lblText.Caption := strActorPawn;
@@ -677,6 +684,26 @@ begin
     UpdateButtonsState();
 end;
 
+procedure TfrmTableEdit.RenameActor(renameFrom, renameTo: string);
+begin
+//
+end;
+
+procedure TfrmTableEdit.RenameFlag(renameFrom, renameTo: string);
+begin
+//
+end;
+
+procedure TfrmTableEdit.RenameObject(renameFrom, renameTo: string);
+begin
+//
+end;
+
+procedure TfrmTableEdit.RenameSkill(renameFrom, renameTo: string);
+begin
+//
+end;
+
 function TfrmTableEdit.CanDeleteItem(item: String): boolean;
 begin
     case TableMode of
@@ -766,6 +793,11 @@ begin
 
         cmbReceiver.ItemIndex := cmbReceiver.Items.IndexOf(lstTableContents.Items[current]);
     end;
+end;
+
+procedure TfrmTableEdit.TableItemRenamed(renameFrom, renameTo: string);
+begin
+    ShowMessage('From: ' + renameFrom + ' To: ' + renameTo);
 end;
 
 procedure TfrmTableEdit.BuildCustomMenu();

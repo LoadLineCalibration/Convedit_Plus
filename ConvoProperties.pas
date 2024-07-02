@@ -122,6 +122,25 @@ begin
     editConvoDescription.Clear();
     memoConversationNotes.Clear();
     lvConvoDependsOnFlags.Clear();
+
+    // Reset Options
+    chkDisplayConvoOnlyOnce.Checked           := True;
+    chkDisplayConvoOnlyOnceClick(self);
+    chkDataLinkConvo.Checked                  := False;
+    chkNonInteractive.Checked                 := False;
+    chkFPMode.Checked                         := False;
+    chkRandomCameraPlacement.Checked          := False;
+    chkCanBeInterruptedByAnotherConvo.Checked := False;
+    chkAbsolutelyCannotInterrupt.Checked      := False;
+
+    // Reset Invoke options
+    chkPCfrobsNPC.Checked        := True;
+    chkPCbumpsNPC.Checked        := True;
+    chkNPCseesPlayer.Checked     := False;
+    chkNPCentersPCRadius.Checked := False;
+    chkNPCentersPCRadiusClick(self);
+
+    editDistFromPlayer.Value := 0;
 end;
 
 procedure TfrmConvoProperties.AddNewConversation();

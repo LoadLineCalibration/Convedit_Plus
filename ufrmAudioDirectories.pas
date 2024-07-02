@@ -104,7 +104,8 @@ begin
 
                     if bTryToCreateDir = False then
                     begin
-                        MessageDlg(Format(strAudioDirsError, [InitialPath, SysErrorMessage(GetLastError)]),  mtError,[mbOK], 0);
+                        //MessageDlg(Format(strAudioDirsError, [InitialPath, SysErrorMessage(GetLastError)]),  mtError,[mbOK], 0);
+                        mmoResults.Lines.Add(Format(strAudioDirsError, [InitialPath, SysErrorMessage(GetLastError)]));
                         Break;
                     end;
 
@@ -134,7 +135,8 @@ begin
 
                             if bTryToCreateDir = False then
                             begin
-                                MessageDlg(Format(strAudioDirsError, [InitialPath, SysErrorMessage(GetLastError)]),  mtError,[mbOK], 0);
+                                //MessageDlg(Format(strAudioDirsError, [InitialPath, SysErrorMessage(GetLastError)]),  mtError,[mbOK], 0);
+                                mmoResults.Lines.Add(Format(strAudioDirsError, [InitialPath, SysErrorMessage(GetLastError)]));
                                 Break;
                             end;
 

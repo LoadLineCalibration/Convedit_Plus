@@ -70,14 +70,13 @@ object frmConvoProperties: TfrmConvoProperties
       Top = 3
       Width = 394
       Height = 404
-      ActivePage = Options
+      ActivePage = Invoke
       Align = alClient
       DoubleBuffered = False
       ParentDoubleBuffered = False
       Style = tsFlatButtons
       TabOrder = 0
       TabWidth = 65
-      StyleName = ''
       OnChange = pgcConvoPropertiesTabsChange
       object TabSheet1: TTabSheet
         Caption = 'General'
@@ -206,7 +205,6 @@ object frmConvoProperties: TfrmConvoProperties
             end>
           GridLines = True
           HideSelection = False
-          StyleName = ''
           RowSelect = True
           SmallImages = frmEventInsAdd.ilSpecial
           TabOrder = 0
@@ -308,7 +306,6 @@ object frmConvoProperties: TfrmConvoProperties
           Enabled = False
           MaxValue = 0
           MinValue = 0
-          StyleName = ''
           TabOrder = 4
           Value = 0
           OnChange = editDistFromPlayerChange

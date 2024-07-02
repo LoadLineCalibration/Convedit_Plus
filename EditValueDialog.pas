@@ -49,11 +49,16 @@ begin
 end;
 
 procedure TfrmEditValue.SendDataBack();
-    var idx: Integer;
+var
+    idx: Integer;
 begin
    if Receiver is TListBox then
    begin
        idx:=TListBox(Receiver).ItemIndex;
+
+        if Receiver.Owner.Name = 'frmTableEdit' then
+            frmTableEdit.TableItemRenamed(TListBox(Receiver).Items[idx], editValue.Text); // notify the Table editor
+
        TListBox(Receiver).Items[idx] := editValue.Text;
    end;
 end;

@@ -5,7 +5,7 @@ object frmTableEdit: TfrmTableEdit
   Caption = 'Table'
   ClientHeight = 366
   ClientWidth = 473
-  Color = 13160660
+  Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -12
@@ -96,7 +96,7 @@ object frmTableEdit: TfrmTableEdit
   end
   object btnEdit: TButton
     Left = 363
-    Top = 72
+    Top = 71
     Width = 102
     Height = 24
     Anchors = [akTop, akRight]
