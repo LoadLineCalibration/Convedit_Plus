@@ -38,7 +38,7 @@ uses
   ufrmAudioDirectories in 'ufrmAudioDirectories.pas' {frmAudioDirectories},
   Vcl.Themes,
   Vcl.Styles,
-  UfrmSpeechGenerator in 'UfrmSpeechGenerator.pas' {frmSpeechGenerator};
+  UfrmConversationPlayer in 'UfrmConversationPlayer.pas' {frmConversationPlayer};
 
 {$R *.res}
 {$SETPEOSVERSION 5.1} // Windows XP
@@ -61,7 +61,7 @@ begin
   Application.CreateForm(TfrmTableEdit, frmTableEdit);
   Application.CreateForm(TfrmLabelErrors, frmLabelErrors);
   Application.CreateForm(TfrmAudioDirectories, frmAudioDirectories);
-  Application.CreateForm(TfrmSpeechGenerator, frmSpeechGenerator);
+  Application.CreateForm(TfrmConversationPlayer, frmConversationPlayer);
   Application.HintHidePause := 10000; // hint delay
   Application.Run;
 

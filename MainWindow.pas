@@ -133,7 +133,7 @@ type
     FileGenerateAudioNames: TAction;
     FileProperties: TAction;
     AddConversation: TAction;
-    DeleteConversation: TAction;
+    Conversation_Delete: TAction;
     Conversation_Cut: TAction;
     Conversation_Copy: TAction;
     Conversation_Paste: TAction;
@@ -541,7 +541,7 @@ type
     procedure ConversationsListCount1Click(Sender: TObject);
     procedure Event_DeleteExecute(Sender: TObject);
     procedure AddConversationExecute(Sender: TObject);
-    procedure DeleteConversationExecute(Sender: TObject);
+    procedure Conversation_DeleteExecute(Sender: TObject);
     procedure ConEventListDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
     procedure ConEventListDragDrop(Sender, Source: TObject; X, Y: Integer);
     procedure btnReorderClick(Sender: TObject);
@@ -609,7 +609,6 @@ type
     procedure mnuLavenderClassicoThemeClick(Sender: TObject);
     procedure mnuSystemThemeClick(Sender: TObject);
     procedure mnuOnyxBlueThemeClick(Sender: TObject);
-    procedure SpeechGeneratortest1Click(Sender: TObject);
     procedure ApplicationEvents1ShowHint(var HintStr: string; var CanShow: Boolean; var HintInfo: THintInfo);
     procedure ConEventListKeyPress(Sender: TObject; var Key: Char);
   private
@@ -651,6 +650,9 @@ type
     var clSpeechBG, clSpeechNoAudioBG, clSpeechText: TColor;
     var clChoiceBG, clChoiceNoAudioBG, clChoiceText: TColor;
 
+    var clPlayerBindNameColor: TColor;
+    var clPlayerSpeechBGColor: TColor;
+
 
     // boolean variables for configuration file
     var bShowAudioFiles, bShowStatusBar, bShowToolbar, bExpandedEventList,
@@ -658,7 +660,7 @@ type
         bAskForConvoDelete, bAskForEventDelete, bHglEventWithNoAudio,
         bHglEventsGradient, bFlatToolbar,
         bUse3DSelectionFrame, bUseWhiteSelectedText, bDrawEventIdx, bUseLogging,
-        bTreeQSeachExactMatch : Boolean;
+        bTreeQSeachExactMatch, bUsePlayerBindNameColor, bUsePlayerSpeechBGColor : Boolean;
 
     property bAutoSaveEnabled: Boolean read GetAutoSaveEnabled write SetAutoSaveEnabled;
 
@@ -709,7 +711,7 @@ implementation
 {$R SoundResources.res} // contains final.mp3
 
 uses frmSettings1, EditValueDialog, ConFileProperties, AboutBox1, ConvoProperties, frmFind1, AddInsertEvent,
-     ConXml.Reader, ConXML.Writer, confile.Reader, conFile.Writer, uFrmLabelErrors, ufrmAudioDirectories, UfrmSpeechGenerator;
+     ConXml.Reader, ConXML.Writer, confile.Reader, conFile.Writer, uFrmLabelErrors, ufrmAudioDirectories;
 
 
 function TfrmMain.GetFileModified: Boolean;
@@ -2743,6 +2745,12 @@ begin
 
        bUseLogging := ReadBool('frmMain', 'bUseLogging', false);
 
+       clPlayerBindNameColor := ReadInteger('frmMain', 'clPlayerBindNameColor', clNavy);
+       bUsePlayerBindNameColor := ReadBool('frmMain', 'bUsePlayerBindNameColor', True);
+
+       clPlayerSpeechBGColor := ReadInteger('frmMain', 'clPlayerSpeechBGColor', clMoneyGreen);
+       bUsePlayerSpeechBGColor := ReadBool('frmMain', 'bUsePlayerSpeechBGColor', True);
+
        ReorderModKey := TReorderEventsModKey(ReadInteger('frmMain', 'ReorderModKey', 0));
 
        btnReorder.Hint := GetReorderButtonHint(); // Update button tooltip
@@ -2805,6 +2813,8 @@ begin
             WriteBool('frmMain', 'bHglEventsGradient', bHglEventsGradient);
             WriteBool('frmMain', 'bFlatToolbar', bFlatToolbar);
             WriteBool('frmMain', 'bAutoSaveEnabled', bAutoSaveEnabled);
+            WriteBool('frmMain', 'bUsePlayerBindNameColor', bUsePlayerBindNameColor);
+            WriteBool('frmMain', 'bUsePlayerSpeechBGColor', bUsePlayerSpeechBGColor);
 
             WriteInteger('frmMain', 'AutoSaveMinutes', AutoSaveMinutes);
             // Colors...
@@ -2812,6 +2822,8 @@ begin
             WriteInteger('frmMain', 'clrHighlightEventFrom', clrHighlightEventFrom);
             WriteInteger('frmMain', 'clrHighlightEventTo', clrHighlightEventTo);
             WriteInteger('frmMain', 'clrGrid', clrGrid);
+            WriteInteger('frmMain', 'clPlayerBindNameColor', clPlayerBindNameColor);
+            WriteInteger('frmMain', 'clPlayerSpeechBGColor', clPlayerSpeechBGColor);
 
             WriteBool('frmMain', 'bUse3DSelectionFrame', bUse3DSelectionFrame);
             WriteBool('frmMain', 'bUseWhiteSelectedText', bUseWhiteSelectedText);
@@ -2884,19 +2896,33 @@ begin
             if (bHglEventWithNoAudio = True) and (mp3str = '') then // what the point?
                 Brush.Color := RGB(192,255,255)
             else
-                Brush.Color := RGB(192,255,192); // green
+            begin
+                if (bUsePlayerSpeechBGColor = True) and (ActorNameStr = PLAYER_BINDNAME) then
+                    Brush.Color := clPlayerSpeechBGColor
+                else
+                    Brush.Color := RGB(192,255,192); // green
+            end;
 
             FillRect(Rect); // Заполнение цветом
         end;
 
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then
+        begin
+            Font.Color := clWhite;
+        end
+        else
+        begin
+            if (ActorNameStr = PLAYER_BINDNAME) and (bUsePlayerBindNameColor = True) then
+                Font.Color := clPlayerBindNameColor else Font.Color := clBlack;
+        end;
 
         Font.Style := [fsBold];
 
         Brush.Style := bsClear;
         TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top, ET_Speech_Caption);
 
-        // NPC (Actor) name
+        // NPC/Actor/Player BindName
         TextOut(Rect.Left + HeaderControl1.Sections[1].Width + HeaderControl1.Sections[0].Width, Rect.Top, ActorNameStr + '');
 
         if bShowAudioFiles = true then
@@ -4648,13 +4674,7 @@ begin
     HighlightRelatedEvents();
 
     if frmEventInsAdd.Visible = True then
-        ConEventListDblClick(Sender)
-    else
-    if frmSpeechGenerator.Visible = True then // load text into speech generator
-    begin
-        if CurrentEvent is TConEventSpeech then
-            frmSpeechGenerator.mmoSpeechText.Text := TConEventSpeech(CurrentEvent).TextLine;
-    end;
+        ConEventListDblClick(Sender);
 
     ConEventList.Repaint();
 
@@ -5100,6 +5120,7 @@ begin
 
         UpdateEventListHeights();
         UnhighlightRelatedEvents();
+        SetEventsListScrollbars();
     end;
 end;
 
@@ -5215,10 +5236,11 @@ begin
     ShowMessage(testDT.ToString);
 end;
 
-procedure TfrmMain.DeleteConversationExecute(Sender: TObject);
+procedure TfrmMain.Conversation_DeleteExecute(Sender: TObject);
 begin
     // Don't execute this action if mainForm and ConvoTree are not focused.
-    if Focused = False and ConvoTree.Focused = False then Exit();
+    //if Focused = False and ConvoTree.Focused = False then Exit();
+//    if (Focused = False) and (ActiveControl <> ConvoTree) then Exit();
 
     if bAskForConvoDelete = true then
     begin
@@ -5376,7 +5398,8 @@ end;
 procedure TfrmMain.Event_DeleteExecute(Sender: TObject);
 begin
     // Don't execute this action if mainForm and EventList are not focused.
-    if Focused = False and ConEventList.Focused = False then Exit();
+    //if Focused = False and ConEventList.Focused = False then Exit();
+    //if (Focused = False) and (ActiveControl <> ConEventList) then Exit();
 
 
     if bAskForEventDelete = true then
@@ -5916,11 +5939,6 @@ end;
 procedure TfrmMain.Speech2Click(Sender: TObject);
 begin
     InsertEvent(Ord(ET_Speech));
-end;
-
-procedure TfrmMain.SpeechGeneratortest1Click(Sender: TObject);
-begin
-    frmSpeechGenerator.show();
 end;
 
 procedure TfrmMain.Splitter1CanResize(Sender: TObject; var NewSize: Integer; var Accept: Boolean);
@@ -6762,7 +6780,7 @@ procedure TfrmMain.PopupTreePopup(Sender: TObject); // block some menu items dep
 begin
     if ConvoTree.Selected = nil then
     begin
-        DeleteConversation.Enabled := False;
+        Conversation_Delete.Enabled := False;
         Conversation_Properties.Enabled := False;
         Conversation_Rename.Enabled := False;
 
@@ -6777,7 +6795,7 @@ begin
 
 //    if TreeHasItemsOfLevel(ConvoTree, 1) = true then
 //    begin
-        DeleteConversation.Enabled := ConvoTree.Selected.Level = 1;
+        Conversation_Delete.Enabled := ConvoTree.Selected.Level = 1;
         Conversation_Properties.Enabled := ConvoTree.Selected.Level = 1;
         Conversation_Rename.Enabled := ConvoTree.Selected.Level = 1;
 

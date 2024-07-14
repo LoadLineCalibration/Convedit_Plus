@@ -58,6 +58,10 @@ type
     TabSheet1: TTabSheet;
     grpEventListColors: TGroupBox;
     btnEmptyBakPath: TButton;
+    chkPlayerBindNameColor: TCheckBox;
+    shpPlayerBindNameColor: TShape;
+    chkPlayerSpeechBGColor: TCheckBox;
+    shpPlayerSpeechBGColor: TShape;
 
     // new procedures
     procedure SaveChanges();
@@ -84,6 +88,8 @@ type
       var Handled: Boolean);
     procedure shpGridColorMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure btnEmptyBakPathClick(Sender: TObject);
+    procedure shpPlayerBindNameColorMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure shpPlayerSpeechBGColorMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
   private
     { Private declarations }
   public
@@ -133,6 +139,12 @@ begin
         cbbReorderEventsModKey.ItemIndex := Ord(ReorderModKey);
 
         chkDblClickTreeFlag.Checked := bEnableDblClickTreeFlag;
+
+        chkPlayerBindNameColor.Checked := bUsePlayerBindNameColor;  // Player BindName
+        shpPlayerBindNameColor.Brush.Color := clPlayerBindNameColor; // and color
+
+        chkPlayerSpeechBGColor.Checked := bUsePlayerSpeechBGColor;
+        shpPlayerSpeechBGColor.Brush.Color := clPlayerSpeechBGColor;
     end;
 end;
 
@@ -177,6 +189,12 @@ begin
         btnReorder.Hint := GetReorderButtonHint(); // Update hint
 
         bEnableDblClickTreeFlag := chkDblClickTreeFlag.Checked;
+
+        bUsePlayerBindNameColor := chkPlayerBindNameColor.Checked;  // Player BindName
+        clPlayerBindNameColor := shpPlayerBindNameColor.Brush.Color; // and color
+
+        bUsePlayerSpeechBGColor := chkPlayerSpeechBGColor.Checked;
+        clPlayerSpeechBGColor := shpPlayerSpeechBGColor.Brush.Color;
 
         ConEventList.Invalidate(); // Refresh the event list
     end;
@@ -327,6 +345,22 @@ begin
     if ((Button = TMouseButton.mbLeft) and (dlgColor1.Execute() = true)) then
     begin
         shpHighlightColorTo.Brush.Color := dlgColor1.Color;
+    end;
+end;
+
+procedure TfrmSettings.shpPlayerBindNameColorMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+    if ((Button = TMouseButton.mbLeft) and (dlgColor1.Execute() = true)) then
+    begin
+        shpPlayerBindNameColor.Brush.Color := dlgColor1.Color;
+    end;
+end;
+
+procedure TfrmSettings.shpPlayerSpeechBGColorMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+    if ((Button = TMouseButton.mbLeft) and (dlgColor1.Execute() = true)) then
+    begin
+        shpPlayerSpeechBGColor.Brush.Color := dlgColor1.Color;
     end;
 end;
 

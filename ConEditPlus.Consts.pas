@@ -142,7 +142,7 @@ const
     ET_Comment_Caption        = 'Comment';
     ET_End_Caption            = 'End';
 
-    STATS_CHOICE_SPEAKER = 'JCDenton';
+    PLAYER_BINDNAME = 'JCDenton';
     INFOLINK_CONVERSATION_DIRECTORY = 'InfoLink';
 
     CLIPBOARD_CONVERSATION_ID = 'id_CONVERSATION';

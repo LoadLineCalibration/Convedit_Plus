@@ -2321,10 +2321,16 @@ begin
 
     frmMain.AddEvent(cmbEventType.ItemIndex);
 
-    if (chkAutoSwapSpeaker.Checked = true) and (cmbEventType.ItemIndex = Ord(ET_Speech)) then
+    if (chkAutoSwapSpeaker.Checked = True) and (cmbEventType.ItemIndex = Ord(ET_Speech)) then
     begin
         cmbSpeakingFrom.ItemIndex := SpeakToIndex;
         cmbSpeakingTo.ItemIndex := SpeakFromIndex;
+    end;
+
+    if (chkAutoSwapSpeaker.Checked = False) and (cmbEventType.ItemIndex = Ord(ET_Speech)) then
+    begin
+        cmbSpeakingFrom.ItemIndex := SpeakFromIndex;
+        cmbSpeakingTo.ItemIndex := SpeakToIndex;
     end;
 end;
 
@@ -2524,6 +2530,8 @@ end;
 procedure TfrmEventInsAdd.btnUpdateClick(Sender: TObject);
 begin
     UpdateEvent();
+    frmMain.UpdateEventListHeights();
+    frmMain.SetEventsListScrollbars();
 end;
 
 procedure TfrmEventInsAdd.btnDeleteCheckFlagClick(Sender: TObject);

@@ -134,10 +134,10 @@ begin
             begin
                 var Choice := TConEventChoice(con.Events[i]);
 
-                if CounterDict.ContainsKey(STATS_CHOICE_SPEAKER) = False then
-                    CounterDict.Add(STATS_CHOICE_SPEAKER, 0);
+                if CounterDict.ContainsKey(PLAYER_BINDNAME) = False then
+                    CounterDict.Add(PLAYER_BINDNAME, 0);
 
-                CounterDict[STATS_CHOICE_SPEAKER] := CounterDict[STATS_CHOICE_SPEAKER] + Length(Choice.Choices);
+                CounterDict[PLAYER_BINDNAME] := CounterDict[PLAYER_BINDNAME] + Length(Choice.Choices);
             end;
         end;
     end;

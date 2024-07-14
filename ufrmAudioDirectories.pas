@@ -155,10 +155,13 @@ begin
         end;
 
     except
-        btnClose.Enabled := True;
-        btnGenerate.Enabled := True;
-        mmoResults.Lines.Add('Something went wrong... Make sure the directory you chosen is writable.');
-        raise Exception.Create(Format(strAudioDirsError, [InitialPath, SysErrorMessage(GetLastError)]));
+        on E: Exception do
+        begin
+            btnClose.Enabled := True;
+            btnGenerate.Enabled := True;
+            mmoResults.Lines.Add('Something went wrong... Make sure the directory you chosen is writable.');
+            raise Exception.Create(Format(strAudioDirsError, [InitialPath, SysErrorMessage(GetLastError)]));
+        end;
     end;
 
     mmoResults.Lines.Add('Done!');

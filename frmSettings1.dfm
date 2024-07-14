@@ -47,14 +47,13 @@ object frmSettings: TfrmSettings
     Width = 62
     Height = 15
     Caption = 'Audio Path:'
-    StyleName = 'Windows'
   end
   object pgcSettings: TPageControl
     Left = 4
     Top = 161
     Width = 446
     Height = 277
-    ActivePage = PageA
+    ActivePage = TabSheet1
     Style = tsFlatButtons
     TabOrder = 9
     object Page1: TTabSheet
@@ -80,7 +79,6 @@ object frmSettings: TfrmSettings
           AutoSize = False
           Caption = 'Grid color:'
           Layout = tlCenter
-          StyleName = 'Windows'
         end
         object shpGridColor: TShape
           Left = 376
@@ -126,7 +124,6 @@ object frmSettings: TfrmSettings
           AutoSize = False
           Caption = 'Hold this key to reorder events:'
           Layout = tlCenter
-          StyleName = 'Windows'
         end
         object shpOriginalStyle: TShape
           Left = 255
@@ -152,7 +149,6 @@ object frmSettings: TfrmSettings
           Height = 17
           Caption = 'Highlight Speech/Choice events with missing audio'
           TabOrder = 1
-          StyleName = 'Windows'
         end
         object chkSelectEventsGradientFill: TCheckBox
           Left = 11
@@ -162,7 +158,6 @@ object frmSettings: TfrmSettings
           Hint = 'If not checked, use single color to highlight events.'
           Caption = 'Highlight selected event with gradient fill'
           TabOrder = 2
-          StyleName = 'Windows'
           OnClick = chkSelectEventsGradientFillClick
         end
         object chkUseSelectionFrame: TCheckBox
@@ -173,7 +168,6 @@ object frmSettings: TfrmSettings
           Hint = 'Use 3D frame in addition to selection color(s).'
           Caption = 'Use 3D frame?'
           TabOrder = 3
-          StyleName = 'Windows'
           OnClick = chkSelectEventsGradientFillClick
         end
         object chkSelectedTextIsWhite: TCheckBox
@@ -184,7 +178,6 @@ object frmSettings: TfrmSettings
           Hint = 'Use this option if you want to use dark selection colors. '
           Caption = 'Selected event text is bright'
           TabOrder = 4
-          StyleName = 'Windows'
           OnClick = chkSelectEventsGradientFillClick
         end
         object chkFlatControlsMainWin: TCheckBox
@@ -197,7 +190,6 @@ object frmSettings: TfrmSettings
             'er'
           Caption = 'Flat toolbar/event list header'
           TabOrder = 5
-          StyleName = 'Windows'
         end
         object cbbReorderEventsModKey: TComboBox
           Left = 180
@@ -209,7 +201,6 @@ object frmSettings: TfrmSettings
           ItemIndex = 0
           TabOrder = 6
           Text = 'Ctrl'
-          StyleName = 'Windows'
           Items.Strings = (
             'Ctrl'
             'Shift'
@@ -224,7 +215,6 @@ object frmSettings: TfrmSettings
           Caption = 'Set original ConEdit style'
           TabOrder = 7
           WordWrap = True
-          StyleName = 'Windows'
           OnClick = btnResetToDefaultsClick
         end
         object chkDarkModeEventList: TCheckBox
@@ -245,7 +235,6 @@ object frmSettings: TfrmSettings
           Height = 17
           Caption = 'Ask for Conversation deletion'
           TabOrder = 9
-          StyleName = 'Windows'
         end
         object chkAskDeleteEvent: TCheckBox
           Left = 11
@@ -254,7 +243,6 @@ object frmSettings: TfrmSettings
           Height = 17
           Caption = 'Ask For Event Deletion'
           TabOrder = 10
-          StyleName = 'Windows'
         end
         object chkDblClickTreeFlag: TCheckBox
           Left = 11
@@ -283,6 +271,43 @@ object frmSettings: TfrmSettings
         HeaderFont.Name = 'Segoe UI'
         HeaderFont.Style = [fsBold]
         TabOrder = 0
+        object shpPlayerBindNameColor: TShape
+          Left = 172
+          Top = 23
+          Width = 20
+          Height = 20
+          Cursor = crHandPoint
+          Brush.Color = clYellow
+          OnMouseDown = shpPlayerBindNameColorMouseDown
+        end
+        object shpPlayerSpeechBGColor: TShape
+          Left = 215
+          Top = 47
+          Width = 20
+          Height = 20
+          Cursor = crHandPoint
+          Brush.Color = clYellow
+          OnMouseDown = shpPlayerSpeechBGColorMouseDown
+        end
+        object chkPlayerBindNameColor: TCheckBox
+          Left = 11
+          Top = 23
+          Width = 155
+          Height = 17
+          Hint = 
+            'If checked, custom color for JCDenton bindname will be used. Oth' +
+            'erwise use regular color (usually black)'
+          Caption = 'Player BindName Color:'
+          TabOrder = 0
+        end
+        object chkPlayerSpeechBGColor: TCheckBox
+          Left = 11
+          Top = 46
+          Width = 198
+          Height = 17
+          Caption = 'Player Speech background color:'
+          TabOrder = 1
+        end
       end
     end
     object PageA: TTabSheet
@@ -327,7 +352,6 @@ object frmSettings: TfrmSettings
             'This will slow down most of operations.'
           Caption = 'Enable logging'
           TabOrder = 0
-          StyleName = 'Windows'
           OnClick = chkSelectEventsGradientFillClick
         end
         object chkAutoSaveEnabled: TCheckBox
@@ -350,7 +374,6 @@ object frmSettings: TfrmSettings
           MaxLength = 2
           MaxValue = 20
           MinValue = 1
-          StyleName = 'Windows'
           TabOrder = 2
           Value = 5
         end
@@ -361,7 +384,6 @@ object frmSettings: TfrmSettings
           Height = 23
           Caption = 'Browse...'
           TabOrder = 3
-          StyleName = 'Windows'
           OnClick = btnBrowseBakConFilePathClick
         end
         object edtConFileBakPath: TEdit
@@ -378,7 +400,6 @@ object frmSettings: TfrmSettings
           PopupMenu = frmEventInsAdd.MemoPopup
           ReadOnly = True
           TabOrder = 4
-          StyleName = 'Windows'
         end
         object btnEmptyBakPath: TButton
           Left = 382
@@ -387,7 +408,6 @@ object frmSettings: TfrmSettings
           Height = 23
           Caption = 'Empty'
           TabOrder = 5
-          StyleName = 'Windows'
           OnClick = btnEmptyBakPathClick
         end
       end
@@ -415,7 +435,6 @@ object frmSettings: TfrmSettings
     PopupMenu = frmEventInsAdd.MemoPopup
     ReadOnly = True
     TabOrder = 1
-    StyleName = 'Windows'
   end
   object edtAudioPath: TEdit
     Left = 8
@@ -426,7 +445,6 @@ object frmSettings: TfrmSettings
     PopupMenu = frmEventInsAdd.MemoPopup
     ReadOnly = True
     TabOrder = 2
-    StyleName = 'Windows'
   end
   object btnBrowseConFilePath: TButton
     Left = 367
@@ -435,7 +453,6 @@ object frmSettings: TfrmSettings
     Height = 25
     Caption = 'Browse...'
     TabOrder = 3
-    StyleName = 'Windows'
     OnClick = btnBrowseConFilePathClick
   end
   object btnBrowseConAudioPath: TButton
@@ -445,7 +462,6 @@ object frmSettings: TfrmSettings
     Height = 25
     Caption = 'Browse...'
     TabOrder = 4
-    StyleName = 'Windows'
     OnClick = btnBrowseConAudioPathClick
   end
   object btnOk: TButton
@@ -455,7 +471,6 @@ object frmSettings: TfrmSettings
     Height = 25
     Caption = 'Ok'
     TabOrder = 5
-    StyleName = 'Windows'
     OnClick = btnOkClick
   end
   object btnCancel: TButton
@@ -466,7 +481,6 @@ object frmSettings: TfrmSettings
     Cancel = True
     Caption = 'Cancel'
     TabOrder = 6
-    StyleName = 'Windows'
     OnClick = btnCancelClick
   end
   object btnClearLastFiles: TButton
@@ -476,7 +490,6 @@ object frmSettings: TfrmSettings
     Height = 25
     Caption = 'Clear recent files'
     TabOrder = 7
-    StyleName = 'Windows'
     OnClick = btnClearLastFilesClick
   end
   object btnPickUserName: TButton
@@ -486,7 +499,6 @@ object frmSettings: TfrmSettings
     Height = 25
     Caption = 'Use from current logged in user?'
     TabOrder = 8
-    StyleName = 'Windows'
     OnClick = btnPickUserNameClick
   end
   object dlgColor1: TColorDialog

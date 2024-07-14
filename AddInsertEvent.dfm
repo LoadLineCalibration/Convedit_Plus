@@ -5436,7 +5436,7 @@ object frmEventInsAdd: TfrmEventInsAdd
     Top = 114
     Width = 556
     Height = 406
-    ActivePage = TabSheet11
+    ActivePage = TabSheet1
     Anchors = [akLeft, akTop, akRight, akBottom]
     DoubleBuffered = True
     ParentDoubleBuffered = False
@@ -5747,7 +5747,6 @@ object frmEventInsAdd: TfrmEventInsAdd
           FullDrag = True
           GridLines = True
           HideSelection = False
-          Items.ItemData = {}
           RowSelect = True
           ParentDoubleBuffered = False
           ParentFont = False
@@ -5874,7 +5873,6 @@ object frmEventInsAdd: TfrmEventInsAdd
                 FullDrag = True
                 GridLines = True
                 HideSelection = False
-                Items.ItemData = {}
                 ReadOnly = True
                 RowSelect = True
                 ParentDoubleBuffered = False
@@ -6096,7 +6094,6 @@ object frmEventInsAdd: TfrmEventInsAdd
           FullDrag = True
           GridLines = True
           HideSelection = False
-          Items.ItemData = {}
           MultiSelect = True
           RowSelect = True
           ParentFont = False
@@ -6196,7 +6193,6 @@ object frmEventInsAdd: TfrmEventInsAdd
           FullDrag = True
           GridLines = True
           HideSelection = False
-          Items.ItemData = {}
           MultiSelect = True
           RowSelect = True
           ParentFont = False

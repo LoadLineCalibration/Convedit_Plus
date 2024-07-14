@@ -5897,7 +5897,7 @@ object frmMain: TfrmMain
       ImageIndex = 4
     end
     object Delete2: TMenuItem
-      Action = DeleteConversation
+      Action = Conversation_Delete
       ImageIndex = 5
     end
     object N12: TMenuItem
@@ -6150,8 +6150,7 @@ object frmMain: TfrmMain
         Caption = '-'
       end
       object SpeechGeneratortest1: TMenuItem
-        Caption = 'Speech Generator test'
-        OnClick = SpeechGeneratortest1Click
+        Caption = 'Conversation player'
       end
     end
     object mnuHelp: TMenuItem
@@ -6403,7 +6402,9 @@ object frmMain: TfrmMain
       Action = Event_Duplicate
     end
     object N8: TMenuItem
-      Caption = '-'
+      Caption = '-------- AI Tools --------'
+      Default = True
+      Enabled = False
     end
     object CopySpeechtext1: TMenuItem
       Action = Event_CopySpeechText
@@ -9075,13 +9076,12 @@ object frmMain: TfrmMain
       ImageIndex = 3
       OnExecute = AddConversationExecute
     end
-    object DeleteConversation: TAction
+    object Conversation_Delete: TAction
       Category = 'Conversation'
       Caption = 'Delete'
       Enabled = False
       ImageIndex = 4
-      ShortCut = 46
-      OnExecute = DeleteConversationExecute
+      OnExecute = Conversation_DeleteExecute
     end
     object Conversation_Cut: TAction
       Category = 'Conversation'
@@ -9153,7 +9153,6 @@ object frmMain: TfrmMain
       Caption = 'Delete'
       Hint = 'Delete selected event'
       ImageIndex = 4
-      ShortCut = 46
       OnExecute = Event_DeleteExecute
     end
     object ShowOptions: TAction
