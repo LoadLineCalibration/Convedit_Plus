@@ -69,7 +69,9 @@ So the correct path will look like `C:\Games\DeusEx_RTX\GameConversations\Audio`
 
 <details> 
   <summary>Screenshot of main window with loaded conversations file:</summary>
-![изображение](https://github.com/user-attachments/assets/9de55c64-fa28-4388-8c92-4cab4a8c52d3)
+  
+![image](https://github.com/user-attachments/assets/3e4d5187-c0cb-41d0-841e-8cdf6123bd64)
+
   
 </details>
 
