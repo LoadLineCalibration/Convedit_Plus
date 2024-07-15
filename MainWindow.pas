@@ -459,6 +459,7 @@ type
 
     // To duplicate selected event
     procedure CopyEventFields(Source, Dest: TConEvent);
+    procedure CopyChoiceItems(Source, Dest: TConEventChoice);
 
     // To expand tree without flags
     procedure ExpandTreeViewToLevel(TreeView: TTreeView; Level: Integer);
@@ -1819,6 +1820,52 @@ procedure TfrmMain.CopyChoiceItemObj_Path_Filename(Sender: TObject);
 begin
     if Sender is TMenuItem then
         CopyChoiceMp3Path(CM_PathAndFilename, TMenuItem(Sender).Tag);
+end;
+
+procedure TfrmMain.CopyChoiceItems(Source, Dest: TConEventChoice);
+var
+  I, J: Integer;
+  SourceChoice: TChoiceItemObject;
+  DestChoice: TChoiceItemObject;
+begin
+    // Ensure the destination choices array is correctly sized
+    SetLength(Dest.Choices, Length(Source.Choices));
+
+    for I := 0 to High(Source.Choices) do
+    begin
+        SourceChoice := Source.Choices[I];
+        if Assigned(SourceChoice) then
+        begin
+            // Create a new instance of TChoiceItemObject for DestChoice
+            DestChoice := TChoiceItemObject.Create;
+            try
+                // Copy each field from SourceChoice to DestChoice
+                DestChoice.Index := SourceChoice.Index;
+                DestChoice.textline := SourceChoice.textline;
+                DestChoice.bDisplayAsSpeech := SourceChoice.bDisplayAsSpeech;
+                DestChoice.bSkillNeeded := SourceChoice.bSkillNeeded;
+                DestChoice.Skill := SourceChoice.Skill;
+                DestChoice.SkillLevel := SourceChoice.SkillLevel;
+                DestChoice.GoToLabel := SourceChoice.GoToLabel;
+                DestChoice.mp3 := SourceChoice.mp3;
+
+                // Copy the RequiredFlags array
+                SetLength(DestChoice.RequiredFlags, Length(SourceChoice.RequiredFlags));
+
+                for J := 0 to High(SourceChoice.RequiredFlags) do
+                begin
+                  DestChoice.RequiredFlags[J] := SourceChoice.RequiredFlags[J];
+                end;
+
+                // Assign the newly created choice to the destination array
+                Dest.Choices[I] := DestChoice;
+            except
+                // Handle exceptions or cleanup if necessary
+                DestChoice.Free;
+                raise; // Re-raise the exception if needed
+            end;
+        end;
+    end;
 end;
 
 procedure TfrmMain.CopyChoiceItemObj_Filename(Sender: TObject);
@@ -3686,6 +3733,26 @@ begin
     end;
 end;
 
+{procedure TfrmMain.CopyEventFields(Source, Dest: TConEvent);
+begin
+    var Ctx: TRttiContext;
+    var SourceType: TRttiType;
+    var Field: TRttiField;
+
+    Ctx := TRttiContext.Create;
+    try
+        SourceType := Ctx.GetType(Source.ClassType);
+
+        for Field in SourceType.GetFields do
+        begin
+            Field.SetValue(Dest, Field.GetValue(Source));
+        end;
+
+    finally
+        Ctx.Free();
+    end;
+end;}
+
 procedure TfrmMain.CopyEventFields(Source, Dest: TConEvent);
 begin
     var Ctx: TRttiContext;
@@ -3705,6 +3772,7 @@ begin
         Ctx.Free();
     end;
 end;
+
 
 procedure TfrmMain.DrawET_AddGoal(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
 var
@@ -5424,7 +5492,10 @@ begin
 
     case EventToDuplicate.EventType of
         ET_Speech:        NewEvent := TConEventSpeech.Create();
-        ET_Choice:        NewEvent := TConEventChoice.Create();
+        ET_Choice:
+              begin
+                  NewEvent := TConEventChoice.Create();
+              end;
         ET_SetFlag:       NewEvent := TConEventSetFlag.Create();
         ET_CheckFlag:     NewEvent := TConEventCheckFlag.Create();
         ET_CheckObject:   NewEvent := TConEventCheckObject.Create();
@@ -5444,8 +5515,14 @@ begin
         ET_End:           NewEvent := TConEventEnd.Create();
     end;
 
+    //if (EventToDuplicate is TConEvent) and (NewEvent is TConEvent) then
+    //    CopyEventFields(TConEvent(EventToDuplicate), TConEvent(NewEvent));
+
     if (EventToDuplicate is TConEvent) and (NewEvent is TConEvent) then
         CopyEventFields(TConEvent(EventToDuplicate), TConEvent(NewEvent));
+
+    if EventToDuplicate is TConEventChoice then
+       CopyChoiceItems(TConEventChoice(EventToDuplicate), TConEventChoice(NewEvent));
 
     NewEvent.EventLabel := ''; // clear EventLabel to avoid duplicates
     NewEvent.EventIdx := -1; // Index will be set later
