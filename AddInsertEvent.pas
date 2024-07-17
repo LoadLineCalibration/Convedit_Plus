@@ -3,7 +3,7 @@ unit AddInsertEvent;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, WinApi.CommCtrl,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.StdActns, Conversation.Classes,
   System.Actions, Vcl.ActnList, Vcl.Menus, Vcl.Samples.Spin, WinApi.ActiveX, Vcl.Buttons, Vcl.Imaging.pngimage,
   ConEditPlus.Helpers, System.ImageList, Vcl.ImgList, Vcl.MPlayer, Winapi.MMSystem, system.UITypes, ES.BaseControls,
@@ -861,7 +861,7 @@ end;
 
 function TfrmEventInsAdd.ValidateSpeech(var speech: TConEventSpeech): Boolean; // Check if entered values are correct, then write values back to object.
 begin
-    if Length(Trim(memoSpeech.Text)) < 1 then
+    if Length(memoSpeech.Text) < 1 then
     begin
         EventWarning(True, strSpeechTextIsEmpty);
         memoSpeech.SetFocus();
