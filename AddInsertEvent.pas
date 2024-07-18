@@ -1284,6 +1284,7 @@ var
     ItemIdx: Integer;
 begin
     NewSpeech := TConEventSpeech.Create();  // создать новыое событие
+    NewSpeech.TextLine := 'Speech text';
     ItemIdx := frmMain.ConEventList.ItemIndex;
 
     if ItemIdx = -1 then ItemIdx := 0;
@@ -1298,6 +1299,7 @@ begin
         False: // Add Event
         begin
             var currLength := Length(frmMain.CurrentConversation.Events); // узнать длину массива событий
+
             SetLength(frmMain.CurrentConversation.Events, currLength +1); // Нарастить на единицу
             frmMain.CurrentConversation.Events[currLength] := NewSpeech;   // Добавить событие в массив
             frmMain.CurrentEvent := frmMain.CurrentConversation.Events[currLength];  // И берем текущее событие уже из массива
@@ -1309,11 +1311,28 @@ begin
 
         True: // Insert Event
         begin
-            Insert(NewSpeech, frmMain.CurrentConversation.Events, ItemIdx); // Insert to array of events
+            if (ItemIdx < 0) or (ItemIdx >= Length(frmMain.CurrentConversation.Events)) then
+                ItemIdx := Length(frmMain.CurrentConversation.Events); // если ItemIdx за пределами диапазона то вставить в конец
+
+            SetLength(frmMain.CurrentConversation.Events, Length(frmMain.CurrentConversation.Events) + 1);
+
+            // Сдвигаем элементы массива для вставки нового элемента
+            if ItemIdx < Length(frmMain.CurrentConversation.Events) - 1 then
+                Move(frmMain.CurrentConversation.Events[ItemIdx], frmMain.CurrentConversation.Events[ItemIdx + 1],
+                     (Length(frmMain.CurrentConversation.Events) - ItemIdx - 1) * SizeOf(TConEventSpeech));
+
+            frmMain.CurrentConversation.Events[ItemIdx] := NewSpeech;
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[ItemIdx];
 
             var NewHeight := frmMain.GetSpeechEventItemHeight([NewSpeech]); // new height...
             var TempString := ET_Speech_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
             frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewSpeech);
+
+
+            {Insert(NewSpeech, frmMain.CurrentConversation.Events, ItemIdx); // Insert to array of events
+            var NewHeight := frmMain.GetSpeechEventItemHeight([NewSpeech]); // new height...
+            var TempString := ET_Speech_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
+            frmMain.ConEventList.Items.InsertObject(ItemIdx, TempString, NewSpeech);}
         end;
     end;
 
@@ -1355,7 +1374,18 @@ begin
 
         True: // Insert event
         begin
-            Insert(NewChoice, frmMain.CurrentConversation.Events, ItemIdx);
+            if (ItemIdx < 0) or (ItemIdx >= Length(frmMain.CurrentConversation.Events)) then
+                ItemIdx := Length(frmMain.CurrentConversation.Events); // если ItemIdx за пределами диапазона то вставить в конец
+
+            SetLength(frmMain.CurrentConversation.Events, Length(frmMain.CurrentConversation.Events) + 1);
+
+            // Сдвигаем элементы массива для вставки нового элемента
+            if ItemIdx < Length(frmMain.CurrentConversation.Events) - 1 then
+                Move(frmMain.CurrentConversation.Events[ItemIdx], frmMain.CurrentConversation.Events[ItemIdx + 1],
+                     (Length(frmMain.CurrentConversation.Events) - ItemIdx - 1) * SizeOf(TConEventSpeech));
+
+            frmMain.CurrentConversation.Events[ItemIdx] := NewChoice;
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[ItemIdx];
 
             var NewHeight := frmMain.GetChoiceItemHeight([NewChoice]);
             var TempString := ET_Choice_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
@@ -1401,7 +1431,18 @@ begin
 
         True:
         begin
-            Insert(NewSetFlags, frmMain.CurrentConversation.Events, ItemIdx);
+            if (ItemIdx < 0) or (ItemIdx >= Length(frmMain.CurrentConversation.Events)) then
+                ItemIdx := Length(frmMain.CurrentConversation.Events); // если ItemIdx за пределами диапазона то вставить в конец
+
+            SetLength(frmMain.CurrentConversation.Events, Length(frmMain.CurrentConversation.Events) + 1);
+
+            // Сдвигаем элементы массива для вставки нового элемента
+            if ItemIdx < Length(frmMain.CurrentConversation.Events) - 1 then
+                Move(frmMain.CurrentConversation.Events[ItemIdx], frmMain.CurrentConversation.Events[ItemIdx + 1],
+                     (Length(frmMain.CurrentConversation.Events) - ItemIdx - 1) * SizeOf(TConEventSpeech));
+
+            frmMain.CurrentConversation.Events[ItemIdx] := NewSetFlags;
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[ItemIdx];
 
             var NewHeight := frmMain.GetSetFlagsItemHeight([NewSetFlags]);
             var TempString := ET_SetFlag_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
@@ -1447,7 +1488,18 @@ begin
 
         True:
         begin
-            Insert(NewCheckFlags, frmMain.CurrentConversation.Events, ItemIdx);
+            if (ItemIdx < 0) or (ItemIdx >= Length(frmMain.CurrentConversation.Events)) then
+                ItemIdx := Length(frmMain.CurrentConversation.Events); // если ItemIdx за пределами диапазона то вставить в конец
+
+            SetLength(frmMain.CurrentConversation.Events, Length(frmMain.CurrentConversation.Events) + 1);
+
+            // Сдвигаем элементы массива для вставки нового элемента
+            if ItemIdx < Length(frmMain.CurrentConversation.Events) - 1 then
+                Move(frmMain.CurrentConversation.Events[ItemIdx], frmMain.CurrentConversation.Events[ItemIdx + 1],
+                     (Length(frmMain.CurrentConversation.Events) - ItemIdx - 1) * SizeOf(TConEventSpeech));
+
+            frmMain.CurrentConversation.Events[ItemIdx] := NewCheckFlags;
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[ItemIdx];
 
             var NewHeight := frmMain.GetCheckFlagsItemHeight([NewCheckFlags]);
             var TempString := ET_CheckFlag_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
@@ -1491,7 +1543,18 @@ begin
 
         True:
         begin
-            Insert(NewCheckObj, frmMain.CurrentConversation.Events, ItemIdx);
+            if (ItemIdx < 0) or (ItemIdx >= Length(frmMain.CurrentConversation.Events)) then
+                ItemIdx := Length(frmMain.CurrentConversation.Events); // если ItemIdx за пределами диапазона то вставить в конец
+
+            SetLength(frmMain.CurrentConversation.Events, Length(frmMain.CurrentConversation.Events) + 1);
+
+            // Сдвигаем элементы массива для вставки нового элемента
+            if ItemIdx < Length(frmMain.CurrentConversation.Events) - 1 then
+                Move(frmMain.CurrentConversation.Events[ItemIdx], frmMain.CurrentConversation.Events[ItemIdx + 1],
+                     (Length(frmMain.CurrentConversation.Events) - ItemIdx - 1) * SizeOf(TConEventSpeech));
+
+            frmMain.CurrentConversation.Events[ItemIdx] := NewCheckObj;
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[ItemIdx];
 
             //var NewHeight := 25;
             var TempString := ET_CheckObject_Caption;// + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
@@ -1535,7 +1598,18 @@ begin
 
         True:
         begin
-            Insert(NewTransObj, frmMain.CurrentConversation.Events, ItemIdx);
+            if (ItemIdx < 0) or (ItemIdx >= Length(frmMain.CurrentConversation.Events)) then
+                ItemIdx := Length(frmMain.CurrentConversation.Events); // если ItemIdx за пределами диапазона то вставить в конец
+
+            SetLength(frmMain.CurrentConversation.Events, Length(frmMain.CurrentConversation.Events) + 1);
+
+            // Сдвигаем элементы массива для вставки нового элемента
+            if ItemIdx < Length(frmMain.CurrentConversation.Events) - 1 then
+                Move(frmMain.CurrentConversation.Events[ItemIdx], frmMain.CurrentConversation.Events[ItemIdx + 1],
+                     (Length(frmMain.CurrentConversation.Events) - ItemIdx - 1) * SizeOf(TConEventSpeech));
+
+            frmMain.CurrentConversation.Events[ItemIdx] := NewTransObj;
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[ItemIdx];
 
             //var NewHeight := 35;
             var TempString := ET_TransferObject_Caption;// + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
@@ -1579,7 +1653,18 @@ begin
 
         True:
         begin
-            Insert(NewMoveCam, frmMain.CurrentConversation.Events, ItemIdx);
+            if (ItemIdx < 0) or (ItemIdx >= Length(frmMain.CurrentConversation.Events)) then
+                ItemIdx := Length(frmMain.CurrentConversation.Events); // если ItemIdx за пределами диапазона то вставить в конец
+
+            SetLength(frmMain.CurrentConversation.Events, Length(frmMain.CurrentConversation.Events) + 1);
+
+            // Сдвигаем элементы массива для вставки нового элемента
+            if ItemIdx < Length(frmMain.CurrentConversation.Events) - 1 then
+                Move(frmMain.CurrentConversation.Events[ItemIdx], frmMain.CurrentConversation.Events[ItemIdx + 1],
+                     (Length(frmMain.CurrentConversation.Events) - ItemIdx - 1) * SizeOf(TConEventSpeech));
+
+            frmMain.CurrentConversation.Events[ItemIdx] := NewMoveCam;
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[ItemIdx];
 
             //var NewHeight := 25;
             var TempString := ET_MoveCamera_Caption;// + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
@@ -1623,7 +1708,18 @@ begin
 
         True:
         begin
-            Insert(NewAnim, frmMain.CurrentConversation.Events, ItemIdx);
+            if (ItemIdx < 0) or (ItemIdx >= Length(frmMain.CurrentConversation.Events)) then
+                ItemIdx := Length(frmMain.CurrentConversation.Events); // если ItemIdx за пределами диапазона то вставить в конец
+
+            SetLength(frmMain.CurrentConversation.Events, Length(frmMain.CurrentConversation.Events) + 1);
+
+            // Сдвигаем элементы массива для вставки нового элемента
+            if ItemIdx < Length(frmMain.CurrentConversation.Events) - 1 then
+                Move(frmMain.CurrentConversation.Events[ItemIdx], frmMain.CurrentConversation.Events[ItemIdx + 1],
+                     (Length(frmMain.CurrentConversation.Events) - ItemIdx - 1) * SizeOf(TConEventSpeech));
+
+            frmMain.CurrentConversation.Events[ItemIdx] := NewAnim;
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[ItemIdx];
 
             //var NewHeight := 70;
             var TempString := ET_Animation_Caption;// + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
@@ -1667,7 +1763,18 @@ begin
 
         True:
         begin
-            Insert(NewTrade, frmMain.CurrentConversation.Events, ItemIdx);
+            if (ItemIdx < 0) or (ItemIdx >= Length(frmMain.CurrentConversation.Events)) then
+                ItemIdx := Length(frmMain.CurrentConversation.Events); // если ItemIdx за пределами диапазона то вставить в конец
+
+            SetLength(frmMain.CurrentConversation.Events, Length(frmMain.CurrentConversation.Events) + 1);
+
+            // Сдвигаем элементы массива для вставки нового элемента
+            if ItemIdx < Length(frmMain.CurrentConversation.Events) - 1 then
+                Move(frmMain.CurrentConversation.Events[ItemIdx], frmMain.CurrentConversation.Events[ItemIdx + 1],
+                     (Length(frmMain.CurrentConversation.Events) - ItemIdx - 1) * SizeOf(TConEventSpeech));
+
+            frmMain.CurrentConversation.Events[ItemIdx] := NewTrade;
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[ItemIdx];
 
             //var NewHeight := 44;
             var TempString := ET_Trade_Caption;// + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
@@ -1711,7 +1818,18 @@ begin
 
         True:
         begin
-            Insert(NewEventJump, frmMain.CurrentConversation.Events, ItemIdx);
+            if (ItemIdx < 0) or (ItemIdx >= Length(frmMain.CurrentConversation.Events)) then
+                ItemIdx := Length(frmMain.CurrentConversation.Events); // если ItemIdx за пределами диапазона то вставить в конец
+
+            SetLength(frmMain.CurrentConversation.Events, Length(frmMain.CurrentConversation.Events) + 1);
+
+            // Сдвигаем элементы массива для вставки нового элемента
+            if ItemIdx < Length(frmMain.CurrentConversation.Events) - 1 then
+                Move(frmMain.CurrentConversation.Events[ItemIdx], frmMain.CurrentConversation.Events[ItemIdx + 1],
+                     (Length(frmMain.CurrentConversation.Events) - ItemIdx - 1) * SizeOf(TConEventSpeech));
+
+            frmMain.CurrentConversation.Events[ItemIdx] := NewEventJump;
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[ItemIdx];
 
             //var NewHeight := 50;
             var TempString := ET_Jump_Caption;// + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
@@ -1757,7 +1875,18 @@ begin
 
         True:
         begin
-            Insert(NewEventRandom, frmMain.CurrentConversation.Events, ItemIdx);
+            if (ItemIdx < 0) or (ItemIdx >= Length(frmMain.CurrentConversation.Events)) then
+                ItemIdx := Length(frmMain.CurrentConversation.Events); // если ItemIdx за пределами диапазона то вставить в конец
+
+            SetLength(frmMain.CurrentConversation.Events, Length(frmMain.CurrentConversation.Events) + 1);
+
+            // Сдвигаем элементы массива для вставки нового элемента
+            if ItemIdx < Length(frmMain.CurrentConversation.Events) - 1 then
+                Move(frmMain.CurrentConversation.Events[ItemIdx], frmMain.CurrentConversation.Events[ItemIdx + 1],
+                     (Length(frmMain.CurrentConversation.Events) - ItemIdx - 1) * SizeOf(TConEventSpeech));
+
+            frmMain.CurrentConversation.Events[ItemIdx] := NewEventRandom;
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[ItemIdx];
 
             var NewHeight := frmMain.GetRandomEventItemHeight([NewEventRandom]);
             var TempString := ET_Random_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
@@ -1801,7 +1930,18 @@ begin
 
         True:
         begin
-            Insert(NewEventTrigger, frmMain.CurrentConversation.Events, ItemIdx);
+            if (ItemIdx < 0) or (ItemIdx >= Length(frmMain.CurrentConversation.Events)) then
+                ItemIdx := Length(frmMain.CurrentConversation.Events); // если ItemIdx за пределами диапазона то вставить в конец
+
+            SetLength(frmMain.CurrentConversation.Events, Length(frmMain.CurrentConversation.Events) + 1);
+
+            // Сдвигаем элементы массива для вставки нового элемента
+            if ItemIdx < Length(frmMain.CurrentConversation.Events) - 1 then
+                Move(frmMain.CurrentConversation.Events[ItemIdx], frmMain.CurrentConversation.Events[ItemIdx + 1],
+                     (Length(frmMain.CurrentConversation.Events) - ItemIdx - 1) * SizeOf(TConEventSpeech));
+
+            frmMain.CurrentConversation.Events[ItemIdx] := NewEventTrigger;
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[ItemIdx];
 
             //var NewHeight := 42;
             var TempString := ET_Trigger_Caption;// + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
@@ -1847,7 +1987,18 @@ begin
 
         True:
         begin
-            Insert(NewEventAddGoal, frmMain.CurrentConversation.Events, ItemIdx);
+            if (ItemIdx < 0) or (ItemIdx >= Length(frmMain.CurrentConversation.Events)) then
+                ItemIdx := Length(frmMain.CurrentConversation.Events); // если ItemIdx за пределами диапазона то вставить в конец
+
+            SetLength(frmMain.CurrentConversation.Events, Length(frmMain.CurrentConversation.Events) + 1);
+
+            // Сдвигаем элементы массива для вставки нового элемента
+            if ItemIdx < Length(frmMain.CurrentConversation.Events) - 1 then
+                Move(frmMain.CurrentConversation.Events[ItemIdx], frmMain.CurrentConversation.Events[ItemIdx + 1],
+                     (Length(frmMain.CurrentConversation.Events) - ItemIdx - 1) * SizeOf(TConEventSpeech));
+
+            frmMain.CurrentConversation.Events[ItemIdx] := NewEventAddGoal;
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[ItemIdx];
 
             var NewHeight := frmMain.GetAddGoalItemHeight([NewEventAddGoal]);
             var TempString := ET_AddGoal_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
@@ -1893,7 +2044,18 @@ begin
 
         True:
         begin
-            Insert(NewEventAddNote, frmMain.CurrentConversation.Events, ItemIdx);
+            if (ItemIdx < 0) or (ItemIdx >= Length(frmMain.CurrentConversation.Events)) then
+                ItemIdx := Length(frmMain.CurrentConversation.Events); // если ItemIdx за пределами диапазона то вставить в конец
+
+            SetLength(frmMain.CurrentConversation.Events, Length(frmMain.CurrentConversation.Events) + 1);
+
+            // Сдвигаем элементы массива для вставки нового элемента
+            if ItemIdx < Length(frmMain.CurrentConversation.Events) - 1 then
+                Move(frmMain.CurrentConversation.Events[ItemIdx], frmMain.CurrentConversation.Events[ItemIdx + 1],
+                     (Length(frmMain.CurrentConversation.Events) - ItemIdx - 1) * SizeOf(TConEventSpeech));
+
+            frmMain.CurrentConversation.Events[ItemIdx] := NewEventAddNote;
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[ItemIdx];
 
             var NewHeight := frmMain.GetAddNoteItemHeight([NewEventAddNote]);
             var TempString := ET_AddNote_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
@@ -1939,7 +2101,18 @@ begin
 
         True:
         begin
-            Insert(NewEventAddSkillPts, frmMain.CurrentConversation.Events, ItemIdx);
+            if (ItemIdx < 0) or (ItemIdx >= Length(frmMain.CurrentConversation.Events)) then
+                ItemIdx := Length(frmMain.CurrentConversation.Events); // если ItemIdx за пределами диапазона то вставить в конец
+
+            SetLength(frmMain.CurrentConversation.Events, Length(frmMain.CurrentConversation.Events) + 1);
+
+            // Сдвигаем элементы массива для вставки нового элемента
+            if ItemIdx < Length(frmMain.CurrentConversation.Events) - 1 then
+                Move(frmMain.CurrentConversation.Events[ItemIdx], frmMain.CurrentConversation.Events[ItemIdx + 1],
+                     (Length(frmMain.CurrentConversation.Events) - ItemIdx - 1) * SizeOf(TConEventSpeech));
+
+            frmMain.CurrentConversation.Events[ItemIdx] := NewEventAddSkillPts;
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[ItemIdx];
 
             var NewHeight := frmMain.GetAddNoteItemHeight([NewEventAddSkillPts]);
             var TempString := ET_AddSkillPoints_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
@@ -1983,7 +2156,18 @@ begin
 
         True:
         begin
-            Insert(NewEventAddCredits, frmMain.CurrentConversation.Events, ItemIdx);
+            if (ItemIdx < 0) or (ItemIdx >= Length(frmMain.CurrentConversation.Events)) then
+                ItemIdx := Length(frmMain.CurrentConversation.Events); // если ItemIdx за пределами диапазона то вставить в конец
+
+            SetLength(frmMain.CurrentConversation.Events, Length(frmMain.CurrentConversation.Events) + 1);
+
+            // Сдвигаем элементы массива для вставки нового элемента
+            if ItemIdx < Length(frmMain.CurrentConversation.Events) - 1 then
+                Move(frmMain.CurrentConversation.Events[ItemIdx], frmMain.CurrentConversation.Events[ItemIdx + 1],
+                     (Length(frmMain.CurrentConversation.Events) - ItemIdx - 1) * SizeOf(TConEventSpeech));
+
+            frmMain.CurrentConversation.Events[ItemIdx] := NewEventAddCredits;
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[ItemIdx];
 
             //var NewHeight := 44;
             var TempString := ET_AddCredits_Caption;// + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
@@ -2027,7 +2211,18 @@ begin
 
         True:
         begin
-            Insert(NewEventCheckPersona, frmMain.CurrentConversation.Events, ItemIdx);
+            if (ItemIdx < 0) or (ItemIdx >= Length(frmMain.CurrentConversation.Events)) then
+                ItemIdx := Length(frmMain.CurrentConversation.Events); // если ItemIdx за пределами диапазона то вставить в конец
+
+            SetLength(frmMain.CurrentConversation.Events, Length(frmMain.CurrentConversation.Events) + 1);
+
+            // Сдвигаем элементы массива для вставки нового элемента
+            if ItemIdx < Length(frmMain.CurrentConversation.Events) - 1 then
+                Move(frmMain.CurrentConversation.Events[ItemIdx], frmMain.CurrentConversation.Events[ItemIdx + 1],
+                     (Length(frmMain.CurrentConversation.Events) - ItemIdx - 1) * SizeOf(TConEventSpeech));
+
+            frmMain.CurrentConversation.Events[ItemIdx] := NewEventCheckPersona;
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[ItemIdx];
 
             //var NewHeight := 42;
             var TempString := ET_CheckPersona_Caption;// + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
@@ -2073,7 +2268,18 @@ begin
 
         True:
         begin
-            Insert(NewEventComment, frmMain.CurrentConversation.Events, ItemIdx);
+            if (ItemIdx < 0) or (ItemIdx >= Length(frmMain.CurrentConversation.Events)) then
+                ItemIdx := Length(frmMain.CurrentConversation.Events); // если ItemIdx за пределами диапазона то вставить в конец
+
+            SetLength(frmMain.CurrentConversation.Events, Length(frmMain.CurrentConversation.Events) + 1);
+
+            // Сдвигаем элементы массива для вставки нового элемента
+            if ItemIdx < Length(frmMain.CurrentConversation.Events) - 1 then
+                Move(frmMain.CurrentConversation.Events[ItemIdx], frmMain.CurrentConversation.Events[ItemIdx + 1],
+                     (Length(frmMain.CurrentConversation.Events) - ItemIdx - 1) * SizeOf(TConEventSpeech));
+
+            frmMain.CurrentConversation.Events[ItemIdx] := NewEventComment;
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[ItemIdx];
 
             var NewHeight := frmMain.GetCommentItemHeight([NewEventComment]);
             var TempString := ET_Comment_Caption + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
@@ -2117,7 +2323,18 @@ begin
 
         True:
         begin
-            Insert(NewEventEnd, frmMain.CurrentConversation.Events, ItemIdx);
+            if (ItemIdx < 0) or (ItemIdx >= Length(frmMain.CurrentConversation.Events)) then
+                ItemIdx := Length(frmMain.CurrentConversation.Events); // если ItemIdx за пределами диапазона то вставить в конец
+
+            SetLength(frmMain.CurrentConversation.Events, Length(frmMain.CurrentConversation.Events) + 1);
+
+            // Сдвигаем элементы массива для вставки нового элемента
+            if ItemIdx < Length(frmMain.CurrentConversation.Events) - 1 then
+                Move(frmMain.CurrentConversation.Events[ItemIdx], frmMain.CurrentConversation.Events[ItemIdx + 1],
+                     (Length(frmMain.CurrentConversation.Events) - ItemIdx - 1) * SizeOf(TConEventSpeech));
+
+            frmMain.CurrentConversation.Events[ItemIdx] := NewEventEnd;
+            frmMain.CurrentEvent := frmMain.CurrentConversation.Events[ItemIdx];
 
             //var NewHeight := 25;
             var TempString := ET_End_Caption;// + frmMain.ConEventList.Items.NameValueSeparator + NewHeight.ToString(); // Too long...
@@ -2741,6 +2958,7 @@ begin
     end;
     10:
     begin
+        lstRandomLabels.Clear(); // clear list first
         frmMain.FillEventLabels(frmMain.CurrentConversation, cmbEventRandomLabels);
         cmbEventRandomLabelsChange(self);
     end;
