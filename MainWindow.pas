@@ -330,6 +330,9 @@ type
     Copymp3pathfilename15: TMenuItem;
     N38: TMenuItem;
     CopyChoicetext15: TMenuItem;
+    Copyconversationtext1: TMenuItem;
+    Wholeconversation1: TMenuItem;
+    Withchoicesifany1: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -377,6 +380,8 @@ type
     function ItemExistsInTreeView(TreeView: TTreeView; ItemText: string): Boolean;
     function FindConvoOwnerInTree(OwnerName: string): TTreeNode;
     function FindConversationInTree(ConName: string): TTreeNode;
+
+    function CheckLabelExistInConversation(labelName: string): Boolean; // Check if event label already exists
 
     procedure SelectTreeItemByObject(TreeView: TTreeView; Obj: TObject);
     procedure SelectEventByObject(obj: TObject);
@@ -612,6 +617,7 @@ type
     procedure mnuOnyxBlueThemeClick(Sender: TObject);
     procedure ApplicationEvents1ShowHint(var HintStr: string; var CanShow: Boolean; var HintInfo: THintInfo);
     procedure ConEventListKeyPress(Sender: TObject; var Key: Char);
+    procedure Wholeconversation1Click(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -741,6 +747,25 @@ procedure TfrmMain.SetAutoSaveEnabled(const Value: Boolean);
 begin
     FAutoSaveEnabled := Value;
     AutoSaveTimer.Enabled := Value;
+end;
+
+procedure TfrmMain.Wholeconversation1Click(Sender: TObject);
+var
+    TextToCopy: TStringList;
+begin
+    TextToCopy := TStringList.Create;
+
+    try
+        for var Event in CurrentConversation.Events do
+        begin
+            if Assigned(event) and (Event is TConEventSpeech) then
+                TextToCopy.Add(Format('%s: %s', [TConEventSpeech(event).ActorValue, TConEventSpeech(event).TextLine]));
+        end;
+
+        Clipboard.AsText := TextToCopy.Text;
+    finally
+        TextToCopy.Free();
+    end;
 end;
 
 procedure TfrmMain.WMDropFiles(var Msg: TWMDropFiles);
@@ -1861,7 +1886,7 @@ begin
                 Dest.Choices[I] := DestChoice;
             except
                 // Handle exceptions or cleanup if necessary
-                DestChoice.Free;
+                DestChoice.Free();
                 raise; // Re-raise the exception if needed
             end;
         end;
@@ -1913,6 +1938,8 @@ begin
 
                         DeSerializeSpeech(BinReader, NewSpeech); // fill fields here (ConEditPlus.Clipboard.Helper.pas)
 
+                        if CheckLabelExistInConversation(NewSpeech.EventLabel) = True then NewSpeech.EventLabel := '';
+
                         if FindTableIdByName(TM_ActorsPawns, NewSpeech.ActorValue) = -1 then
                         begin
                             listPawnsActors.Add(NewSpeech.ActorValue);
@@ -1942,6 +1969,8 @@ begin
                         var NewChoice := TConEventChoice.Create();
 
                         DeSerializeChoice(BinReader, NewChoice);
+
+                        if CheckLabelExistInConversation(NewChoice.EventLabel) = True then NewChoice.EventLabel := '';
 
                         for var choiceItem in NewChoice.Choices do // Choice in Clipboard can contain flags and skills
                         begin                                       // (skills? Really?), so add them to corresponding tables
@@ -1984,6 +2013,8 @@ begin
 
                         DeSerializeSetFlag(BinReader, NewSetFlag);
 
+                        if CheckLabelExistInConversation(NewSetFlag.EventLabel) = True then NewSetFlag.EventLabel := '';
+
                         for var i:= 0 to High(NewSetFlag.SetFlags) do
                         begin
                             if FindTableIdByName(TM_Flags, NewSetFlag.SetFlags[i].flagName) = -1 then
@@ -2012,7 +2043,7 @@ begin
 
                         DeSerializeCheckFlag(BinReader, NewCheckFlag);
 
-                        NewCheckFlag.GotoLabel := ''; // Test
+                        if CheckLabelExistInConversation(NewCheckFlag.EventLabel) = True then NewCheckFlag.EventLabel := '';
 
                         for var i:= 0 to High(NewCheckFlag.FlagsToCheck) do
                         begin
@@ -2043,6 +2074,8 @@ begin
 
                         DeSerializeCheckObject(BinReader, NewCheckObj);
 
+                        if CheckLabelExistInConversation(NewCheckObj.EventLabel) = True then NewCheckObj.EventLabel := '';
+
                         if FindTableIdByName(TM_Objects, NewCheckObj.ObjectValue) = -1 then
                         begin
                             listObjects.Add(NewCheckObj.ObjectValue);
@@ -2065,6 +2098,8 @@ begin
                         var NewTransObject := TConEventTransferObject.Create();
 
                         DeSerializeTransferObject(BinReader, NewTransObject);
+
+                        if CheckLabelExistInConversation(NewTransObject.EventLabel) = True then NewTransObject.EventLabel := '';
 
                         if FindTableIdByName(TM_Objects, NewTransObject.ObjectValue) = -1 then
                         begin
@@ -2100,6 +2135,8 @@ begin
 
                         DeSerializeMoveCamera(BinReader, NewMoveCam);
 
+                        if CheckLabelExistInConversation(NewMoveCam.EventLabel) = True then NewMoveCam.EventLabel := '';
+
                         Insert(NewMoveCam, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_MoveCamera_Caption, NewMoveCam);
                         ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewMoveCam);
@@ -2129,6 +2166,8 @@ begin
 
                         DeSerializeTrade(BinReader, NewTrade);
 
+                        if CheckLabelExistInConversation(NewTrade.EventLabel) = True then NewTrade.EventLabel := '';
+
                         if FindTableIdByName(TM_ActorsPawns, NewTrade.TradeActorValue) = -1 then
                         begin
                             listPawnsActors.Add(NewTrade.TradeActorValue);
@@ -2147,6 +2186,8 @@ begin
 
                         DeSerializeJump(BinReader, NewJump);
 
+                        if CheckLabelExistInConversation(NewJump.EventLabel) = True then NewJump.EventLabel := '';
+
                         Insert(NewJump, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_Jump_Caption, NewJump);
                         ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewJump);
@@ -2157,6 +2198,8 @@ begin
                         var NewRandom := TConEventRandom.Create();
 
                         DeSerializeRandom(BinReader, NewRandom);
+
+                        if CheckLabelExistInConversation(NewRandom.EventLabel) = True then NewRandom.EventLabel := '';
 
                         Insert(NewRandom, CurrentConversation.Events, ItemIdx);
 
@@ -2172,6 +2215,8 @@ begin
 
                         DeSerializeTrigger(BinReader, NewTrigger);
 
+                        if CheckLabelExistInConversation(NewTrigger.EventLabel) = True then NewTrigger.EventLabel := '';
+
                         Insert(NewTrigger, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_Trigger_Caption, NewTrigger);
                         ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewTrigger);
@@ -2182,6 +2227,8 @@ begin
                         var NewAddGoal := TConEventAddGoal.Create();
 
                         DeSerializeAddGoal(BinReader, NewAddGoal);
+
+                        if CheckLabelExistInConversation(NewAddGoal.EventLabel) = True then NewAddGoal.EventLabel := '';
 
                         Insert(NewAddGoal, CurrentConversation.Events, ItemIdx);
 
@@ -2197,6 +2244,8 @@ begin
 
                         DeSerializeAddNote(BinReader, NewAddNote);
 
+                        if CheckLabelExistInConversation(NewAddNote.EventLabel) = True then NewAddNote.EventLabel := '';
+
                         Insert(NewAddNote, CurrentConversation.Events, ItemIdx);
 
                         var ListItemHeight := GetAddNoteItemHeight([NewAddNote]);
@@ -2210,6 +2259,8 @@ begin
                         var NewAddSkillPts := TConEventAddSkillPoints.Create();
 
                         DeSerializeAddSkillPts(BinReader, NewAddSkillPts);
+
+                        if CheckLabelExistInConversation(NewAddSkillPts.EventLabel) = True then NewAddSkillPts.EventLabel := '';
 
                         Insert(NewAddSkillPts, CurrentConversation.Events, ItemIdx);
 
@@ -2225,6 +2276,8 @@ begin
 
                         DeSerializeAddCredits(BinReader, NewAddCredits);
 
+                        if CheckLabelExistInConversation(NewAddCredits.EventLabel) = True then NewAddCredits.EventLabel := '';
+
                         Insert(NewAddCredits, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_AddCredits_Caption, NewAddCredits);
                         ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewAddCredits);
@@ -2236,6 +2289,8 @@ begin
 
                         DeSerializeCheckPersona(BinReader, NewCheckPersona);
 
+                        if CheckLabelExistInConversation(NewCheckPersona.EventLabel) = True then NewCheckPersona.EventLabel := '';
+
                         Insert(NewCheckPersona, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_CheckPersona_Caption, NewCheckPersona);
                         ConEventList.ItemIndex := ConEventList.Items.IndexOfObject(NewCheckPersona);
@@ -2246,6 +2301,8 @@ begin
                         var NewComment := TConEventComment.Create();
 
                         DeSerializeComment(BinReader, NewComment);
+
+                        if CheckLabelExistInConversation(NewComment.EventLabel) = True then NewComment.EventLabel := '';
 
                         Insert(NewComment, CurrentConversation.Events, ItemIdx);
 
@@ -2260,6 +2317,8 @@ begin
                         var NewEnd := TConEventEnd.Create();
 
                         DeSerializeEnd(BinReader, NewEnd);
+
+                        if CheckLabelExistInConversation(NewEnd.EventLabel) = True then NewEnd.EventLabel := '';
 
                         Insert(NewEnd, CurrentConversation.Events, ItemIdx);
                         ConEventList.Items.InsertObject(ItemIdx, ET_End_Caption, NewEnd);
@@ -5492,10 +5551,7 @@ begin
 
     case EventToDuplicate.EventType of
         ET_Speech:        NewEvent := TConEventSpeech.Create();
-        ET_Choice:
-              begin
-                  NewEvent := TConEventChoice.Create();
-              end;
+        ET_Choice:        NewEvent := TConEventChoice.Create();
         ET_SetFlag:       NewEvent := TConEventSetFlag.Create();
         ET_CheckFlag:     NewEvent := TConEventCheckFlag.Create();
         ET_CheckObject:   NewEvent := TConEventCheckObject.Create();
@@ -6081,6 +6137,21 @@ end;
 procedure TfrmMain.Checkflag2Click(Sender: TObject);
 begin
     InsertEvent(Ord(ET_CheckFlag));
+end;
+
+function TfrmMain.CheckLabelExistInConversation(labelName: string): Boolean; // Returns true if event with such label already exists
+begin
+    if CurrentConversation = nil then Exit(False);
+
+    for var event in CurrentConversation.Events do
+    begin
+        if LowerCase(event.EventLabel) = LowerCase(labelName) then
+        begin
+            Exit(True);
+        end;
+    end;
+
+    Result := False;
 end;
 
 procedure TfrmMain.CheckObject1Click(Sender: TObject);

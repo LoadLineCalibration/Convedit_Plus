@@ -6409,6 +6409,16 @@ object frmMain: TfrmMain
     object CopySpeechtext1: TMenuItem
       Action = Event_CopySpeechText
     end
+    object Copyconversationtext1: TMenuItem
+      Caption = 'Copy conversation text'
+      object Wholeconversation1: TMenuItem
+        Caption = 'Whole conversation/no choices'
+        OnClick = Wholeconversation1Click
+      end
+      object Withchoicesifany1: TMenuItem
+        Caption = 'With choices (if any)'
+      end
+    end
     object N10: TMenuItem
       Caption = '-'
     end
