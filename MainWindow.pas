@@ -618,6 +618,7 @@ type
     procedure ApplicationEvents1ShowHint(var HintStr: string; var CanShow: Boolean; var HintInfo: THintInfo);
     procedure ConEventListKeyPress(Sender: TObject; var Key: Char);
     procedure Wholeconversation1Click(Sender: TObject);
+    procedure Withchoicesifany1Click(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -760,6 +761,36 @@ begin
         begin
             if Assigned(event) and (Event is TConEventSpeech) then
                 TextToCopy.Add(Format('%s: %s', [TConEventSpeech(event).ActorValue, TConEventSpeech(event).TextLine]));
+        end;
+
+        Clipboard.AsText := TextToCopy.Text;
+    finally
+        TextToCopy.Free();
+    end;
+end;
+
+procedure TfrmMain.Withchoicesifany1Click(Sender: TObject);
+var
+    TextToCopy: TStringList;
+begin
+    TextToCopy := TStringList.Create;
+
+    try
+        for var Event in CurrentConversation.Events do
+        begin
+            if Assigned(event) then
+            begin
+                if (Event is TConEventSpeech) then
+                    TextToCopy.Add(Format('%s: %s', [TConEventSpeech(event).ActorValue, TConEventSpeech(event).TextLine]));
+
+                if (Event is TConEventChoice) then
+                begin
+                    for var i:= 0 to High(TConEventChoice(Event).Choices) do
+                    begin
+                        TextToCopy.Add(Format(PLAYER_BINDNAME + ' choice #%d: %s', [i,  TConEventChoice(Event).Choices[i].textline]));
+                    end;
+                end;
+            end;
         end;
 
         Clipboard.AsText := TextToCopy.Text;

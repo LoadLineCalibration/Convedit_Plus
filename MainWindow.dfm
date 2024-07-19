@@ -6402,7 +6402,7 @@ object frmMain: TfrmMain
       Action = Event_Duplicate
     end
     object N8: TMenuItem
-      Caption = '-------- AI Tools --------'
+      Caption = '-------- A.I. Tools --------'
       Default = True
       Enabled = False
     end
@@ -6412,11 +6412,12 @@ object frmMain: TfrmMain
     object Copyconversationtext1: TMenuItem
       Caption = 'Copy conversation text'
       object Wholeconversation1: TMenuItem
-        Caption = 'Whole conversation/no choices'
+        Caption = 'Speaker + Text, no choices'
         OnClick = Wholeconversation1Click
       end
       object Withchoicesifany1: TMenuItem
-        Caption = 'With choices (if any)'
+        Caption = 'Speaker + Text, with choices if any'
+        OnClick = Withchoicesifany1Click
       end
     end
     object N10: TMenuItem
