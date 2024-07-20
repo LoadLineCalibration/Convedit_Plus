@@ -304,7 +304,15 @@ begin
     WriteInteger(ConWrite, eventPlayAnim.ActorIndex); // eventOwnerName.id
     WriteString(ConWrite, eventPlayAnim.ActorValue); // eventOwnerName.Name
     WriteString(ConWrite, eventPlayAnim.AnimSequence); // seqStr
-    WriteInteger(ConWrite, Ord(eventPlayAnim.AnimPlayMode)); // Once or Loop, now as integer
+
+    case eventPlayAnim.AnimPlayMode of
+        AM_Loop: WriteInteger(ConWrite, 0);
+        AM_Once: WriteInteger(ConWrite, 1);
+//        AM_Loop: WriteLongBool(ConWrite, True);
+//        AM_Once: WriteLongBool(ConWrite, False);
+    end;
+
+//    WriteInteger(ConWrite, Ord(eventPlayAnim.AnimPlayMode)); // Once or Loop, as Integer
 //    WriteLongBool(ConWrite, eventPlayAnim.bAnimPlayOnce); // playMode.
 //    WriteLongBool(ConWrite, not eventPlayAnim.bAnimPlayOnce); // playMode. // WTF? Maybe convert it to Enum?
     WriteInteger(ConWrite, eventPlayAnim.AnimPlayForSeconds); // This field is missing in ConEventAnimation.uc (by default)
