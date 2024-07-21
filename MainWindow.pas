@@ -207,7 +207,7 @@ type
     GenAudiofilenames: TMenuItem;
     AutoSaveTimer: TTimer;
     lblSelectedEvent: TLabel;
-    N8: TMenuItem;
+    mnuAITools: TMenuItem;
     CopySpeechtext1: TMenuItem;
     Event_CopySpeechText: TAction;
     Event_CopyMp3FileAndPath: TAction;
@@ -330,9 +330,12 @@ type
     Copymp3pathfilename15: TMenuItem;
     N38: TMenuItem;
     CopyChoicetext15: TMenuItem;
-    Copyconversationtext1: TMenuItem;
+    mnuCopyConvoTestSub: TMenuItem;
     Wholeconversation1: TMenuItem;
     Withchoicesifany1: TMenuItem;
+    Wholeconversation2: TMenuItem;
+    Partial1: TMenuItem;
+    Alllinesofselectedspeaker1: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -619,6 +622,7 @@ type
     procedure ConEventListKeyPress(Sender: TObject; var Key: Char);
     procedure Wholeconversation1Click(Sender: TObject);
     procedure Withchoicesifany1Click(Sender: TObject);
+    procedure Alllinesofselectedspeaker1Click(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -754,13 +758,13 @@ procedure TfrmMain.Wholeconversation1Click(Sender: TObject);
 var
     TextToCopy: TStringList;
 begin
-    TextToCopy := TStringList.Create;
+    TextToCopy := TStringList.Create();
 
     try
         for var Event in CurrentConversation.Events do
         begin
             if Assigned(event) and (Event is TConEventSpeech) then
-                TextToCopy.Add(Format('%s: %s', [TConEventSpeech(event).ActorValue, TConEventSpeech(event).TextLine]));
+                TextToCopy.Add(Format(strClipboardConversationV1, [TConEventSpeech(event).ActorValue, TConEventSpeech(event).TextLine]));
         end;
 
         Clipboard.AsText := TextToCopy.Text;
@@ -773,7 +777,7 @@ procedure TfrmMain.Withchoicesifany1Click(Sender: TObject);
 var
     TextToCopy: TStringList;
 begin
-    TextToCopy := TStringList.Create;
+    TextToCopy := TStringList.Create();
 
     try
         for var Event in CurrentConversation.Events do
@@ -786,9 +790,7 @@ begin
                 if (Event is TConEventChoice) then
                 begin
                     for var i:= 0 to High(TConEventChoice(Event).Choices) do
-                    begin
-                        TextToCopy.Add(Format(PLAYER_BINDNAME + ' choice #%d: %s', [i,  TConEventChoice(Event).Choices[i].textline]));
-                    end;
+                        TextToCopy.Add(Format(PLAYER_BINDNAME + strClipboardConversationV2, [i,  TConEventChoice(Event).Choices[i].textline]));
                 end;
             end;
         end;
@@ -6704,6 +6706,35 @@ begin
     InsertEvent(Ord(ET_AddSkillPoints));
 end;
 
+procedure TfrmMain.Alllinesofselectedspeaker1Click(Sender: TObject);
+var
+    TextToCopy: TStringList;
+begin
+    var ChosenSpeaker := TConEventSpeech(CurrentEvent).ActorValue;
+
+    TextToCopy := TStringList.Create();
+    TextToCopy.Add(ChosenSpeaker + ':');
+
+    try
+        for var Event in CurrentConversation.Events do
+        begin
+            if Assigned(event) then
+            begin
+                if (Event is TConEventSpeech) and (TConEventSpeech(Event).ActorValue = ChosenSpeaker) then
+                    TextToCopy.Add(Format('%s', [TConEventSpeech(event).TextLine]));
+
+                if (Event is TConEventChoice) and (ChosenSpeaker = PLAYER_BINDNAME) then // if speaker is Player, add text from choices!
+                    for var ch in TConEventChoice(Event).Choices do
+                        TextToCopy.Add(Format('%s', [ch.TextLine]));
+            end;
+        end;
+
+        Clipboard.AsText := TextToCopy.Text;
+    finally
+        TextToCopy.Free();
+    end;
+end;
+
 procedure TfrmMain.ApplicationEvents1ShowHint(var HintStr: string; var CanShow: Boolean; var HintInfo: THintInfo);
 begin
     HintInfo.HintMaxWidth := 400;
@@ -6881,7 +6912,6 @@ end;
 procedure TfrmMain.PopupConvoEventListPopup(Sender: TObject); // Enable/disable some menu items...
 begin
     var ListObject: TObject;
-    //var SpeechObj: TConEventSpeech := nil;
     var SpeechObj: TConEventSpeech := nil;
     var ChoiceObj: TConEventChoice := nil;
     var ItemIdx := ConEventList.ItemIndex;
@@ -6930,6 +6960,7 @@ begin
         PasteConvoEvent.Enabled := HasConvoEventToPaste();
         Event_Duplicate.Enabled := true;
 
+        mnuCopyConvoTestSub.Visible      := SpeechObj <> nil;
         Event_CopySpeechText.Visible     := SpeechObj <> nil;
         Event_CopyMp3FileAndPath.Visible := (SpeechObj <> nil) and (SpeechObj.mp3File <> '');
         Event_CopyMp3FilePath.Visible    := Event_CopyMp3FileAndPath.Visible;
