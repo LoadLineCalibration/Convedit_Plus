@@ -6115,15 +6115,15 @@ object frmMain: TfrmMain
         object N31: TMenuItem
           Caption = '-'
         end
-        object mnuCyanNightTheme: TMenuItem
-          Caption = 'Cyan Night (Light)'
+        object mnuLunaTheme: TMenuItem
+          Caption = 'Luna (Light)'
           RadioItem = True
-          OnClick = mnuCyanNightThemeClick
+          OnClick = mnuLunaThemeClick
         end
-        object mnuLavenderClassicoTheme: TMenuItem
-          Caption = 'Lavender Classico (Light)'
+        object mnuSilverTheme: TMenuItem
+          Caption = 'Silver (Light)'
           RadioItem = True
-          OnClick = mnuLavenderClassicoThemeClick
+          OnClick = mnuSilverThemeClick
         end
         object N32: TMenuItem
           Caption = '-'
@@ -6409,7 +6409,7 @@ object frmMain: TfrmMain
     object CopySpeechtext1: TMenuItem
       Action = Event_CopySpeechText
     end
-    object mnuCopyConvoTestSub: TMenuItem
+    object mnuCopyConvoTextSub: TMenuItem
       Caption = 'Copy conversation text'
       object Wholeconversation2: TMenuItem
         Caption = 'Whole conversation:'

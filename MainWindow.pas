@@ -291,8 +291,8 @@ type
     N30: TMenuItem;
     btnStartSearch: TButton;
     mnuCharcoalDarkSlate: TMenuItem;
-    mnuCyanNightTheme: TMenuItem;
-    mnuLavenderClassicoTheme: TMenuItem;
+    mnuLunaTheme: TMenuItem;
+    mnuSilverTheme: TMenuItem;
     mnuSystemTheme: TMenuItem;
     mnuOnyxBlueTheme: TMenuItem;
     N31: TMenuItem;
@@ -330,7 +330,7 @@ type
     Copymp3pathfilename15: TMenuItem;
     N38: TMenuItem;
     CopyChoicetext15: TMenuItem;
-    mnuCopyConvoTestSub: TMenuItem;
+    mnuCopyConvoTextSub: TMenuItem;
     Wholeconversation1: TMenuItem;
     Withchoicesifany1: TMenuItem;
     Wholeconversation2: TMenuItem;
@@ -346,6 +346,8 @@ type
     procedure InsertEvent(TargetPage: Integer); // Insert event at current position in the list
     procedure EditCurrentEvent(EventToEdit: TConEvent);
     procedure ToggleLV_FlagValue(lstv: TListView);
+
+    procedure ApplyStyle(styleName: string);
 
     procedure SetEventsListScrollbars();
 
@@ -614,8 +616,8 @@ type
     procedure CopyChoiceItemObj_Filename(Sender: TObject);
     procedure btnStartSearchClick(Sender: TObject);
     procedure mnuCharcoalDarkSlateClick(Sender: TObject);
-    procedure mnuCyanNightThemeClick(Sender: TObject);
-    procedure mnuLavenderClassicoThemeClick(Sender: TObject);
+    procedure mnuLunaThemeClick(Sender: TObject);
+    procedure mnuSilverThemeClick(Sender: TObject);
     procedure mnuSystemThemeClick(Sender: TObject);
     procedure mnuOnyxBlueThemeClick(Sender: TObject);
     procedure ApplicationEvents1ShowHint(var HintStr: string; var CanShow: Boolean; var HintInfo: THintInfo);
@@ -678,6 +680,7 @@ type
 
     // strings
     var ConversationUserName, ConFilePath, ConFileBakPath, ConFileAudioPath: string;
+    var CurrentTheme: string; // save and restore theme (skin).
 
     // Integer values
     var AutoSaveMinutes: Integer;
@@ -985,9 +988,12 @@ end;
 
 procedure TfrmMain.mnuCharcoalDarkSlateClick(Sender: TObject);
 begin
-    EventListColorsMode := ELCM_Dark;
+    ApplyStyle('Charcoal Dark Slate');
+{    EventListColorsMode := ELCM_Dark;
     TStyleManager.SetStyle('Charcoal Dark Slate');
     ViewoutputTMemo1Click(self);
+    CurrentTheme := 'Charcoal Dark Slate';
+}
 end;
 
 function TfrmMain.GetRandomEventItemHeight(events: array of TConEvent): Integer;
@@ -2820,11 +2826,13 @@ begin
     ClearForNewFile();
 end;
 
-procedure TfrmMain.mnuLavenderClassicoThemeClick(Sender: TObject);
+procedure TfrmMain.mnuSilverThemeClick(Sender: TObject);
 begin
-    EventListColorsMode := ELCM_Default;
+    ApplyStyle('Silver');
+{    EventListColorsMode := ELCM_Default;
     TStyleManager.SetStyle('Lavender Classico');
     ViewoutputTMemo1Click(self);
+    CurrentTheme := 'Lavender Classico';}
 end;
 
 procedure TfrmMain.LoadCfg();
@@ -2860,6 +2868,11 @@ begin
        ConFilePath := ReadString('frmMain', 'ConFilePath', '');
        ConFileBakPath := ReadString('frmMain', 'ConFileBakPath', '');
        ConFileAudioPath := ReadString('frmMain', 'ConFileAudioPath', '');
+
+       CurrentTheme := ReadString('frmMain', 'CurrentTheme', TStyleManager.cSystemStyleName);
+       ApplyStyle(CurrentTheme);
+
+//                   WriteString('frmMain', 'CurrentTheme', CurrentTheme)
 
        bHighlightRelatedEvents := ReadBool('frmMain', 'bHighlightRelatedEvents',true);
        bAskForConvoDelete := ReadBool('frmMain', 'bAskForConvoDelete', true);
@@ -2939,11 +2952,12 @@ begin
             WriteBool('frmMain', 'bShowToolbar', bShowToolbar);
             WriteBool('frmMain', 'bDrawEventIdx', bDrawEventIdx);
 
-            // Settings form
+            // strings...
             WriteString('frmMain', 'UserName', ConversationUserName);
             WriteString('frmMain', 'ConFilePath', ConFilePath);
             WriteString('frmMain', 'ConFileBakPath', ConFileBakPath);
             WriteString('frmMain', 'ConFileAudioPath', ConFileAudioPath);
+            WriteString('frmMain', 'CurrentTheme', CurrentTheme);
 
             WriteBool('frmMain', 'bHighlightRelatedEvents', bHighlightRelatedEvents);
             WriteBool('frmMain', 'bAskForConvoDelete', bAskForConvoDelete);
@@ -5835,11 +5849,13 @@ begin
         AddLog('Event[' + i.ToString + '] ' + CurrentConversation.Events[i].ClassName);
 end;
 
-procedure TfrmMain.mnuCyanNightThemeClick(Sender: TObject);
+procedure TfrmMain.mnuLunaThemeClick(Sender: TObject);
 begin
-    EventListColorsMode := ELCM_Default;
+    ApplyStyle('Luna');
+{    EventListColorsMode := ELCM_Default;
     TStyleManager.SetStyle('Cyan Night');
     ViewoutputTMemo1Click(self);
+    CurrentTheme := 'Cyan Night';}
 end;
 
 procedure TfrmMain.FileCloseExecute(Sender: TObject);
@@ -6122,8 +6138,10 @@ end;
 
 procedure TfrmMain.mnuSystemThemeClick(Sender: TObject);
 begin
-    EventListColorsMode := ELCM_Default;
+    ApplyStyle('Windows');
+{    EventListColorsMode := ELCM_Default;
     TStyleManager.SetStyle('Windows');
+    CurrentTheme := 'Windows';}
 end;
 
 procedure TfrmMain.mnuStatusbarClick(Sender: TObject);
@@ -6740,6 +6758,50 @@ begin
     HintInfo.HintMaxWidth := 400;
 end;
 
+procedure TfrmMain.ApplyStyle(styleName: string);
+begin
+    if styleName = 'Charcoal Dark Slate' then
+    begin
+        EventListColorsMode := ELCM_Dark;
+        TStyleManager.SetStyle(styleName);
+        ViewoutputTMemo1Click(self);
+        CurrentTheme := styleName;
+        mnuCharcoalDarkSlate.Checked := True;
+    end else
+    if styleName = 'Onyx Blue' then
+    begin
+        EventListColorsMode := ELCM_Dark;
+        TStyleManager.SetStyle(styleName);
+        ViewoutputTMemo1Click(self);
+        CurrentTheme := styleName;
+        mnuOnyxBlueTheme.Checked := True;
+    end else
+    if styleName = 'Luna' then
+    begin
+        EventListColorsMode := ELCM_Default;
+        TStyleManager.SetStyle(styleName);
+        ViewoutputTMemo1Click(self);
+        CurrentTheme := styleName;
+        mnuLunaTheme.Checked := True;
+    end else
+    if styleName = 'Silver' then
+    begin
+        EventListColorsMode := ELCM_Default;
+        TStyleManager.SetStyle(styleName);
+        ViewoutputTMemo1Click(self);
+        CurrentTheme := styleName;
+        mnuSilverTheme.Checked := True;
+    end else
+    if styleName = 'Windows' then
+    begin
+        EventListColorsMode := ELCM_Default;
+        TStyleManager.SetStyle(styleName);
+        ViewoutputTMemo1Click(self);
+        CurrentTheme := styleName;
+        mnuSystemTheme.Checked := True;
+    end
+end;
+
 procedure TfrmMain.AutoSaveFile(const aFileName: string); // Label errors should be ignored in this case.
 begin                                                     // Execute in background, to avoid any possible freezes in main thread.
     var FileToSave := aFileName;
@@ -6864,9 +6926,11 @@ end;
 
 procedure TfrmMain.mnuOnyxBlueThemeClick(Sender: TObject);
 begin
-    EventListColorsMode := ELCM_Dark;
+    ApplyStyle('Onyx Blue');
+{    EventListColorsMode := ELCM_Dark;
     TStyleManager.SetStyle('Onyx Blue');
     ViewoutputTMemo1Click(self);
+    CurrentTheme := 'Onyx Blue';}
 end;
 
 procedure TfrmMain.mnuToggleMainToolBarClick(Sender: TObject);
@@ -6960,7 +7024,7 @@ begin
         PasteConvoEvent.Enabled := HasConvoEventToPaste();
         Event_Duplicate.Enabled := true;
 
-        mnuCopyConvoTestSub.Visible      := SpeechObj <> nil;
+        mnuCopyConvoTextSub.Visible      := SpeechObj <> nil;
         Event_CopySpeechText.Visible     := SpeechObj <> nil;
         Event_CopyMp3FileAndPath.Visible := (SpeechObj <> nil) and (SpeechObj.mp3File <> '');
         Event_CopyMp3FilePath.Visible    := Event_CopyMp3FileAndPath.Visible;
