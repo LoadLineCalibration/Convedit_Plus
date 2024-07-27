@@ -5810,7 +5810,7 @@ object frmEventInsAdd: TfrmEventInsAdd
                 Font.Name = 'Tahoma'
                 Font.Style = []
                 HideSelection = False
-                MaxLength = 256
+                MaxLength = 1024
                 ParentDoubleBuffered = False
                 ParentFont = False
                 PopupMenu = MemoPopup
