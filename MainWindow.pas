@@ -989,11 +989,6 @@ end;
 procedure TfrmMain.mnuCharcoalDarkSlateClick(Sender: TObject);
 begin
     ApplyStyle('Charcoal Dark Slate');
-{    EventListColorsMode := ELCM_Dark;
-    TStyleManager.SetStyle('Charcoal Dark Slate');
-    ViewoutputTMemo1Click(self);
-    CurrentTheme := 'Charcoal Dark Slate';
-}
 end;
 
 function TfrmMain.GetRandomEventItemHeight(events: array of TConEvent): Integer;
@@ -2829,10 +2824,6 @@ end;
 procedure TfrmMain.mnuSilverThemeClick(Sender: TObject);
 begin
     ApplyStyle('Silver');
-{    EventListColorsMode := ELCM_Default;
-    TStyleManager.SetStyle('Lavender Classico');
-    ViewoutputTMemo1Click(self);
-    CurrentTheme := 'Lavender Classico';}
 end;
 
 procedure TfrmMain.LoadCfg();
@@ -5852,10 +5843,6 @@ end;
 procedure TfrmMain.mnuLunaThemeClick(Sender: TObject);
 begin
     ApplyStyle('Luna');
-{    EventListColorsMode := ELCM_Default;
-    TStyleManager.SetStyle('Cyan Night');
-    ViewoutputTMemo1Click(self);
-    CurrentTheme := 'Cyan Night';}
 end;
 
 procedure TfrmMain.FileCloseExecute(Sender: TObject);
@@ -6139,9 +6126,6 @@ end;
 procedure TfrmMain.mnuSystemThemeClick(Sender: TObject);
 begin
     ApplyStyle('Windows');
-{    EventListColorsMode := ELCM_Default;
-    TStyleManager.SetStyle('Windows');
-    CurrentTheme := 'Windows';}
 end;
 
 procedure TfrmMain.mnuStatusbarClick(Sender: TObject);
@@ -6927,10 +6911,6 @@ end;
 procedure TfrmMain.mnuOnyxBlueThemeClick(Sender: TObject);
 begin
     ApplyStyle('Onyx Blue');
-{    EventListColorsMode := ELCM_Dark;
-    TStyleManager.SetStyle('Onyx Blue');
-    ViewoutputTMemo1Click(self);
-    CurrentTheme := 'Onyx Blue';}
 end;
 
 procedure TfrmMain.mnuToggleMainToolBarClick(Sender: TObject);
