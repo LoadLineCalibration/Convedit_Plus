@@ -57,7 +57,10 @@ begin
        idx:=TListBox(Receiver).ItemIndex;
 
         if Receiver.Owner.Name = 'frmTableEdit' then
+        begin
             frmTableEdit.TableItemRenamed(TListBox(Receiver).Items[idx], editValue.Text); // notify the Table editor
+            Exit(); // «десь всЄ, дальше там.
+        end;
 
        TListBox(Receiver).Items[idx] := editValue.Text;
    end;
