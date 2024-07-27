@@ -5436,7 +5436,7 @@ object frmEventInsAdd: TfrmEventInsAdd
     Top = 114
     Width = 556
     Height = 406
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Anchors = [akLeft, akTop, akRight, akBottom]
     DoubleBuffered = True
     ParentDoubleBuffered = False
@@ -7591,7 +7591,6 @@ object frmEventInsAdd: TfrmEventInsAdd
     Top = 535
     Width = 153
     Height = 23
-    Cursor = crSizeWE
     Hint = 'Speech volume control'
     Margins.Left = 0
     Margins.Top = 0
@@ -7599,10 +7598,10 @@ object frmEventInsAdd: TfrmEventInsAdd
     Margins.Bottom = 0
     Anchors = [akRight, akBottom]
     DoubleBuffered = True
-    Max = 65534
+    Max = 65535
     ParentDoubleBuffered = False
     PageSize = 1
-    Position = 32768
+    Position = 65535
     PositionToolTip = ptLeft
     ShowSelRange = False
     TabOrder = 11
