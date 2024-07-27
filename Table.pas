@@ -686,22 +686,161 @@ end;
 
 procedure TfrmTableEdit.RenameActor(renameFrom, renameTo: string);
 begin
-//
+    with frmMain do
+    begin
+        for var con in ConversationsList do
+        begin
+            if con.conOwnerName = renameFrom then // rename conversation owner
+                con.conOwnerName := renameTo;
+
+            for var item in ConvoTree.Items do // don't forget about tree...
+            begin
+                if (item.Level = 0) and (item.Text = renameFrom) then
+                    item.Text := renameTo;
+            end;
+
+            for var Event in con.Events do // owner actor...
+            begin
+                if Event is TConEventSpeech then
+                begin
+                    if TConEventSpeech(Event).ActorValue = renameFrom then
+                        TConEventSpeech(Event).ActorValue := renameTo;
+
+                    if TConEventSpeech(Event).ActorToValue = renameFrom then
+                        TConEventSpeech(Event).ActorToValue := renameTo;
+                end;
+
+                if Event is TConEventTransferObject then
+                begin
+                    if TConEventTransferObject(Event).ActorFromValue = renameFrom then
+                        TConEventTransferObject(Event).ActorFromValue := renameTo;
+
+                    if TConEventTransferObject(Event).ActorToValue = renameFrom then
+                        TConEventTransferObject(Event).ActorToValue := renameTo;
+                end;
+
+                if Event is TConEventAnimation then
+                begin
+                    if TConEventAnimation(Event).ActorValue = renameFrom then
+                        TConEventAnimation(Event).ActorValue := renameTo;
+                end;
+
+                if Event is TConEventTrade then
+                begin
+                    if TConEventTrade(Event).TradeActorValue = renameFrom then
+                        TConEventTrade(Event).TradeActorValue := renameTo;
+                end;
+            end;
+        end;
+    end;
 end;
 
 procedure TfrmTableEdit.RenameFlag(renameFrom, renameTo: string);
 begin
-//
+    with frmMain do
+    begin
+        for var con in ConversationsList do
+        begin
+            for var item in ConvoTree.Items do // Rename ConvoTree Item
+            begin
+                if (item.Level = 2) and (item.Text.StartsText(renameFrom, item.Text)) then
+                begin
+                    var posEquals := Pos(' = ', item.Text);
+                    if posEquals > 0 then
+                    begin
+                        var prefix := Copy(item.Text, 1, posEquals - 1);
+                        if prefix = renameFrom then
+                            item.Text := StringReplace(item.Text, renameFrom, renameTo, []);
+                    end;
+                end;
+            end;
+
+            for var i := 0 to High(con.conDependsOnFlags) do // Rename flag in conDependsOnFlags
+            begin
+                if con.conDependsOnFlags[i].flagName = renameFrom then
+                    con.conDependsOnFlags[i].flagName := renameTo;
+            end;
+
+            for var Event in con.Events do // Rename in Events
+            begin
+                if Event is TConEventChoice then
+                begin
+                    for var chi in TConEventChoice(Event).Choices do
+                    begin
+                        for var i := 0 to High(chi.RequiredFlags) do
+                        begin
+                            if chi.RequiredFlags[i].flagName = renameFrom then
+                                chi.RequiredFlags[i].flagName := renameTo;
+                        end;
+                    end;
+                end;
+
+                if Event is TConEventSetFlag then
+                begin
+                    for var i := 0 to High(TConEventSetFlag(Event).SetFlags) do
+                    begin
+                        if TConEventSetFlag(Event).SetFlags[i].flagName = renameFrom then
+                            TConEventSetFlag(Event).SetFlags[i].flagName := renameTo;
+                    end;
+                end;
+
+                if Event is TConEventCheckFlag then
+                begin
+                    for var i := 0 to High(TConEventCheckFlag(Event).FlagsToCheck) do
+                    begin
+                        if TConEventCheckFlag(Event).FlagsToCheck[i].flagName = renameFrom then
+                            TConEventCheckFlag(Event).FlagsToCheck[i].flagName := renameTo;
+                    end;
+                end;
+            end;
+        end;
+    end;
 end;
 
 procedure TfrmTableEdit.RenameObject(renameFrom, renameTo: string);
 begin
-//
+    with frmMain do
+    begin
+        for var con in ConversationsList do
+        begin
+            for var Event in con.Events do // Rename in Events
+            begin
+                if Event is TConEventCheckObject then
+                begin
+                    if TConEventCheckObject(Event).ObjectValue = renameFrom then
+                        TConEventCheckObject(Event).ObjectValue := renameTo;
+                end;
+
+                if Event is TConEventTransferObject then
+                begin
+                    if TConEventTransferObject(Event).ObjectValue = renameFrom then
+                        TConEventTransferObject(Event).ObjectValue := renameTo;
+                end;
+            end;
+        end;
+    end;
 end;
 
 procedure TfrmTableEdit.RenameSkill(renameFrom, renameTo: string);
 begin
-//
+    with frmMain do
+    begin
+        for var con in ConversationsList do
+        begin
+            for var Event in con.Events do // Rename in Events
+            begin
+                if Event is TConEventChoice then
+                begin
+                    for var chi in TConEventChoice(Event).Choices do
+                    begin
+                        if chi.bSkillNeeded <> -1 then
+                            if chi.Skill = renameFrom then
+                                chi.Skill := renameTo;
+                    end;
+                end;
+            end;
+        end;
+    end;
 end;
 
 function TfrmTableEdit.CanDeleteItem(item: String): boolean;
@@ -797,7 +936,32 @@ end;
 
 procedure TfrmTableEdit.TableItemRenamed(renameFrom, renameTo: string);
 begin
-    ShowMessage('From: ' + renameFrom + ' To: ' + renameTo);
+    if renameFrom = renameTo then
+    begin
+//        ShowMessage('Nothing to rename, items are same!');
+        Exit();
+    end;
+
+    if lstTableContents.Items.IndexOf(renameTo) = -1 then
+    begin
+        lstTableContents.Items[lstTableContents.ItemIndex] := renameTo;
+    end
+    else
+    begin
+        MessageDlg('The item name already exists.', mtWarning, [mbOK], 0);
+        lstTableContents.Items[lstTableContents.ItemIndex] := renameFrom; // set value back to previous
+        Exit();
+    end;
+
+
+    case TableMode of
+      TM_ActorsPawns: RenameActor(renameFrom, renameTo);
+      TM_Flags:       RenameFlag(renameFrom, renameTo);
+      TM_Skills:      RenameSkill(renameFrom, renameTo);
+      TM_Objects:     RenameObject(renameFrom, renameTo);
+    end;
+
+    //ShowMessage('From: ' + renameFrom + ' To: ' + renameTo);
 end;
 
 procedure TfrmTableEdit.BuildCustomMenu();
