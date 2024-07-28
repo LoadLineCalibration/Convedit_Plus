@@ -49,7 +49,6 @@ object frmAbout: TfrmAbout
     00008FFF0000001F0000000F0000000900000001000000000000000000000000
     0000000000000000000000000000F0000000F0000000F0000000F8000000}
   Position = poMainFormCenter
-  StyleName = 'Windows'
   OnClick = FormClick
   OnCreate = FormCreate
   OnShow = FormShow
@@ -65,7 +64,6 @@ object frmAbout: TfrmAbout
     Url = 'https://github.com/errorcalc/FreeEsVCLComponents'
     LinkColor = clBlue
     LinkStyle = Mixed
-    StyleName = 'Windows'
   end
   object Label1: TLabel
     Left = 8
@@ -85,7 +83,6 @@ object frmAbout: TfrmAbout
     Url = 'https://github.com/Dennis1000/verysimplexml'
     LinkColor = clBlue
     LinkStyle = Mixed
-    StyleElements = []
   end
   object btnOk: TButton
     Left = 195
@@ -109,7 +106,9 @@ object frmAbout: TfrmAbout
       'MVV -- for help with understanding .con files '
       'format'
       ''
-      'KillerBeer -- for ConEditExport tool')
+      'KillerBeer -- for ConEditExport tool'
+      ''
+      'Hanfling -- for technical assistance')
     ParentColor = True
     ReadOnly = True
     TabOrder = 1

@@ -5576,7 +5576,6 @@ object frmMain: TfrmMain
       TabOrder = 2
       Visible = False
       WordWrap = False
-      OnClick = mmoOutputClick
     end
     object btnCloseLog: TButton
       Left = 645

@@ -228,7 +228,6 @@ TConEventAnimation = class(TConEvent) // 07
     ActorValue: string;
 
     AnimSequence: string;
-    //bAnimPlayOnce: Boolean;
     AnimPlayMode: TAnimationModes;
     AnimPlayForSeconds: Integer;
     bAnimWaitToFinish: Boolean;

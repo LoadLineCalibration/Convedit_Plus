@@ -3010,6 +3010,8 @@ procedure TfrmEventInsAdd.editConditionValueChange(Sender: TObject);
 begin
     if (Sender as TSpinEdit).Value < 0 then
        (Sender as TSpinEdit).Value := 0;
+
+    cmbObjectToTransferChange(cmbObjectToTransfer);
 end;
 
 procedure TfrmEventInsAdd.editGoalNameChange(Sender: TObject);

@@ -625,7 +625,6 @@ type
     procedure Wholeconversation1Click(Sender: TObject);
     procedure Withchoicesifany1Click(Sender: TObject);
     procedure Alllinesofselectedspeaker1Click(Sender: TObject);
-    procedure mmoOutputClick(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -985,11 +984,6 @@ begin
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
 
     Result := dResult;
-end;
-
-procedure TfrmMain.mmoOutputClick(Sender: TObject);
-begin
-    mmoOutput.ScrollBars := ssVertical;
 end;
 
 procedure TfrmMain.mnuCharcoalDarkSlateClick(Sender: TObject);
