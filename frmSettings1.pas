@@ -358,6 +358,8 @@ end;
 
 procedure TfrmSettings.shpPlayerSpeechBGColorMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
+    dlgColor1.Color := shpPlayerSpeechBGColor.Brush.Color;
+
     if ((Button = TMouseButton.mbLeft) and (dlgColor1.Execute() = true)) then
     begin
         shpPlayerSpeechBGColor.Brush.Color := dlgColor1.Color;
