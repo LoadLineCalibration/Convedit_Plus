@@ -625,6 +625,7 @@ type
     procedure Wholeconversation1Click(Sender: TObject);
     procedure Withchoicesifany1Click(Sender: TObject);
     procedure Alllinesofselectedspeaker1Click(Sender: TObject);
+    procedure mmoOutputClick(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -986,6 +987,11 @@ begin
     Result := dResult;
 end;
 
+procedure TfrmMain.mmoOutputClick(Sender: TObject);
+begin
+    mmoOutput.ScrollBars := ssVertical;
+end;
+
 procedure TfrmMain.mnuCharcoalDarkSlateClick(Sender: TObject);
 begin
     ApplyStyle('Charcoal Dark Slate');
@@ -1005,8 +1011,8 @@ begin
         end;
     end;
 
-    dResult := 38 + (17 * aLength); // 38 for name and 17 for each flag string
-    //dResult := Round(38 * GetDPIAsRatio()) + (Round(17 * GetDPIAsRatio()) * aLength); // 38 for name and 17 for each flag string
+    //dResult := 38 + (17 * aLength); // 38 for name and 17 for each flag string
+    dResult := Round(38 * GetDPIAsRatio()) + (Round(17 * GetDPIAsRatio()) * aLength); // 38 for name and 17 for each flag string
 
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
 
@@ -6748,7 +6754,6 @@ begin
     begin
         EventListColorsMode := ELCM_Dark;
         TStyleManager.SetStyle(styleName);
-        ViewoutputTMemo1Click(self);
         CurrentTheme := styleName;
         mnuCharcoalDarkSlate.Checked := True;
     end else
@@ -6756,7 +6761,6 @@ begin
     begin
         EventListColorsMode := ELCM_Dark;
         TStyleManager.SetStyle(styleName);
-        ViewoutputTMemo1Click(self);
         CurrentTheme := styleName;
         mnuOnyxBlueTheme.Checked := True;
     end else
@@ -6764,7 +6768,6 @@ begin
     begin
         EventListColorsMode := ELCM_Default;
         TStyleManager.SetStyle(styleName);
-        ViewoutputTMemo1Click(self);
         CurrentTheme := styleName;
         mnuLunaTheme.Checked := True;
     end else
@@ -6772,7 +6775,6 @@ begin
     begin
         EventListColorsMode := ELCM_Default;
         TStyleManager.SetStyle(styleName);
-        ViewoutputTMemo1Click(self);
         CurrentTheme := styleName;
         mnuSilverTheme.Checked := True;
     end else
@@ -6780,10 +6782,11 @@ begin
     begin
         EventListColorsMode := ELCM_Default;
         TStyleManager.SetStyle(styleName);
-        ViewoutputTMemo1Click(self);
         CurrentTheme := styleName;
         mnuSystemTheme.Checked := True;
-    end
+    end;
+
+    ViewoutputTMemo1Click(self);
 end;
 
 procedure TfrmMain.AutoSaveFile(const aFileName: string); // Label errors should be ignored in this case.
@@ -7153,6 +7156,11 @@ begin
 
     btnCloseLog.Visible := mmoOutput.Visible;
     btnViewLog.Down := mmoOutput.Visible;
+
+    case mmoOutput.Visible of
+        True: mmoOutput.ScrollBars := ssVertical;
+        False:mmoOutput.ScrollBars := ssNone;
+    end;
 
     if bUseLogging = False then
         mmoOutput.Text := 'Logging is disabled. To see log messages, enable logging in program options.';

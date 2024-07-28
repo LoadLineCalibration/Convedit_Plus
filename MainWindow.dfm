@@ -5560,15 +5560,11 @@ object frmMain: TfrmMain
       Width = 660
       Height = 286
       Align = alBottom
-      BevelEdges = [beTop]
-      BevelInner = bvLowered
-      BevelKind = bkTile
-      BevelOuter = bvSpace
-      BorderStyle = bsNone
+      BevelEdges = []
       Color = clBlack
       EditMargins.Left = 5
       EditMargins.Right = 5
-      Font.Charset = RUSSIAN_CHARSET
+      Font.Charset = DEFAULT_CHARSET
       Font.Color = clLime
       Font.Height = -15
       Font.Name = 'Consolas'
@@ -5577,10 +5573,10 @@ object frmMain: TfrmMain
       ParentFont = False
       PopupMenu = pmOutput
       ReadOnly = True
-      ScrollBars = ssVertical
       TabOrder = 2
       Visible = False
       WordWrap = False
+      OnClick = mmoOutputClick
     end
     object btnCloseLog: TButton
       Left = 645
