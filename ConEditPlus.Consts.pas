@@ -294,6 +294,7 @@ ResourceString // These strings can be translated.
 
     strInvalidConFileHdr = 'This is not a valid Conversation File!!';//  Invalid .con file header! Loading aborted. Please choose valid .con file.';
     strSelectConXML = 'Please select .con or .xml file!';
+    strFileDoesNotExists = '%s: Such file does not exists! Operation cancelled.';
 
     strEmptyValue = '<empty>';
 
@@ -330,6 +331,7 @@ ResourceString // These strings can be translated.
     strSearchResults = 'Results: ';
 
     // Error messages when trying to save file
+    strErrorTitle = 'Error!';
     strSaveError = 'Error saving file (%s):' + #13#10 +'%s';
     strSaveErrorStatus = 'Error saving file: ';
 
@@ -351,7 +353,7 @@ ResourceString // These strings can be translated.
 
     strNoFileLoaded = 'No file loaded';
 
-    strAskToOpenGithub = 'Do you want to open ConEditPlus Github page in your Internet browser?';
+    strAskToOpenGithub = 'Do you want to open ConEditPlus GitHub page in your Internet browser?';
 
     strCannotRenameConversation = 'Another conversation with such name already exists or name contains invalid characters!' + #13#10#13#10 +
                                   'Cannot rename this conversation.';
@@ -366,9 +368,10 @@ ResourceString // These strings can be translated.
 
     strRecentFileNotFound = 'Such file does not exists!';
 
-    strSpeechGenTitle = 'Text-to-speech (using ElevenLabs API)';
-
     strDEED = 'Deus Ex Extractor and Decompiler'; // for testing
+
+    strClipboardConversationV1 = '%s: %s';
+    strClipboardConversationV2 = ' choice #%d: %s';
 
 
 

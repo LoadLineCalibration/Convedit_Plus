@@ -625,6 +625,7 @@ type
     procedure Wholeconversation1Click(Sender: TObject);
     procedure Withchoicesifany1Click(Sender: TObject);
     procedure Alllinesofselectedspeaker1Click(Sender: TObject);
+    procedure SpeechGeneratortest1Click(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -726,7 +727,7 @@ implementation
 {$R SoundResources.res} // contains final.mp3
 
 uses frmSettings1, EditValueDialog, ConFileProperties, AboutBox1, ConvoProperties, frmFind1, AddInsertEvent,
-     ConXml.Reader, ConXML.Writer, confile.Reader, conFile.Writer, uFrmLabelErrors, ufrmAudioDirectories;
+     ConXml.Reader, ConXML.Writer, confile.Reader, conFile.Writer, uFrmLabelErrors, ufrmAudioDirectories, UfrmConversationPlayer;
 
 
 function TfrmMain.GetFileModified: Boolean;
@@ -837,6 +838,7 @@ begin
                 Exit();
             end;
 
+            currentConFile := FileName;  // Assign filename to global variable
             StatusBar.Panels[0].Text := '';
             StatusBar.Panels[1].Text := FileName; // filename in StatusBar
             AddRecentFile(FileName);  // Add to recent
@@ -1327,6 +1329,10 @@ begin
         LoadConFile(cmdLine);
         BuildConvoTree();
         ToggleMenusPanels(True);
+        currentConFile := cmdLine;  // Assign filename to global variable
+        StatusBar.Panels[0].Text := '';
+        StatusBar.Panels[1].Text := cmdLine; // filename in StatusBar
+        AddRecentFile(cmdLine);  // Add to recent
     end;
 
     if ExtractFileExt(cmdLine) = LowerCase('.xml') then
@@ -1334,6 +1340,10 @@ begin
         LoadConXMLFile(cmdLine);
         BuildConvoTree();
         ToggleMenusPanels(True);
+        currentConFile := cmdLine;  // Assign filename to global variable
+        StatusBar.Panels[0].Text := '';
+        StatusBar.Panels[1].Text := cmdLine; // filename in StatusBar
+        AddRecentFile(cmdLine);  // Add to recent
     end;
 end;
 
@@ -1341,7 +1351,8 @@ procedure TfrmMain.LoadConXMLFile(aFileName: string);
 begin
     if FileExists(aFileName) = false then
     begin
-        MessageDlg(aFileName + ': Such file does not exists! Operation cancelled.',  mtError, [mbOK], 0);
+        //MessageDlg(aFileName + ': Such file does not exists! Operation cancelled.',  mtError, [mbOK], 0);
+        MessageBox(0, PChar(Format(strFileDoesNotExists, [aFileName])), PChar(strErrorTitle), MB_OK + MB_ICONSTOP + MB_TOPMOST);
         Exit();
     end;
 
@@ -6108,6 +6119,11 @@ end;
 procedure TfrmMain.Speech2Click(Sender: TObject);
 begin
     InsertEvent(Ord(ET_Speech));
+end;
+
+procedure TfrmMain.SpeechGeneratortest1Click(Sender: TObject);
+begin
+    frmConversationPlayer.Show();
 end;
 
 procedure TfrmMain.Splitter1CanResize(Sender: TObject; var NewSize: Integer; var Accept: Boolean);
