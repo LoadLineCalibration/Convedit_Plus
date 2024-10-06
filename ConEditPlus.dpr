@@ -62,7 +62,8 @@ begin
   Application.CreateForm(TfrmLabelErrors, frmLabelErrors);
   Application.CreateForm(TfrmAudioDirectories, frmAudioDirectories);
   Application.CreateForm(TfrmConversationPlayer, frmConversationPlayer);
-  Application.HintHidePause := 10000; // hint delay
+  Application.HintHidePause := 30000; // hint delay
   Application.Run;
+  ReportMemoryLeaksOnShutdown := True;
 
 end.

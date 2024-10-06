@@ -172,6 +172,7 @@ TConEventChoice = class(TConEvent) // 01
 
     public
     constructor Create();
+    destructor Destroy(); override;
 end;
 
 TConEventSetFlag = class(TConEvent) // 02
@@ -369,6 +370,7 @@ TConversation = class(TConBaseObject)
     Events: array of TConEvent;
 
     constructor Create();
+    destructor Destroy(); override;
 end;
 
 // Contains base information about conversation file.
@@ -566,5 +568,26 @@ begin
     Result := currDateTime;
 end;
 
+destructor TConversation.Destroy();
+begin
+    for var i := 0 to High(Events) do
+        if Assigned(Events[i]) = True then
+            Events[i].Free(); // Освобождаем объект
+
+    SetLength(Events, 0); // Очищаем массив
+
+    inherited;
+end;
+
+destructor TConEventChoice.Destroy();
+begin
+    for var i:= 0 to High(Choices) do
+        if Assigned(Choices[i]) then
+            Choices[i].Free();
+
+    SetLength(Choices, 0);
+
+    inherited;
+end;
 
 end.
