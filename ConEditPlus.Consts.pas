@@ -294,7 +294,7 @@ ResourceString // These strings can be translated.
 
     strInvalidConFileHdr = 'This is not a valid Conversation File!!';//  Invalid .con file header! Loading aborted. Please choose valid .con file.';
     strSelectConXML = 'Please select .con or .xml file!';
-    strFileDoesNotExists = '%s: Such file does not exists! Operation cancelled.';
+    strFileDoesNotExists = '%s' + #13#10#13#10 + 'Such file does not exists! Operation cancelled.';
 
     strEmptyValue = '<empty>';
 
@@ -365,8 +365,6 @@ ResourceString // These strings can be translated.
     strFileModiefied = ' [File has been modified]';
 
     strClipboardReadError = 'Error reading data from Clipboard!';
-
-    strRecentFileNotFound = 'Such file does not exists!';
 
     strDEED = 'Deus Ex Extractor and Decompiler'; // for testing
 

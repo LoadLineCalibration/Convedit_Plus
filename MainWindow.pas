@@ -572,7 +572,6 @@ type
     procedure CurrentConversationEvents1Click(Sender: TObject);
     procedure tbGenerateAudioDirsClick(Sender: TObject);
     procedure Conversation_CheckLabelsExecute(Sender: TObject);
-    procedure tbPrintClick(Sender: TObject);
     procedure mainToolBarCustomDrawButton(Sender: TToolBar; Button: TToolButton;
       State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure mnuGithubClick(Sender: TObject);
@@ -706,8 +705,8 @@ type
     // set to True when file has been modified. Converted to property
     property bFileModified: Boolean read GetFileModified write SetFileModified;
 
-    var eventsFormLeft: Integer;
-    var eventsFormTop: Integer;
+//    var eventsFormLeft: Integer;
+//    var eventsFormTop: Integer;
 
     var SysScrollBarWidth: Integer;
 
@@ -715,6 +714,7 @@ type
 
     var TreeBuildTask: ITask;
     var AutoSaveTask: ITask;
+    var frmEventInsAddOffset: TPoint;
   end;
 
 var
@@ -858,11 +858,15 @@ procedure TfrmMain.WMEnterSizeMove(var Msg: TMessage);
 begin
     tmrEventWinPosSync.Enabled := True;
 
-    var diffL := frmMain.Left - frmEventInsAdd.Left;
-    var diffT := frmMain.Top - frmEventInsAdd.Top;
+    // Сохраняем разницу в позициях между главной
+    frmEventInsAddOffset.X := frmEventInsAdd.Left - Self.Left;
+    frmEventInsAddOffset.Y := frmEventInsAdd.Top - Self.Top;
 
-    eventsFormLeft := Abs(diffL);
-    eventsFormTop := Abs(diffT);
+//    var diffL := frmMain.Left - frmEventInsAdd.Left;
+//    var diffT := frmMain.Top - frmEventInsAdd.Top;
+
+//    eventsFormLeft := Abs(diffL);
+//    eventsFormTop := Abs(diffT);
 
     inherited;
 end;
@@ -7120,20 +7124,17 @@ begin
     if FileExists(fileName) = True then
         OpenRecentFile(fileName)
     else
-        MessageDlg(strRecentFileNotFound,  mtError, [mbOK], 0);
-end;
+        MessageBox(0, PChar(Format(strFileDoesNotExists, [fileName])), PChar(strErrorTitle), MB_OK + MB_ICONSTOP + MB_TOPMOST);
 
-procedure TfrmMain.tbPrintClick(Sender: TObject);
-begin
-    MessageDlg('Printing is not implemented yet ',  mtWarning, [mbOK], 0);
+        //MessageDlg(strRecentFileNotFound,  mtError, [mbOK], 0);
 end;
 
 procedure TfrmMain.tmrEventWinPosSyncTimer(Sender: TObject);
 begin
     if (frmEventInsAdd.Visible = True) and (frmEventInsAdd.chkFollowMainWindow.Checked = True) then
     begin
-        frmEventInsAdd.Left := frmMain.Left + eventsFormLeft;
-        frmEventInsAdd.Top := frmMain.Top + eventsFormTop;
+        frmEventInsAdd.Left := frmMain.Left + frmEventInsAddOffset.X;
+        frmEventInsAdd.Top := frmMain.Top + frmEventInsAddOffset.Y;
     end;
 end;
 
