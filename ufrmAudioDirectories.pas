@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Conversation.Classes, ConEditPlus.Consts,
-  Winapi.ShellAPI, System.UITypes, System.Threading;
+  Winapi.ShellAPI, System.UITypes;
 
 type
   TfrmAudioDirectories = class(TForm)
@@ -30,8 +30,6 @@ type
     { Private declarations }
   public
     { Public declarations }
-
-    var DirectoryCreationTask: TTask;
   end;
 
 var
@@ -52,7 +50,7 @@ procedure TfrmAudioDirectories.btnGenerateClick(Sender: TObject);
 begin
     if (edtPath.Text = '') or (DirectoryExists(edtPath.text) = false) then
     begin
-        MessageDlg('Select directory first!',  mtError, [mbOK], 0);
+        MessageBox(0, PChar(strSelDirectoryWarning), PChar(strErrorTitle), MB_OK + MB_ICONSTOP + MB_TOPMOST);
         Exit();
     end;
 
@@ -73,14 +71,13 @@ var
 begin
     var bTryToCreateDir: Boolean := false;
 
-
-    mmoResults.Lines.Add('Generating audio filenames...');
+    mmoResults.Lines.Add(strGenAudioFileNames);
     frmMain.GenerateAudioFileNames(); // Generate filenames and paths first
 
     btnClose.Enabled := False;
     btnGenerate.Enabled := False;
 
-    mmoResults.Lines.Add('Generating audio filenames and directories...');
+    mmoResults.Lines.Add(strGenAudioFilenamesDirs);
 
     try
         for var con in frmMain.ConversationsList do
@@ -104,7 +101,6 @@ begin
 
                     if bTryToCreateDir = False then
                     begin
-                        //MessageDlg(Format(strAudioDirsError, [InitialPath, SysErrorMessage(GetLastError)]),  mtError,[mbOK], 0);
                         mmoResults.Lines.Add(Format(strAudioDirsError, [InitialPath, SysErrorMessage(GetLastError)]));
                         Break;
                     end;
@@ -135,8 +131,7 @@ begin
 
                             if bTryToCreateDir = False then
                             begin
-                                //MessageDlg(Format(strAudioDirsError, [InitialPath, SysErrorMessage(GetLastError)]),  mtError,[mbOK], 0);
-                                mmoResults.Lines.Add(Format(strAudioDirsError, [InitialPath, SysErrorMessage(GetLastError)]));
+                                mmoResults.Lines.Add(Format(strAudioDirsError, [InitialPath, SysErrorMessage(GetLastError())]));
                                 Break;
                             end;
 
@@ -159,16 +154,17 @@ begin
         begin
             btnClose.Enabled := True;
             btnGenerate.Enabled := True;
-            mmoResults.Lines.Add('Something went wrong... Make sure the directory you chosen is writable.');
-            raise Exception.Create(Format(strAudioDirsError, [InitialPath, SysErrorMessage(GetLastError)]));
+            mmoResults.Lines.Add(strGenAudioFileNamesDirsError);
+            raise Exception.Create(Format(strAudioDirsError, [InitialPath, SysErrorMessage(GetLastError())]));
         end;
     end;
 
-    mmoResults.Lines.Add('Done!');
+    mmoResults.Lines.Add(strGenAudioFileNamesDirsSuccess);
     btnClose.Enabled := True;
     btnGenerate.Enabled := True;
 
-    if MessageDlg(strAudioDirsSuccesful, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+    if MessageBox(0, PChar(strAudioDirsSuccesful), PChar(strGenAudioFileNamesDirsSuccess),
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
         ShellExecute(0, 'open', PChar(InitialPath), nil, nil, SW_SHOWNORMAL);
 end;
 

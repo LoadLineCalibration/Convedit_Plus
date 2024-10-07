@@ -371,6 +371,13 @@ ResourceString // These strings can be translated.
     strClipboardConversationV1 = '%s: %s';
     strClipboardConversationV2 = ' choice #%d: %s';
 
+    // ufrmAudioDirectories
+    strSelDirectoryWarning = 'Select directory first!';
+    strGenAudioFileNames = 'Generating audio filenames...';
+    strGenAudioFilenamesDirs = 'Generating audio filenames and directories...';
+    strGenAudioFileNamesDirsError = 'Something went wrong... Make sure the directory you chosen is writable.';
+    strGenAudioFileNamesDirsSuccess = 'Done!';
+
 
 
 
