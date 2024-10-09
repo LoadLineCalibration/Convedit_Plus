@@ -82,12 +82,15 @@ const Default_DeusEx_Grenades: array[0..3] of string =
     'WeaponLAM'
 );
 
-const Default_DeusEx_MiscItems: array[0..3] of string =
+const Default_DeusEx_MiscItems: array[0..6] of string =
 (
     'NanoKey',
     'Sodacan',
     'SoyFood',
-    'WineBottle'
+    'WineBottle',
+    'MedKit',
+    'Lockpick',
+    'Multitool'
 );
 
 const Default_DeusEx_Infolink_Names: array[0..16] of string =
@@ -182,6 +185,9 @@ ResourceString // These strings can be translated.
                                      'SodaCan' + #13#10 +
                                      'SoyFood' + #13#10 +
                                      'WineBottle' + #13#10 +
+                                     'MedKit'    + #13#10 +
+                                     'Lockpick'  + #13#10 +
+                                     'Multitool' + #13#10 +
                                      'Existing items will not be lost. Do you want to proceed?';
 
     strAddDefInfoLinkNamesQuestion = 'This will add default InfoLink names (like PaulDenton, BobPage, Icarus, etc.) from the original Deus Ex game into the table. ' +
