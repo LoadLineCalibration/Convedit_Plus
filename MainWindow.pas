@@ -336,6 +336,7 @@ type
     Wholeconversation2: TMenuItem;
     Partial1: TMenuItem;
     Alllinesofselectedspeaker1: TMenuItem;
+    tbViewConeventJump: TToolButton;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -625,6 +626,7 @@ type
     procedure Withchoicesifany1Click(Sender: TObject);
     procedure Alllinesofselectedspeaker1Click(Sender: TObject);
     procedure SpeechGeneratortest1Click(Sender: TObject);
+    procedure tbViewConeventJumpClick(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -705,9 +707,6 @@ type
     // set to True when file has been modified. Converted to property
     property bFileModified: Boolean read GetFileModified write SetFileModified;
 
-//    var eventsFormLeft: Integer;
-//    var eventsFormTop: Integer;
-
     var SysScrollBarWidth: Integer;
 
     var CF_ConEditPlus: Word; // Custom clipboard format
@@ -727,7 +726,7 @@ implementation
 {$R SoundResources.res} // contains final.mp3
 
 uses frmSettings1, EditValueDialog, ConFileProperties, AboutBox1, ConvoProperties, frmFind1, AddInsertEvent,
-     ConXml.Reader, ConXML.Writer, confile.Reader, conFile.Writer, uFrmLabelErrors, ufrmAudioDirectories, UfrmConversationPlayer;
+     ConXml.Reader, ConXML.Writer, confile.Reader, conFile.Writer, uFrmLabelErrors, ufrmAudioDirectories, UfrmConversationPlayer, uFrmFindRefs;
 
 
 function TfrmMain.GetFileModified: Boolean;
@@ -858,15 +857,8 @@ procedure TfrmMain.WMEnterSizeMove(var Msg: TMessage);
 begin
     tmrEventWinPosSync.Enabled := True;
 
-    // Сохраняем разницу в позициях между главной
     frmEventInsAddOffset.X := frmEventInsAdd.Left - Self.Left;
     frmEventInsAddOffset.Y := frmEventInsAdd.Top - Self.Top;
-
-//    var diffL := frmMain.Left - frmEventInsAdd.Left;
-//    var diffT := frmMain.Top - frmEventInsAdd.Top;
-
-//    eventsFormLeft := Abs(diffL);
-//    eventsFormTop := Abs(diffT);
 
     inherited;
 end;
@@ -1355,7 +1347,6 @@ procedure TfrmMain.LoadConXMLFile(aFileName: string);
 begin
     if FileExists(aFileName) = false then
     begin
-        //MessageDlg(aFileName + ': Such file does not exists! Operation cancelled.',  mtError, [mbOK], 0);
         MessageBox(0, PChar(Format(strFileDoesNotExists, [aFileName])), PChar(strErrorTitle), MB_OK + MB_ICONSTOP + MB_TOPMOST);
         Exit();
     end;
@@ -1384,72 +1375,79 @@ begin
     TreeBuildTask := TTask.Run(
     procedure
     begin
+        for var cList := 0 to ConversationsList.Count -1 do
+        begin
+            var NodeConName, NodeConOwnerName, NodeDependsOnFlags: TTreeNode;
+            var tempConvo := ConversationsList.Items[cList];
 
-    for var cList := 0 to ConversationsList.Count -1 do
-    begin
-        var NodeConName, NodeConOwnerName, NodeDependsOnFlags: TTreeNode;
-        var tempConvo := ConversationsList.Items[cList];
+            TThread.Synchronize(nil,
+            procedure
+            begin
+
+            if ItemExistsInTreeView(ConvoTree, tempConvo.conOwnerName) = false then
+            begin
+                NodeConOwnerName:= frmMain.ConvoTree.Items.Add(nil, tempConvo.conOwnerName);
+                NodeConOwnerName.ImageIndex := 0;
+                NodeConOwnerName.ExpandedImageIndex := 0;
+                NodeConOwnerName.SelectedIndex := 0;
+            end
+            else
+            begin
+                NodeConOwnerName := ConvoTree.Items.GetFirstNode;
+                while NodeConOwnerName <> nil do
+                begin
+                    if NodeConOwnerName.Text = tempConvo.conOwnerName then
+                        Break;
+                    NodeConOwnerName := NodeConOwnerName.GetNextSibling;
+                end;
+            end;
+
+            // Add owner's conversations
+            NodeConName:= frmMain.ConvoTree.Items.AddChildObject(NodeConOwnerName, tempConvo.conName, tempConvo);
+            NodeConName.ImageIndex := 1;
+            NodeConName.ExpandedImageIndex := 1;
+            NodeConName.SelectedIndex := 1;
+
+            // Flags required by this conversation
+            for var DOF:= 0 to Length(tempConvo.conDependsOnFlags) -1 do
+            begin
+                NodeDependsOnFlags:= frmMain.ConvoTree.Items.AddChild(NodeConName,
+                tempConvo.conDependsOnFlags[DOF].flagName + ' = '
+                + BoolToStr(tempConvo.conDependsOnFlags[DOF].flagValue, true));
+
+                // red icon = false, green icon = true
+                if NodeDependsOnFlags.Text.EndsText('true', NodeDependsOnFlags.Text) then
+                begin
+                    NodeDependsOnFlags.ImageIndex := 2;
+                    NodeDependsOnFlags.ExpandedImageIndex := 2;
+                    NodeDependsOnFlags.SelectedIndex := 2;
+                end else
+                begin
+                    NodeDependsOnFlags.ImageIndex := 3;
+                    NodeDependsOnFlags.ExpandedImageIndex := 3;
+                    NodeDependsOnFlags.SelectedIndex := 3;
+                end;
+            end;
+        end);
+    end;
 
         TThread.Synchronize(nil,
         procedure
         begin
-
-        if ItemExistsInTreeView(ConvoTree, tempConvo.conOwnerName) = false then
-        begin
-            NodeConOwnerName:= frmMain.ConvoTree.Items.Add(nil, tempConvo.conOwnerName);
-            NodeConOwnerName.ImageIndex := 0;
-            NodeConOwnerName.ExpandedImageIndex := 0;
-            NodeConOwnerName.SelectedIndex := 0;
-        end
-        else
-        begin
-            NodeConOwnerName := ConvoTree.Items.GetFirstNode;
-            while NodeConOwnerName <> nil do
-            begin
-                if NodeConOwnerName.Text = tempConvo.conOwnerName then
-                    Break;
-                NodeConOwnerName := NodeConOwnerName.GetNextSibling;
-            end;
-        end;
-
-        // Add owner's conversations
-        NodeConName:= frmMain.ConvoTree.Items.AddChildObject(NodeConOwnerName, tempConvo.conName, tempConvo);
-        NodeConName.ImageIndex := 1;
-        NodeConName.ExpandedImageIndex := 1;
-        NodeConName.SelectedIndex := 1;
-
-        // Flags required by this conversation
-        for var DOF:= 0 to Length(tempConvo.conDependsOnFlags) -1 do
-        begin
-            NodeDependsOnFlags:= frmMain.ConvoTree.Items.AddChild(NodeConName,
-            tempConvo.conDependsOnFlags[DOF].flagName + ' = '
-            + BoolToStr(tempConvo.conDependsOnFlags[DOF].flagValue, true));
-
-            // red icon = false, green icon = true
-            if NodeDependsOnFlags.Text.EndsText('true', NodeDependsOnFlags.Text) then
-            begin
-                NodeDependsOnFlags.ImageIndex := 2;
-                NodeDependsOnFlags.ExpandedImageIndex := 2;
-                NodeDependsOnFlags.SelectedIndex := 2;
-            end else
-            begin
-                NodeDependsOnFlags.ImageIndex := 3;
-                NodeDependsOnFlags.ExpandedImageIndex := 3;
-                NodeDependsOnFlags.SelectedIndex := 3;
-            end;
-        end;
-
+            EndTime := Now();
+            lblSelectedEvent.Caption := 'Tree built in ' + IntToStr(MilliSecondsBetween(EndTime, StartTime)) + ' ms';
+            ConvoTree.AlphaSort(True);
+            SetEventIndexes();
         end);
-    end;
 
-    EndTime := Now();
-    lblSelectedEvent.Caption := 'Tree built in ' + IntToStr(MilliSecondsBetween(EndTime, StartTime)) + ' ms';
+//    EndTime := Now();
+//    lblSelectedEvent.Caption := 'Tree built in ' + IntToStr(MilliSecondsBetween(EndTime, StartTime)) + ' ms';
 
-    ConvoTree.AlphaSort(True);
+//    ConvoTree.AlphaSort(True);
 
     end);
 
-    SetEventIndexes();
+//    SetEventIndexes();
 
 {
     for var cList := 0 to ConversationsList.Count -1 do
@@ -5432,6 +5430,9 @@ end;
 
 procedure TfrmMain.DeleteCurrentEvent();
 begin
+    if Assigned(CurrentConversation.Events[ConEventList.ItemIndex]) then
+        CurrentConversation.Events[ConEventList.ItemIndex].Free(); // Освобождаем объект
+
     Delete(CurrentConversation.Events, ConEventList.ItemIndex, 1); // Delete from array
     ConEventList.DeleteSelected(); // also delete from list
 
@@ -5786,6 +5787,9 @@ end;
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
     DragAcceptFiles(Handle, False);
+
+    ConversationsList.Free(); // Освобождаем список, что также освободит TConversation элементы
+    conFileParameters.Free(); // Освобождаем заголовок, если он был создан
 end;
 
 procedure TfrmMain.CreateObjectLists();
@@ -5844,6 +5848,12 @@ begin
     btnStartSearch.Enabled := bVisible;
 end;
 
+procedure TfrmMain.tbViewConeventJumpClick(Sender: TObject);
+begin
+    frmFindRefs.Show();
+    frmFindRefs.ListConEventJump();
+end;
+
 procedure TfrmMain.CreateTestFile1Click(Sender: TObject);
 begin
     SaveConFile('C:\Temp\First26.con');
@@ -5880,6 +5890,11 @@ begin
     ToggleMenusPanels(False);
 
     if frmEventInsAdd.Visible = True then frmEventInsAdd.Close();
+    if frmFindRefs.Visible = True then
+    begin
+        frmFindRefs.lvRefs.Clear();
+        frmFindRefs.Close();
+    end;
 end;
 
 procedure TfrmMain.FileGenerateAudioNamesExecute(Sender: TObject);
@@ -5908,6 +5923,12 @@ begin
     CreateConFile(True);
 
     if frmEventInsAdd.Visible = True then frmEventInsAdd.Close();
+
+    if frmFindRefs.Visible = True then
+    begin
+        frmFindRefs.lvRefs.Clear();
+        frmFindRefs.Close();
+    end;
 end;
 
 procedure TfrmMain.FileOpenDialogTypeChange(Sender: TObject);
@@ -7066,13 +7087,13 @@ begin
 
 //    if TreeHasItemsOfLevel(ConvoTree, 1) = true then
 //    begin
-        Conversation_Delete.Enabled := ConvoTree.Selected.Level = 1;
-        Conversation_Properties.Enabled := ConvoTree.Selected.Level = 1;
-        Conversation_Rename.Enabled := ConvoTree.Selected.Level = 1;
+    Conversation_Delete.Enabled := ConvoTree.Selected.Level = 1;
+    Conversation_Properties.Enabled := ConvoTree.Selected.Level = 1;
+    Conversation_Rename.Enabled := ConvoTree.Selected.Level = 1;
 
-        Conversation_Cut.Enabled := ConvoTree.Selected.Level = 1;
-        Conversation_Copy.Enabled := ConvoTree.Selected.Level = 1;
-        Conversation_Paste.Enabled := HasConversationToPaste();
+    Conversation_Cut.Enabled := ConvoTree.Selected.Level = 1;
+    Conversation_Copy.Enabled := ConvoTree.Selected.Level = 1;
+    Conversation_Paste.Enabled := HasConversationToPaste();
 
 //    end;
 //    else begin
@@ -7125,8 +7146,6 @@ begin
         OpenRecentFile(fileName)
     else
         MessageBox(0, PChar(Format(strFileDoesNotExists, [fileName])), PChar(strErrorTitle), MB_OK + MB_ICONSTOP + MB_TOPMOST);
-
-        //MessageDlg(strRecentFileNotFound,  mtError, [mbOK], 0);
 end;
 
 procedure TfrmMain.tmrEventWinPosSyncTimer(Sender: TObject);
