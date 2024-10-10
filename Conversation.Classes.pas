@@ -130,6 +130,7 @@ TChoiceItemObject = class(TConBaseObject) // for editing Choice Items, use as li
     GoToLabel: string;
     mp3: string;
     RequiredFlags: array of TFlag;
+//    bDeleteMe: Boolean;
 end;
 
 

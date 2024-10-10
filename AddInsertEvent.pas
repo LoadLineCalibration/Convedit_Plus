@@ -407,6 +407,7 @@ type
     procedure btnSaveChoiceItemClick(Sender: TObject);
     procedure btnSwapNowClick(Sender: TObject);
     procedure btnPlayChoiceAudioClick(Sender: TObject);
+    procedure editSkillPointsAmountChange(Sender: TObject);
   private
     { Private declarations }
   public
@@ -907,6 +908,25 @@ begin
     begin
         EventWarning(True, 'Add some choices first!');
         Exit(False);
+    end;
+
+    // Удалить объекты которых нет в списке
+    for var u := 0 to High(choice.Choices) do
+    begin
+        var bFound := False;
+
+        for var lvIndex := 0 to lvChoiceList.Items.Count - 1 do
+        begin
+            if choice.Choices[u] = TChoiceItemObject(lvChoiceList.Items[lvIndex].Data) then
+            begin
+                bFound := True;
+                Break;
+            end;
+        end;
+
+        // Если объект больше не используется, освобождаем его
+        if bFound = False then
+            FreeAndNil(choice.Choices[u]);
     end;
 
     SetLength(choice.Choices, lvChoiceList.Items.Count);
@@ -2966,7 +2986,7 @@ begin
     11:editTriggerTagChange(self);
     12:editGoalNameChange(self);
     13:memoNoteTextChange(Self);
-    14:;
+    14:editSkillPointsAmountChange(editSkillPointsAmount);
     15:;
     16:
     begin
@@ -3011,7 +3031,7 @@ begin
     if (Sender as TSpinEdit).Value < 0 then
        (Sender as TSpinEdit).Value := 0;
 
-    cmbObjectToTransferChange(cmbObjectToTransfer);
+    btnUpdate.Enabled := editSkillPointsAmount.Value > 0;
 end;
 
 procedure TfrmEventInsAdd.editGoalNameChange(Sender: TObject);
@@ -3020,6 +3040,14 @@ begin
         btnUpdate.Enabled := (Trim(editGoalName.Text) <> '') and (Trim(memoGoalText.Text) <> '')
     else
         btnUpdate.Enabled := (Trim(editGoalName.Text) <> '')
+end;
+
+procedure TfrmEventInsAdd.editSkillPointsAmountChange(Sender: TObject);
+begin
+    if (Sender as TSpinEdit).Value < 0 then
+       (Sender as TSpinEdit).Value := 0;
+
+    btnUpdate.Enabled := editSkillPointsAmount.Value > 0;
 end;
 
 procedure TfrmEventInsAdd.editTriggerTagChange(Sender: TObject);
