@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, ES.Labels, Winapi.MMSystem;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, ES.Labels;
 
 type
   TfrmAbout = class(TForm)
@@ -14,6 +14,7 @@ type
     Memo1: TMemo;
     EsLinkLabel2: TEsLinkLabel;
     edtVersion: TEdit;
+    Label2: TLabel;
     procedure btnOkClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);

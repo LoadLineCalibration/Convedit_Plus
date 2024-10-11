@@ -384,6 +384,10 @@ ResourceString // These strings can be translated.
     strGenAudioFileNamesDirsError = 'Something went wrong... Make sure the directory you chosen is writable.';
     strGenAudioFileNamesDirsSuccess = 'Done!';
 
+    // frmSettings1
+    strUseUsername = 'The following username will be used: %s' + #13#10 + 'Do you want to continue?';
+    strUseUserNameTitle = 'Use username?';
+
 
 
 

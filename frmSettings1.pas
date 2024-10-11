@@ -248,9 +248,19 @@ begin
     i := 1024;
     TempUser := StrAlloc(Succ(i));
 
-    if GetUserName(TempUser, i) = True then
-        edtUserName.Text := TempUser
-    else Exit();
+    try
+        if GetUserName(TempUser, i) = True then
+        begin
+            if MessageBox(0, PChar(Format(strUseUsername, [TempUser])), PChar(strUseUserNameTitle), MB_YESNO
+                + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
+            begin
+                edtUserName.Text := TempUser
+            end;
+        end
+
+    finally
+        StrDispose(TempUser);
+    end;
 end;
 
 procedure TfrmSettings.btnResetToDefaultsClick(Sender: TObject); // Use event selection colors from original ConEdit app.
