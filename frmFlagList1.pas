@@ -20,6 +20,7 @@ type
     cbbFlagValue: TComboBox;
     cbbFlagExp: TComboBox;
     Label1: TLabel;
+    edtSearchInFlags: TEdit;
     procedure btnCancelClick(Sender: TObject);
 
     // new procedures
@@ -31,6 +32,7 @@ type
 
     procedure btnOkClick(Sender: TObject);
     procedure btnEditFlagsClick(Sender: TObject);
+    procedure edtSearchInFlagsChange(Sender: TObject);
 
   private
     { Private declarations }
@@ -85,6 +87,24 @@ procedure TfrmFlagList.btnOkClick(Sender: TObject);
 begin
     SendFlagsToEvent();
     Close();
+end;
+
+procedure TfrmFlagList.edtSearchInFlagsChange(Sender: TObject);
+begin
+    lstFlags.Items.BeginUpdate();
+
+    try
+        lstFlags.ClearSelection();
+
+        for var i:= 0 to lstFlags.Items.Count -1 do
+        begin
+            if Pos(UpperCase(edtSearchInFlags.Text), UpperCase(lstFlags.Items[i])) > 0 then
+                lstFlags.Selected[i] := True;
+        end;
+
+    finally
+        lstFlags.Items.EndUpdate();
+    end;
 end;
 
 procedure TfrmFlagList.SendFlagsToEvent(); // fill flags list in Add/Edit event form.

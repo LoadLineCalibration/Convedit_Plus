@@ -13,7 +13,9 @@ object frmFlagList: TfrmFlagList
   Font.Style = []
   Position = poMainFormCenter
   ShowHint = True
-  StyleName = ''
+  DesignSize = (
+    370
+    464)
   TextHeight = 15
   object lbl1: TLabel
     Left = 8
@@ -35,8 +37,8 @@ object frmFlagList: TfrmFlagList
   object lstFlags: TListBox
     Left = 8
     Top = 36
-    Width = 353
-    Height = 277
+    Width = 354
+    Height = 252
     ItemHeight = 15
     MultiSelect = True
     TabOrder = 0
@@ -116,5 +118,16 @@ object frmFlagList: TfrmFlagList
     Caption = 'Cancel'
     TabOrder = 4
     OnClick = btnCancelClick
+  end
+  object edtSearchInFlags: TEdit
+    Left = 8
+    Top = 294
+    Width = 354
+    Height = 23
+    Anchors = [akLeft, akTop, akRight]
+    PopupMenu = frmEventInsAdd.MemoPopup
+    TabOrder = 5
+    TextHint = 'Search in flags (case-insensitive, partial match, multi-select)'
+    OnChange = edtSearchInFlagsChange
   end
 end
