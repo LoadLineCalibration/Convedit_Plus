@@ -224,10 +224,6 @@ type
     Copyalltext1: TMenuItem;
     SimulateDEED: TMenuItem;
     edtConvoTreeQSearch: TEdit;
-    N17: TMenuItem;
-    reeQuickSearch1: TMenuItem;
-    mnuTQS_Exact: TMenuItem;
-    mnuTQS_Partial: TMenuItem;
     N20: TMenuItem;
     mnuChoiceItemSub0: TMenuItem;
     mnuChoiceItemSub1: TMenuItem;
@@ -337,6 +333,9 @@ type
     Partial1: TMenuItem;
     Alllinesofselectedspeaker1: TMenuItem;
     tbViewConeventJump: TToolButton;
+    pnlTreeSearch: TEsPanel;
+    lbTreeSearchResults: TListBox;
+    chkTreeSearchExactMatch: TCheckBox;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -608,8 +607,6 @@ type
     procedure Copyalltext1Click(Sender: TObject);
     procedure SimulateDEEDClick(Sender: TObject);
     procedure edtConvoTreeQSearchChange(Sender: TObject);
-    procedure mnuTQS_PartialClick(Sender: TObject);
-    procedure mnuTQS_ExactClick(Sender: TObject);
     procedure CopyChoicetext1Click(Sender: TObject);
     procedure CopyChoiceItemObj_Path_Filename(Sender: TObject);
     procedure CopyChoiceItemObj_Path(Sender: TObject);
@@ -627,6 +624,9 @@ type
     procedure Alllinesofselectedspeaker1Click(Sender: TObject);
     procedure SpeechGeneratortest1Click(Sender: TObject);
     procedure tbViewConeventJumpClick(Sender: TObject);
+    procedure edtConvoTreeQSearchEnter(Sender: TObject);
+    procedure lbTreeSearchResultsDblClick(Sender: TObject);
+    procedure lbTreeSearchResultsExit(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -676,7 +676,7 @@ type
         bAskForConvoDelete, bAskForEventDelete, bHglEventWithNoAudio,
         bHglEventsGradient, bFlatToolbar,
         bUse3DSelectionFrame, bUseWhiteSelectedText, bDrawEventIdx, bUseLogging,
-        bTreeQSeachExactMatch, bUsePlayerBindNameColor, bUsePlayerSpeechBGColor : Boolean;
+        {bTreeQSeachExactMatch,} bUsePlayerBindNameColor, bUsePlayerSpeechBGColor : Boolean;
 
     property bAutoSaveEnabled: Boolean read GetAutoSaveEnabled write SetAutoSaveEnabled;
 
@@ -5782,6 +5782,9 @@ begin
         ProcessCommandline(ParamStr(1));
 
     Screen.HintFont.Name := 'Verdana';
+
+    pnlTreeSearch.Color := clBtnFace;
+    pnlTreeSearch.FrameColor := clBtnFace;
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
@@ -6694,30 +6697,28 @@ end;
 
 procedure TfrmMain.edtConvoTreeQSearchChange(Sender: TObject);
 begin
-    ConvoTree.Items.BeginUpdate();
+    lbTreeSearchResults.Clear();
 
     for var Node in ConvoTree.Items do
     begin
-        if bTreeQSeachExactMatch = True then
+        if Assigned(Node) and Assigned(Node.Owner) and Assigned(Node.Owner.Owner) then
         begin
-            if SameText(Node.Text, edtConvoTreeQSearch.Text) then
+            if chkTreeSearchExactMatch.Checked = True then
             begin
-                Node.Selected := True;
-                Node.MakeVisible();
-//                Break;
-            end;
-        end else
-        begin
-            if Pos(LowerCase(edtConvoTreeQSearch.Text), LowerCase(Node.Text)) > 0 then
+                if SameText(Node.Text, edtConvoTreeQSearch.Text) then
+                    lbTreeSearchResults.Items.AddObject(Node.Text, Node); // Добавляем найденный узел в список результатов
+            end else
             begin
-                Node.Selected := True;
-                Node.MakeVisible();
-//                Break;
+                if Pos(LowerCase(edtConvoTreeQSearch.Text), LowerCase(Node.Text)) > 0 then
+                    lbTreeSearchResults.Items.AddObject(Node.Text, Node); // Добавляем найденный узел в список результатов
             end;
         end;
     end;
+end;
 
-    ConvoTree.Items.EndUpdate();
+procedure TfrmMain.edtConvoTreeQSearchEnter(Sender: TObject);
+begin
+    pnlTreeSearch.Show();
 end;
 
 procedure TfrmMain.edtSearchBoxKeyPress(Sender: TObject; var Key: Char);
@@ -6912,6 +6913,27 @@ begin
     InsertEvent(Ord(ET_Jump));
 end;
 
+procedure TfrmMain.lbTreeSearchResultsDblClick(Sender: TObject);
+begin
+    // Получаем узел, связанный с выбранным элементом списка
+    if lbTreeSearchResults.ItemIndex >= 0 then
+    begin
+        var SelectedNode := TTreeNode(lbTreeSearchResults.Items.Objects[lbTreeSearchResults.ItemIndex]);
+
+        // Выделяем узел в дереве и делаем его видимым
+        if Assigned(SelectedNode) then
+        begin
+            SelectedNode.Selected := True;
+            SelectedNode.MakeVisible();
+        end;
+    end;
+end;
+
+procedure TfrmMain.lbTreeSearchResultsExit(Sender: TObject);
+begin
+    pnlTreeSearch.Hide();
+end;
+
 procedure TfrmMain.IndexEvents1Click(Sender: TObject);
 begin
     SetEventIndexes();
@@ -6955,24 +6977,6 @@ procedure TfrmMain.mnuToggleMainToolBarClick(Sender: TObject);
 begin
     bShowToolbar := mnuToggleMainToolBar.Checked;
     MainToolBar.Visible := mnuToggleMainToolBar.Checked;
-end;
-
-procedure TfrmMain.mnuTQS_ExactClick(Sender: TObject);
-begin
-    mnuTQS_Exact.Checked := not mnuTQS_Exact.Checked;
-
-    bTreeQSeachExactMatch := mnuTQS_Exact.Checked;
-
-    edtConvoTreeQSearchChange(Self);
-end;
-
-procedure TfrmMain.mnuTQS_PartialClick(Sender: TObject);
-begin
-    mnuTQS_Partial.Checked := not mnuTQS_Partial.Checked;
-
-    bTreeQSeachExactMatch := mnuTQS_Exact.Checked;
-
-    edtConvoTreeQSearchChange(Self);
 end;
 
 procedure TfrmMain.mnuGithubClick(Sender: TObject);

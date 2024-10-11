@@ -5388,7 +5388,7 @@ object frmMain: TfrmMain
       Left = 0
       Top = 0
       Width = 300
-      Height = 509
+      Height = 353
       Margins.Left = 0
       Margins.Top = 0
       Margins.Right = 0
@@ -5420,6 +5420,7 @@ object frmMain: TfrmMain
       OnEdited = ConvoTreeEdited
       OnEditing = ConvoTreeEditing
       OnMouseDown = ConvoTreeMouseDown
+      ExplicitHeight = 509
     end
     object edtConvoTreeQSearch: TEdit
       Left = 0
@@ -5437,6 +5438,43 @@ object frmMain: TfrmMain
       TabOrder = 1
       TextHint = 'Search in tree'
       OnChange = edtConvoTreeQSearchChange
+      OnEnter = edtConvoTreeQSearchEnter
+    end
+    object pnlTreeSearch: TEsPanel
+      Left = 0
+      Top = 353
+      Width = 300
+      Height = 156
+      Align = alBottom
+      ParentBackground = False
+      ParentColor = False
+      TabOrder = 2
+      Visible = False
+      FrameStyle = None
+      FrameColor = clWhite
+      ExplicitLeft = 1
+      object lbTreeSearchResults: TListBox
+        AlignWithMargins = True
+        Left = 3
+        Top = 3
+        Width = 294
+        Height = 124
+        Align = alTop
+        BorderStyle = bsNone
+        Color = clBtnFace
+        ItemHeight = 15
+        TabOrder = 0
+        OnDblClick = lbTreeSearchResultsDblClick
+        OnExit = lbTreeSearchResultsExit
+      end
+      object chkTreeSearchExactMatch: TCheckBox
+        Left = 6
+        Top = 133
+        Width = 167
+        Height = 17
+        Caption = 'Exact match?'
+        TabOrder = 1
+      end
     end
   end
   object StatusBar: TStatusBar
@@ -5943,25 +5981,6 @@ object frmMain: TfrmMain
     object CollapseAll2: TMenuItem
       Caption = 'Collapse All'
       OnClick = CollapseAll2Click
-    end
-    object N17: TMenuItem
-      Caption = '-'
-    end
-    object reeQuickSearch1: TMenuItem
-      Caption = 'Tree QSearch'
-      object mnuTQS_Exact: TMenuItem
-        Caption = 'Exact match'
-        GroupIndex = 10
-        RadioItem = True
-        OnClick = mnuTQS_ExactClick
-      end
-      object mnuTQS_Partial: TMenuItem
-        Caption = 'Partial match'
-        Checked = True
-        GroupIndex = 10
-        RadioItem = True
-        OnClick = mnuTQS_PartialClick
-      end
     end
   end
   object MenuMain: TMainMenu
