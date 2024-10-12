@@ -971,54 +971,58 @@ begin
     CustomItemsPopup.Items.Clear(); // удалить ранее созданные элементы меню
 
     CustomClasses := TStringList.Create();
-try
-    case TableMode of
-        TM_ActorsPawns: CustomClasses.LoadFromFile(CUSTOM_CLASSES_ACTORS);
-        TM_Flags:       CustomClasses.LoadFromFile(CUSTOM_CLASSES_FLAGS);
-        TM_Skills:      CustomClasses.LoadFromFile(CUSTOM_CLASSES_SKILLS);
-        TM_Objects:     CustomClasses.LoadFromFile(CUSTOM_CLASSES_OBJECTS);
-    end;
-
-    for var i:= 0 to CustomClasses.Count -1 do
-    begin
-        var line := CustomClasses.Strings[i];
-
-        // skip empty lines
-        if CustomClasses.Strings[i].IsEmpty then
-            Continue;
-
-        if CustomClasses.Strings[i] = '-' then begin
-            var CustomMenuSeparator := TMenuItem.Create(CustomItemsPopup);
-
-            CustomMenuSeparator.Caption := CustomClasses.Strings[i];
-            CustomItemsPopup.Items.Add(CustomMenuSeparator);
-            Continue;
+    try
+        case TableMode of
+            TM_ActorsPawns: CustomClasses.LoadFromFile(CUSTOM_CLASSES_ACTORS);
+            TM_Flags:       CustomClasses.LoadFromFile(CUSTOM_CLASSES_FLAGS);
+            TM_Skills:      CustomClasses.LoadFromFile(CUSTOM_CLASSES_SKILLS);
+            TM_Objects:     CustomClasses.LoadFromFile(CUSTOM_CLASSES_OBJECTS);
         end;
 
-        // now split the line
-        var parts := TStringList.Create();
+        for var i:= 0 to CustomClasses.Count -1 do
+        begin
+            var line := CustomClasses.Strings[i];
 
-        try
-            parts.Delimiter := ';';
-            parts.StrictDelimiter := True;
-            parts.DelimitedText := line;
+            // skip empty lines
+            if CustomClasses.Strings[i].IsEmpty then
+                Continue;
 
-            var CustomMenuItem := TMenuItem.Create(CustomItemsPopup);
-                CustomMenuItem.Caption := parts[0] + #9 + parts[1];
+            if CustomClasses.Strings[i] = '-' then begin
+                var CustomMenuSeparator := TMenuItem.Create(CustomItemsPopup);
 
-            // OnClick event handler...
-            CustomMenuItem.OnClick := CustomItem1Click;
+                CustomMenuSeparator.Caption := CustomClasses.Strings[i];
+                CustomItemsPopup.Items.Add(CustomMenuSeparator);
+                Continue;
+            end;
 
-            // Add to menu
-            CustomItemsPopup.Items.Add(CustomMenuItem);
-        finally
-            parts.Free(); // free memory
+            // now split the line
+            var parts := TStringList.Create();
+
+            try
+                parts.Delimiter := ';';
+                parts.StrictDelimiter := True;
+                parts.DelimitedText := line;
+
+                var CustomMenuItem := TMenuItem.Create(CustomItemsPopup);
+
+                if parts.Count > 1 then
+                    CustomMenuItem.Caption := parts[0] + #9 + parts[1]
+                else
+                    CustomMenuItem.Caption := parts[0]; // allow using only name, without ;description
+
+                // OnClick event handler...
+                CustomMenuItem.OnClick := CustomItem1Click;
+
+                // Add to menu
+                CustomItemsPopup.Items.Add(CustomMenuItem);
+            finally
+                parts.Free(); // free memory
+            end;
         end;
-    end;
 
-finally
-    CustomClasses.Free();
-end;
+    finally
+        CustomClasses.Free();
+    end;
 end;
 
 procedure TfrmTableEdit.CleanupCurrentTable(aTableMode: TTableMode);
