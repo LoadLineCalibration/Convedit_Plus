@@ -5409,7 +5409,9 @@ object frmMain: TfrmMain
       MultiSelectStyle = []
       ParentDoubleBuffered = False
       ParentFont = False
+      ParentShowHint = False
       RowSelect = True
+      ShowHint = True
       SortType = stText
       StateImages = TreeImages
       TabOrder = 0
@@ -5419,8 +5421,8 @@ object frmMain: TfrmMain
       OnDeletion = ConvoTreeDeletion
       OnEdited = ConvoTreeEdited
       OnEditing = ConvoTreeEditing
+      OnKeyDown = ConvoTreeKeyDown
       OnMouseDown = ConvoTreeMouseDown
-      ExplicitHeight = 509
     end
     object edtConvoTreeQSearch: TEdit
       Left = 0
@@ -5446,13 +5448,13 @@ object frmMain: TfrmMain
       Width = 300
       Height = 156
       Align = alBottom
+      Color = 3947580
       ParentBackground = False
       ParentColor = False
       TabOrder = 2
       Visible = False
       FrameStyle = None
       FrameColor = clWhite
-      ExplicitLeft = 1
       object lbTreeSearchResults: TListBox
         AlignWithMargins = True
         Left = 3

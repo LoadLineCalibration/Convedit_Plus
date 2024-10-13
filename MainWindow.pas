@@ -627,6 +627,7 @@ type
     procedure edtConvoTreeQSearchEnter(Sender: TObject);
     procedure lbTreeSearchResultsDblClick(Sender: TObject);
     procedure lbTreeSearchResultsExit(Sender: TObject);
+    procedure ConvoTreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -5370,8 +5371,7 @@ begin
         end
         else
         begin
-            //MessageBeep(MB_ICONASTERISK); // Rename is not allowed for this case, play warning sound
-            MessageDlg(PChar(strCannotRenameConversation),  mtError, [mbOK], 0);
+            MessageBox(Handle, PChar(strCannotRenameConversation), PChar(strErrorTitle), MB_OK + MB_ICONSTOP + MB_TOPMOST);
             S := Conversation.conName;
         end;
     end;
@@ -5383,6 +5383,22 @@ begin
 
     if Assigned(Conversation) then
         AllowEdit := True else AllowEdit := False;
+end;
+
+procedure TfrmMain.ConvoTreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+    if Key = VK_F1 then
+    begin
+        if ConvoTree.Selected <> nil then
+        begin
+            if TObject(ConvoTree.Selected.Data) is TConversation then
+            begin
+                var BuildString := ConEditPlus.Helpers.FormatConversationDetails(TConversation(ConvoTree.Selected.Data));
+
+                MessageBox(Handle, PChar(BuildString),PChar('Information'), MB_OK + MB_TOPMOST);
+            end;
+        end;
+    end;
 end;
 
 procedure TfrmMain.ConvoTreeMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -5422,10 +5438,13 @@ begin
 
     if bAskForConvoDelete = true then
     begin
-        if MessageDlg(PChar(strAskDeleteConvoText),  mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+        if MessageBox(Handle, PChar(strAskDeleteConvoText),
+                      PChar(strAskDeleteConvoTitle),
+                      MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
             DeleteCurrentConversation();
-    end else
-        DeleteCurrentConversation();
+    end
+        else
+            DeleteCurrentConversation();
 end;
 
 procedure TfrmMain.DeleteCurrentEvent();
@@ -6190,7 +6209,8 @@ end;
 
 function TfrmMain.CanRenameConversation(convoName: string): Boolean;
 begin
-    if StringStartsFromDigit(convoName) = True then
+    //if StringStartsFromDigit(convoName) = True then
+    if ConEditPlus.Helpers.ValidateFName(convoName) = False then
     begin
         Result := False;
         Exit;

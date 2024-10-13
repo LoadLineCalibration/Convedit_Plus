@@ -14,7 +14,6 @@ type
     Memo1: TMemo;
     EsLinkLabel2: TEsLinkLabel;
     edtVersion: TEdit;
-    Label2: TLabel;
     procedure btnOkClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);

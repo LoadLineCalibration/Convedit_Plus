@@ -6,7 +6,8 @@ unit ConEditPlus.Helpers;
 interface
 
 uses
-     Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, System.StrUtils;
+     Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, System.StrUtils,
+     Conversation.Classes;
 
 // functions
 function StringStartsFromDigit(str: String): Boolean;
@@ -14,6 +15,7 @@ function IsInvalidFName(const AString: string): Boolean;
 function ValidateFName(const AString: string): Boolean;
 function GetDPIAsRatio(): Single;
 function GenerateRandomSuffix(): string;
+function FormatConversationDetails(const Conversation: TConversation): string;
 
 // procedures
 procedure FilterEditInput(var aKey: Char);
@@ -92,7 +94,52 @@ begin
     aKey := #0;
 end;
 
-
-
+function FormatConversationDetails(const Conversation: TConversation): string;
+begin
+  Result := Format('unknown0: %d'#13#10 +
+                  'id: %d'#13#10 +
+                  'conDescription: "%s"'#13#10 +
+                  'conCreatedByDate: "%s"'#13#10 +
+                  'conCreatedByName: "%s"'#13#10 +
+                  'conModifiedByDate: "%s"'#13#10 +
+                  'conModifiedByName: "%s"'#13#10 +
+                  'conOwnerIndex: %d'#13#10 +
+                  'conOwnerName: "%s"'#13#10 +
+                  'bInfoLink: %s'#13#10 +
+                  'conNotes: "%s"'#13#10 +
+                  'bOnlyOnce: %s'#13#10 +
+                  'bFirstPerson: %s'#13#10 +
+                  'bNonInteract: %s'#13#10 +
+                  'bRandomCamera: %s'#13#10 +
+                  'bCanInterrupt: %s'#13#10 +
+                  'bCannotInterrupt: %s'#13#10 +
+                  'bPCBumps: %s'#13#10 +
+                  'bPCFrobs: %s'#13#10 +
+                  'bNPCSees: %s'#13#10 +
+                  'bNPCEnters: %s'#13#10 +
+                  'distance: %d',
+                  [Conversation.unknown0,
+                   Conversation.id,
+                   Conversation.conDescription,
+                   Conversation.conCreatedByDate,
+                   Conversation.conCreatedByName,
+                   Conversation.conModifiedByDate,
+                   Conversation.conModifiedByName,
+                   Conversation.conOwnerIndex,
+                   Conversation.conOwnerName,
+                   BoolToStr(Conversation.bInfoLink, True),
+                   Conversation.conNotes,
+                   BoolToStr(Conversation.bOnlyOnce, True),
+                   BoolToStr(Conversation.bFirstPerson, True),
+                   BoolToStr(Conversation.bNonInteract, True),
+                   BoolToStr(Conversation.bRandomCamera, True),
+                   BoolToStr(Conversation.bCanInterrupt, True),
+                   BoolToStr(Conversation.bCannotInterrupt, True),
+                   BoolToStr(Conversation.bPCBumps, True),
+                   BoolToStr(Conversation.bPCFrobs, True),
+                   BoolToStr(Conversation.bNPCSees, True),
+                   BoolToStr(Conversation.bNPCEnters, True),
+                   Conversation.distance]);
+end;
 
 end.

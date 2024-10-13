@@ -2,7 +2,7 @@ object frmAbout: TfrmAbout
   Left = 0
   Top = 0
   BorderStyle = bsDialog
-  Caption = 'Romantic'#259
+  Caption = 'Dar totu'#537'i, '#238'n lume exist'#259' dragoste!'
   ClientHeight = 278
   ClientWidth = 278
   Color = clBtnFace
@@ -83,17 +83,6 @@ object frmAbout: TfrmAbout
     Url = 'https://github.com/Dennis1000/verysimplexml'
     LinkColor = clBlue
     LinkStyle = Mixed
-  end
-  object Label2: TLabel
-    Left = 156
-    Top = 155
-    Width = 114
-    Height = 74
-    Alignment = taCenter
-    Caption = 
-      #206'ntr-un veac grabit'#13#10'Ce ne va l'#259'sa'#13#10'Visul m-a sorbit'#13#10'Cu dulcea'#355 +
-      'a sa.'
-    Layout = tlCenter
   end
   object btnOk: TButton
     Left = 195
