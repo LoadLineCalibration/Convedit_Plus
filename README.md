@@ -110,7 +110,7 @@ So the correct path will look like `C:\Games\DeusEx_RTX\GameConversations\Audio`
   <summary>How to build from sources:</summary>
 
 * Install Delphi 11.3 or Delphi Community Edition 11.3. Community edition is free.
-* Install CNPack (optional). 
+* Install [CNWizards](https://github.com/cnpack/cnwizards) (optional). 
 * Download and install FreeEsVCLComponents components library.
 * Download and install the Xml.VerySimple.
 * Download sources, open the .dproj file and hit F9 (by default).
