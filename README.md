@@ -19,7 +19,7 @@ ToDo list:
 
 Known bugs I have not fixed yet:
 * ~Duplication of Choice leads to "sync" editing of both events. This is because the copy contains pointers to nested objects from an original event.~
-* For unknown reason (at least at the moment), the original ConEdit refuses to load some files, saved or created in ConEditPlus. These files, however, do work just fine in-game, and can be decompiled with DEED. I suppose this due to some "unknown" fields in  the .con files.
+* Should be fixed starting from beta 7. ~For unknown reason (at least at the moment), the original ConEdit refuses to load some files, saved or created in ConEditPlus. These files, however, do work just fine in-game, and can be decompiled with DEED. I suppose this due to some "unknown" fields in  the .con files.~
 
 
 ___
