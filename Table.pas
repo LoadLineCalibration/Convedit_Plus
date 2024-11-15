@@ -33,6 +33,10 @@ type
     Copytoclipboard1: TMenuItem;
     edtSearchInTable: TEdit;
     edtTableItemsCounter: TEdit;
+    N1: TMenuItem;
+    CopylistcontentstoClipboard1: TMenuItem;
+    Exportlistcontentstofile1: TMenuItem;
+    ExportListDialog: TFileSaveDialog;
 
     // new procedures
     procedure UpdateButtonsState();
@@ -79,6 +83,8 @@ type
     procedure ListContentsPopupPopup(Sender: TObject);
     procedure Copytoclipboard1Click(Sender: TObject);
     procedure edtSearchInTableChange(Sender: TObject);
+    procedure CopylistcontentstoClipboard1Click(Sender: TObject);
+    procedure Exportlistcontentstofile1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -571,6 +577,21 @@ begin
     end;
 end;
 
+procedure TfrmTableEdit.Exportlistcontentstofile1Click(Sender: TObject);
+begin
+    var TextFileName: string;
+
+    if ExportListDialog.Execute() = True then
+    begin
+        TextFileName := ExportListDialog.FileName;
+
+        if (ExportListDialog.FileTypeIndex = 1) and (ExtractFileExt(TextFileName) = '') then
+            TextFileName := TextFileName + '.txt';
+
+        lstTableContents.Items.SaveToFile(TextFileName, TEncoding.ANSI);
+    end;
+end;
+
 procedure TfrmTableEdit.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
     if frmFlagList.Visible = true then
@@ -617,6 +638,9 @@ procedure TfrmTableEdit.ListContentsPopupPopup(Sender: TObject);
 begin
     if lstTableContents.ItemIndex <> -1 then
         Copytoclipboard1.Enabled := True;
+
+    CopylistcontentstoClipboard1.Enabled := lstTableContents.Items.Count > 0;
+    Exportlistcontentstofile1.Enabled := lstTableContents.Items.Count > 0;
 end;
 
 procedure TfrmTableEdit.UpdateButtonsState(); // блокировать/разблокировать кнопки в зависимости от...
@@ -1129,6 +1153,12 @@ begin
     tempList.Free();
 end;
 
+
+procedure TfrmTableEdit.CopylistcontentstoClipboard1Click(Sender: TObject);
+begin
+    if lstTableContents.Items.Count > 0 then
+        Clipboard.AsText := lstTableContents.Items.Text;
+end;
 
 procedure TfrmTableEdit.Copytoclipboard1Click(Sender: TObject);
 begin

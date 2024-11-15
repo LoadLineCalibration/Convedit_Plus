@@ -292,5 +292,33 @@ object frmTableEdit: TfrmTableEdit
       Enabled = False
       OnClick = Copytoclipboard1Click
     end
+    object N1: TMenuItem
+      Caption = '-'
+    end
+    object CopylistcontentstoClipboard1: TMenuItem
+      Caption = 'Copy list contents to Clipboard'
+      OnClick = CopylistcontentstoClipboard1Click
+    end
+    object Exportlistcontentstofile1: TMenuItem
+      Caption = 'Export list contents to file...'
+      OnClick = Exportlistcontentstofile1Click
+    end
+  end
+  object ExportListDialog: TFileSaveDialog
+    FavoriteLinks = <>
+    FileTypes = <
+      item
+        DisplayName = 'Text files'
+        FileMask = '*.txt'
+      end
+      item
+        DisplayName = 'All files'
+        FileMask = '*.*'
+      end>
+    OkButtonLabel = '&Export'
+    Options = [fdoOverWritePrompt, fdoStrictFileTypes, fdoForceFileSystem, fdoPathMustExist, fdoNoTestFileCreate]
+    Title = 'Export list to file...'
+    Left = 239
+    Top = 135
   end
 end

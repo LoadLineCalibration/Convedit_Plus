@@ -5910,7 +5910,7 @@ object frmMain: TfrmMain
     object lblSelectedEvent: TLabel
       Left = 951
       Top = 0
-      Width = 400
+      Width = 300
       Height = 30
       Alignment = taCenter
       AutoSize = False
