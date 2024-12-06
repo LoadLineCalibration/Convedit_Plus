@@ -10,8 +10,8 @@ uses
      Conversation.Classes;
 
 // functions
-function StringStartsFromDigit(str: String): Boolean;
-function IsInvalidFName(const AString: string): Boolean;
+//function StringStartsFromDigit(str: String): Boolean;
+//function IsInvalidFName(const AString: string): Boolean;
 function ValidateFName(const AString: string): Boolean;
 function GetDPIAsRatio(): Single;
 function GenerateRandomSuffix(): string;
@@ -22,13 +22,13 @@ procedure FilterEditInput(var aKey: Char);
 
 implementation
 
-function StringStartsFromDigit(str: String): Boolean;
+{function StringStartsFromDigit(str: String): Boolean;
 begin
     if (Length(str) > 0) and (CharInSet(str[1], ['0'..'9'])) then Result := True
        else Result := False;
-end;
+end;}
 
-function IsInvalidFName(const AString: string): Boolean;
+{function IsInvalidFName(const AString: string): Boolean;
 begin
     Result := false;
 
@@ -40,34 +40,30 @@ begin
             break;
         end;
     end;
-end;
+end; }
 
 function ValidateFName(const AString: string): Boolean;
 begin
-    Result := (Pos(' ', AString) = 0) and
-              (Pos('_', AString) > 0) and
-              (CharInSet(AString[1],  ['A'..'Z', 'a'..'z'])) and
-              (not CharInSet(AString[1], ['0'..'9']));
-end;
-
-{function ValidateFName(const AString: string): Boolean;
-var
-  CharIndex: Integer;
-begin
-  Result := (Pos(' ', AString) = 0) and
-            (CharInSet(AString[1], ['A'..'Z', 'a'..'z'])) and
-            (not CharInSet(AString[1], ['0'..'9']));
-
-  for CharIndex := 1 to Length(AString) do
-  begin
-    if not (AString[CharIndex] in ['A'..'Z', 'a'..'z', '_']) then
+    if (AString = '') or
+       (CharInSet(AString[1], ['0'..'9'])) or
+       (Pos(' ', AString) > 0) then
     begin
-      Result := False;
-      Break;
+        Result := False;
+        Exit;
     end;
-  end;
-end;}
 
+    // Проверяем каждый символ
+    for var i := 1 to Length(AString) do
+    begin
+        if not CharInSet(AString[i], ['A'..'Z', 'a'..'z', '0'..'9', '_']) then
+        begin
+            Result := False;
+            Exit;
+        end;
+    end;
+
+    Result := True;
+end;
 
 function GetDPIAsRatio(): Single;
 var
@@ -80,7 +76,7 @@ end;
 
 function GenerateRandomSuffix(): string;
 begin
-    Randomize;
+    Randomize();
     Result := '_';
 
     for var i := 1 to 3 do

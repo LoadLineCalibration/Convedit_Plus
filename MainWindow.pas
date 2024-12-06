@@ -6209,7 +6209,6 @@ end;
 
 function TfrmMain.CanRenameConversation(convoName: string): Boolean;
 begin
-    //if StringStartsFromDigit(convoName) = True then
     if ConEditPlus.Helpers.ValidateFName(convoName) = False then
     begin
         Result := False;

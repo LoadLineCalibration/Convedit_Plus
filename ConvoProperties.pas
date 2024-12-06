@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Samples.Spin, Vcl.Buttons,
   System.StrUtils, Conversation.Classes, ConEditPlus.Helpers, ConEditPlus.Consts, ConEditPlus.Enums,
-  System.UITypes;
+  System.UITypes, System.TypInfo;
 
 type
   TfrmConvoProperties = class(TForm)
@@ -59,6 +59,9 @@ type
     lblTypeName: TLabel;
     chkAdd_PlayedFlag: TCheckBox;
     Label12: TLabel;
+    cmbAIBarksMode: TComboBox;
+    chkAddAiBarksSuffix: TCheckBox;
+    btnAddAiBarkTemplate: TButton;
     procedure btnCancelClick(Sender: TObject);
     procedure chkDataLinkConvoClick(Sender: TObject);
     procedure chkNPCentersPCRadiusClick(Sender: TObject);
@@ -77,6 +80,7 @@ type
     procedure EditConversation_FillFields(var convoToEdit: TConversation); // Load conversation info so we can change something
     procedure UpdateConversation(var convoToUpdate: TConversation); // write modified data back to Conversation we're loaded in procedure above
     procedure ClearFields();
+    procedure FillAIBarksComboBox();
 
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure editDistFromPlayerChange(Sender: TObject);
@@ -85,6 +89,9 @@ type
     function CheckConversationExists(conName: string): Boolean;
     procedure pgcConvoPropertiesTabsChange(Sender: TObject);
     procedure btnDeleteFlagClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure chkAddAiBarksSuffixClick(Sender: TObject);
+    procedure btnAddAiBarkTemplateClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -141,6 +148,27 @@ begin
     chkNPCentersPCRadiusClick(self);
 
     editDistFromPlayer.Value := 0;
+end;
+
+procedure TfrmConvoProperties.FillAIBarksComboBox();
+begin
+    var AIBarks: TBarkModes;
+    var StrToAdd: string;
+
+    cmbAIBarksMode.Clear();
+
+    for AIBarks := Low(TBarkModes) to High(TBarkModes) do
+    begin
+        StrToAdd := GetEnumName(TypeInfo(TBarkModes), Ord(AIBarks));
+
+        if StrToAdd.StartsWith('BM') then
+            StrToAdd := Copy(StrToAdd, 3, Length(StrToAdd) -2);
+
+        cmbAIBarksMode.Items.Add(StrToAdd);
+    end;
+
+    cmbAIBarksMode.ItemIndex := 0;
+    chkAddAiBarksSuffixClick(self);
 end;
 
 procedure TfrmConvoProperties.AddNewConversation();
@@ -229,7 +257,7 @@ begin
     end;
 
     if chkAdd_PlayedFlag.Checked = True then
-        frmMain.listFlags.Add(ConvoToAdd.conName + '_Played');
+        frmMain.listFlags.Add(ConvoToAdd.conName + PLAYED_SUFF);
 
     frmMain.SelectTreeItemByObject(frmMain.ConvoTree, ConvoToAdd); // select the conversation
 end;
@@ -240,11 +268,10 @@ var
 begin
     with convoToUpdate do
     begin
-        conName := editConvoName.Text;
+        conName := editConvoName.Text; // conversation name
 
-        conModifiedByName := frmMain.ConversationUserName;
-
-        conModifiedByDate := conXMLDateTime(); // set current date/time
+        conModifiedByName := frmMain.ConversationUserName; // user name
+        conModifiedByDate := conXMLDateTime(); // use current date/time
 
         // conversation has only one owner
         TempConvoOwnerName := cmbConvoOwner.Items[cmbConvoOwner.ItemIndex];
@@ -333,7 +360,7 @@ begin
     end;
 
     if chkAdd_PlayedFlag.Checked = True then
-        frmMain.listFlags.Add(convoToUpdate.conName + '_Played');
+        frmMain.listFlags.Add(convoToUpdate.conName + PLAYED_SUFF);
 
     NameNode.Expand(False);
 end;
@@ -390,6 +417,28 @@ begin
     ShowModal();
 end;
 
+procedure TfrmConvoProperties.btnAddAiBarkTemplateClick(Sender: TObject);
+begin
+    var AIBarksItemIdx := cmbAIBarksMode.ItemIndex;
+      if AIBarksItemIdx = -1 then AIBarksItemIdx := 0; // Combobox itemIndex (failsafe)
+    var AIBarkMode := cmbAIBarksMode.Items[AIBarksItemIdx];
+    var bAlreadyBark: Boolean := False;
+
+    for var str in cmbAIBarksMode.Items do
+    begin
+        if EndsText(str, editConvoName.Text) = True then
+        begin
+            bAlreadyBark := True;
+            Break;
+        end;
+    end;
+
+    if bAlreadyBark = False then
+    begin
+        editConvoName.Text := editConvoName.Text + AIBarkMode;
+    end;
+end;
+
 procedure TfrmConvoProperties.btnAddFlagClick(Sender: TObject);
 begin
     frmFlagList.ShowModalCheckFlags(lvConvoDependsOnFlags);
@@ -425,7 +474,8 @@ begin
     var L := Length(S);
 
     // Unlock the "OK" button only if required fields are not empty and contains no digit in the beginning.
-    btnOk.Enabled := ((L > 0) and (StringStartsFromDigit(S) = false) and (cmbConvoOwner.ItemIndex <> -1) and (cmbConvoOwner.Items.Count > 0));
+    //btnOk.Enabled := ((L > 0) and (StringStartsFromDigit(S) = false) and (cmbConvoOwner.ItemIndex <> -1) and (cmbConvoOwner.Items.Count > 0));
+    btnOk.Enabled := ((L > 0) and (ConEditPlus.Helpers.ValidateFName(S) = True) and (cmbConvoOwner.ItemIndex <> -1) and (cmbConvoOwner.Items.Count > 0));
 
     lblTypeName.Visible := not btnOk.Enabled;
     with pgcConvoPropertiesTabs do
@@ -446,6 +496,11 @@ procedure TfrmConvoProperties.editDistFromPlayerChange(Sender: TObject);
 begin
     if editDistFromPlayer.Value <= 1 then
         editDistFromPlayer.Value := 0;
+end;
+
+procedure TfrmConvoProperties.FormCreate(Sender: TObject);
+begin
+    FillAIBarksComboBox();
 end;
 
 procedure TfrmConvoProperties.FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
@@ -507,7 +562,8 @@ begin
 
         em_Create:
         begin
-            if StringStartsFromDigit(editConvoName.Text) = True then
+            //if StringStartsFromDigit(editConvoName.Text) = True then
+            if ConEditPlus.Helpers.ValidateFName(editConvoName.Text) then
             begin
                 MessageDlg(strNameStartsFromDigit,  mtError, [mbOK], 0);
                 Exit();
@@ -530,6 +586,12 @@ end;
 procedure TfrmConvoProperties.btnPickConvoOwnerClick(Sender: TObject);
 begin
     frmMain.PickTableObject(TM_ActorsPawns, cmbConvoOwner);
+end;
+
+procedure TfrmConvoProperties.chkAddAiBarksSuffixClick(Sender: TObject);
+begin
+    cmbAIBarksMode.Visible := chkAddAiBarksSuffix.Checked;
+    btnAddAiBarkTemplate.Visible := chkAddAiBarksSuffix.Checked;
 end;
 
 procedure TfrmConvoProperties.chkDataLinkConvoClick(Sender: TObject);
@@ -562,9 +624,8 @@ end;
 
 procedure TfrmConvoProperties.chkDisplayConvoOnlyOnceClick(Sender: TObject);
 begin
-    chkAdd_PLayedFlag.Enabled := chkDisplayConvoOnlyOnce.Checked;
-
-    if chkDisplayConvoOnlyOnce.Checked = false then chkAdd_PLayedFlag.Checked := false;
+    chkAdd_PlayedFlag.Enabled := chkDisplayConvoOnlyOnce.Checked;
+    if chkDisplayConvoOnlyOnce.Checked = false then chkAdd_PlayedFlag.Checked := false;
 end;
 
 end.

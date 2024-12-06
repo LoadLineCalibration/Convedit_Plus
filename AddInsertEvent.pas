@@ -1076,13 +1076,14 @@ end;
 
 function TfrmEventInsAdd.ValidatePlayAnim(playAnim: TConEventAnimation): Boolean;
 begin
-    if StringStartsFromDigit(cmbAnimSeq.Text) = true then
+{    if StringStartsFromDigit(cmbAnimSeq.Text) = true then
     begin
         EventWarning(true, 'Error: Animation name should not start from digit!');
         Exit(False);
-    end;
+    end; }
 
-    if IsInvalidFName(cmbAnimSeq.Text) = true then
+    //if IsInvalidFName(cmbAnimSeq.Text) = true then
+    if ConEditPlus.Helpers.ValidateFName(cmbAnimSeq.Text) = False then
     begin
         EventWarning(true, 'Error: Invalid animation name!');
         Exit(False);
@@ -1163,7 +1164,8 @@ end;
 
 function TfrmEventInsAdd.ValidateTrigger(trigger: TConEventTrigger): Boolean;
 begin
-    if (Length(editTriggerTag.Text) > 0) and (StringStartsFromDigit(editTriggerTag.Text)) then
+//    if (Length(editTriggerTag.Text) > 0) and (StringStartsFromDigit(editTriggerTag.Text)) then
+    if (Length(editTriggerTag.Text) > 0) and (ConEditPlus.Helpers.ValidateFName(editTriggerTag.Text) = False) then
     begin
        EventWarning(True, 'Invalid characters in TriggerTag!');
        Exit(False);
@@ -2381,9 +2383,11 @@ begin
         Exit();
     end;
 
-    if StringStartsFromDigit(Trim(editEventLabel.Text)) then
+    //if StringStartsFromDigit(Trim(editEventLabel.Text)) then
+    if ConEditPlus.Helpers.ValidateFName(Trim(editEventLabel.Text)) then
     begin
-        MessageDlg(strLabelStartsWithNumber,  mtError, [mbOK], 0);
+        MessageBox(Handle, PChar(strLabelStartsWithNumber), PChar(strErrorTitle), MB_OK + MB_ICONERROR + MB_TOPMOST);
+        //MessageDlg(strLabelStartsWithNumber,  mtError, [mbOK], 0);
         Exit();
     end;
 

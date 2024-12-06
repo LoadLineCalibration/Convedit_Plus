@@ -13,6 +13,7 @@ object frmConvoProperties: TfrmConvoProperties
   Font.Style = []
   Position = poMainFormCenter
   ShowHint = True
+  OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
   OnShow = FormShow
   TextHeight = 15
@@ -70,7 +71,7 @@ object frmConvoProperties: TfrmConvoProperties
       Top = 3
       Width = 394
       Height = 404
-      ActivePage = Invoke
+      ActivePage = TabSheet1
       Align = alClient
       DoubleBuffered = False
       ParentDoubleBuffered = False
@@ -85,21 +86,21 @@ object frmConvoProperties: TfrmConvoProperties
           371)
         object Label3: TLabel
           Left = 12
-          Top = 20
+          Top = 60
           Width = 108
           Height = 15
           Caption = 'Conversation Name:'
         end
         object Label4: TLabel
           Left = 12
-          Top = 92
+          Top = 116
           Width = 146
           Height = 15
           Caption = 'Description (seen by Player)'
         end
         object Label5: TLabel
           Left = 12
-          Top = 160
+          Top = 172
           Width = 111
           Height = 15
           Caption = 'Conversation Owner:'
@@ -130,7 +131,7 @@ object frmConvoProperties: TfrmConvoProperties
         end
         object cmbConvoOwner: TComboBox
           Left = 12
-          Top = 181
+          Top = 193
           Width = 333
           Height = 22
           Style = csOwnerDrawFixed
@@ -139,14 +140,14 @@ object frmConvoProperties: TfrmConvoProperties
         end
         object editConvoDescription: TEdit
           Left = 12
-          Top = 112
+          Top = 136
           Width = 360
           Height = 23
           TabOrder = 1
         end
         object editConvoName: TEdit
           Left = 12
-          Top = 40
+          Top = 80
           Width = 360
           Height = 23
           TabOrder = 0
@@ -155,7 +156,7 @@ object frmConvoProperties: TfrmConvoProperties
         end
         object btnPickConvoOwner: TButton
           Left = 351
-          Top = 181
+          Top = 193
           Width = 21
           Height = 22
           Hint = 'Edit NPC Table'
@@ -164,6 +165,32 @@ object frmConvoProperties: TfrmConvoProperties
           TabOrder = 4
           StyleElements = []
           OnClick = btnPickConvoOwnerClick
+        end
+        object cmbAIBarksMode: TComboBox
+          Left = 12
+          Top = 24
+          Width = 321
+          Height = 22
+          Style = csOwnerDrawFixed
+          TabOrder = 5
+        end
+        object chkAddAiBarksSuffix: TCheckBox
+          Left = 13
+          Top = 1
+          Width = 145
+          Height = 17
+          Caption = 'AI Barks templates?'
+          TabOrder = 6
+          OnClick = chkAddAiBarksSuffixClick
+        end
+        object btnAddAiBarkTemplate: TButton
+          Left = 336
+          Top = 23
+          Width = 36
+          Height = 23
+          Caption = 'Add'
+          TabOrder = 7
+          OnClick = btnAddAiBarkTemplateClick
         end
       end
       object Flags: TTabSheet
