@@ -188,6 +188,7 @@ object frmConvoProperties: TfrmConvoProperties
           Top = 23
           Width = 36
           Height = 23
+          Hint = 'Add to conversation name'
           Caption = 'Add'
           TabOrder = 7
           OnClick = btnAddAiBarkTemplateClick

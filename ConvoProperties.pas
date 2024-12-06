@@ -129,6 +129,7 @@ begin
     editConvoDescription.Clear();
     memoConversationNotes.Clear();
     lvConvoDependsOnFlags.Clear();
+    chkAddAiBarksSuffix.Checked := False;
 
     // Reset Options
     chkDisplayConvoOnlyOnce.Checked           := True;
@@ -563,7 +564,7 @@ begin
         em_Create:
         begin
             //if StringStartsFromDigit(editConvoName.Text) = True then
-            if ConEditPlus.Helpers.ValidateFName(editConvoName.Text) then
+            if ConEditPlus.Helpers.ValidateFName(editConvoName.Text) = False then
             begin
                 MessageDlg(strNameStartsFromDigit,  mtError, [mbOK], 0);
                 Exit();

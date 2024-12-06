@@ -30,6 +30,8 @@ const CUSTOM_CLASSES_OBJECTS = 'Objects_Custom.txt';
 const CUSTOM_CLASSES_ACTORS = 'ActorsPawns_Custom.txt';
 const CUSTOM_CLASSES_FLAGS = 'Flags_Custom.txt';
 
+const strDEED = 'Deus Ex Extractor and Decompiler'; // for testing
+
 
 const Default_DeusEx_Skills: array[0..10] of string =
 (
@@ -337,8 +339,12 @@ ResourceString // These strings can be translated.
     strSearchSelectConversation = 'Select any conversation first!';
     strSearchResults = 'Results: ';
 
-    // Error messages when trying to save file
+
+    // MessageBox title
     strErrorTitle = 'Error!';
+    strWarningTitle = 'Warning!';
+
+    // Error messages when trying to save file
     strSaveError = 'Error saving file (%s):' + #13#10 +'%s';
     strSaveErrorStatus = 'Error saving file: ';
 
@@ -365,15 +371,13 @@ ResourceString // These strings can be translated.
     strCannotRenameConversation = 'Another conversation with such name already exists or name contains invalid characters!' + #13#10#13#10 +
                                   'Cannot rename this conversation.';
 
-    strNameStartsFromDigit = 'Conversation name cannot start with number!';
+    strNameStartsFromDigit = 'Conversation name cannot start with number!'; // Remove?
 
     strUniqueLabelRequired = 'The EventLabel you entered is not unique, please choose another.';
 
     strFileModiefied = ' [File has been modified]';
 
     strClipboardReadError = 'Error reading data from Clipboard!';
-
-    strDEED = 'Deus Ex Extractor and Decompiler'; // for testing
 
     strClipboardConversationV1 = '%s: %s';
     strClipboardConversationV2 = ' choice #%d: %s';

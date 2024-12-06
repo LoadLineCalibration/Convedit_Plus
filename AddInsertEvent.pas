@@ -2379,15 +2379,14 @@ procedure TfrmEventInsAdd.ValidateEvents(var Event: TConEvent);
 begin
     if CheckLabelDuplicates(frmMain.CurrentConversation, editEventLabel.Text) = True then
     begin
-        MessageDlg(strUniqueLabelRequired,  mtWarning, [mbOk], 0);
+        MessageBox(Handle, PChar(strUniqueLabelRequired), PChar(strWarningTitle), MB_OK + MB_ICONWARNING + MB_TOPMOST);
         Exit();
     end;
 
     //if StringStartsFromDigit(Trim(editEventLabel.Text)) then
-    if ConEditPlus.Helpers.ValidateFName(Trim(editEventLabel.Text)) then
+    if ConEditPlus.Helpers.ValidateFName(Trim(editEventLabel.Text)) = False then
     begin
         MessageBox(Handle, PChar(strLabelStartsWithNumber), PChar(strErrorTitle), MB_OK + MB_ICONERROR + MB_TOPMOST);
-        //MessageDlg(strLabelStartsWithNumber,  mtError, [mbOK], 0);
         Exit();
     end;
 
