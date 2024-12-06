@@ -5937,11 +5937,9 @@ object frmMain: TfrmMain
     Top = 287
     object Add3: TMenuItem
       Action = AddConversation
-      ImageIndex = 4
     end
     object Delete2: TMenuItem
       Action = Conversation_Delete
-      ImageIndex = 5
     end
     object N12: TMenuItem
       Caption = '-'
@@ -9120,41 +9118,41 @@ object frmMain: TfrmMain
     end
     object AddConversation: TAction
       Category = 'Conversation'
-      Caption = 'Add'
-      ImageIndex = 3
+      Caption = 'Add Conversation'
+      ImageIndex = 4
       OnExecute = AddConversationExecute
     end
     object Conversation_Delete: TAction
       Category = 'Conversation'
-      Caption = 'Delete'
+      Caption = 'Delete Conversation'
       Enabled = False
-      ImageIndex = 4
+      ImageIndex = 5
       OnExecute = Conversation_DeleteExecute
     end
     object Conversation_Cut: TAction
       Category = 'Conversation'
-      Caption = 'Cut'
+      Caption = 'Cut Conversation'
       Enabled = False
       ImageIndex = 1
       OnExecute = Conversation_CutExecute
     end
     object Conversation_Copy: TAction
       Category = 'Conversation'
-      Caption = 'Copy'
+      Caption = 'Copy Conversation'
       Enabled = False
       ImageIndex = 0
       OnExecute = Conversation_CopyExecute
     end
     object Conversation_Paste: TAction
       Category = 'Conversation'
-      Caption = 'Paste'
+      Caption = 'Paste Conversation'
       Enabled = False
       ImageIndex = 2
       OnExecute = Conversation_PasteExecute
     end
     object Conversation_Properties: TAction
       Category = 'Conversation'
-      Caption = 'Properties'
+      Caption = 'Properties...'
       Hint = 'Conversation properties'
       OnExecute = Conversation_PropertiesExecute
     end
@@ -9210,7 +9208,7 @@ object frmMain: TfrmMain
     end
     object Conversation_CheckLabels: TAction
       Category = 'Conversation'
-      Caption = 'Check Labels'
+      Caption = 'Check Labels...'
       ShortCut = 16460
       OnExecute = Conversation_CheckLabelsExecute
     end

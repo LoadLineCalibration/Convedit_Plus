@@ -5436,7 +5436,7 @@ object frmEventInsAdd: TfrmEventInsAdd
     Top = 114
     Width = 556
     Height = 406
-    ActivePage = TabSheet6
+    ActivePage = TabSheet13
     Anchors = [akLeft, akTop, akRight, akBottom]
     DoubleBuffered = True
     ParentDoubleBuffered = False
@@ -7218,7 +7218,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           MinValue = 0
           TabOrder = 1
           Value = -1
-          OnChange = editConditionValueChange
+          OnChange = editSkillPointsAmountChange
         end
       end
     end
@@ -7629,14 +7629,11 @@ object frmEventInsAdd: TfrmEventInsAdd
     Width = 66
     Height = 25
     Cursor = crHandPoint
-    Hint = 
-      'Follow main window when moving. '#13#10'Works only within bounds of ma' +
-      'in window.'
+    Hint = 'Follow the main window when it is moved.'
     Anchors = [akRight, akBottom]
     Caption = 'Follow?'
     TabOrder = 13
     WordWrap = True
-    OnClick = chAlphaBlendClick
   end
   object MemoPopup: TPopupMenu
     OnPopup = MemoPopupPopup

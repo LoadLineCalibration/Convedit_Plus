@@ -831,8 +831,7 @@ begin
        end;
     end
     else
-        Application.MessageBox(PChar(Format(strAudioFileNotFound, [SpeechMP3File])), 'Error', MB_OK + MB_ICONSTOP + MB_TOPMOST);
-        //MessageDlg(Format(strAudioFileNotFound, [SpeechMP3File]) , mtError, [mbOK], 0);
+        MessageBox(frmMain.Handle, PChar(Format(strAudioFileNotFound, [SpeechMP3File])), 'Error', MB_OK + MB_ICONSTOP + MB_TOPMOST);
 end;
 
 procedure TfrmEventInsAdd.ExchangeListViewItems(LV: TListView; const i, j: Integer);
@@ -1167,14 +1166,14 @@ begin
 //    if (Length(editTriggerTag.Text) > 0) and (StringStartsFromDigit(editTriggerTag.Text)) then
     if (Length(editTriggerTag.Text) > 0) and (ConEditPlus.Helpers.ValidateFName(editTriggerTag.Text) = False) then
     begin
-       EventWarning(True, 'Invalid characters in TriggerTag!');
-       Exit(False);
+        EventWarning(True, 'Invalid characters in TriggerTag!');
+        Exit(False);
     end;
 
     if Length(editTriggerTag.Text) < 1 then
     begin
-       EventWarning(True, 'TriggerTag cannot be empty!');
-       Exit(False);
+        EventWarning(True, 'TriggerTag cannot be empty!');
+        Exit(False);
     end;
 
     trigger.TriggerTag := editTriggerTag.Text;
@@ -1189,6 +1188,12 @@ end;
 
 function TfrmEventInsAdd.ValidateAddCompGoal(theGoal: TConEventAddGoal): Boolean;
 begin
+    if (Length(editGoalName.Text) > 0) and (ConEditPlus.Helpers.ValidateFName(editGoalName.Text) = False) then
+    begin
+        EventWarning(True, 'Invalid characters in GoalName!');
+        Exit(False);
+    end;
+
     theGoal.GoalName := editGoalName.Text; // в любом случае
 
     if rbAddGoal.Checked = True then
@@ -2379,14 +2384,14 @@ procedure TfrmEventInsAdd.ValidateEvents(var Event: TConEvent);
 begin
     if CheckLabelDuplicates(frmMain.CurrentConversation, editEventLabel.Text) = True then
     begin
-        MessageBox(Handle, PChar(strUniqueLabelRequired), PChar(strWarningTitle), MB_OK + MB_ICONWARNING + MB_TOPMOST);
+        MessageBox(frmMain.Handle, PChar(strUniqueLabelRequired), PChar(strWarningTitle), MB_OK + MB_ICONWARNING + MB_TOPMOST);
         Exit();
     end;
 
     //if StringStartsFromDigit(Trim(editEventLabel.Text)) then
     if ConEditPlus.Helpers.ValidateFName(Trim(editEventLabel.Text)) = False then
     begin
-        MessageBox(Handle, PChar(strLabelStartsWithNumber), PChar(strErrorTitle), MB_OK + MB_ICONERROR + MB_TOPMOST);
+        MessageBox(frmMain.Handle, PChar(strLabelStartsWithNumber), PChar(strErrorTitle), MB_OK + MB_ICONERROR + MB_TOPMOST);
         Exit();
     end;
 

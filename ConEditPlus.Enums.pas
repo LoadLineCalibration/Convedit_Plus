@@ -36,28 +36,27 @@ type TChoiceMP3CopyMode =
     CM_OnlyMp3
 );
 
-// DEUS_EX AJY
 type TBarkModes =
 (
-    BM_Idle,
-    BM_CriticalDamage,
-    BM_AreaSecure,
-    BM_TargetAcquired,
-    BM_TargetLost,
-    BM_GoingForAlarm,
-    BM_OutOfAmmo,
-    BM_Scanning,
-    BM_Futz,
-    BM_OnFire,
-    BM_TearGas,
-    BM_Gore,
-    BM_Surprise,
-    BM_PreAttackSearching,
-    BM_PreAttackSighting,
-    BM_PostAttackSearching,
-    BM_SearchGiveUp,
-    BM_AllianceHostile,
-    BM_AllianceFriendly
+    BM_BarkIdle,
+    BM_BarkCriticalDamage,
+    BM_BarkAreaSecure,
+    BM_BarkTargetAcquired,
+    BM_BarkTargetLost,
+    BM_BarkGoingForAlarm,
+    BM_BarkOutOfAmmo,
+    BM_BarkScanning,
+    BM_BarkFutz,
+    BM_BarkOnFire,
+    BM_BarkTearGas,
+    BM_BarkGore,
+    BM_BarkSurprise,
+    BM_BarkPreAttackSearching,
+    BM_BarkPreAttackSighting,
+    BM_BarkPostAttackSearching,
+    BM_BarkSearchGiveUp,
+    BM_BarkAllianceHostile,
+    BM_BarkAllianceFriendly
 );
 
 
