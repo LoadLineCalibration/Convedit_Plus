@@ -7577,7 +7577,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   object mp1: TMediaPlayer
     Left = 294
     Top = 522
-    Width = 57
+    Width = -1
     Height = 20
     VisibleButtons = [btPlay, btPause]
     DoubleBuffered = True

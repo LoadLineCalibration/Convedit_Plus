@@ -336,6 +336,9 @@ type
     pnlTreeSearch: TEsPanel;
     lbTreeSearchResults: TListBox;
     chkTreeSearchExactMatch: TCheckBox;
+    Conversation_Create_AIBark_Template: TAction;
+    AddTemplateConversation1: TMenuItem;
+    AddAIBarktemplateconversation1: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -479,6 +482,8 @@ type
 
     procedure CopyChoiceMp3Path(ChoiceMP3CopyMode: TChoiceMP3CopyMode; idx: Integer);
 
+    procedure CreateAIBarksExample();
+
     procedure FormResize(Sender: TObject);
     procedure CollapseAll2Click(Sender: TObject);
     procedure ConvoTreeEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
@@ -588,7 +593,6 @@ type
     procedure FileOpenDialogTypeChange(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure ConEventListEndDrag(Sender, Target: TObject; X, Y: Integer);
-    procedure ConvoTreeAddition(Sender: TObject; Node: TTreeNode);
     procedure ConvoTreeDeletion(Sender: TObject; Node: TTreeNode);
     procedure Conversation_RenameExecute(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -628,6 +632,7 @@ type
     procedure lbTreeSearchResultsDblClick(Sender: TObject);
     procedure lbTreeSearchResultsExit(Sender: TObject);
     procedure ConvoTreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure Conversation_Create_AIBark_TemplateExecute(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -2425,6 +2430,126 @@ begin
             end;
         end;
     end;
+end;
+
+{Random 123
+end
+Speech1
+end
+Speech2
+end
+Speech3
+end}
+procedure TfrmMain.CreateAIBarksExample();
+begin
+    // Initial setup
+    var ConvoOwnerName: string;
+    var OwnerNode: TTreeNode;
+
+    OwnerNode := ConvoTree.Selected;
+
+    while OwnerNode.Level > 0 do
+        OwnerNode := OwnerNode.Parent;
+
+    ConvoOwnerName := OwnerNode.Text;
+
+    var ConvoOwnerIdx := FindTableIdByName(TM_ActorsPawns, ConvoOwnerName);
+
+//    Exit();  // For now
+
+    var AIBarksConvo := TConversation.Create(); // Create TConversation object first
+    with AIBarksConvo do
+    begin
+        ConversationsList.Add(AIBarksConvo); // Add to list
+        id := ConversationsList.IndexOfItem(AIBarksConvo, TList.TDirection.FromBeginning); // set id from list
+
+        conDescription := strConvoDescGenerated;
+        conName := ConvoOwnerName + ConEditPlus.Helpers.GenerateRandomSuffix(); // Generate random?
+
+        conOwnerIndex:= ConvoOwnerIdx;
+        conOwnerName:= ConvoOwnerName;
+
+        bOnlyOnce       := False; // Fill fields...
+        bFirstPerson    := True;
+        bNonInteract    := True;
+        bRandomCamera   := False;
+        bCanInterrupt   := False;
+        bCannotInterrupt:= False;
+        bPCBumps        := False;
+        bPCFrobs        := False;
+        bNPCSees        := False;
+        bNPCEnters      := False;
+        distance        := 0;
+
+        // Now events...
+        numEventList:= 8;
+        unknown0 := 8;
+        SetLength(Events, 8);
+
+        Events[0] := TConEventRandom.Create(); // Create TConEventRandom
+        with Events[0] as TConEventRandom do
+        begin
+            EventIdx := 0;
+            unknown1 := EventIdx + 1;
+            bCycle := True;
+            bCycleOnce := False;
+            bCycleRandom := True;
+            numLabels := 3;
+            SetLength(GoToLabels, numLabels); // array length
+            GoToLabels[0] := strEventSpeechLabel1;
+            GoToLabels[1] := strEventSpeechLabel2;
+            GoToLabels[2] := strEventSpeechLabel3;
+        end;
+
+        Events[1] := TConEventEnd.Create(); // create End event
+        Events[1].EventIdx := 1;
+        Events[1].unknown1 := Events[1].EventIdx + 1;
+
+        Events[2] := TConEventSpeech.Create(); // Speech 1
+        with Events[2] as TConEventSpeech do
+        begin
+            EventIdx := 2;
+            unknown1 := EventIdx + 1;
+            EventLabel := strEventSpeechLabel1;
+            TextLine := strEventSpeech1;
+        end;
+
+        Events[3] := TConEventEnd.Create(); // create End event
+        Events[3].EventIdx := 3;
+        Events[3].unknown1 := Events[3].EventIdx + 1;
+
+        Events[4] := TConEventSpeech.Create(); // Speech 2
+        with Events[4] as TConEventSpeech do
+        begin
+            EventIdx := 4;
+            unknown1 := EventIdx + 1;
+            EventLabel := strEventSpeechLabel2;
+            TextLine := strEventSpeech2;
+        end;
+
+        Events[5] := TConEventEnd.Create(); // create End event
+        Events[5].EventIdx := 5;
+        Events[5].unknown1 := Events[5].EventIdx + 1;
+
+        Events[6] := TConEventSpeech.Create(); // Speech 3
+        with Events[6] as TConEventSpeech do
+        begin
+            EventIdx := 6;
+            unknown1 := EventIdx + 1;
+            EventLabel := strEventSpeechLabel3;
+            TextLine := strEventSpeech3;
+        end;
+
+        Events[7] := TConEventEnd.Create(); // create End event
+        Events[7].EventIdx := 7;
+        Events[7].unknown1 := Events[7].EventIdx + 1;
+    end;
+
+    // Now add it to ConversationTree
+    var NewConvoNode := ConvoTree.Items.AddChildObject(OwnerNode, AIBarksConvo.conName, AIBarksConvo);
+    ConvoTree.Select(NewConvoNode); // Highlight
+
+    bFileModified := True;
 end;
 
 procedure TfrmMain.CopyChoicetext1Click(Sender: TObject);
@@ -5194,6 +5319,14 @@ begin
         CopyConversationToClipboard(CurrentConversation);
 end;
 
+procedure TfrmMain.Conversation_Create_AIBark_TemplateExecute(Sender: TObject);
+begin
+    if MessageBox(Handle, PChar(strAskToAddAIBarksExample), '', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = ID_YES then
+    begin
+        CreateAIBarksExample();
+    end;
+end;
+
 procedure TfrmMain.Conversation_PasteExecute(Sender: TObject);
 begin
     PasteConversationFromClipboard();
@@ -5216,12 +5349,6 @@ procedure TfrmMain.Conversation_RenameExecute(Sender: TObject);
 begin
     if (ConvoTree.Selected <> nil) and (ConvoTree.Selected.Level = 1) and (ActiveControl = ConvoTree) and (Active = True) then
         ConvoTree.Selected.EditText();
-end;
-
-procedure TfrmMain.ConvoTreeAddition(Sender: TObject; Node: TTreeNode);
-begin
-    //AddLog('OnAddition ' + Node.Text);
-    //bFileModified := True;
 end;
 
 procedure TfrmMain.ConvoTreeChange(Sender: TObject; Node: TTreeNode);

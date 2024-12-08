@@ -2,7 +2,7 @@ object frmAbout: TfrmAbout
   Left = 0
   Top = 0
   BorderStyle = bsDialog
-  Caption = 'Dar totu'#537'i, '#238'n lume exist'#259' dragoste!'
+  Caption = 'Apa trece, pietrele r'#259'm'#226'n'
   ClientHeight = 278
   ClientWidth = 278
   Color = clBtnFace

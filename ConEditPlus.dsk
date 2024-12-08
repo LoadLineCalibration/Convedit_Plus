@@ -1,50 +1,47 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'c:\lang\22.0\source\rtl\common\System.StrUtils.pas',0,1,279,1,302,0,0,,
-File_1=TSourceModule,'c:\lang\22.0\SOURCE\VCL\Vcl.Dialogs.pas',0,1,4898,1,4920,0,0,,
-File_2=TSourceModule,'C:\LANG\DelphiProjects\ConEditPlus\AboutBox1.pas',0,1,42,1,44,0,0,,
-File_3=TSourceModule,'c:\lang\22.0\SOURCE\VCL\Vcl.Forms.pas',0,1,1819,1,1842,0,0,{{1990,4}
-File_4=TSourceModule,'c:\lang\22.0\SOURCE\RTL\SYS\System.Types.pas',0,1,133,1,156,0,0,,
-File_5=TSourceModule,'C:\LANG\DelphiProjects\ConEditPlus\Conversation.Classes.pas',0,1,333,77,362,0,0,,
-File_6=TSourceModule,'C:\LANG\DelphiProjects\ConEditPlus\UfrmConversationPlayer.pas',0,1,43,25,74,0,0,,
-File_7=TSourceModule,'C:\LANG\DelphiProjects\ConEditPlus\ConFileProperties.pas',0,1,1,1,1,0,0,,
-File_8=TSourceModule,'C:\LANG\DelphiProjects\ConEditPlus\frmSettings1.pas',0,1,232,48,252,0,0,,
-File_9=TSourceModule,'c:\lang\22.0\source\rtl\win\Winapi.Windows.pas',0,1,17376,1,17399,0,0,,
-File_10=TSourceModule,'c:\lang\22.0\SOURCE\VCL\Vcl.ComCtrls.pas',0,1,8937,162,8943,0,0,{{18131,0}
-File_11=TSourceModule,'C:\LANG\DelphiProjects\ConEditPlus\frmFlagList1.pas',0,1,71,49,106,0,0,,
-File_12=TSourceModule,'C:\LANG\DelphiProjects\ConEditPlus\ConEditPlus.Clipboard.Helper.pas',0,1,1,80,9,0,0,,
-File_13=TSourceModule,'c:\lang\22.0\SOURCE\RTL\SYS\System.SysUtils.pas',0,1,27926,49,27992,0,0,,
-File_14=TSourceModule,'c:\lang\22.0\SOURCE\RTL\SYS\System.pas',0,1,6315,1,6337,0,0,,
+File_0=TSourceModule,'C:\LANG\DelphiProjects\ConEditPlus\AboutBox1.pas',0,1,42,1,44,0,0,,
+File_1=TSourceModule,'C:\LANG\DelphiProjects\ConEditPlus\ConEditPlus.Enums.pas',0,1,1,1,12,0,0,,
+File_2=TSourceModule,'C:\LANG\DelphiProjects\ConEditPlus\ConEditPlus.Clipboard.Helper.pas',0,1,1249,65,1275,0,0,,
+File_3=TSourceModule,'c:\lang\22.0\source\rtl\win\Winapi.Windows.pas',0,1,39045,34,39004,0,0,,
+File_4=TSourceModule,'c:\lang\22.0\SOURCE\RTL\SYS\System.pas',0,1,16,70,27,0,0,,
+File_5=TSourceModule,'c:\lang\22.0\SOURCE\RTL\SYS\System.SysUtils.pas',0,1,3303,84,3329,0,0,,
+File_6=TSourceModule,'c:\lang\22.0\source\rtl\common\System.StrUtils.pas',0,1,279,1,302,0,0,,
+File_7=TSourceModule,'c:\lang\22.0\SOURCE\VCL\Vcl.Dialogs.pas',0,1,4898,1,4920,0,0,,
+File_8=TSourceModule,'c:\lang\22.0\SOURCE\VCL\Vcl.Forms.pas',0,1,1819,1,1842,0,0,{{1990,4}
+File_9=TSourceModule,'c:\lang\22.0\SOURCE\RTL\SYS\System.Types.pas',0,1,133,1,156,0,0,,
+File_10=TSourceModule,'C:\LANG\DelphiProjects\ConEditPlus\UfrmConversationPlayer.pas',0,1,43,25,74,0,0,,
+File_11=TSourceModule,'C:\LANG\DelphiProjects\ConEditPlus\ConFileProperties.pas',0,1,1,1,1,0,0,,
 
 [Modules]
 Module0=C:\LANG\DelphiProjects\ConEditPlus\MainWindow.pas
-Module1=C:\LANG\DelphiProjects\ConEditPlus\ConEditPlus.Consts.pas
+Module1=C:\LANG\DelphiProjects\ConEditPlus\AddInsertEvent.pas
 Module2=C:\LANG\DelphiProjects\ConEditPlus\ConEditPlus.Helpers.pas
-Module3=C:\LANG\DelphiProjects\ConEditPlus\ConvoProperties.pas
-Module4=C:\LANG\DelphiProjects\ConEditPlus\AddInsertEvent.pas
-Module5=C:\LANG\DelphiProjects\ConEditPlus\Table.pas
-Module6=C:\LANG\DelphiProjects\ConEditPlus\ConEditPlus.Enums.pas
+Module3=C:\LANG\DelphiProjects\ConEditPlus\Conversation.Classes.pas
+Module4=C:\LANG\DelphiProjects\ConEditPlus\ConvoProperties.pas
+Module5=C:\LANG\DelphiProjects\ConEditPlus\ConEditPlus.Consts.pas
+Module6=C:\LANG\DelphiProjects\ConEditPlus\Table.pas
 Count=7
 EditWindowCount=1
 
 [C:\LANG\DelphiProjects\ConEditPlus\MainWindow.pas]
 ModuleType=TSourceModule
 
-[C:\LANG\DelphiProjects\ConEditPlus\ConEditPlus.Consts.pas]
+[C:\LANG\DelphiProjects\ConEditPlus\AddInsertEvent.pas]
 ModuleType=TSourceModule
 
 [C:\LANG\DelphiProjects\ConEditPlus\ConEditPlus.Helpers.pas]
 ModuleType=TSourceModule
 
+[C:\LANG\DelphiProjects\ConEditPlus\Conversation.Classes.pas]
+ModuleType=TSourceModule
+
 [C:\LANG\DelphiProjects\ConEditPlus\ConvoProperties.pas]
 ModuleType=TSourceModule
 
-[C:\LANG\DelphiProjects\ConEditPlus\AddInsertEvent.pas]
+[C:\LANG\DelphiProjects\ConEditPlus\ConEditPlus.Consts.pas]
 ModuleType=TSourceModule
 
 [C:\LANG\DelphiProjects\ConEditPlus\Table.pas]
-ModuleType=TSourceModule
-
-[C:\LANG\DelphiProjects\ConEditPlus\ConEditPlus.Enums.pas]
 ModuleType=TSourceModule
 
 [EditWindow0]
@@ -88,9 +85,9 @@ TabDockBottomClients=MessageView=0
 [View0]
 CustomEditViewType=TEditView
 Module=C:\LANG\DelphiProjects\ConEditPlus\MainWindow.pas
-CursorX=50
-CursorY=5357
-TopLine=5352
+CursorX=43
+CursorY=2467
+TopLine=2439
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -98,65 +95,65 @@ EditViewName=C:\LANG\DelphiProjects\ConEditPlus\MainWindow.pas
 
 [View1]
 CustomEditViewType=TEditView
-Module=C:\LANG\DelphiProjects\ConEditPlus\ConvoProperties.pas
-CursorX=65
-CursorY=435
-TopLine=420
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=C:\LANG\DelphiProjects\ConEditPlus\ConvoProperties.pas
-
-[View2]
-CustomEditViewType=TEditView
-Module=C:\LANG\DelphiProjects\ConEditPlus\ConEditPlus.Enums.pas
-CursorX=27
-CursorY=38
-TopLine=18
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=C:\LANG\DelphiProjects\ConEditPlus\ConEditPlus.Enums.pas
-
-[View3]
-CustomEditViewType=TEditView
 Module=C:\LANG\DelphiProjects\ConEditPlus\ConEditPlus.Helpers.pas
-CursorX=11
-CursorY=44
-TopLine=10
+CursorX=71
+CursorY=104
+TopLine=65
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=C:\LANG\DelphiProjects\ConEditPlus\ConEditPlus.Helpers.pas
 
-[View4]
+[View2]
+CustomEditViewType=TEditView
+Module=C:\LANG\DelphiProjects\ConEditPlus\Conversation.Classes.pas
+CursorX=1
+CursorY=337
+TopLine=326
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\LANG\DelphiProjects\ConEditPlus\Conversation.Classes.pas
+
+[View3]
 CustomEditViewType=TEditView
 Module=C:\LANG\DelphiProjects\ConEditPlus\ConEditPlus.Consts.pas
-CursorX=32
-CursorY=365
-TopLine=328
+CursorX=26
+CursorY=409
+TopLine=373
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=C:\LANG\DelphiProjects\ConEditPlus\ConEditPlus.Consts.pas
 
+[View4]
+CustomEditViewType=TEditView
+Module=C:\LANG\DelphiProjects\ConEditPlus\ConvoProperties.pas
+CursorX=124
+CursorY=220
+TopLine=184
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\LANG\DelphiProjects\ConEditPlus\ConvoProperties.pas
+
 [View5]
 CustomEditViewType=TEditView
 Module=C:\LANG\DelphiProjects\ConEditPlus\AddInsertEvent.pas
-CursorX=61
-CursorY=917
-TopLine=919
+CursorX=49
+CursorY=2222
+TopLine=2205
 LeftCol=1
 Elisions=
-Bookmarks={0,1412,14}
-EditViewName=Borland.FormDesignerView
+Bookmarks={0,1419,14}
+EditViewName=C:\LANG\DelphiProjects\ConEditPlus\AddInsertEvent.pas
 
 [View6]
 CustomEditViewType=TEditView
 Module=C:\LANG\DelphiProjects\ConEditPlus\Table.pas
-CursorX=80
-CursorY=601
-TopLine=580
+CursorX=56
+CursorY=850
+TopLine=839
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -187,10 +184,8 @@ Dockable=1
 StayOnTop=0
 
 [Breakpoints]
-Count=3
-Breakpoint0='C:\LANG\DelphiProjects\ConEditPlus\Table.pas',1001,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint1='C:\LANG\DelphiProjects\ConEditPlus\ConvoProperties.pas',387,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint2='C:\LANG\DelphiProjects\ConEditPlus\Table.pas',862,'',0,1,'',1,0,0,'',1,'','','',0,''
+Count=1
+Breakpoint0='C:\LANG\DelphiProjects\ConEditPlus\Table.pas',862,'',0,1,'',1,0,0,'',1,'','','',0,''
 
 [EmbarcaderoWin32Debugger_AddressBreakpoints]
 Count=0
@@ -264,11 +259,11 @@ State=0
 Left=8
 Top=1371
 Width=2770
-Height=1392
+Height=1769
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2770
-ClientHeight=1392
+ClientHeight=1769
 TBDockHeight=1392
 LRDockWidth=2770
 Dockable=1
@@ -334,11 +329,6 @@ LRDockWidth=1895
 Dockable=1
 StayOnTop=0
 SplitPos=186
-
-[PropInspDesignerSelection]
-ArrangeBy=Name
-SelectedItem=Name,OnEdited
-ExpandedItems=Anchors=0,Constraints=0,Font=0,LiveBindings=0,"LiveBindings Designer=0",Margins=0,StyleElements=0,CustomTitleBar=0,GlassFrame=0,HorzScrollBar=0,EditMargins=0,Touch=0,BevelEdges=0,ImageMargins=0,Padding=0,Images=0,MultiSelectStyle=0,StateImages=0
 
 [DebugLogView]
 PercentageSizes=1

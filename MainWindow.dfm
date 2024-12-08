@@ -5415,7 +5415,6 @@ object frmMain: TfrmMain
       SortType = stText
       StateImages = TreeImages
       TabOrder = 0
-      OnAddition = ConvoTreeAddition
       OnChange = ConvoTreeChange
       OnDblClick = ConvoTreeDblClick
       OnDeletion = ConvoTreeDeletion
@@ -5937,6 +5936,12 @@ object frmMain: TfrmMain
     Top = 287
     object Add3: TMenuItem
       Action = AddConversation
+    end
+    object AddTemplateConversation1: TMenuItem
+      Caption = 'Add...'
+      object AddAIBarktemplateconversation1: TMenuItem
+        Action = Conversation_Create_AIBark_Template
+      end
     end
     object Delete2: TMenuItem
       Action = Conversation_Delete
@@ -9252,6 +9257,11 @@ object frmMain: TfrmMain
       Caption = 'Open path\ to .mp3 in Explorer'
       ImageIndex = 13
       OnExecute = Event_BrowseToExecute
+    end
+    object Conversation_Create_AIBark_Template: TAction
+      Category = 'Conversation'
+      Caption = 'Conversation_Create_AIBark_Template'
+      OnExecute = Conversation_Create_AIBark_TemplateExecute
     end
   end
   object FileSaveDialog: TFileSaveDialog

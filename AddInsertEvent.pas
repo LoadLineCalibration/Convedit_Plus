@@ -2395,7 +2395,7 @@ begin
         Exit();
     end;
 
-    event.EventLabel := editEventLabel.Text; // add/update event label in any case
+    event.EventLabel := editEventLabel.Text; // add/update event label if we're reached this point
 
     if (event is TConEventSpeech) and (cmbEventType.ItemIndex = 0) then
     begin

@@ -393,6 +393,25 @@ ResourceString // These strings can be translated.
     strUseUsername = 'The following username will be used: %s' + #13#10 + 'Do you want to continue?';
     strUseUserNameTitle = 'Use username?';
 
+    // AI Bark conversation Template
+    strEventSpeech1 = 'Example One. TConEventSpeech.';
+    strEventSpeechLabel1 = 'Example1';
+
+    strEventSpeech2 = 'Example Two. TConEventSpeech.';
+    strEventSpeechLabel2 = 'Example2';
+
+    strEventSpeech3 = 'Example Three. TConEventSpeech.';
+    strEventSpeechLabel3 = 'Example3';
+
+    strEventComment = 'This is comment. Use it to store some additional information about conversation.';
+
+    strAskToAddAIBarksExample = 'Add example conversation with random and speech events?';
+    strConvoDescGenerated = 'Automatically generated conversation template.';
+
+    // end of AI Bark conversation Template
+
+
+
 
 
 
