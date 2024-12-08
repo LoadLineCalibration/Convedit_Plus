@@ -339,6 +339,8 @@ type
     Conversation_Create_AIBark_Template: TAction;
     AddTemplateConversation1: TMenuItem;
     AddAIBarktemplateconversation1: TMenuItem;
+    Conversation_Create_AIBarkFutz_Template: TAction;
+    emplateforAIBarkFutz1: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -482,7 +484,7 @@ type
 
     procedure CopyChoiceMp3Path(ChoiceMP3CopyMode: TChoiceMP3CopyMode; idx: Integer);
 
-    procedure CreateAIBarksExample();
+    procedure CreateAIBarksExample(bBarkFutz: Boolean);
 
     procedure FormResize(Sender: TObject);
     procedure CollapseAll2Click(Sender: TObject);
@@ -633,6 +635,7 @@ type
     procedure lbTreeSearchResultsExit(Sender: TObject);
     procedure ConvoTreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure Conversation_Create_AIBark_TemplateExecute(Sender: TObject);
+    procedure Conversation_Create_AIBarkFutz_TemplateExecute(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -2432,19 +2435,22 @@ begin
     end;
 end;
 
-{Random 123
-end
-Speech1
-end
-Speech2
-end
-Speech3
-end}
-procedure TfrmMain.CreateAIBarksExample();
+procedure TfrmMain.CreateAIBarksExample(bBarkFutz: Boolean);
 begin
     // Initial setup
     var ConvoOwnerName: string;
     var OwnerNode: TTreeNode;
+    var JCDentonIdx := FindTableIdByName(TM_ActorsPawns, PLAYER_BINDNAME); // Find conversation owner ID in the table
+
+    if bBarkFutz = True then
+    begin
+        if JCDentonIdx = -1 then
+        begin
+            MessageBox(Handle, PChar(strAddPlayerFirst), PChar(strWarningTitle), MB_OK + MB_ICONWARNING + MB_TOPMOST);
+            Exit();
+        end;
+    end;
+
 
     OwnerNode := ConvoTree.Selected;
 
@@ -2453,18 +2459,16 @@ begin
 
     ConvoOwnerName := OwnerNode.Text;
 
-    var ConvoOwnerIdx := FindTableIdByName(TM_ActorsPawns, ConvoOwnerName);
-
-//    Exit();  // For now
-
-    var AIBarksConvo := TConversation.Create(); // Create TConversation object first
+    var ConvoOwnerIdx := FindTableIdByName(TM_ActorsPawns, ConvoOwnerName); // Find conversation owner ID in the table
+    var AIBarksConvo := TConversation.Create(); // Create TConversation object
     with AIBarksConvo do
     begin
         ConversationsList.Add(AIBarksConvo); // Add to list
         id := ConversationsList.IndexOfItem(AIBarksConvo, TList.TDirection.FromBeginning); // set id from list
 
         conDescription := strConvoDescGenerated;
-        conName := ConvoOwnerName + ConEditPlus.Helpers.GenerateRandomSuffix(); // Generate random?
+        conNotes := strConvoNotesGenerated;
+        conName := 'GeneratedConversation' + ConEditPlus.Helpers.GenerateRandomSuffix(); // Generate random?
 
         conOwnerIndex:= ConvoOwnerIdx;
         conOwnerName:= ConvoOwnerName;
@@ -2512,6 +2516,20 @@ begin
             unknown1 := EventIdx + 1;
             EventLabel := strEventSpeechLabel1;
             TextLine := strEventSpeech1;
+
+            ActorIndex := AIBarksConvo.conOwnerIndex; // Speaker
+            ActorValue := AIBarksConvo.conOwnerName;
+
+            if bBarkFutz = True then
+            begin
+                ActorToIndex := JCDentonIdx;  // Speaking To PlayerPawn
+                ActorToValue := PLAYER_BINDNAME;
+            end
+            else
+            begin
+                ActorToIndex := AIBarksConvo.conOwnerIndex; // Speaking To self
+                ActorToValue := AIBarksConvo.conOwnerName;
+            end;
         end;
 
         Events[3] := TConEventEnd.Create(); // create End event
@@ -2525,6 +2543,20 @@ begin
             unknown1 := EventIdx + 1;
             EventLabel := strEventSpeechLabel2;
             TextLine := strEventSpeech2;
+
+            ActorIndex := AIBarksConvo.conOwnerIndex; // Speaker
+            ActorValue := AIBarksConvo.conOwnerName;
+
+            if bBarkFutz = True then
+            begin
+                ActorToIndex := JCDentonIdx;  // Speaking To PlayerPawn
+                ActorToValue := PLAYER_BINDNAME;
+            end
+            else
+            begin
+                ActorToIndex := AIBarksConvo.conOwnerIndex; // Speaking To self
+                ActorToValue := AIBarksConvo.conOwnerName;
+            end;
         end;
 
         Events[5] := TConEventEnd.Create(); // create End event
@@ -2538,6 +2570,20 @@ begin
             unknown1 := EventIdx + 1;
             EventLabel := strEventSpeechLabel3;
             TextLine := strEventSpeech3;
+
+            ActorIndex := AIBarksConvo.conOwnerIndex; // Speaker
+            ActorValue := AIBarksConvo.conOwnerName;
+
+            if bBarkFutz = True then
+            begin
+                ActorToIndex := JCDentonIdx;  // Speaking To PlayerPawn
+                ActorToValue := PLAYER_BINDNAME;
+            end
+            else
+            begin
+                ActorToIndex := AIBarksConvo.conOwnerIndex; // Speaking To self
+                ActorToValue := AIBarksConvo.conOwnerName;
+            end;
         end;
 
         Events[7] := TConEventEnd.Create(); // create End event
@@ -2548,6 +2594,10 @@ begin
     // Now add it to ConversationTree
     var NewConvoNode := ConvoTree.Items.AddChildObject(OwnerNode, AIBarksConvo.conName, AIBarksConvo);
     ConvoTree.Select(NewConvoNode); // Highlight
+
+    NewConvoNode.ImageIndex := 1; // set icons
+    NewConvoNode.ExpandedImageIndex := 1;
+    NewConvoNode.SelectedIndex := 1;
 
     bFileModified := True;
 end;
@@ -5319,11 +5369,19 @@ begin
         CopyConversationToClipboard(CurrentConversation);
 end;
 
+procedure TfrmMain.Conversation_Create_AIBarkFutz_TemplateExecute(Sender: TObject);
+begin
+    if MessageBox(Handle, PChar(strAskToAddAIBarkFutzExample), PChar(strQuiestion), MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = ID_YES then
+    begin
+        CreateAIBarksExample(True);
+    end;
+end;
+
 procedure TfrmMain.Conversation_Create_AIBark_TemplateExecute(Sender: TObject);
 begin
-    if MessageBox(Handle, PChar(strAskToAddAIBarksExample), '', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = ID_YES then
+    if MessageBox(Handle, PChar(strAskToAddAIBarksExample), PChar(strQuiestion), MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = ID_YES then
     begin
-        CreateAIBarksExample();
+        CreateAIBarksExample(False);
     end;
 end;
 

@@ -343,6 +343,7 @@ ResourceString // These strings can be translated.
     // MessageBox title
     strErrorTitle = 'Error!';
     strWarningTitle = 'Warning!';
+    strQuiestion = 'Confirm?';
 
     // Error messages when trying to save file
     strSaveError = 'Error saving file (%s):' + #13#10 +'%s';
@@ -405,8 +406,11 @@ ResourceString // These strings can be translated.
 
     strEventComment = 'This is comment. Use it to store some additional information about conversation.';
 
-    strAskToAddAIBarksExample = 'Add example conversation with random and speech events?';
-    strConvoDescGenerated = 'Automatically generated conversation template.';
+    strAskToAddAIBarksExample = 'Add AI Bark conversation with three random speech lines?';
+    strAskToAddAIBarkFutzExample = 'Add AI BarkFutz conversation with three random speech lines?';
+    strConvoDescGenerated = 'Description for automatically generated conversation.';
+    strConvoNotesGenerated = 'Notes for automatically generated conversation.';
+    strAddPlayerFirst = 'Please add "JCDenton" to Actors/Pawns table first!';
 
     // end of AI Bark conversation Template
 
