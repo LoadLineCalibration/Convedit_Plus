@@ -38,7 +38,9 @@ uses
   ufrmAudioDirectories in 'ufrmAudioDirectories.pas' {frmAudioDirectories},
   Vcl.Themes,
   Vcl.Styles,
-  UfrmConversationPlayer in 'UfrmConversationPlayer.pas' {frmConversationPlayer};
+  UfrmConversationPlayer in 'UfrmConversationPlayer.pas' {frmConversationPlayer},
+  uFrmFindRefs in 'uFrmFindRefs.pas' {frmFindRefs},
+  ConEditPlus.Templates.Factory in 'ConEditPlus.Templates.Factory.pas';
 
 {$R *.res}
 {$SETPEOSVERSION 5.1} // Windows XP
@@ -62,6 +64,7 @@ begin
   Application.CreateForm(TfrmLabelErrors, frmLabelErrors);
   Application.CreateForm(TfrmAudioDirectories, frmAudioDirectories);
   Application.CreateForm(TfrmConversationPlayer, frmConversationPlayer);
+  Application.CreateForm(TfrmFindRefs, frmFindRefs);
   Application.HintHidePause := 30000; // hint delay
   Application.Run;
   ReportMemoryLeaksOnShutdown := True;
