@@ -40,7 +40,8 @@ uses
   Vcl.Styles,
   UfrmConversationPlayer in 'UfrmConversationPlayer.pas' {frmConversationPlayer},
   uFrmFindRefs in 'uFrmFindRefs.pas' {frmFindRefs},
-  ConEditPlus.Templates.Factory in 'ConEditPlus.Templates.Factory.pas';
+  ConEditPlus.Templates.Factory in 'ConEditPlus.Templates.Factory.pas',
+  ConEditPlus.Colors in 'ConEditPlus.Colors.pas';
 
 {$R *.res}
 {$SETPEOSVERSION 5.1} // Windows XP
