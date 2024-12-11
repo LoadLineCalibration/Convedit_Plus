@@ -9,7 +9,8 @@ uses
   Conversation.Classes, System.ImageList, Vcl.ImgList, Table, Vcl.GraphUtil, ES.BaseControls, ES.Layouts,
   System.Actions, Vcl.ActnList, System.Generics.Collections, System.TypInfo, xml.VerySimple, System.StrUtils,
   system.Math, Vcl.MPlayer, ConEditPlus.Enums, Winapi.ShellAPI, ConEditPlus.Helpers, Vcl.Clipbrd, system.Rtti,
-  ConEditPlus.Clipboard.Helper, Vcl.AppEvnts, System.Threading, system.DateUtils, vcl.Styles, vcl.Themes;
+  ConEditPlus.Clipboard.Helper, ConEditPlus.Templates.Factory, Vcl.AppEvnts, System.Threading,
+  system.DateUtils, vcl.Styles, vcl.Themes;
 
 
 type
@@ -341,6 +342,8 @@ type
     AddAIBarktemplateconversation1: TMenuItem;
     Conversation_Create_AIBarkFutz_Template: TAction;
     emplateforAIBarkFutz1: TMenuItem;
+    N8: TMenuItem;
+    Testfactory1: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -636,6 +639,7 @@ type
     procedure ConvoTreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure Conversation_Create_AIBark_TemplateExecute(Sender: TObject);
     procedure Conversation_Create_AIBarkFutz_TemplateExecute(Sender: TObject);
+    procedure Testfactory1Click(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -1691,12 +1695,13 @@ begin
 end;
 
 procedure TfrmMain.SetEventIndexes();
-var
-    NewIndex: Integer;
+//var
+//    NewIndex: Integer;
 begin
     for var con in ConversationsList do
-    begin
-        NewIndex := 0;
+//    begin
+        ConEditPlus.Helpers.SetConversationEventsIdx(con);
+{        NewIndex := 0;
 
         //for var i:= 0 to High(con.Events) do
         for var Event in con.Events do
@@ -1705,8 +1710,8 @@ begin
             Event.EventIdx := NewIndex;
             Event.unknown1 := Event.EventIdx + 1;
             Inc(NewIndex);
-        end;
-    end;
+        end;}
+//    end;
 
 //    bFileModified := True;
 end;
@@ -2493,8 +2498,6 @@ begin
         Events[0] := TConEventRandom.Create(); // Create TConEventRandom
         with Events[0] as TConEventRandom do
         begin
-            EventIdx := 0;
-            unknown1 := EventIdx + 1;
             bCycle := True;
             bCycleOnce := False;
             bCycleRandom := True;
@@ -2506,14 +2509,10 @@ begin
         end;
 
         Events[1] := TConEventEnd.Create(); // create End event
-        Events[1].EventIdx := 1;
-        Events[1].unknown1 := Events[1].EventIdx + 1;
 
         Events[2] := TConEventSpeech.Create(); // Speech 1
         with Events[2] as TConEventSpeech do
         begin
-            EventIdx := 2;
-            unknown1 := EventIdx + 1;
             EventLabel := strEventSpeechLabel1;
             TextLine := strEventSpeech1;
 
@@ -2533,14 +2532,10 @@ begin
         end;
 
         Events[3] := TConEventEnd.Create(); // create End event
-        Events[3].EventIdx := 3;
-        Events[3].unknown1 := Events[3].EventIdx + 1;
 
         Events[4] := TConEventSpeech.Create(); // Speech 2
         with Events[4] as TConEventSpeech do
         begin
-            EventIdx := 4;
-            unknown1 := EventIdx + 1;
             EventLabel := strEventSpeechLabel2;
             TextLine := strEventSpeech2;
 
@@ -2560,8 +2555,6 @@ begin
         end;
 
         Events[5] := TConEventEnd.Create(); // create End event
-        Events[5].EventIdx := 5;
-        Events[5].unknown1 := Events[5].EventIdx + 1;
 
         Events[6] := TConEventSpeech.Create(); // Speech 3
         with Events[6] as TConEventSpeech do
@@ -2587,9 +2580,9 @@ begin
         end;
 
         Events[7] := TConEventEnd.Create(); // create End event
-        Events[7].EventIdx := 7;
-        Events[7].unknown1 := Events[7].EventIdx + 1;
     end;
+
+    ConEditPlus.Helpers.SetConversationEventsIdx(AIBarksConvo);
 
     // Now add it to ConversationTree
     var NewConvoNode := ConvoTree.Items.AddChildObject(OwnerNode, AIBarksConvo.conName, AIBarksConvo);
@@ -5606,6 +5599,25 @@ end;
 procedure TfrmMain.End2Click(Sender: TObject);
 begin
     InsertEvent(Ord(ET_End));
+end;
+
+procedure TfrmMain.Testfactory1Click(Sender: TObject);
+var
+    Labels: array of string;
+begin
+    var Temp := ConEditPlus.Templates.Factory.GenerateEnd('TestLabel');
+    Temp.Free();
+
+    var Temp1 := ConEditPlus.Templates.Factory.GenerateSpeech('', PLAYER_BINDNAME, 'BobPage', 'You gonna burn');
+    Temp1.Free();
+
+    SetLength(Labels, 3);
+    Labels[0] := strEventSpeechLabel1;
+    Labels[1] := strEventSpeechLabel2;
+    Labels[2] := strEventSpeechLabel3;
+
+    var Temp2 := ConEditPlus.Templates.Factory.GenerateRandom('', Labels, True, False, True);
+    Temp2.Free();
 end;
 
 procedure TfrmMain.DateTimeToDouble1Click(Sender: TObject);
