@@ -9336,6 +9336,17 @@ object frmMain: TfrmMain
       Caption = 'Check DPI Ratio'
       OnClick = CheckDpiRatioClick
     end
+    object N8: TMenuItem
+      Caption = '-'
+    end
+    object Testfactory1: TMenuItem
+      Caption = 'Test factory'
+      OnClick = Testfactory1Click
+    end
+    object Defaultrecordvalue1: TMenuItem
+      Caption = 'Default record value?'
+      OnClick = Defaultrecordvalue1Click
+    end
   end
   object tmrEventWinPosSync: TTimer
     Enabled = False

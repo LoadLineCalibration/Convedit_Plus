@@ -10,7 +10,7 @@ uses
   System.Actions, Vcl.ActnList, System.Generics.Collections, System.TypInfo, xml.VerySimple, System.StrUtils,
   system.Math, Vcl.MPlayer, ConEditPlus.Enums, Winapi.ShellAPI, ConEditPlus.Helpers, Vcl.Clipbrd, system.Rtti,
   ConEditPlus.Clipboard.Helper, ConEditPlus.Templates.Factory, Vcl.AppEvnts, System.Threading,
-  system.DateUtils, vcl.Styles, vcl.Themes;
+  system.DateUtils, vcl.Styles, vcl.Themes, ConEditPlus.Colors;
 
 
 type
@@ -344,6 +344,7 @@ type
     emplateforAIBarkFutz1: TMenuItem;
     N8: TMenuItem;
     Testfactory1: TMenuItem;
+    Defaultrecordvalue1: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -640,6 +641,7 @@ type
     procedure Conversation_Create_AIBark_TemplateExecute(Sender: TObject);
     procedure Conversation_Create_AIBarkFutz_TemplateExecute(Sender: TObject);
     procedure Testfactory1Click(Sender: TObject);
+    procedure Defaultrecordvalue1Click(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -676,6 +678,8 @@ type
     var clrHighlightEvent, clrHighlightEventFrom, clrHighlightEventTo, clrGrid: TColor;
 
     // Events colors
+    var EventListColors: ConEditPlus.Colors.TEventListColors;
+
     var clSpeechBG, clSpeechNoAudioBG, clSpeechText: TColor;
     var clChoiceBG, clChoiceNoAudioBG, clChoiceText: TColor;
 
@@ -739,7 +743,8 @@ implementation
 {$R SoundResources.res} // contains final.mp3
 
 uses frmSettings1, EditValueDialog, ConFileProperties, AboutBox1, ConvoProperties, frmFind1, AddInsertEvent,
-     ConXml.Reader, ConXML.Writer, confile.Reader, conFile.Writer, uFrmLabelErrors, ufrmAudioDirectories, UfrmConversationPlayer, uFrmFindRefs;
+     ConXml.Reader, ConXML.Writer, confile.Reader, conFile.Writer, uFrmLabelErrors, ufrmAudioDirectories,
+     UfrmConversationPlayer, uFrmFindRefs;
 
 
 function TfrmMain.GetFileModified: Boolean;
@@ -1716,7 +1721,7 @@ begin
 //    bFileModified := True;
 end;
 
-procedure TfrmMain.SetEventsListScrollbars();
+procedure TfrmMain.SetEventsListScrollbars(); // Always show vertical scrollbar for EventList
 var
     Style: Longint;
 begin
@@ -1951,6 +1956,26 @@ begin
                 raise; // Re-raise the exception if needed
             end;
         end;
+    end;
+end;
+
+procedure TfrmMain.CopyEventFields(Source, Dest: TConEvent);
+begin
+    var Ctx: TRttiContext;
+    var SourceType: TRttiType;
+    var Field: TRttiField;
+
+    Ctx := TRttiContext.Create();
+    try
+        SourceType := Ctx.GetType(Source.ClassType);
+
+        for Field in SourceType.GetFields do
+        begin
+            Field.SetValue(Dest, Field.GetValue(Source));
+        end;
+
+    finally
+        Ctx.Free();
     end;
 end;
 
@@ -4012,47 +4037,6 @@ begin
     end;
 end;
 
-{procedure TfrmMain.CopyEventFields(Source, Dest: TConEvent);
-begin
-    var Ctx: TRttiContext;
-    var SourceType: TRttiType;
-    var Field: TRttiField;
-
-    Ctx := TRttiContext.Create;
-    try
-        SourceType := Ctx.GetType(Source.ClassType);
-
-        for Field in SourceType.GetFields do
-        begin
-            Field.SetValue(Dest, Field.GetValue(Source));
-        end;
-
-    finally
-        Ctx.Free();
-    end;
-end;}
-
-procedure TfrmMain.CopyEventFields(Source, Dest: TConEvent);
-begin
-    var Ctx: TRttiContext;
-    var SourceType: TRttiType;
-    var Field: TRttiField;
-
-    Ctx := TRttiContext.Create;
-    try
-        SourceType := Ctx.GetType(Source.ClassType);
-
-        for Field in SourceType.GetFields do
-        begin
-            Field.SetValue(Dest, Field.GetValue(Source));
-        end;
-
-    finally
-        Ctx.Free();
-    end;
-end;
-
-
 procedure TfrmMain.DrawET_AddGoal(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
 var
     TempRect: TRect;
@@ -5664,6 +5648,13 @@ begin
     ShowMessage('25 * ' + GetDPIAsRatio().ToString() + ' = ' + TestString);
 end;
 
+procedure TfrmMain.Defaultrecordvalue1Click(Sender: TObject);
+begin
+    var Test := EventListColors.SpeechBG;
+
+    ShowMessage(ColorToString(Test));
+end;
+
 procedure TfrmMain.DeleteCurrentConversation();
 begin
     if CurrentConversation = nil then Exit();
@@ -5964,8 +5955,9 @@ end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
-    // register new clipboard format
-    CF_ConEditPlus := RegisterClipboardFormat('CF_ConEditPlus');
+    EventListColors := ConEditPlus.Colors.DefaultTEventsColors; // set record defaults
+
+    CF_ConEditPlus := RegisterClipboardFormat('CF_ConEditPlus'); // register new clipboard format
 
     DragAcceptFiles(Handle, True);
 

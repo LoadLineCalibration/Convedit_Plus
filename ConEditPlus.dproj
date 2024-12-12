@@ -85,11 +85,11 @@
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
-        <VerInfo_Build>691</VerInfo_Build>
+        <VerInfo_Build>694</VerInfo_Build>
         <VerInfo_MajorVer>2024</VerInfo_MajorVer>
         <VerInfo_MinorVer>12</VerInfo_MinorVer>
-        <VerInfo_Release>6</VerInfo_Release>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=2024.12.6.691;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;LastCompiledTime=2024.12.06 22:15:39</VerInfo_Keys>
+        <VerInfo_Release>9</VerInfo_Release>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=2024.12.9.694;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;LastCompiledTime=2024.12.09 21:19:22</VerInfo_Keys>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <Icon_MainIcon>ConEditPlus_Icon.ico</Icon_MainIcon>
@@ -175,6 +175,8 @@
             <Form>frmFindRefs</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="ConEditPlus.Templates.Factory.pas"/>
+        <DCCReference Include="ConEditPlus.Colors.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
