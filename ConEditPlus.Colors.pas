@@ -75,6 +75,8 @@ type
     HighlightEventFrom: TColor;
     HighlightEventTo: TColor;
     ColorGrid: TColor;
+
+    EventHeaderColor: TColor; // Speech, Choice, etc.
   end;
 
 const // Default colors for regular mode
@@ -147,6 +149,7 @@ const // Default colors for regular mode
     HighlightEventFrom: 16767927;
     HighlightEventTo: 16777215;
     ColorGrid: clGray;
+    EventHeaderColor: clBlack;
     );
 
 implementation

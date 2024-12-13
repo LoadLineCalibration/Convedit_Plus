@@ -4390,7 +4390,8 @@ begin
                end
         end else
         begin
-           Brush.Color := RGB(238,238,238);
+           //Brush.Color := RGB(238,238,238);
+           Brush.Color := EventListColors.CommentBG;
            FillRect(Rect); // Заполнение цветом
         end;
 
@@ -4413,7 +4414,8 @@ begin
         Inc(tempRect.Top, Round(16 * GetDPIAsRatio()));
         //Inc(tempRect.Top, 16);
 
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlue;
+        //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlue;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.CommentText;
         DrawText(Handle,CommentString, -1, TempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
     end;
 end;
