@@ -77,11 +77,20 @@ type
     ColorGrid: TColor;
 
     EventHeaderColor: TColor; // Speech, Choice, etc.
+
+    RelatedEventFrom: TColor;
+    RelatedEventTo: TColor;
+
+    ErrorEventFrom: TColor;
+    ErrorEventTo: TColor;
+
+    EventWithLabel: TColor;
+    EventLabelText: TColor;
   end;
 
 const // Default colors for regular mode
-    DefaultTEventsColors: TEventListColors =
-    (
+  DefaultTEventsColors: TEventListColors =
+  (
     SpeechBG: clMoneyGreen;
     SpeechBGNoAudio: clAqua;
     SpeechText: clBlack;
@@ -149,8 +158,18 @@ const // Default colors for regular mode
     HighlightEventFrom: 16767927;
     HighlightEventTo: 16777215;
     ColorGrid: clGray;
+
     EventHeaderColor: clBlack;
-    );
+
+    RelatedEventFrom: clYellow;
+    RelatedEventTo: clCream;
+
+    ErrorEventFrom: clWebOrange;
+    ErrorEventTo: clRed;
+
+    EventWithLabel: clLime;
+    EventLabelText: clMaroon;
+  );
 
 implementation
 

@@ -4305,24 +4305,25 @@ begin
     if ((CurrentConversation <> nil) and (TConEventCheckPersona(ConEventList.Items.Objects[Index]) <> nil)) then
     begin
         case TConEventCheckPersona(ConEventList.Items.Objects[Index]).AttrToCheck of
-        	EP_Credits: CheckString := 'Credits';
-        	EP_Health: CheckString := 'Health';
-        	EP_SkillPoints: CheckString := 'SkillPoints';
+        	EP_Credits: CheckString := ConEditPlus.Consts.strCheckCredits; // 'Credits';
+        	EP_Health: CheckString := ConEditPlus.Consts.strCheckHealth; //'Health';
+        	EP_SkillPoints: CheckString := ConEditPlus.Consts.strCheckSkillPts;// 'SkillPoints';
         end;
 
         case TConEventCheckPersona(ConEventList.Items.Objects[Index]).Condition of
-        	EC_Less: ConditionString:= ' Less than (<) ';
-        	EC_LessEqual: ConditionString:= ' Less than or Equal to (<=) ';
-        	EC_Equal: ConditionString:= ' Equal to (=) ';
-        	EC_GreaterEqual: ConditionString:= ' Greater than or Equal to (>=) ';
-        	EC_Greater: ConditionString:= ' Greater than (>) ';
+        	EC_Less:         ConditionString:= ConEditPlus.Consts.strCheckConditionLessThan;// ' Less than (<) ';
+        	EC_LessEqual:    ConditionString:= ConEditPlus.Consts.strCheckConditionLessThanEqualTo;// ' Less than or Equal to (<=) ';
+        	EC_Equal:        ConditionString:= ConEditPlus.Consts.strCheckConditionEqual; //' Equal to (=) ';
+        	EC_GreaterEqual: ConditionString:= ConEditPlus.Consts.strCheckConditionGreaterThan;// ' Greater than or Equal to (>=) ';
+        	EC_Greater:      ConditionString:= ConEditPlus.Consts.strCheckConditionGreater;// ' Greater than (>) ';
         end;
 
         CheckValue := TConEventCheckPersona(ConEventList.Items.Objects[Index]).CheckValue;
         CheckGoToLabel := TConEventCheckPersona(ConEventList.Items.Objects[Index]).CheckGoToLabel;
     end;
 
-    CombinedString := 'if ' + CheckString + ConditionString + CheckValue.ToString + ' then JumpToLabel: ' + CheckGoToLabel;
+    //CombinedString := 'if ' + CheckString + ConditionString + CheckValue.ToString + ' then JumpToLabel: ' + CheckGoToLabel;
+    CombinedString := ConEditPlus.Consts.strCheckIf + CheckString + ConditionString + CheckValue.ToString + ConEditPlus.Consts.strJumpToLabel + CheckGoToLabel;
 
     with (Control as TListBox).Canvas do
     begin
@@ -4385,7 +4386,8 @@ begin
            if (bHglEventsGradient = True) then
                GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
           else begin
-               Brush.Color := clrHighlightEvent;
+               //Brush.Color := clrHighlightEvent;
+               Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
                end
         end else
@@ -4395,7 +4397,8 @@ begin
            FillRect(Rect); // Заполнение цветом
         end;
 
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderColor;
 
         Brush.Style := bsClear;
 
@@ -4435,13 +4438,15 @@ begin
               if bHglEventsGradient then
                  GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
               else begin
-                 Brush.Color := clrHighlightEvent;
+                 //Brush.Color := clrHighlightEvent;
+                 Brush.Color := EventListColors.HighlightEvent;
                  FillRect(Rect);
               end;
             end
             else
             begin
-                Brush.Color := clWhite;
+                //Brush.Color := clWhite;
+                Brush.Color := EventListColors.EndBG;
                 FillRect(Rect); // Заполнение цветом
             end;
 
@@ -4450,7 +4455,8 @@ begin
 
         Font.Size := CEP_EVENT_LIST_FONT_SIZE;
         Font.Name := CEP_EVENT_LIST_FONT_NAME;
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderColor;
         Font.Style := [fsBold, fsItalic];
 
         DrawText(Handle, ET_End_Caption, -1, TempRect, DT_SINGLELINE);
@@ -4471,7 +4477,7 @@ begin
             if Event <> nil then
             begin
                labelStr:= TConEvent(ConEventList.Items.Objects[Index]).EventLabel;
-               idxStr := TConEvent(ConEventList.Items.Objects[Index]).EventIdx.toString + '>' +
+               idxStr := TConEvent(ConEventList.Items.Objects[Index]).EventIdx.ToString + '>' +
                          TConEvent(ConEventList.Items.Objects[Index]).unknown1.ToString;
             end;
         end;
@@ -4491,7 +4497,8 @@ begin
             tempRect.Top := Rect.Top;
             Brush.Style := bsClear;
 
-            FillRectAlpha(TListBox(Control).Canvas, tempRect, clLime, 64);
+            //FillRectAlpha(TListBox(Control).Canvas, tempRect, clLime, 64);
+            FillRectAlpha(TListBox(Control).Canvas, tempRect, EventListColors.EventWithLabel, 64);
         end;
 
         case Event.EventHighlightType of
@@ -4504,10 +4511,11 @@ begin
                 tempRect.Top := Rect.Top;
                 Brush.Style := bsClear;
 
-                case EventListColorsMode of
-                    ELCM_Default: GradientFillCanvas(TListBox(Control).Canvas, clYellow, clCream, tempRect, gdHorizontal);
-                    ELCM_Dark:    GradientFillCanvas(TListBox(Control).Canvas, RGB(128,121,0), clWebYellowGreen, tempRect, gdHorizontal);
-                end;
+                //case EventListColorsMode of
+                GradientFillCanvas(TListBox(Control).Canvas, EventListColors.RelatedEventFrom, EventListColors.RelatedEventTo, tempRect, gdHorizontal);
+                    //ELCM_Default: GradientFillCanvas(TListBox(Control).Canvas, clYellow, clCream, tempRect, gdHorizontal);
+                    //ELCM_Dark:    GradientFillCanvas(TListBox(Control).Canvas, RGB(128,121,0), clWebYellowGreen, tempRect, gdHorizontal);
+                //end;
             end;
 
             EHT_Error:
@@ -4519,12 +4527,14 @@ begin
                 tempRect.Top := Rect.Top;
                 Brush.Style := bsClear;
 
-                GradientFillCanvas(TListBox(Control).Canvas, clWebOrange, clRed, tempRect, gdHorizontal);
+                GradientFillCanvas(TListBox(Control).Canvas, EventListColors.ErrorEventFrom, EventListColors.ErrorEventTo, tempRect, gdHorizontal);
+                //GradientFillCanvas(TListBox(Control).Canvas, clWebOrange, clRed, tempRect, gdHorizontal);
             end;
         end;
 
         if ((odSelected in State) and (bUseWhiteSelectedText = true)) then
-           Font.Color := clWhite else Font.Color := clMaroon;
+            Font.Color := clWhite else Font.Color := EventListColors.EventLabelText;
+           //Font.Color := clWhite else Font.Color := clMaroon;
 
         if bDrawEventIdx = True then
             //TextOut(Rect.Left + Round(40 * GetDPIAsRatio()), Rect.Top + 4, labelStr)

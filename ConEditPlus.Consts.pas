@@ -414,7 +414,21 @@ ResourceString // These strings can be translated.
 
     // end of AI Bark conversation Template
 
+    // For "Check Persona" event
+    strCheckIf = 'if ';
 
+    strCheckCredits = 'Credits';
+    strCheckHealth = 'Health';
+    strCheckSkillPts = 'SkillPoints';
+
+    strCheckConditionLessThan = ' less than (<) ';
+    strCheckConditionLessThanEqualTo = ' less than or equal to (<=) ';
+    strCheckConditionEqual = ' equal to (=) ';
+    strCheckConditionGreaterThan = ' greater than or equial to (>=)';
+    strCheckConditionGreater = ' greater than (>) ';
+
+    strJumpToLabel = 'then JumpToLabel: ';
+    // end of strings for "Check Persona" event
 
 
 
