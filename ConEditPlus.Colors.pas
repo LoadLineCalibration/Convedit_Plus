@@ -8,13 +8,13 @@ uses
 
 type
   TEventListColors = record
-    SpeechBG: TColor;
+    SpeechBG: TColor; // Regular speech background color
     SpeechBGNoAudio: TColor;
     SpeechText: TColor;
 
-    PlayerSpeechBG: TColor;
-    PlayerSpeechBindName: TColor;
-    PlayerSpeechText: TColor;
+    PlayerSpeechBG: TColor; // Player speech
+    PlayerSpeechBindName: TColor; // Text color
+    PlayerSpeechText: TColor; // Player speech text color
 
     ChoiceBG: TColor;
     ChoiceBGNoAudio: TColor;
@@ -30,7 +30,7 @@ type
     CheckObjectBG: TColor;
     CheckObjectText: TColor;
 
-    TansferObjectBG: TColor;
+    TransferObjectBG: TColor;
     TransferObjectText: TColor;
 
     MoveCameraBG: TColor;
@@ -71,32 +71,32 @@ type
 
     EndBG: TColor; // No text!
 
-    HighlightEvent: TColor;
-    HighlightEventFrom: TColor;
-    HighlightEventTo: TColor;
+    HighlightEvent: TColor; // Selected event
+    HighlightEventFrom: TColor; // Selected Event first color
+    HighlightEventTo: TColor; // Selected Event second color
     ColorGrid: TColor;
 
     EventHeaderColor: TColor; // Speech, Choice, etc.
 
-    RelatedEventFrom: TColor;
-    RelatedEventTo: TColor;
+    RelatedEventFrom: TColor; // Events, referenced by selected event (and vice versa), first color of gradient
+    RelatedEventTo: TColor; // Events, referenced by selected event (and vice versa), second color of gradient
 
-    ErrorEventFrom: TColor;
-    ErrorEventTo: TColor;
+    ErrorEventFrom: TColor; // Event with error, first color
+    ErrorEventTo: TColor; // Event with error, second color
 
-    EventWithLabel: TColor;
-    EventLabelText: TColor;
+    EventWithLabel: TColor; // Left part of the event, only if contains a label
+    EventLabelText: TColor; // ...and label text color
   end;
 
 const // Default colors for regular mode
   DefaultTEventsColors: TEventListColors =
   (
-    SpeechBG: clMoneyGreen;
-    SpeechBGNoAudio: clAqua;
+    SpeechBG: $C0DCC0;
+    SpeechBGNoAudio: $FFFF00;
     SpeechText: clBlack;
 
-    PlayerSpeechBG: clWebOrange;
-    PlayerSpeechBindName: clNavy;
+    PlayerSpeechBG: $00A5FF;
+    PlayerSpeechBindName: $800000;
     PlayerSpeechText: clBlack;
 
     ChoiceBG: $00FFFAC8;
@@ -113,7 +113,7 @@ const // Default colors for regular mode
     CheckObjectBG: $00F0F0F0;
     CheckObjectText: clBlack;
 
-    TansferObjectBG: $00F5F5F5;
+    TransferObjectBG: $00F5F5F5;
     TransferObjectText: clBlack;
 
     MoveCameraBG: $00F0F0F0;
@@ -141,7 +141,7 @@ const // Default colors for regular mode
     AddNoteText: clBlack;
 
     AddSkillPointsBG: $00F5F0F5;
-    AddSkillPointsText: clBlack;
+    AddSkillPointsText: clBlue;
 
     AddCreditsBG: $00FFF4F5;
     AddCreditsText: clBlack;
@@ -154,22 +154,81 @@ const // Default colors for regular mode
 
     EndBG: clWhite;
 
-    HighlightEvent: 16767927;
+    HighlightEvent: 5759784; //    HighlightEvent: 5789784;
     HighlightEventFrom: 16767927;
     HighlightEventTo: 16777215;
-    ColorGrid: clGray;
+    ColorGrid: $808080;
 
     EventHeaderColor: clBlack;
 
     RelatedEventFrom: clYellow;
-    RelatedEventTo: clCream;
+    RelatedEventTo: $F0FBFF;
 
-    ErrorEventFrom: clWebOrange;
+    ErrorEventFrom: $00A5FF;
     ErrorEventTo: clRed;
 
     EventWithLabel: clLime;
     EventLabelText: clMaroon;
   );
+
+  DefaultTEventsColors_Dark: TEventListColors =
+  (
+    SpeechBG: $3E5D3E; // Inverted from $C0DCC0
+    SpeechBGNoAudio: $FFD700; // Inverted from $FFFF00
+    SpeechText: clWhite; // Inverted from clBlack
+    PlayerSpeechBG: $0060B0; // Inverted from $00A5FF
+    PlayerSpeechBindName: $B30000; // Inverted from $800000
+    PlayerSpeechText: clWhite; // Inverted from clBlack
+    ChoiceBG: $4D4D3E; // Inverted from $00FFFAC8
+    ChoiceBGNoAudio: $4D7D7A; // Inverted from $00C0FFFF
+    ChoiceText: clWhite; // Inverted from clBlack
+    ChoiceFlagsText: clSkyBlue; // Inverted from clBlue
+    SetFlagBG: $B3B3B3; // Inverted from $00F0F0F0
+    SetFlagText: clWhite; // Inverted from clBlack
+    CheckFlagBG: $B8B8B8; // Inverted from $00F5F5F5
+    CheckFlagText: clWhite; // Inverted from clBlack
+    CheckObjectBG: $B3B3B3; // Inverted from $00F0F0F0
+    CheckObjectText: clWhite; // Inverted from clBlack
+    TransferObjectBG: $B8B8B8; // Inverted from $00F5F5F5
+    TransferObjectText: clWhite; // Inverted from clBlack
+    MoveCameraBG: $B3B3B3; // Inverted from $00F0F0F0
+    MoveCameraText: clWhite; // Inverted from clBlack
+    AnimationBG: $B3B3B3; // Inverted from $00F0F0F0
+    AnimationText: clWhite; // Inverted from clBlack
+    TradeBG: $2A2A2A; // Inverted from clWhite
+    TradeText: clWhite; // Inverted from clBlack
+    JumpBG: $3F7F3F; // Inverted from $00FAFFF0
+    JumpText: clWhite; // Inverted from clBlack
+    RandomBG: $B8B8B8; // Inverted from $00F5F5F5
+    RandomText: clWhite; // Inverted from clBlack
+    TriggerBG: $B3E6B3; // Inverted from $00F0FFF0
+    TriggerText: clWhite; // Inverted from clBlack
+    AddGoalBG: $B3E6B3; // Inverted from $00FFFFF5
+    AddGoalText: clWhite; // Inverted from clBlack
+    AddNoteBG: $B3E6B3; // Inverted from $00F0FFF0
+    AddNoteText: clWhite; // Inverted from clBlack
+    AddSkillPointsBG: $B8B3B8; // Inverted from $00F5F0F5
+    AddSkillPointsText: clWhite; // Inverted from clBlack
+    AddCreditsBG: $B8B3B8; // Inverted from $00FFF4F5
+    AddCreditsText: clWhite; // Inverted from clBlack
+    CheckPersonaBG: $B8B3FF; // Inverted from $00F4F4FF
+    CheckPersonaText: clWhite; // Inverted from clBlack
+    CommentBG: $B3B3B3; // Inverted from $00EEEEEE
+    CommentText: clWhite; // Inverted from clBlack
+    EndBG: $2A2A2A; // Inverted from clWhite
+    HighlightEvent: 16767927; // Inverted from 16767927 (this stays the same)
+    HighlightEventFrom: 16711680; // Darker red (inverted from light gradient)
+    HighlightEventTo: $000000; // Inverted from 16777215 (white to black gradient)
+    ColorGrid: $D9D9D9; // Inverted from $808080
+    EventHeaderColor: clWhite; // Inverted from clBlack
+    RelatedEventFrom: $00FF00; // Inverted from clYellow
+    RelatedEventTo: $003F3F7F; // Darker shade of cream (inverted from $F0FBFF)
+    ErrorEventFrom: $0060B0; // Inverted from $00A5FF
+    ErrorEventTo: $FF0000; // Red (inverted from clRed)
+    EventWithLabel: $FF3300; // Inverted from clLime
+    EventLabelText: clWhite; // Inverted from clMaroon
+  );
+
 
 implementation
 

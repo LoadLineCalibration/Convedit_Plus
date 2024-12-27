@@ -153,6 +153,16 @@ const
     CLIPBOARD_CONVERSATION_ID = 'id_CONVERSATION';
     PLAYED_SUFF = '_Played';
 
+    CHECK_OBJECT_HEIGHT = 25;
+    TRANSFER_OBJECT_HEIGHT = 35;
+    MOVE_CAMERA_HEIGHT = 25;
+    ANIMATION_HEIGHT = 70;
+    TRADE_HEIGHT = 44;
+    JUMP_HEIGHT = 50;
+    TRIGGER_HEIGHT = 42;
+    ADD_CREDITS_HEIGHT = 44;
+    CHECK_PERSONA_HEIGHT = 42;
+    END_HEIGHT = 25;
 
 
 ResourceString // These strings can be translated.

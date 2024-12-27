@@ -130,7 +130,6 @@ TChoiceItemObject = class(TConBaseObject) // for editing Choice Items, use as li
     GoToLabel: string;
     mp3: string;
     RequiredFlags: array of TFlag;
-//    bDeleteMe: Boolean;
 end;
 
 
@@ -143,8 +142,7 @@ TConEvent = class(TConBaseObject)
     EventHighlightType: TEventHighlightType; // To highlight events (related/error)
 end;
 
-// Speech event
-TConEventSpeech = class(TConEvent) // 00
+TConEventSpeech = class(TConEvent) // 00 // Speech event
     ActorIndex: Integer;
     ActorValue: string;
 
