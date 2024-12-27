@@ -4673,6 +4673,27 @@ begin
                 ConEventList.Perform(LB_SETITEMHEIGHT, i, GetChoiceItemHeight([ChoiceEvent]));
             end;
 
+            if ConEventList.Items.Objects[i] is TConEventSetFlag then
+            begin
+                var SetFlagEvent := TConEventSetFlag(ConEventList.Items.Objects[i]);
+
+                ConEventList.Perform(LB_SETITEMHEIGHT, i, GetSetFlagsItemHeight([SetFlagEvent]));
+            end;
+
+            if ConEventList.Items.Objects[i] is TConEventCheckFlag then
+            begin
+                var CheckFlagEvent := TConEventCheckFlag(ConEventList.Items.Objects[i]);
+
+                ConEventList.Perform(LB_SETITEMHEIGHT, i, GetCheckFlagsItemHeight([CheckFlagEvent]));
+            end;
+
+            if ConEventList.Items.Objects[i] is TConEventRandom then
+            begin
+                var RandomEvent := TConEventRandom(ConEventList.Items.Objects[i]);
+
+                ConEventList.Perform(LB_SETITEMHEIGHT, i, GetRandomEventItemHeight([RandomEvent]));
+            end;
+
             if ConEventList.Items.Objects[i] is TConEventAddGoal then
             begin
                 var AddGoalEvent := TConEventAddGoal(ConEventList.Items.Objects[i]);
