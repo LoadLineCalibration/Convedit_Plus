@@ -5639,8 +5639,8 @@ object frmMain: TfrmMain
       OnClick = ViewoutputTMemo1Click
     end
     object pnlEventFilter: TEsPanel
-      Left = 421
-      Top = 24
+      Left = 393
+      Top = 22
       Width = 241
       Height = 251
       Anchors = [akTop, akRight]
@@ -5891,11 +5891,12 @@ object frmMain: TfrmMain
           TabOrder = 21
         end
         object btnApplyFilter: TButton
-          Left = 184
+          Left = 180
           Top = 222
           Width = 50
           Height = 22
           Caption = 'Apply'
+          Default = True
           TabOrder = 22
           OnClick = btnApplyFilterClick
         end
@@ -6371,11 +6372,6 @@ object frmMain: TfrmMain
         AutoCheck = True
         Caption = 'Status bar'
         OnClick = mnuStatusbarClick
-      end
-      object mnuEventIndex: TMenuItem
-        AutoCheck = True
-        Caption = 'Show Events Index + Unknown1 [for debugging only]'
-        OnClick = mnuEventIndexClick
       end
       object mnuShowAudioFiles1: TMenuItem
         AutoCheck = True

@@ -40,7 +40,6 @@ type
     Objects1: TMenuItem;
     mnuToggleMainToolBar: TMenuItem;
     mnuStatusbar: TMenuItem;
-    mnuEventIndex: TMenuItem;
     mnuShowAudioFiles1: TMenuItem;
     PopupConvoEventList: TPopupMenu;
     pnlConvoTree: TEsPanel;
@@ -423,6 +422,8 @@ type
 
     function CheckLabelExistInConversation(labelName: string): Boolean; // Check if event label already exists
 
+    function bIsEventFilterActive(): Boolean;
+
     procedure SelectTreeItemByObject(TreeView: TTreeView; Obj: TObject);
     procedure SelectEventByObject(obj: TObject);
 
@@ -452,6 +453,11 @@ type
 
     procedure UpdateEventListHeights();
     procedure UpdateEventListFixedHeights();
+
+    // Events Filter
+    procedure ResetEventFilter();
+    procedure ApplyEventFilter();
+    procedure LoadFilters(); // Set checkboxes.Checked from variables
 
     procedure AddLog(msg: string);
 
@@ -487,6 +493,8 @@ type
     procedure DrawET_CheckPersona(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
     procedure DrawET_Comment(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
     procedure DrawET_End(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
+
+    procedure ToggleEventIdx();
 
     // to highlight events
     procedure HighlightSelectedEvent(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
@@ -614,7 +622,6 @@ type
       State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure mnuGithubClick(Sender: TObject);
     procedure edtSearchBoxKeyPress(Sender: TObject; var Key: Char);
-    procedure mnuEventIndexClick(Sender: TObject);
     procedure Event_DuplicateExecute(Sender: TObject);
     procedure IndexEvents1Click(Sender: TObject);
     procedure Event_CutExecute(Sender: TObject);
@@ -717,6 +724,27 @@ type
     var clPlayerBindNameColor: TColor;
     var clPlayerSpeechBGColor: TColor;
 
+    // variables for Event Filter
+    var bchkSpeech: Boolean;
+    var bchkChoice: Boolean;
+    var bchkComment: Boolean;
+    var bchkTransferObject: Boolean;
+    var bchkTrigger: Boolean;
+    var bchkRandom: Boolean;
+    var bchkCheckObject: Boolean;
+    var bchkTrade: Boolean;
+    var bchkAnimation: Boolean;
+    var bchkAddGoal: Boolean;
+    var bchkSetFlag: Boolean;
+    var bchkAddCredits: Boolean;
+    var bchkCheckPersona: Boolean;
+    var bchkCheckFlag: Boolean;
+    var bchkMoveCamera: Boolean;
+    var bchkJump: Boolean;
+    var bchkAddSkillPoints: Boolean;
+    var bchkAddNote: Boolean;
+    var bchkEnd: Boolean;
+
 
     // boolean variables for configuration file
     var bShowAudioFiles, bShowStatusBar, bShowToolbar, bExpandedEventList,
@@ -724,7 +752,7 @@ type
         bAskForConvoDelete, bAskForEventDelete, bHglEventWithNoAudio,
         bHglEventsGradient, bFlatToolbar,
         bUse3DSelectionFrame, bUseWhiteSelectedText, bDrawEventIdx, bUseLogging,
-        {bTreeQSeachExactMatch,} bUsePlayerBindNameColor, bUsePlayerSpeechBGColor : Boolean;
+        bUsePlayerBindNameColor, bUsePlayerSpeechBGColor : Boolean;
 
     property bAutoSaveEnabled: Boolean read GetAutoSaveEnabled write SetAutoSaveEnabled;
 
@@ -931,7 +959,7 @@ begin
            aLength := TConEventSetFlag(events[L]).numFlags; //ArrayLength;
     end;
 
-    if chkSetFlag.Checked = True then
+    if bchkSetFlag = True then
         dResult := 20 + (17 * aLength) // 20 for name and 17 for each flag string
     else
         dResult := 1;
@@ -954,7 +982,7 @@ begin
            aLength := TConEventCheckFlag(events[L]).numFlags; //ArrayLength;
     end;
 
-    if chkCheckFlag.Checked = True then
+    if bchkCheckFlag = True then
         dResult := 20 + (17 * aLength) // 20 for name and 17 for each flag string
     else
         dResult := 1;
@@ -992,7 +1020,7 @@ begin
     end;
 
     //dResult := 20 + (17 * tLength); // 20 for name and 17 for each Choice Item + space for flags
-    if chkChoice.Checked = True then
+    if bchkChoice = True then
         dResult := Round(20 * ConEditPlus.Helpers.GetDPIAsRatio()) + (Round(17 * ConEditPlus.Helpers.GetDPIAsRatio()) * tLength) // 20 for name and 17 for each Choice Item + space for flags
     else
         dResult := 1;
@@ -1035,7 +1063,7 @@ begin
     end;
 
     //dResult := 18 + (16 * aLength); // 20 for name and 17 for each speech string
-    if chkSpeech.Checked = True then
+    if bchkSpeech = True then
         dResult := Round(18 * ConEditPlus.Helpers.GetDPIAsRatio()) + (Round(16 * ConEditPlus.Helpers.GetDPIAsRatio()) * aLength) // 20 for name and 17 for each speech string
     else
         dResult := 1;
@@ -1066,7 +1094,7 @@ begin
     end;
 
     //dResult := 38 + (17 * aLength); // 38 for name and 17 for each flag string
-    if chkRandom.Checked = True then
+    if bchkRandom = True then
         dResult := Round(38 * ConEditPlus.Helpers.GetDPIAsRatio()) + (Round(17 * ConEditPlus.Helpers.GetDPIAsRatio()) * aLength) // 38 for name and 17 for each flag string
     else
         dResult := 1;
@@ -1091,7 +1119,7 @@ begin
     end;
 
     //dResult := 20 + (16 * aLength); // 18 for event name and 17 for each comment string
-    if chkAddGoal.Checked = True then
+    if bchkAddGoal = True then
         dResult := Round(20 * ConEditPlus.Helpers.GetDPIAsRatio()) + (Round(16 * ConEditPlus.Helpers.GetDPIAsRatio()) * aLength) // 18 for event name and 17 for each comment string
     else
         dResult := 1;
@@ -1116,7 +1144,7 @@ begin
     end;
 
     //dResult := 5 + (16 * aLength); // 18 for event name and 17 for each comment string
-    if chkAddNote.Checked = True then
+    if bchkAddNote = True then
         dResult := Round(5 * ConEditPlus.Helpers.GetDPIAsRatio()) + (Round(16 * ConEditPlus.Helpers.GetDPIAsRatio()) * aLength) // 18 for event name and 17 for each note string
     else
         dResult := 1;
@@ -1141,7 +1169,7 @@ begin
     end;
 
     //dResult := 20 + (16 * aLength); // 18 for event name and 17 for each comment string
-    if chkAddSkillPoints.Checked = True then
+    if bchkAddSkillPoints = True then
         dResult := Round(20 * ConEditPlus.Helpers.GetDPIAsRatio()) + (Round(16 * ConEditPlus.Helpers.GetDPIAsRatio()) * aLength) // 18 for event name and 17 for each comment string
     else
         dResult := 1;
@@ -1166,7 +1194,7 @@ begin
     end;
 
     //dResult := 5 + (16 * aLength); // 18 for event name and 17 for each comment string
-    if chkComment.Checked = True then
+    if bchkComment = True then
         dResult := Round(5 * ConEditPlus.Helpers.GetDPIAsRatio()) + (Round(16 * ConEditPlus.Helpers.GetDPIAsRatio()) * aLength) // 18 for event name and 17 for each comment string
     else
         dResult := 1;
@@ -3117,7 +3145,7 @@ begin
        mnuToggleMainToolBar.Checked := bShowToolbar;
 
        bDrawEventIdx := ReadBool('frmMain', 'bDrawEventIdx', true);
-       mnuEventIndex.Checked := bDrawEventIdx;
+       chkEventIdx.Checked := bDrawEventIdx;
 
 
        // Settings form
@@ -3287,6 +3315,8 @@ begin
         SpeechStr      := SpeechEvent.TextLine;
     end;
 
+    if bchkSpeech = False then Exit();  // Filter
+
     with (Control as TListBox).Canvas do
     begin
         if odSelected in State then
@@ -3376,6 +3406,8 @@ begin
 //    begin
 //        EventChoice := TConEventChoice(ConEventList.Items.Objects[Index]);
 //    end;
+
+    if bchkChoice = False then Exit();
 
     with (Control as TListBox).Canvas do
     begin
@@ -3522,6 +3554,8 @@ begin
         EventSetFlags:= TConEventSetFlag(ConEventList.Items.Objects[Index]);
     end;
 
+    if bchkSetFlag = False then Exit();
+
     with (Control as TListBox).Canvas do
     begin
         if odSelected in State then
@@ -3583,6 +3617,8 @@ begin
         EventCheckFlag:= TConEventCheckFlag(ConEventList.Items.Objects[Index]);
     end;
 
+    if bchkCheckFlag = False then Exit();
+
     with (Control as TListBox).Canvas do
     begin
         if odSelected in State then
@@ -3643,6 +3679,8 @@ begin
         failLabel := TConEventCheckObject(ConEventList.Items.Objects[Index]).GoToLabel;
     end;
 
+    if bchkCheckObject = False then Exit();
+
     with (Control as TListBox).Canvas do
     begin
         if odSelected in State then
@@ -3691,6 +3729,8 @@ begin
         ActorToValue := TConEventTransferObject(ConEventList.Items.Objects[Index]).ActorToValue;
         GotoLabel    := TConEventTransferObject(ConEventList.Items.Objects[Index]).GotoLabel;
     end;
+
+    if bchkTransferObject = False then Exit();
 
     with (Control as TListBox).Canvas do
     begin
@@ -3741,31 +3781,33 @@ var
 begin
     if ((CurrentConversation <> nil) and (TConEventMoveCamera(ConEventList.Items.Objects[Index]) <> nil)) then
     begin
-    case TConEventMoveCamera(ConEventList.Items.Objects[Index]).CameraType of
-          CT_Predefined: camTypeStr := strCT_Predefined;
-          CT_Speakers: camTypeStr := 'Not Implemented';
-          CT_Actor: camTypeStr := 'Not Implemented';
-          CT_Random: camTypeStr := strRandomCam;
+        case TConEventMoveCamera(ConEventList.Items.Objects[Index]).CameraType of
+              CT_Predefined: camTypeStr := strCT_Predefined;
+              CT_Speakers: camTypeStr := 'Not Implemented';
+              CT_Actor: camTypeStr := 'Not Implemented';
+              CT_Random: camTypeStr := strRandomCam;
+        end;
+
+        case TConEventMoveCamera(ConEventList.Items.Objects[Index]).CameraAngle of
+              CP_SideTight:             camAngleStr := strCP_SideTight;
+              CP_SideMid:               camAngleStr := strCP_SideMid;
+              CP_SideAbove:             camAngleStr := strCP_SideAbove;
+              CP_SideAbove45:           camAngleStr := strCP_SideAbove45;
+              CP_ShoulderLeft:          camAngleStr := strCP_ShoulderLeft;
+              CP_ShoulderRight:         camAngleStr := strCP_ShoulderRight;
+              CP_HeadShotTight:         camAngleStr := strCP_HeadShotTight;
+              CP_HeadShotMid:           camAngleStr := strCP_HeadShotMid;
+              CP_HeadShotLeft:          camAngleStr := strCP_HeadShotLeft;
+              CP_HeadShotRight:         camAngleStr := strCP_HeadShotRight;
+              CP_HeadShotSlightRight:   camAngleStr := strCP_HeadShotSlightRight;
+              CP_HeadShotSlightLeft:    camAngleStr := strCP_HeadShotSlightLeft;
+              CP_StraightAboveLookingDown: camAngleStr := strCP_StraightAboveLookingDown;
+              CP_StraightBelowLookingUp:camAngleStr := strCP_StraightBelowLookingUp;
+              CP_BelowLookingUp:        camAngleStr := strCP_BelowLookingUp;
+        end;
     end;
 
-    case TConEventMoveCamera(ConEventList.Items.Objects[Index]).CameraAngle of
-          CP_SideTight:             camAngleStr := strCP_SideTight;
-          CP_SideMid:               camAngleStr := strCP_SideMid;
-          CP_SideAbove:             camAngleStr := strCP_SideAbove;
-          CP_SideAbove45:           camAngleStr := strCP_SideAbove45;
-          CP_ShoulderLeft:          camAngleStr := strCP_ShoulderLeft;
-          CP_ShoulderRight:         camAngleStr := strCP_ShoulderRight;
-          CP_HeadShotTight:         camAngleStr := strCP_HeadShotTight;
-          CP_HeadShotMid:           camAngleStr := strCP_HeadShotMid;
-          CP_HeadShotLeft:          camAngleStr := strCP_HeadShotLeft;
-          CP_HeadShotRight:         camAngleStr := strCP_HeadShotRight;
-          CP_HeadShotSlightRight:   camAngleStr := strCP_HeadShotSlightRight;
-          CP_HeadShotSlightLeft:    camAngleStr := strCP_HeadShotSlightLeft;
-          CP_StraightAboveLookingDown: camAngleStr := strCP_StraightAboveLookingDown;
-          CP_StraightBelowLookingUp:camAngleStr := strCP_StraightBelowLookingUp;
-          CP_BelowLookingUp:        camAngleStr := strCP_BelowLookingUp;
-    end;
-    end;
+    if bchkMoveCamera = False then Exit();
 
     with (Control as TListBox).Canvas do
     begin
@@ -3827,6 +3869,8 @@ begin
         bPlayAnimWaitToFinish:= EventPlayAnim.bAnimWaitToFinish;
     end;
 
+    if bchkAnimation = False then Exit();
+
     with (Control as TListBox).Canvas do
     begin
         if odSelected in State then
@@ -3881,6 +3925,8 @@ end;
 
 procedure TfrmMain.DrawET_Trade(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState); // This event is not implemented, so I will skip it for now...
 begin
+    if bchkTrade = False then Exit();
+
     with (Control as TListBox).Canvas do
     begin
         Font.Color := clBlack;
@@ -3918,6 +3964,8 @@ begin
            CombinedJumpToStr := Format(strJumpInAnotherConversation, [JumpToConversation,  JumpToLabelStr]);
         end;
     end;
+
+    if bchkJump = False then Exit();
 
     with (Control as TListBox).Canvas do
     begin
@@ -3991,6 +4039,8 @@ begin
         strRandCycle := BoolToStr(TConEventRandom(ConEventList.Items.Objects[Index]).bCycleRandom, True);
     end;
 
+    if bchkRandom = False then Exit();
+
     with (Control as TListBox).Canvas do
     begin
         if odSelected in State then
@@ -4053,6 +4103,8 @@ begin
     begin
         TriggerTag := TConEventTrigger(ConEventList.Items.Objects[Index]).TriggerTag;
     end;
+
+    if bchkTrigger = False then Exit();
 
     with (Control as TListBox).Canvas do
     begin
@@ -4120,6 +4172,8 @@ begin
         GoalText     := GoalObject.GoalText; //TConEventAddGoal(ConEventList.Items.Objects[Index]).GoalText;
         bPrimaryGoal := GoalObject.bPrimaryGoal; //TConEventAddGoal(ConEventList.Items.Objects[Index]).bPrimaryGoal;
     end;
+
+    if bchkAddGoal = False then Exit();
 
     with (Control as TListBox).Canvas do
     begin
@@ -4193,13 +4247,16 @@ begin
 end;
 
 procedure TfrmMain.DrawET_AddNote(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
-var tempRect: TRect;
-var NoteText: string;
+var
+    tempRect: TRect;
+    NoteText: string;
 begin
     if ((CurrentConversation <> nil) and (TConEventAddNote(ConEventList.Items.Objects[Index]) <> nil)) then
     begin
         NoteText := TConEventAddNote(ConEventList.Items.Objects[Index]).TextLine;
     end;
+
+    if bchkAddNote = False then Exit();
 
     with (Control as TListBox).Canvas do
     begin
@@ -4263,6 +4320,8 @@ begin
         SkillAwardMessage := TConEventAddSkillPoints(ConEventList.Items.Objects[Index]).TextLine;
     end;
 
+    if bchkAddNote = False then Exit();
+
     with (Control as TListBox).Canvas do
     begin
         if odSelected in State then
@@ -4324,6 +4383,8 @@ begin
     begin
         AmountOfCredits := TConEventAddCredits(ConEventList.Items.Objects[Index]).Credits;
     end;
+
+    if bchkAddCredits = False then Exit();
 
     with (Control as TListBox).Canvas do
     begin
@@ -4408,6 +4469,8 @@ begin
     //CombinedString := 'if ' + CheckString + ConditionString + CheckValue.ToString + ' then JumpToLabel: ' + CheckGoToLabel;
     CombinedString := ConEditPlus.Consts.strCheckIf + CheckString + ConditionString + CheckValue.ToString + ConEditPlus.Consts.strJumpToLabel + CheckGoToLabel;
 
+    if bchkCheckPersona = False then Exit();
+
     with (Control as TListBox).Canvas do
     begin
         if odSelected in State then
@@ -4455,7 +4518,8 @@ begin
 end;
 
 procedure TfrmMain.DrawET_Comment(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
-var tempRect: TRect;
+var
+    tempRect: TRect;
 begin
     var CommentString: string;
 
@@ -4464,6 +4528,8 @@ begin
     begin
         CommentString := TConEventComment(ConEventList.Items.Objects[Index]).TextLine;
     end;
+
+    if bchkComment = False then Exit();
 
     with (Control as TListBox).Canvas do
     begin
@@ -4515,6 +4581,8 @@ end;
 procedure TfrmMain.DrawET_End(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
 var TempRect: TRect;
 begin
+    if bchkEnd = False then Exit();
+
     with (Control as TListBox).Canvas do
     begin
         Brush.Style := bsClear;
@@ -4737,7 +4805,7 @@ begin
         begin
             if ConEventList.Items.Objects[i] is TConEventCheckObject then
             begin
-                if chkCheckObject.Checked = True then
+                if bchkCheckObject = True then
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, Round(CHECK_OBJECT_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()))
                 else
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, 1);
@@ -4745,7 +4813,7 @@ begin
 
             if ConEventList.Items.Objects[i] is TConEventTransferObject then
             begin
-                if chkTransferObject.Checked = True then
+                if bchkTransferObject = True then
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, Round(TRANSFER_OBJECT_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()))
                 else
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, 1);
@@ -4753,7 +4821,7 @@ begin
 
             if ConEventList.Items.Objects[i] is TConEventMoveCamera then
             begin
-                if chkMoveCamera.Checked = True then
+                if bchkMoveCamera = True then
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, Round(MOVE_CAMERA_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()))
                 else
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, 1);
@@ -4761,7 +4829,7 @@ begin
 
             if ConEventList.Items.Objects[i] is TConEventAnimation then
             begin
-                if chkAnimation.Checked = True then
+                if bchkAnimation = True then
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, Round(ANIMATION_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()))
                 else
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, 1);
@@ -4769,7 +4837,7 @@ begin
 
             if ConEventList.Items.Objects[i] is TConEventTrade then
             begin
-                if chkTrade.Checked = True then
+                if bchkTrade = True then
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, Round(TRADE_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()))
                 else
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, 1);
@@ -4777,7 +4845,7 @@ begin
 
             if ConEventList.Items.Objects[i] is TConEventJump then
             begin
-                if chkJump.Checked = True then
+                if bchkJump = True then
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, Round(JUMP_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()))
                 else
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, 1);
@@ -4785,7 +4853,7 @@ begin
 
             if ConEventList.Items.Objects[i] is TConEventTrigger then
             begin
-                if chkTrigger.Checked = True then
+                if bchkTrigger = True then
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, Round(TRIGGER_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()))
                 else
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, 1);
@@ -4793,7 +4861,7 @@ begin
 
             if ConEventList.Items.Objects[i] is TConEventAddCredits then
             begin
-                if chkAddCredits.Checked = True then
+                if bchkAddCredits = True then
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, Round(ADD_CREDITS_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()))
                 else
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, 1);
@@ -4801,7 +4869,7 @@ begin
 
             if ConEventList.Items.Objects[i] is TConEventCheckPersona then
             begin
-                if chkCheckPersona.Checked = True then
+                if bchkCheckPersona = True then
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, Round(CHECK_PERSONA_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()))
                 else
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, 1);
@@ -4809,7 +4877,7 @@ begin
 
             if ConEventList.Items.Objects[i] is TConEventEnd then
             begin
-                if chkEnd.Checked = True then
+                if bchkEnd = True then
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, Round(END_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()))
                 else
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, 1);
@@ -5364,7 +5432,30 @@ begin
             if Items[Index] = ET_End_Caption then                     DrawET_End(Control, Index, Rect, State);
         end;
 
-        HighlightSelectedEvent(Control, Index, Rect, State);
+        if ConEventList.Items.Objects[Index] <> nil then
+        begin
+            if (ConEventList.Items.Objects[Index] is TConEventSpeech)         and bchkSpeech = True then HighlightSelectedEvent(Control, Index, Rect, State);
+            if (ConEventList.Items.Objects[Index] is TConEventChoice)         and bchkChoice = True then HighlightSelectedEvent(Control, Index, Rect, State);
+            if (ConEventList.Items.Objects[Index] is TConEventSetFlag)        and bchkSetFlag = True then HighlightSelectedEvent(Control, Index, Rect, State);
+            if (ConEventList.Items.Objects[Index] is TConEventCheckFlag)      and bchkCheckFlag = True then HighlightSelectedEvent(Control, Index, Rect, State);
+            if (ConEventList.Items.Objects[Index] is TConEventCheckObject)    and bchkCheckObject = True then HighlightSelectedEvent(Control, Index, Rect, State);
+            if (ConEventList.Items.Objects[Index] is TConEventTransferObject) and bchkTransferObject = True then HighlightSelectedEvent(Control, Index, Rect, State);
+            if (ConEventList.Items.Objects[Index] is TConEventMoveCamera)     and bchkMoveCamera = True then HighlightSelectedEvent(Control, Index, Rect, State);
+            if (ConEventList.Items.Objects[Index] is TConEventAnimation)      and bchkAnimation = True then HighlightSelectedEvent(Control, Index, Rect, State);
+            if (ConEventList.Items.Objects[Index] is TConEventTrade)          and bchkTrade = True then HighlightSelectedEvent(Control, Index, Rect, State);
+            if (ConEventList.Items.Objects[Index] is TConEventJump)           and bchkJump = True then HighlightSelectedEvent(Control, Index, Rect, State);
+            if (ConEventList.Items.Objects[Index] is TConEventRandom)         and bchkRandom = True then HighlightSelectedEvent(Control, Index, Rect, State);
+            if (ConEventList.Items.Objects[Index] is TConEventTrigger)        and bchkTrigger = True then HighlightSelectedEvent(Control, Index, Rect, State);
+            if (ConEventList.Items.Objects[Index] is TConEventAddGoal)        and bchkAddGoal = True then HighlightSelectedEvent(Control, Index, Rect, State);
+            if (ConEventList.Items.Objects[Index] is TConEventAddNote)        and bchkAddNote = True then HighlightSelectedEvent(Control, Index, Rect, State);
+            if (ConEventList.Items.Objects[Index] is TConEventAddSkillPoints) and bchkAddSkillPoints = True then HighlightSelectedEvent(Control, Index, Rect, State);
+            if (ConEventList.Items.Objects[Index] is TConEventAddCredits)     and bchkAddCredits = True then HighlightSelectedEvent(Control, Index, Rect, State);
+            if (ConEventList.Items.Objects[Index] is TConEventCheckPersona)   and bchkCheckPersona = True then HighlightSelectedEvent(Control, Index, Rect, State);
+            if (ConEventList.Items.Objects[Index] is TConEventComment)        and bchkComment = True then HighlightSelectedEvent(Control, Index, Rect, State);
+            if (ConEventList.Items.Objects[Index] is TConEventEnd)            and bchkEnd = True then HighlightSelectedEvent(Control, Index, Rect, State);
+        end;
+
+        //HighlightSelectedEvent(Control, Index, Rect, State);
     end;
 end;
 
@@ -5399,7 +5490,7 @@ begin
 
     if ConEventList.Items[Index] = ET_CheckObject_Caption then
     begin
-        if chkCheckObject.Checked = True then
+        if bchkCheckObject = True then
             Height := Round(CHECK_OBJECT_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()) // fixed
         else
             Height := 1;
@@ -5407,7 +5498,7 @@ begin
 
     if ConEventList.Items[Index] = ET_TransferObject_Caption then
     begin
-        if chkTransferObject.Checked = True then
+        if bchkTransferObject = True then
             Height := Round(TRANSFER_OBJECT_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()) // fixed
         else
             Height := 1;
@@ -5415,7 +5506,7 @@ begin
 
     if ConEventList.Items[Index] = ET_MoveCamera_Caption then
     begin
-        if chkMoveCamera.Checked = True then
+        if bchkMoveCamera = True then
             Height := Round(MOVE_CAMERA_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()) // fixed
         else
             Height := 1;
@@ -5423,7 +5514,7 @@ begin
 
     if ConEventList.Items[Index] = ET_Animation_Caption then
     begin
-        if chkAnimation.Checked = True then
+        if bchkAnimation = True then
             Height := Round(ANIMATION_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()) // fixed
         else
             Height := 1;
@@ -5431,7 +5522,7 @@ begin
 
     if ConEventList.Items[Index] = ET_Trade_Caption then
     begin
-        if chkTrade.Checked = True then
+        if bchkTrade = True then
             Height := Round(TRADE_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio())  // fixed, also not implemented
         else
             Height := 1;
@@ -5439,7 +5530,7 @@ begin
 
     if ConEventList.Items[Index] = ET_Jump_Caption then
     begin
-        if chkJump.Checked = True then
+        if bchkJump = True then
             Height := Round(JUMP_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()) // fixed
         else
             Height := 1;
@@ -5450,7 +5541,7 @@ begin
 
     if ConEventList.Items[Index] = ET_Trigger_Caption then
     begin
-        if chkTrigger.Checked = True then
+        if bchkTrigger = True then
             Height := Round(TRIGGER_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio())  // fixed
         else
             Height := 1;
@@ -5470,7 +5561,7 @@ begin
 
     if ConEventList.Items[Index] = ET_AddCredits_Caption then
     begin
-        if chkAddCredits.Checked = True then
+        if bchkAddCredits = True then
             Height := Round(ADD_CREDITS_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio())  // fixed
         else
             Height := 1;
@@ -5478,7 +5569,7 @@ begin
 
     if ConEventList.Items[Index] = ET_CheckPersona_Caption then
     begin
-        if chkCheckPersona.Checked = True then
+        if bchkCheckPersona = True then
             Height := Round(CHECK_PERSONA_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio())  // fixed
         else
             Height := 1;
@@ -5490,7 +5581,7 @@ begin
 
     if ConEventList.Items[Index] = ET_End_Caption then
     begin
-        if chkEnd.Checked = True then
+        if bchkEnd = True then
             Height := Round(END_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()) // fixed
         else
             Height := 1;
@@ -5670,6 +5761,8 @@ procedure TfrmMain.ConvoTreeChange(Sender: TObject; Node: TTreeNode);
 begin
     ConEventList.Enabled := Node.Level = 1;
     Conversation_Properties.Enabled := Node.Level = 1;
+
+    if pnlEventFilter.Visible = True then pnlEventFilter.Hide();
 
     //if Node.Level >= 1 then
     if Node.Level = 1 then
@@ -6170,18 +6263,6 @@ begin
     ExpandTreeViewToLevel(ConvoTree, 1);
 end;
 
-procedure TfrmMain.mnuEventIndexClick(Sender: TObject);
-begin
-    bDrawEventIdx := mnuEventIndex.Checked;
-
-    case mnuEventIndex.Checked of
-        True: HeaderControl1.Sections[0].Text := 'idx/Label';
-        False: HeaderControl1.Sections[0].Text := 'Label';
-    end;
-
-    ConEventList.Invalidate();
-end;
-
 procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
     SaveCfg();
@@ -6235,6 +6316,7 @@ end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
+    ResetEventFilter();
     EventListColors := ConEditPlus.Colors.DefaultTEventsColors; // set record defaults
     //EventListColors := ConEditPlus.Colors.DefaultTEventsColors_Dark;
 
@@ -6621,6 +6703,7 @@ end;
 
 procedure TfrmMain.Setfilter1Click(Sender: TObject);
 begin
+    LoadFilters();
     pnlEventFilter.Show();
 end;
 
@@ -7078,6 +7161,18 @@ begin
     frmTableEdit.ShowModal();
 end;
 
+procedure TfrmMain.ToggleEventIdx();
+begin
+    bDrawEventIdx := chkEventIdx.Checked;
+
+    case chkEventIdx.Checked of
+        True: HeaderControl1.Sections[0].Text := 'idx/Label';
+        False: HeaderControl1.Sections[0].Text := 'Label';
+    end;
+
+    ConEventList.Invalidate();
+end;
+
 procedure TfrmMain.ToggleLV_FlagValue(lstv: TListView);
 begin
     if lstv.Selected <> nil then
@@ -7380,11 +7475,38 @@ begin
     frmAudioDirectories.ShowModal();
 end;
 
+function TfrmMain.bIsEventFilterActive(): Boolean;
+begin
+    Result := bchkSpeech = False or
+              bchkChoice = False or
+              bchkComment = False or
+              bchkTransferObject = False or
+              bchkTrigger = False or
+              bchkRandom = False or
+              bchkCheckObject = False or
+              bchkTrade = False or
+              bchkAnimation = False or
+              bchkAddGoal = False or
+              bchkSetFlag = False or
+              bchkAddCredits = False or
+              bchkCheckPersona = False or
+              bchkCheckFlag = False or
+              bchkMoveCamera = False or
+              bchkJump = False or
+              bchkAddSkillPoints = False or
+              bchkAddNote = False or
+              bchkEnd = False;
+end;
+
 procedure TfrmMain.btnApplyFilterClick(Sender: TObject);
 begin
+    ApplyEventFilter();
+
     UpdateEventListHeights();
     UpdateEventListFixedHeights();
+    ToggleEventIdx();
     ConEventList.Invalidate();
+
     pnlEventFilter.Hide();
 end;
 
@@ -7688,6 +7810,75 @@ begin
         OpenRecentFile(fileName)
     else
         MessageBox(0, PChar(Format(strFileDoesNotExists, [fileName])), PChar(strErrorTitle), MB_OK + MB_ICONSTOP + MB_TOPMOST);
+end;
+
+procedure TfrmMain.ResetEventFilter();
+begin
+    bchkSpeech:= True;       chkSpeech.Checked := True;
+    bchkChoice:= True;       chkChoice.Checked := True;
+    bchkComment:= True;      chkComment.Checked := True;
+    bchkTransferObject:= True;  chkTransferObject.Checked := True;
+    bchkTrigger:= True;      chkTrigger.Checked := True;
+    bchkRandom:= True;       chkRandom.Checked := True;
+    bchkCheckObject:= True;  chkCheckObject.Checked := True;
+    bchkTrade:= True;        chkTrade.Checked := True;
+    bchkAnimation:= True;    chkAnimation.Checked := True;
+    bchkAddGoal:= True;      chkAddGoal.Checked := True;
+    bchkSetFlag:= True;      chkSetFlag.Checked := True;
+    bchkAddCredits:= True;   chkAddCredits.Checked := True;
+    bchkCheckPersona:= True; chkCheckPersona.Checked := True;
+    bchkCheckFlag:= True;    chkCheckFlag.Checked := True;
+    bchkMoveCamera:= True;   chkMoveCamera.Checked := True;
+    bchkJump:= True;         chkJump.Checked := True;
+    bchkAddSkillPoints:= True; chkAddSkillPoints.Checked := True;
+    bchkAddNote:= True;      chkAddNote.Checked := True;
+    bchkEnd:= True;          chkEnd.Checked := True;
+end;
+
+procedure TfrmMain.ApplyEventFilter();
+begin
+    bchkSpeech:=         chkSpeech.Checked;
+    bchkChoice:=         chkChoice.Checked;
+    bchkComment:=        chkComment.Checked;
+    bchkTransferObject:= chkTransferObject.Checked;
+    bchkTrigger:=        chkTrigger.Checked;
+    bchkRandom:=         chkRandom.Checked;
+    bchkCheckObject:=    chkCheckObject.Checked;
+    bchkTrade:=          chkTrade.Checked;
+    bchkAnimation:=      chkAnimation.Checked;
+    bchkAddGoal:=        chkAddGoal.Checked;
+    bchkSetFlag:=        chkSetFlag.Checked;
+    bchkAddCredits:=     chkAddCredits.Checked;
+    bchkCheckPersona:=   chkCheckPersona.Checked;
+    bchkCheckFlag:=      chkCheckFlag.Checked;
+    bchkMoveCamera:=     chkMoveCamera.Checked;
+    bchkJump:=           chkJump.Checked;
+    bchkAddSkillPoints:= chkAddSkillPoints.Checked;
+    bchkAddNote:=        chkAddNote.Checked;
+    bchkEnd:=            chkEnd.Checked;
+end;
+
+procedure TfrmMain.LoadFilters();
+begin
+    chkSpeech.Checked :=         bchkSpeech;
+    chkChoice.Checked :=         bchkChoice;
+    chkComment.Checked :=        bchkComment;
+    chkTransferObject.Checked := bchkTransferObject;
+    chkTrigger.Checked :=        bchkTrigger;
+    chkRandom.Checked :=         bchkRandom;
+    chkCheckObject.Checked :=    bchkCheckObject;
+    chkTrade.Checked :=          bchkTrade;
+    chkAnimation.Checked :=      bchkAnimation;
+    chkAddGoal.Checked :=        bchkAddGoal;
+    chkSetFlag.Checked :=        bchkSetFlag;
+    chkAddCredits.Checked :=     bchkAddCredits;
+    chkCheckPersona.Checked :=   bchkCheckPersona;
+    chkCheckFlag.Checked :=      bchkCheckFlag;
+    chkMoveCamera.Checked :=     bchkMoveCamera;
+    chkJump.Checked :=           bchkJump;
+    chkAddSkillPoints.Checked := bchkAddSkillPoints;
+    chkAddNote.Checked :=        bchkAddNote;
+    chkEnd.Checked :=            bchkEnd;
 end;
 
 procedure TfrmMain.tmrEventWinPosSyncTimer(Sender: TObject);
