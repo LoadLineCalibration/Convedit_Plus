@@ -164,6 +164,8 @@ const
     CHECK_PERSONA_HEIGHT = 42;
     END_HEIGHT = 25;
 
+    FILTER_ITEM_HEIGHT = 1;
+
 
 ResourceString // These strings can be translated.
 

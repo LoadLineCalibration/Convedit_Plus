@@ -4,25 +4,25 @@ unit ConEditPlus.Colors;
 interface
 
 uses
-    WinApi.Windows, System.UITypes, Vcl.Graphics;
+    Vcl.Graphics;
 
 type
   TEventListColors = record
     SpeechBG: TColor; // Regular speech background color
-    SpeechBGNoAudio: TColor;
-    SpeechText: TColor;
+    SpeechBGNoAudio: TColor; // Speech without audio: background
+    SpeechText: TColor; // Speech text color
 
     PlayerSpeechBG: TColor; // Player speech
-    PlayerSpeechBindName: TColor; // Text color
+    PlayerSpeechBindName: TColor; // Player BindName Text color
     PlayerSpeechText: TColor; // Player speech text color
 
-    ChoiceBG: TColor;
-    ChoiceBGNoAudio: TColor;
-    ChoiceText: TColor;
-    ChoiceFlagsText: TColor;
+    ChoiceBG: TColor; // choice background
+    ChoiceBGNoAudio: TColor; // choice without audio
+    ChoiceText: TColor; // choice text color
+    ChoiceFlagsText: TColor; // choice flags text color
 
-    SetFlagBG: TColor;
-    SetFlagText: TColor;
+    SetFlagBG: TColor; // SetFlag background
+    SetFlagText: TColor; // SetFlag text color
 
     CheckFlagBG: TColor;
     CheckFlagText: TColor;
@@ -44,9 +44,11 @@ type
 
     JumpBG: TColor;
     JumpText: TColor;
+    JumpLink: TColor; // "Jump to this conversation..." link color
 
     RandomBG: TColor;
     RandomText: TColor;
+    RandomLabels: TColor; // list of labels
 
     TriggerBG: TColor;
     TriggerText: TColor;
@@ -72,17 +74,19 @@ type
     EndBG: TColor; // No text!
 
     HighlightEvent: TColor; // Selected event
-    HighlightEventFrom: TColor; // Selected Event first color
-    HighlightEventTo: TColor; // Selected Event second color
-    ColorGrid: TColor;
+    HighlightEventFrom: TColor; // Selected Event first color of gradient fill
+    HighlightEventTo: TColor; // Selected Event second color of gradient fill
 
-    EventHeaderColor: TColor; // Speech, Choice, etc.
+    GridBG: TColor; // event separator first color
+    GridColor: TColor; // event separator second color
+
+    EventHeaderText: TColor; // Event name (Speech, Choice, etc.)
 
     RelatedEventFrom: TColor; // Events, referenced by selected event (and vice versa), first color of gradient
     RelatedEventTo: TColor; // Events, referenced by selected event (and vice versa), second color of gradient
 
-    ErrorEventFrom: TColor; // Event with error, first color
-    ErrorEventTo: TColor; // Event with error, second color
+    ErrorEventFrom: TColor; // Event with error, first (left) color
+    ErrorEventTo: TColor; // Event with error, second (right) color
 
     EventWithLabel: TColor; // Left part of the event, only if contains a label
     EventLabelText: TColor; // ...and label text color
@@ -95,9 +99,9 @@ const // Default colors for regular mode
     SpeechBGNoAudio: $FFFF00;
     SpeechText: clBlack;
 
-    PlayerSpeechBG: $00A5FF;
+    PlayerSpeechBG: $DCF5F5; // Beige
     PlayerSpeechBindName: $800000;
-    PlayerSpeechText: clBlack;
+    PlayerSpeechText: clNavy;
 
     ChoiceBG: $00FFFAC8;
     ChoiceBGNoAudio: $00C0FFFF;
@@ -127,9 +131,11 @@ const // Default colors for regular mode
 
     JumpBG: $00FAFFF0;
     JumpText: clBlack;
+    JumpLink: clBlue;
 
     RandomBG: $00F5F5F5;
     RandomText: clBlack;
+    RandomLabels: clBlue;
 
     TriggerBG: $00F0FFF0;
     TriggerText: clBlack;
@@ -154,12 +160,14 @@ const // Default colors for regular mode
 
     EndBG: clWhite;
 
-    HighlightEvent: 5759784; //    HighlightEvent: 5789784;
+    HighlightEvent: $701919; //5789784; //$701919; //    HighlightEvent: 5789784;
     HighlightEventFrom: 16767927;
     HighlightEventTo: 16777215;
-    ColorGrid: $808080;
 
-    EventHeaderColor: clBlack;
+    GridBG: clWhite;
+    GridColor:$808080;
+
+    EventHeaderText: clBlack;
 
     RelatedEventFrom: clYellow;
     RelatedEventTo: $F0FBFF;
@@ -171,63 +179,180 @@ const // Default colors for regular mode
     EventLabelText: clMaroon;
   );
 
-  DefaultTEventsColors_Dark: TEventListColors =
+const // Softer colors for regular mode
+  SofterTEventsColors: TEventListColors =
   (
-    SpeechBG: $3E5D3E; // Inverted from $C0DCC0
-    SpeechBGNoAudio: $FFD700; // Inverted from $FFFF00
-    SpeechText: clWhite; // Inverted from clBlack
-    PlayerSpeechBG: $0060B0; // Inverted from $00A5FF
-    PlayerSpeechBindName: $B30000; // Inverted from $800000
-    PlayerSpeechText: clWhite; // Inverted from clBlack
-    ChoiceBG: $4D4D3E; // Inverted from $00FFFAC8
-    ChoiceBGNoAudio: $4D7D7A; // Inverted from $00C0FFFF
-    ChoiceText: clWhite; // Inverted from clBlack
-    ChoiceFlagsText: clSkyBlue; // Inverted from clBlue
-    SetFlagBG: $B3B3B3; // Inverted from $00F0F0F0
-    SetFlagText: clWhite; // Inverted from clBlack
-    CheckFlagBG: $B8B8B8; // Inverted from $00F5F5F5
-    CheckFlagText: clWhite; // Inverted from clBlack
-    CheckObjectBG: $B3B3B3; // Inverted from $00F0F0F0
-    CheckObjectText: clWhite; // Inverted from clBlack
-    TransferObjectBG: $B8B8B8; // Inverted from $00F5F5F5
-    TransferObjectText: clWhite; // Inverted from clBlack
-    MoveCameraBG: $B3B3B3; // Inverted from $00F0F0F0
-    MoveCameraText: clWhite; // Inverted from clBlack
-    AnimationBG: $B3B3B3; // Inverted from $00F0F0F0
-    AnimationText: clWhite; // Inverted from clBlack
-    TradeBG: $2A2A2A; // Inverted from clWhite
-    TradeText: clWhite; // Inverted from clBlack
-    JumpBG: $3F7F3F; // Inverted from $00FAFFF0
-    JumpText: clWhite; // Inverted from clBlack
-    RandomBG: $B8B8B8; // Inverted from $00F5F5F5
-    RandomText: clWhite; // Inverted from clBlack
-    TriggerBG: $B3E6B3; // Inverted from $00F0FFF0
-    TriggerText: clWhite; // Inverted from clBlack
-    AddGoalBG: $B3E6B3; // Inverted from $00FFFFF5
-    AddGoalText: clWhite; // Inverted from clBlack
-    AddNoteBG: $B3E6B3; // Inverted from $00F0FFF0
-    AddNoteText: clWhite; // Inverted from clBlack
-    AddSkillPointsBG: $B8B3B8; // Inverted from $00F5F0F5
-    AddSkillPointsText: clWhite; // Inverted from clBlack
-    AddCreditsBG: $B8B3B8; // Inverted from $00FFF4F5
-    AddCreditsText: clWhite; // Inverted from clBlack
-    CheckPersonaBG: $B8B3FF; // Inverted from $00F4F4FF
-    CheckPersonaText: clWhite; // Inverted from clBlack
-    CommentBG: $B3B3B3; // Inverted from $00EEEEEE
-    CommentText: clWhite; // Inverted from clBlack
-    EndBG: $2A2A2A; // Inverted from clWhite
-    HighlightEvent: 16767927; // Inverted from 16767927 (this stays the same)
-    HighlightEventFrom: 16711680; // Darker red (inverted from light gradient)
-    HighlightEventTo: $000000; // Inverted from 16777215 (white to black gradient)
-    ColorGrid: $D9D9D9; // Inverted from $808080
-    EventHeaderColor: clWhite; // Inverted from clBlack
-    RelatedEventFrom: $00FF00; // Inverted from clYellow
-    RelatedEventTo: $003F3F7F; // Darker shade of cream (inverted from $F0FBFF)
-    ErrorEventFrom: $0060B0; // Inverted from $00A5FF
-    ErrorEventTo: $FF0000; // Red (inverted from clRed)
-    EventWithLabel: $FF3300; // Inverted from clLime
-    EventLabelText: clWhite; // Inverted from clMaroon
+    SpeechBG: $D8E8D8; // softer green
+    SpeechBGNoAudio: $FFFFE0; // light yellow
+    SpeechText: clBlack;
+
+    PlayerSpeechBG: $E0F5F5; // light beige
+    PlayerSpeechBindName: $A0522D; // sienna
+    PlayerSpeechText: clNavy;
+
+    ChoiceBG: $E6FFFA; // light cyan
+    ChoiceBGNoAudio: $E0FFFF; // very light cyan
+    ChoiceText: clBlack;
+    ChoiceFlagsText: clBlue;
+
+    SetFlagBG: $F0F0F0;
+    SetFlagText: clBlack;
+
+    CheckFlagBG: $F5F5F5;
+    CheckFlagText: clBlack;
+
+    CheckObjectBG: $F0F0F0;
+    CheckObjectText: clBlack;
+
+    TransferObjectBG: $F5F5F5;
+    TransferObjectText: clBlack;
+
+    MoveCameraBG: $F0F0F0;
+    MoveCameraText: clBlack;
+
+    AnimationBG: $F0F0F0;
+    AnimationText: clBlack;
+
+    TradeBG: clWhite;
+    TradeText: clBlack;
+
+    JumpBG: $F0FFF0; // softer green
+    JumpText: clBlack;
+    JumpLink: clBlue;
+
+    RandomBG: $F5F5F5;
+    RandomText: clBlack;
+    RandomLabels: clBlue;
+
+    TriggerBG: $F0FFF0; // light green
+    TriggerText: clBlack;
+
+    AddGoalBG: $FFFFF5; // very light yellow
+    AddGoalText: clBlack;
+
+    AddNoteBG: $F0FFF0; // light green
+    AddNoteText: clBlack;
+
+    AddSkillPointsBG: $F5F0F5; // light pink
+    AddSkillPointsText: clBlue;
+
+    AddCreditsBG: $FFF4F5; // very light pink
+    AddCreditsText: clBlack;
+
+    CheckPersonaBG: $F4F4FF; // very light lavender
+    CheckPersonaText: clBlack;
+
+    CommentBG: $EEEEEE;
+    CommentText: clBlack;
+
+    EndBG: clWhite;
+
+    HighlightEvent: $FFA07A; // light salmon
+    HighlightEventFrom: $FFE4E1; // misty rose
+    HighlightEventTo: $FFF5EE; // seashell
+
+    GridBG: clWhite;
+    GridColor: $D3D3D3; // light gray
+
+    EventHeaderText: clBlack;
+
+    RelatedEventFrom: $FFFFE0; // light yellow
+    RelatedEventTo: $F0F8FF; // alice blue
+
+    ErrorEventFrom: clYellow;
+    ErrorEventTo: clRed;
+
+    EventWithLabel: $98FB98; // pale green
+    EventLabelText: $8B4513; // saddle brown
   );
+
+const
+  SofterDarkerTEventsColors: TEventListColors =
+  (
+    SpeechBG: $2E2E2E; // dark gray
+    SpeechBGNoAudio: $4E4E4E; // medium gray
+    SpeechText: clWhite;
+
+    PlayerSpeechBG: $3E4E4E; // darker beige
+    PlayerSpeechBindName: clSilver;
+    PlayerSpeechText: $ADD8E6; // light blue
+
+    ChoiceBG: $5E6E6E; // medium cyan
+    ChoiceBGNoAudio: $4E6E6E; // darker cyan
+    ChoiceText: clWhite;
+    ChoiceFlagsText: $87CEEB; // sky blue
+
+    SetFlagBG: $3A3A3A;
+    SetFlagText: clWhite;
+
+    CheckFlagBG: $434343;
+    CheckFlagText: clWhite;
+
+    CheckObjectBG: $3A3A3A;
+    CheckObjectText: clWhite;
+
+    TransferObjectBG: $434343;
+    TransferObjectText: clWhite;
+
+    MoveCameraBG: $3A3A3A;
+    MoveCameraText: clWhite;
+
+    AnimationBG: $3A3A3A;
+    AnimationText: clWhite;
+
+    TradeBG: $2E2E2E;
+    TradeText: clWhite;
+
+    JumpBG: $3E4E4E; // darker green
+    JumpText: clWhite;
+    JumpLink: $87CEFA; // light sky blue
+
+    RandomBG: $434343;
+    RandomText: clWhite;
+    RandomLabels: $87CEEB; // sky blue
+
+    TriggerBG: $3E4E4E; // darker green
+    TriggerText: clWhite;
+
+    AddGoalBG: $4E4E4E; // medium gray
+    AddGoalText: clWhite;
+
+    AddNoteBG: $3E4E4E; // darker green
+    AddNoteText: clWhite;
+
+    AddSkillPointsBG: $5E3E5E; // medium pink
+    AddSkillPointsText: $87CEEB; // sky blue
+
+    AddCreditsBG: $4E3E4E; // dark pink
+    AddCreditsText: clWhite;
+
+    CheckPersonaBG: $3E3E5E; // dark lavender
+    CheckPersonaText: clWhite;
+
+    CommentBG: $2E2E2E;
+    CommentText: clWhite;
+
+    EndBG: $2E2E2E;
+
+    HighlightEvent: $00804000;
+    HighlightEventFrom: $8B0000; // dark red
+    HighlightEventTo: $8B4513; // saddle brown
+
+    GridBG: $2E2E2E;
+    GridColor: $696969; // dim gray
+
+    EventHeaderText: clWhite;
+
+    RelatedEventFrom: $4E4E4E; // medium gray
+    RelatedEventTo: $5F9EA0; // cadet blue
+
+    ErrorEventFrom: $0000D5D5;
+    ErrorEventTo: $000000D5;
+
+    EventWithLabel: $32CD32; // lime green
+    EventLabelText: clSilver;
+  );
+
 
 
 implementation

@@ -962,7 +962,7 @@ begin
     if bchkSetFlag = True then
         dResult := 20 + (17 * aLength) // 20 for name and 17 for each flag string
     else
-        dResult := 1;
+        dResult := FILTER_ITEM_HEIGHT;
     //dResult := Round(20 * GetDPIAsRatio()) + Round(17 * GetDpiAsRatio()) * aLength; // 20 for name and 17 for each flag string
 
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
@@ -985,7 +985,7 @@ begin
     if bchkCheckFlag = True then
         dResult := 20 + (17 * aLength) // 20 for name and 17 for each flag string
     else
-        dResult := 1;
+        dResult := FILTER_ITEM_HEIGHT;
     //dResult := Round(20 * GetDPIAsRatio()) + (Round(17 * GetDPIAsRatio()) * aLength); // 20 for name and 17 for each flag string
     //dResult := Round(20 * GetDPIAsRatio()) + (Round(17 * GetDPIAsRatio()) * aLength);
 
@@ -1023,7 +1023,7 @@ begin
     if bchkChoice = True then
         dResult := Round(20 * ConEditPlus.Helpers.GetDPIAsRatio()) + (Round(17 * ConEditPlus.Helpers.GetDPIAsRatio()) * tLength) // 20 for name and 17 for each Choice Item + space for flags
     else
-        dResult := 1;
+        dResult := FILTER_ITEM_HEIGHT;
 
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
 
@@ -1066,7 +1066,7 @@ begin
     if bchkSpeech = True then
         dResult := Round(18 * ConEditPlus.Helpers.GetDPIAsRatio()) + (Round(16 * ConEditPlus.Helpers.GetDPIAsRatio()) * aLength) // 20 for name and 17 for each speech string
     else
-        dResult := 1;
+        dResult := FILTER_ITEM_HEIGHT;
 
 
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
@@ -1097,7 +1097,7 @@ begin
     if bchkRandom = True then
         dResult := Round(38 * ConEditPlus.Helpers.GetDPIAsRatio()) + (Round(17 * ConEditPlus.Helpers.GetDPIAsRatio()) * aLength) // 38 for name and 17 for each flag string
     else
-        dResult := 1;
+        dResult := FILTER_ITEM_HEIGHT;
 
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
 
@@ -1122,7 +1122,7 @@ begin
     if bchkAddGoal = True then
         dResult := Round(20 * ConEditPlus.Helpers.GetDPIAsRatio()) + (Round(16 * ConEditPlus.Helpers.GetDPIAsRatio()) * aLength) // 18 for event name and 17 for each comment string
     else
-        dResult := 1;
+        dResult := FILTER_ITEM_HEIGHT;
 
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
 
@@ -1147,7 +1147,7 @@ begin
     if bchkAddNote = True then
         dResult := Round(5 * ConEditPlus.Helpers.GetDPIAsRatio()) + (Round(16 * ConEditPlus.Helpers.GetDPIAsRatio()) * aLength) // 18 for event name and 17 for each note string
     else
-        dResult := 1;
+        dResult := FILTER_ITEM_HEIGHT;
 
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
 
@@ -1172,7 +1172,7 @@ begin
     if bchkAddSkillPoints = True then
         dResult := Round(20 * ConEditPlus.Helpers.GetDPIAsRatio()) + (Round(16 * ConEditPlus.Helpers.GetDPIAsRatio()) * aLength) // 18 for event name and 17 for each comment string
     else
-        dResult := 1;
+        dResult := FILTER_ITEM_HEIGHT;
 
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
 
@@ -1197,7 +1197,7 @@ begin
     if bchkComment = True then
         dResult := Round(5 * ConEditPlus.Helpers.GetDPIAsRatio()) + (Round(16 * ConEditPlus.Helpers.GetDPIAsRatio()) * aLength) // 18 for event name and 17 for each comment string
     else
-        dResult := 1;
+        dResult := FILTER_ITEM_HEIGHT;
 
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
 
@@ -3325,22 +3325,26 @@ begin
                 DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
 
             if bHglEventsGradient = True then
-                GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
+                GradientFillCanvas(ConEventList.Canvas, EventListColors.HighlightEventFrom, EventListColors.HighlightEventTo, Rect, gdVertical)
+                //GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
             else
             begin
-                Brush.Color := clrHighlightEvent;
+                //Brush.Color := clrHighlightEvent;
+                Brush.Color := EventListColors.HighlightEvent;
                 FillRect(Rect); // Заполнение цветом
             end
         end else
         begin
             if (bHglEventWithNoAudio = True) and (mp3str = '') then // what the point?
-                Brush.Color := RGB(192,255,255)
+                Brush.Color := EventListColors.SpeechBGNoAudio
+                //Brush.Color := RGB(192,255,255)
             else
             begin
                 if (bUsePlayerSpeechBGColor = True) and (ActorNameStr = PLAYER_BINDNAME) then
-                    Brush.Color := clPlayerSpeechBGColor
+                    Brush.Color := EventListColors.PlayerSpeechBG //clPlayerSpeechBGColor
                 else
-                    Brush.Color := RGB(192,255,192); // green
+                    Brush.Color := EventListColors.SpeechBG;
+                    //Brush.Color := RGB(192,255,192); // green
             end;
 
             FillRect(Rect); // Заполнение цветом
@@ -3354,13 +3358,14 @@ begin
         else
         begin
             if (ActorNameStr = PLAYER_BINDNAME) and (bUsePlayerBindNameColor = True) then
-                Font.Color := clPlayerBindNameColor else Font.Color := clBlack;
+                Font.Color := EventListColors.PlayerSpeechBindName else Font.Color := EventListColors.EventHeaderText;
+                //Font.Color := clPlayerBindNameColor else Font.Color := clBlack;
         end;
 
         Font.Style := [fsBold];
 
         Brush.Style := bsClear;
-        TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top, ET_Speech_Caption);
+        TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top, ET_Speech_Caption); // Event header
 
         // NPC/Actor/Player BindName
         TextOut(Rect.Left + HeaderControl1.Sections[1].Width + HeaderControl1.Sections[0].Width, Rect.Top, ActorNameStr + '');
@@ -3380,8 +3385,14 @@ begin
 
         Font.Style := [];
 
-        if ((odSelected in State) and
-            (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clNavy;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite
+            else
+            begin
+                if (ActorNameStr = PLAYER_BINDNAME) and (bUsePlayerBindNameColor = True) then
+                    Font.Color := EventListColors.PlayerSpeechText  // player speech text - selected
+                    else Font.Color := EventListColors.SpeechText;  // NPC speech text - selected
+            end;
+            //(bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clNavy;
 
         Font.Name := CEP_SPEECH_EVENT_FONT;
         Font.Size := CEP_SPEECH_EVENT_FONT_SIZE;
@@ -3416,11 +3427,13 @@ begin
             if bUse3DSelectionFrame = True then
                 DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
             if (bHglEventsGradient = True) then
-                 GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
+                GradientFillCanvas(ConEventList.Canvas, EventListColors.HighlightEventFrom, EventListColors.HighlightEventTo, Rect, gdVertical)
+                 //GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
             else
             begin
-               Brush.Color := clrHighlightEvent;
-               FillRect(Rect); // Заполнение цветом
+                //Brush.Color := clrHighlightEvent;
+                Brush.Color := EventListColors.HighlightEvent;
+                FillRect(Rect); // Заполнение цветом
             end
         end else
         begin
@@ -3436,18 +3449,21 @@ begin
             end;
 
             if (bHglEventWithNoAudio = True) and (bHasMP3String = False) then
-                Brush.Color := RGB(192,255,255)
+                //Brush.Color := RGB(192,255,255)
+                Brush.Color := EventListColors.ChoiceBGNoAudio
             else
-                Brush.Color := RGB(255,250,200);
+                Brush.Color := EventListColors.ChoiceBG;
+                //Brush.Color := RGB(255,250,200);
 
                 FillRect(Rect); // Заполнение цветом
         end;
 
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.ChoiceText;
 
         Brush.Style := bsClear;
         Font.Style := [fsBold];
-        TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top, ET_Choice_Caption);
+        TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top, ET_Choice_Caption); // Event header
         tempRect := Rect;
 
         Font.Style := [];
@@ -3456,7 +3472,8 @@ begin
 
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width;
 
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clNavy;
+        //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clNavy;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.ChoiceText;
 
         for var E:= 0 to EventChoice.NumChoices -1 do
         begin
@@ -3465,7 +3482,8 @@ begin
 
             if EventChoice.Choices[E].bSkillNeeded <> -1 then
             begin // bSkillNedded <>  -1, i.e. true
-                if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clNavy;
+                //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clNavy;
+                if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.ChoiceText;
 
                 if EventChoice.Choices[E].bDisplayAsSpeech = True then
                     DrawText(handle, Format(strChoiceWithSkills, [EventChoice.Choices[E].textline,
@@ -3483,9 +3501,11 @@ begin
                 begin
                     Font.Name := CEP_EVENT_LIST_FONT_NAME;
                     Font.Size := CEP_EVENT_LIST_FONT_SIZE;
-                    if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clYellow else Font.Color := clBlue;
+                    //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clYellow else Font.Color := clBlue;
+                    if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clYellow else Font.Color := EventListColors.ChoiceFlagsText;
 
-                        FlagsStr := '';
+                    FlagsStr := '';
+
                     for var F := 0 to Length(EventChoice.Choices[E].RequiredFlags) -1 do
                     begin
                         FlagsStr := FlagsStr + '[' + EventChoice.Choices[E].RequiredFlags[F].flagName + '='
@@ -3501,7 +3521,8 @@ begin
                 end;
             end else
             begin // bSkillNeeded = 0 or greater
-                if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clNavy;
+                //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clNavy;
+                if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.ChoiceText;
 
                 if EventChoice.Choices[E].bDisplayAsSpeech = True then
                     DrawText(handle, Format(strChoiceNoSkills, [EventChoice.Choices[E].textline,
@@ -3517,7 +3538,8 @@ begin
                 begin
                     Font.Name := CEP_EVENT_LIST_FONT_NAME;
                     Font.Size := CEP_EVENT_LIST_FONT_SIZE;
-                    if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clYellow else Font.Color := clBlue;
+                    //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clYellow else Font.Color := clBlue;
+                    if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clYellow else Font.Color := EventListColors.ChoiceFlagsText;
 
                     FlagsStr := '';
 
@@ -3563,28 +3585,35 @@ begin
            if bUse3DSelectionFrame = True then
               DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
            if (bHglEventsGradient = True) then
-               GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
+               GradientFillCanvas(ConEventList.Canvas, EventListColors.HighlightEventFrom, EventListColors.HighlightEventTo, Rect, gdVertical)
+               //GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
           else begin
-               Brush.Color := clrHighlightEvent;
+               //Brush.Color := clrHighlightEvent;
+               Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
                end
         end else
         begin
-           Brush.Color := RGB(240,240,240);
-           FillRect(Rect); // Заполнение цветом
+            //Brush.Color := RGB(240,240,240);
+            Brush.Color := EventListColors.SetFlagBG;
+            FillRect(Rect); // Заполнение цветом
         end;
 
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderText;
 
         Brush.Style := bsClear;
 
         Font.Style := [fsBold];
-        TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top, ET_SetFlag_Caption);
+        TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top, ET_SetFlag_Caption); // Event header
         tempRect := Rect;
 
         Font.Style := [];
         Font.Name := CEP_EVENT_HEADER_LIST_FONT_NAME;
         Font.Size := CEP_EVENT_HEADER_LIST_FONT_SIZE;
+
+        // font color when event is selected
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.SetFlagText;
 
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width;
         //Inc(tempRect.Top, 16);
@@ -3626,23 +3655,27 @@ begin
            if bUse3DSelectionFrame = True then
               DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
            if (bHglEventsGradient = True) then
-               GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
+               GradientFillCanvas(ConEventList.Canvas, EventListColors.HighlightEventFrom, EventListColors.HighlightEventTo, Rect, gdVertical)
+               //GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
           else begin
-               Brush.Color := clrHighlightEvent;
+               //Brush.Color := clrHighlightEvent;
+               Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
                end
         end else
         begin
-           Brush.Color := RGB(245,245,245);
-           FillRect(Rect); // Заполнение цветом
+            //Brush.Color := RGB(245,245,245);
+            Brush.Color := EventListColors.CheckFlagBG;
+            FillRect(Rect); // Заполнение цветом
         end;
 
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderText;
 
         Brush.Style := bsClear;
 
         Font.Style := [fsBold];
-        TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top, ET_CheckFlag_Caption);
+        TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top, ET_CheckFlag_Caption);  // Event header
 
         var Indent := Rect.Left + HeaderControl1.Sections[0].Width + HeaderControl1.Sections[1].Width + HeaderControl1.Sections[2].Width;
 
@@ -3653,17 +3686,19 @@ begin
         Font.Name := CEP_EVENT_HEADER_LIST_FONT_NAME;
         Font.Size := CEP_EVENT_HEADER_LIST_FONT_SIZE;
 
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.CheckFlagText;
+
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width;
         Inc(tempRect.Top, Round(16 * ConEditPlus.Helpers.GetDPIAsRatio()));
         //Inc(tempRect.Top, 16);
 
         for var i := 0 to Length(EventCheckFlag.FlagsToCheck) -1 do
         begin
-           var flagvalue := BoolToStr(EventCheckFlag.FlagsToCheck[i].FlagValue, true);
+            var flagvalue := BoolToStr(EventCheckFlag.FlagsToCheck[i].FlagValue, true);
 
-           DrawText(Handle,EventCheckFlag.FlagsToCheck[i].FlagName + '=' + flagvalue, -1, TempRect, DT_END_ELLIPSIS);
-           Inc(tempRect.Top, Round(16 * ConEditPlus.Helpers.GetDPIAsRatio()));
-           //Inc(tempRect.Top, 16); // Отступ вниз
+            DrawText(Handle,EventCheckFlag.FlagsToCheck[i].FlagName + '=' + flagvalue, -1, TempRect, DT_END_ELLIPSIS);
+            Inc(tempRect.Top, Round(16 * ConEditPlus.Helpers.GetDPIAsRatio()));
+            //Inc(tempRect.Top, 16); // Отступ вниз
         end;
     end;
 end;
@@ -3688,25 +3723,31 @@ begin
            if bUse3DSelectionFrame = True then
               DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
            if (bHglEventsGradient = True) then
-               GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
+               GradientFillCanvas(ConEventList.Canvas, EventListColors.HighlightEventFrom, EventListColors.HighlightEventTo, Rect, gdVertical)
+               //GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
           else begin
-               Brush.Color := clrHighlightEvent;
+               //Brush.Color := clrHighlightEvent;
+               Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
                end
         end else
         begin
-           Brush.Color := RGB(240,240,240);
-           FillRect(Rect); // Заполнение цветом
+            //Brush.Color := RGB(240,240,240);
+            Brush.Color := EventListColors.CheckObjectBG;
+            FillRect(Rect); // Заполнение цветом
         end;
 
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderText;
 
         Font.Style := [fsBold];
         Brush.Style := bsClear;
-        TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top, ET_CheckObject_Caption);
+        TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top, ET_CheckObject_Caption); // Event header
 
         TempRect := Rect;
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width + HeaderControl1.Sections[1].Width + HeaderControl1.Sections[2].Width;
+
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.CheckObjectText;
 
         DrawText(Handle, Format(strCheckObject, [objName, failLabel]) , -1, tempRect, DT_END_ELLIPSIS);
     end;
@@ -3739,18 +3780,22 @@ begin
            if bUse3DSelectionFrame = True then
               DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
            if (bHglEventsGradient = True) then
-               GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
+               GradientFillCanvas(ConEventList.Canvas, EventListColors.HighlightEventFrom, EventListColors.HighlightEventTo, Rect, gdVertical)
+               //GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
           else begin
-               Brush.Color := clrHighlightEvent;
+               //Brush.Color := clrHighlightEvent;
+               Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
                end
         end else
         begin
-           Brush.Color := RGB(245,245,245);
-           FillRect(Rect); // Заполнение цветом
+            //Brush.Color := RGB(245,245,245);
+            Brush.Color := EventListColors.TransferObjectBG;
+            FillRect(Rect); // Заполнение цветом
         end;
 
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderText;
 
         Font.Style := [fsBold];
         Brush.Style := bsClear;
@@ -3764,9 +3809,7 @@ begin
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width + HeaderControl1.Sections[1].Width + HeaderControl1.Sections[2].Width;
 
         Font.Style := [];
-
-//        Font.Name := CEP_SPEECH_EVENT_FONT;
-//        Font.Size := CEP_SPEECH_EVENT_FONT_SIZE;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.TransferObjectText;
 
         DrawText(Handle, Format(strTransferObject, [ObjectValue, ActorFromValue, ActorToValue, GotoLabel]) , -1, tempRect,
         DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL);
@@ -3816,25 +3859,30 @@ begin
            if bUse3DSelectionFrame = True then
               DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
            if (bHglEventsGradient = True) then
-               GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
+               //GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
+               GradientFillCanvas(ConEventList.Canvas, EventListColors.HighlightEventFrom, EventListColors.HighlightEventTo, Rect, gdVertical)
           else begin
-               Brush.Color := clrHighlightEvent;
+               //Brush.Color := clrHighlightEvent;
+               Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
                end
         end else
         begin
-           Brush.Color := RGB(240,240,240);
-           FillRect(Rect); // Заполнение цветом
+            //Brush.Color := RGB(240,240,240);
+            Brush.Color := EventListColors.MoveCameraBG;
+            FillRect(Rect); // Заполнение цветом
         end;
 
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderText;
 
         Font.Style := [fsBold];
         Brush.Style := bsClear;
-        TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top, ET_MoveCamera_Caption);
+        TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top, ET_MoveCamera_Caption); // event header
 
         TempRect := Rect;
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width + HeaderControl1.Sections[1].Width + HeaderControl1.Sections[2].Width;
+
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.MoveCameraText;
 
         if camTypeStr = strRandomCam then
             DrawText(Handle, camTypeStr, -1, tempRect, DT_END_ELLIPSIS or DT_WORDBREAK or DT_EDITCONTROL)
@@ -3878,25 +3926,31 @@ begin
            if bUse3DSelectionFrame = True then
               DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
            if (bHglEventsGradient = True) then
-               GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
+               GradientFillCanvas(ConEventList.Canvas, EventListColors.HighlightEventFrom, EventListColors.HighlightEventTo, Rect, gdVertical)
+               //GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
           else begin
-               Brush.Color := clrHighlightEvent;
+               //Brush.Color := clrHighlightEvent;
+               Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
                end
         end else
         begin
-           Brush.Color := RGB(240,240,240);
-           FillRect(Rect); // Заполнение цветом
+            //Brush.Color := RGB(240,240,240);
+            Brush.Color := EventListColors.AnimationBG;
+            FillRect(Rect); // Заполнение цветом
         end;
 
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderText;
 
         Font.Style := [fsBold];
         Brush.Style := bsClear;
-        TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top, ET_Animation_Caption);
+        TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top, ET_Animation_Caption); // Event header
 
         TempRect := Rect;
         TempRect.Left := Rect.Left + HeaderControl1.Sections[0].Width + HeaderControl1.Sections[1].Width;
+
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.AnimationText;
 
         DrawText(Handle, PlayAnimActor, -1, tempRect, DT_END_ELLIPSIS);
 
@@ -3958,10 +4012,10 @@ begin
 
         if CurrentConversationId = JumpToConversationId then
         begin
-           CombinedJumpToStr := strJumpInCurrentConversation + JumpToLabelStr;
+            CombinedJumpToStr := strJumpInCurrentConversation + JumpToLabelStr;
         end else
         begin
-           CombinedJumpToStr := Format(strJumpInAnotherConversation, [JumpToConversation,  JumpToLabelStr]);
+            CombinedJumpToStr := Format(strJumpInAnotherConversation, [JumpToConversation,  JumpToLabelStr]);
         end;
     end;
 
@@ -3971,26 +4025,30 @@ begin
     begin
         if odSelected in State then
         begin
-           if bUse3DSelectionFrame = True then
-              DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
-           if (bHglEventsGradient = True) then
-               GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
+            if bUse3DSelectionFrame = True then
+               DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
+            if (bHglEventsGradient = True) then
+                GradientFillCanvas(ConEventList.Canvas, EventListColors.HighlightEventFrom, EventListColors.HighlightEventTo, Rect, gdVertical)
+                //GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
           else begin
-               Brush.Color := clrHighlightEvent;
+               //Brush.Color := clrHighlightEvent;
+               Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
                end
         end else
         begin
-           Brush.Color := RGB(250,255,240);
-           FillRect(Rect); // Заполнение цветом
+            //Brush.Color := RGB(250,255,240);
+            Brush.Color := EventListColors.JumpBG;
+            FillRect(Rect); // Заполнение цветом
         end;
 
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderText;
 
         Brush.Style := bsClear;
 
         Font.Style := [fsBold];
-        TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top, ET_Jump_Caption);
+        TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top, ET_Jump_Caption); // Event header
 
         Font.Style := [];
 
@@ -4003,7 +4061,8 @@ begin
         Inc(tempRect.Top, Round(16 * ConEditPlus.Helpers.GetDPIAsRatio()));
         //Inc(tempRect.Top, 16);
 
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.JumpText;
 
         DrawText(Handle,CombinedJumpToStr, -1, TempRect, DT_END_ELLIPSIS);
 
@@ -4013,6 +4072,8 @@ begin
         ButtonRect.Top:= Rect.Top + 20;
         ButtonRect.Bottom:= Rect.Bottom - 5;
         Font.Style := [TFontStyle.fsUnderline];
+
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.JumpLink;
 
         if (CurrentConversationId <> JumpToConversationId) then
             DrawText(Handle,strJumpToConversation, -1, ButtonRect,DT_END_ELLIPSIS)
@@ -4048,24 +4109,30 @@ begin
            if bUse3DSelectionFrame = True then
               DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
            if (bHglEventsGradient = True) then
-               GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
+               GradientFillCanvas(ConEventList.Canvas, EventListColors.HighlightEventFrom, EventListColors.HighlightEventTo, Rect, gdVertical)
+               //GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
           else begin
-               Brush.Color := clrHighlightEvent;
+               //Brush.Color := clrHighlightEvent;
+               Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
                end
         end else
         begin
-           Brush.Color := RGB(245,245,245);
-           FillRect(Rect); // Заполнение цветом
+            //Brush.Color := RGB(245,245,245);
+            Brush.Color := EventListColors.RandomBG;
+            FillRect(Rect); // Заполнение цветом
         end;
 
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderText;
 
         Brush.Style := bsClear;
 
         Font.Style := [fsBold];
-        TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top, ET_Random_Caption);
+        TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top, ET_Random_Caption); // Event header
 
+
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.RandomText; // Labels text color
         Font.Style := [];
         TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top + Round(12 * ConEditPlus.Helpers.GetDPIAsRatio()), ET_Random_TargetLabels);
         //TextOut(Rect.Left + HeaderControl1.Sections[0].Width, Rect.Top + 12, ET_Random_TargetLabels);
@@ -4085,8 +4152,20 @@ begin
         //Inc(tempRect.Top, 16);
         Inc(tempRect.Top, Round(16 * ConEditPlus.Helpers.GetDPIAsRatio()));
 
+        //var r,g,b: Byte;
+        //var rr,gg,bb: Byte;
+
         for var i := 0 to Length(labelsArray) -1 do
         begin
+            //ConEditPlus.Helpers.ExtractRGB(EventListColors.RandomText, r,g,b);
+
+            //Randomize();
+            //rr := System.Math.EnsureRange(RandomRange(r - 150, r + 150), 0, 255);
+            //gg := System.Math.EnsureRange(RandomRange(g - 150, g + 150), 0, 255);
+            //bb := System.Math.EnsureRange(RandomRange(b - 150, b + 150), 0, 255);
+
+            if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clYellow else Font.Color := EventListColors.RandomLabels;
+
             DrawText(Handle,labelsArray[i], -1, TempRect, DT_END_ELLIPSIS);  // maybe someone will be using very long labels?
             Inc(tempRect.Top, Round(16 * ConEditPlus.Helpers.GetDPIAsRatio()));
             //Inc(tempRect.Top, 16); // Отступ вниз
@@ -4128,7 +4207,7 @@ begin
         end;
 
         //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderColor;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderText;
 
         Brush.Style := bsClear;
 
@@ -4197,7 +4276,7 @@ begin
         end;
 
         //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderColor;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderText;
 
         Brush.Style := bsClear;
 
@@ -4280,7 +4359,7 @@ begin
         end;
 
         //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderColor;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderText;
 
         Brush.Style := bsClear;
 
@@ -4344,7 +4423,7 @@ begin
         end;
 
         //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderColor;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderText;
 
         Brush.Style := bsClear;
 
@@ -4408,7 +4487,7 @@ begin
         end;
 
         //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderColor;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderText;
 
         Brush.Style := bsClear;
 
@@ -4493,7 +4572,7 @@ begin
         end;
 
         //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderColor;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderText;
 
         Brush.Style := bsClear;
 
@@ -4553,7 +4632,7 @@ begin
         end;
 
         //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderColor;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderText;
 
         Brush.Style := bsClear;
 
@@ -4614,7 +4693,7 @@ begin
         Font.Size := CEP_EVENT_LIST_FONT_SIZE;
         Font.Name := CEP_EVENT_LIST_FONT_NAME;
         //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderColor;
+        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := EventListColors.EventHeaderText;
         Font.Style := [fsBold, fsItalic];
 
         DrawText(Handle, ET_End_Caption, -1, TempRect, DT_SINGLELINE);
@@ -4808,7 +4887,7 @@ begin
                 if bchkCheckObject = True then
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, Round(CHECK_OBJECT_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()))
                 else
-                    ConEventList.Perform(LB_SETITEMHEIGHT, i, 1);
+                    ConEventList.Perform(LB_SETITEMHEIGHT, i, FILTER_ITEM_HEIGHT);
             end;
 
             if ConEventList.Items.Objects[i] is TConEventTransferObject then
@@ -4816,7 +4895,7 @@ begin
                 if bchkTransferObject = True then
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, Round(TRANSFER_OBJECT_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()))
                 else
-                    ConEventList.Perform(LB_SETITEMHEIGHT, i, 1);
+                    ConEventList.Perform(LB_SETITEMHEIGHT, i, FILTER_ITEM_HEIGHT);
             end;
 
             if ConEventList.Items.Objects[i] is TConEventMoveCamera then
@@ -4824,7 +4903,7 @@ begin
                 if bchkMoveCamera = True then
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, Round(MOVE_CAMERA_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()))
                 else
-                    ConEventList.Perform(LB_SETITEMHEIGHT, i, 1);
+                    ConEventList.Perform(LB_SETITEMHEIGHT, i, FILTER_ITEM_HEIGHT);
             end;
 
             if ConEventList.Items.Objects[i] is TConEventAnimation then
@@ -4832,7 +4911,7 @@ begin
                 if bchkAnimation = True then
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, Round(ANIMATION_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()))
                 else
-                    ConEventList.Perform(LB_SETITEMHEIGHT, i, 1);
+                    ConEventList.Perform(LB_SETITEMHEIGHT, i, FILTER_ITEM_HEIGHT);
             end;
 
             if ConEventList.Items.Objects[i] is TConEventTrade then
@@ -4840,7 +4919,7 @@ begin
                 if bchkTrade = True then
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, Round(TRADE_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()))
                 else
-                    ConEventList.Perform(LB_SETITEMHEIGHT, i, 1);
+                    ConEventList.Perform(LB_SETITEMHEIGHT, i, FILTER_ITEM_HEIGHT);
             end;
 
             if ConEventList.Items.Objects[i] is TConEventJump then
@@ -4848,7 +4927,7 @@ begin
                 if bchkJump = True then
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, Round(JUMP_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()))
                 else
-                    ConEventList.Perform(LB_SETITEMHEIGHT, i, 1);
+                    ConEventList.Perform(LB_SETITEMHEIGHT, i, FILTER_ITEM_HEIGHT);
             end;
 
             if ConEventList.Items.Objects[i] is TConEventTrigger then
@@ -4856,7 +4935,7 @@ begin
                 if bchkTrigger = True then
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, Round(TRIGGER_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()))
                 else
-                    ConEventList.Perform(LB_SETITEMHEIGHT, i, 1);
+                    ConEventList.Perform(LB_SETITEMHEIGHT, i, FILTER_ITEM_HEIGHT);
             end;
 
             if ConEventList.Items.Objects[i] is TConEventAddCredits then
@@ -4864,7 +4943,7 @@ begin
                 if bchkAddCredits = True then
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, Round(ADD_CREDITS_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()))
                 else
-                    ConEventList.Perform(LB_SETITEMHEIGHT, i, 1);
+                    ConEventList.Perform(LB_SETITEMHEIGHT, i, FILTER_ITEM_HEIGHT);
             end;
 
             if ConEventList.Items.Objects[i] is TConEventCheckPersona then
@@ -4872,7 +4951,7 @@ begin
                 if bchkCheckPersona = True then
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, Round(CHECK_PERSONA_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()))
                 else
-                    ConEventList.Perform(LB_SETITEMHEIGHT, i, 1);
+                    ConEventList.Perform(LB_SETITEMHEIGHT, i, FILTER_ITEM_HEIGHT);
             end;
 
             if ConEventList.Items.Objects[i] is TConEventEnd then
@@ -4880,7 +4959,7 @@ begin
                 if bchkEnd = True then
                     ConEventList.Perform(LB_SETITEMHEIGHT, i, Round(END_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()))
                 else
-                    ConEventList.Perform(LB_SETITEMHEIGHT, i, 1);
+                    ConEventList.Perform(LB_SETITEMHEIGHT, i, FILTER_ITEM_HEIGHT);
             end;
         end;
     end;
@@ -5405,7 +5484,11 @@ begin
         Font.Name := CEP_EVENT_LIST_FONT_NAME;
 
         Pen.Style := psInsideFrame;
-        Frame3D(TListBox(Control).Canvas, Rect, clWhite, clrGrid, 1); // разделитель
+        Frame3D(TListBox(Control).Canvas, Rect, EventListColors.GridBG, EventListColors.GridColor, 1); // разделитель
+
+        //Brush.Style := bsSolid;
+        //Brush.Color := clBlack;
+        //FillRect(Rect);
 
         // Turns out, original ConEdit highlights events with non-empty label with green color!
         // But I will implement that feature differently...
@@ -5456,6 +5539,7 @@ begin
         end;
 
         //HighlightSelectedEvent(Control, Index, Rect, State);
+        //ConEventList.Color := clBlack;
     end;
 end;
 
@@ -5493,7 +5577,7 @@ begin
         if bchkCheckObject = True then
             Height := Round(CHECK_OBJECT_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()) // fixed
         else
-            Height := 1;
+            Height := FILTER_ITEM_HEIGHT;
     end;
 
     if ConEventList.Items[Index] = ET_TransferObject_Caption then
@@ -5501,7 +5585,7 @@ begin
         if bchkTransferObject = True then
             Height := Round(TRANSFER_OBJECT_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()) // fixed
         else
-            Height := 1;
+            Height := FILTER_ITEM_HEIGHT;
     end;
 
     if ConEventList.Items[Index] = ET_MoveCamera_Caption then
@@ -5509,7 +5593,7 @@ begin
         if bchkMoveCamera = True then
             Height := Round(MOVE_CAMERA_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()) // fixed
         else
-            Height := 1;
+            Height := FILTER_ITEM_HEIGHT;
     end;
 
     if ConEventList.Items[Index] = ET_Animation_Caption then
@@ -5517,7 +5601,7 @@ begin
         if bchkAnimation = True then
             Height := Round(ANIMATION_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()) // fixed
         else
-            Height := 1;
+            Height := FILTER_ITEM_HEIGHT;
     end;
 
     if ConEventList.Items[Index] = ET_Trade_Caption then
@@ -5525,7 +5609,7 @@ begin
         if bchkTrade = True then
             Height := Round(TRADE_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio())  // fixed, also not implemented
         else
-            Height := 1;
+            Height := FILTER_ITEM_HEIGHT;
     end;
 
     if ConEventList.Items[Index] = ET_Jump_Caption then
@@ -5533,7 +5617,7 @@ begin
         if bchkJump = True then
             Height := Round(JUMP_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()) // fixed
         else
-            Height := 1;
+            Height := FILTER_ITEM_HEIGHT;
     end;
 
     if ConEventList.Items[Index].Contains(ET_Random_Caption) = True then
@@ -5544,7 +5628,7 @@ begin
         if bchkTrigger = True then
             Height := Round(TRIGGER_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio())  // fixed
         else
-            Height := 1;
+            Height := FILTER_ITEM_HEIGHT;
     end;
 
     //if ConEventList.Items[Index] = ET_AddGoal_Caption then Height := 75;  // variable
@@ -5564,7 +5648,7 @@ begin
         if bchkAddCredits = True then
             Height := Round(ADD_CREDITS_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio())  // fixed
         else
-            Height := 1;
+            Height := FILTER_ITEM_HEIGHT;
     end;
 
     if ConEventList.Items[Index] = ET_CheckPersona_Caption then
@@ -5572,7 +5656,7 @@ begin
         if bchkCheckPersona = True then
             Height := Round(CHECK_PERSONA_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio())  // fixed
         else
-            Height := 1;
+            Height := FILTER_ITEM_HEIGHT;
     end;
 
     //if ConEventList.Items[Index] = ET_Comment_Caption then Height := 40; // variable
@@ -5584,7 +5668,7 @@ begin
         if bchkEnd = True then
             Height := Round(END_HEIGHT * ConEditPlus.Helpers.GetDPIAsRatio()) // fixed
         else
-            Height := 1;
+            Height := FILTER_ITEM_HEIGHT;
     end;
 end;
 
@@ -6317,7 +6401,7 @@ end;
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
     ResetEventFilter();
-    EventListColors := ConEditPlus.Colors.DefaultTEventsColors; // set record defaults
+    EventListColors := ConEditPlus.Colors.SofterTEventsColors; //ConEditPlus.Colors.DefaultTEventsColors; // set record defaults
     //EventListColors := ConEditPlus.Colors.DefaultTEventsColors_Dark;
 
     CF_ConEditPlus := RegisterClipboardFormat('CF_ConEditPlus'); // register new clipboard format
@@ -7505,7 +7589,7 @@ begin
     UpdateEventListHeights();
     UpdateEventListFixedHeights();
     ToggleEventIdx();
-    ConEventList.Invalidate();
+    SetEventsListScrollbars();
 
     pnlEventFilter.Hide();
 end;
@@ -7519,7 +7603,8 @@ begin
         aControl := grpEventFilter.Controls[i];
         if aControl is TCheckBox then
         begin
-            (aControl as TCheckBox).Checked := True;
+            if aControl.Name <> 'chkEventIdx' then // don't check the debug option
+                (aControl as TCheckBox).Checked := True;
         end;
     end;
 end;

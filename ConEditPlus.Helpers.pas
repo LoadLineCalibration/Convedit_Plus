@@ -7,7 +7,7 @@ interface
 
 uses
      Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, System.StrUtils,
-     Conversation.Classes;
+     Conversation.Classes, VCL.Graphics;
 
 // functions
 function ValidateFName(const AString: string): Boolean;
@@ -17,12 +17,33 @@ function FormatConversationDetails(const Conversation: TConversation): string;
 
 // procedures
 procedure FilterEditInput(var aKey: Char);
+procedure SetConversationEventsIdx(con: TConversation);
+procedure ExtractRGB(aColor: TColor; out r, g, b: Byte);
 
 implementation
 
 function ValidateFName(const AString: string): Boolean;
 begin
-    if (AString = '') or
+    if (AString <> '') and
+       ((CharInSet(AString[1], ['0'..'9'])) or
+       (Pos(' ', AString) > 0)) then
+    begin
+        Result := False;
+        Exit;
+    end;
+
+    // Проверяем каждый символ
+    for var i := 1 to Length(AString) do
+    begin
+        if not CharInSet(AString[i], ['A'..'Z', 'a'..'z', '0'..'9', '_']) then
+        begin
+            Result := False;
+            Exit;
+        end;
+    end;
+
+    Result := True;
+{    if (AString = '') or
        (CharInSet(AString[1], ['0'..'9'])) or
        (Pos(' ', AString) > 0) then
     begin
@@ -41,6 +62,7 @@ begin
     end;
 
     Result := True;
+}
 end;
 
 function GetDPIAsRatio(): Single;
@@ -59,13 +81,6 @@ begin
 
     for var i := 1 to 3 do
         Result := Result + Chr(Ord('a') + Random(26));
-end;
-
-procedure FilterEditInput(var aKey: Char);
-begin
-    if CharInSet(aKey, ['A'..'Z', 'a'..'z', '0'..'9', '_', #8]) then
-    else
-    aKey := #0;
 end;
 
 function FormatConversationDetails(const Conversation: TConversation): string;
@@ -115,5 +130,33 @@ begin
                    BoolToStr(Conversation.bNPCEnters, True),
                    Conversation.distance]);
 end;
+
+procedure FilterEditInput(var aKey: Char);
+begin
+    if CharInSet(aKey, ['A'..'Z', 'a'..'z', '0'..'9', '_', #8]) then
+    else
+    aKey := #0;
+end;
+
+procedure SetConversationEventsIdx(con: TConversation);
+begin
+    var NewIndex := 0;
+
+    for var Event in con.Events do
+    begin
+        Event.EventIdx := NewIndex;
+        Event.unknown1 := Event.EventIdx + 1;
+        Inc(NewIndex);
+    end;
+end;
+
+procedure ExtractRGB(aColor: TColor; out r, g, b: Byte);
+begin
+    var rgbColor := VCL.Graphics.ColorToRGB(aColor);
+    r := Byte(rgbColor);
+    g := Byte(rgbColor shr 8);
+    b := Byte(rgbColor shr 16);
+end;
+
 
 end.
