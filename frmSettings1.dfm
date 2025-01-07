@@ -53,7 +53,7 @@ object frmSettings: TfrmSettings
     Top = 161
     Width = 446
     Height = 277
-    ActivePage = TabSheet1
+    ActivePage = Page1
     Style = tsFlatButtons
     TabOrder = 9
     object Page1: TTabSheet
@@ -63,7 +63,7 @@ object frmSettings: TfrmSettings
         Top = 7
         Width = 434
         Height = 236
-        Caption = ' Events list and Conversations tree '
+        Caption = ' Events/Events list/Conversations tree '
         DefaultHeaderFont = False
         HeaderFont.Charset = DEFAULT_CHARSET
         HeaderFont.Color = clWindowText
@@ -71,51 +71,6 @@ object frmSettings: TfrmSettings
         HeaderFont.Name = 'Segoe UI'
         HeaderFont.Style = [fsBold]
         TabOrder = 0
-        object lblGridColor: TLabel
-          Left = 316
-          Top = 45
-          Width = 64
-          Height = 17
-          AutoSize = False
-          Caption = 'Grid color:'
-          Layout = tlCenter
-        end
-        object shpGridColor: TShape
-          Left = 376
-          Top = 43
-          Width = 20
-          Height = 20
-          Cursor = crHandPoint
-          Brush.Color = clYellow
-          OnMouseDown = shpGridColorMouseDown
-        end
-        object shpHighlightColorFrom: TShape
-          Left = 265
-          Top = 43
-          Width = 20
-          Height = 20
-          Cursor = crHandPoint
-          Brush.Color = clSilver
-          OnMouseDown = shpHighlightColorFromMouseDown
-        end
-        object shpHighlightColorSingle: TShape
-          Left = 265
-          Top = 43
-          Width = 20
-          Height = 20
-          Cursor = crHandPoint
-          Brush.Color = clYellow
-          OnMouseDown = shpHighlightColorSingleMouseDown
-        end
-        object shpHighlightColorTo: TShape
-          Left = 291
-          Top = 43
-          Width = 20
-          Height = 20
-          Cursor = crHandPoint
-          Brush.Color = clGreen
-          OnMouseDown = shpHighlightColorToMouseDown
-        end
         object lblReorderKey: TLabel
           Left = 11
           Top = 207
@@ -124,15 +79,6 @@ object frmSettings: TfrmSettings
           AutoSize = False
           Caption = 'Hold this key to reorder events:'
           Layout = tlCenter
-        end
-        object shpOriginalStyle: TShape
-          Left = 255
-          Top = 67
-          Width = 167
-          Height = 26
-          Brush.Style = bsClear
-          Pen.Color = clRed
-          Pen.Width = 4
         end
         object chkHighlightRelatedEvents: TCheckBox
           Left = 11
@@ -150,46 +96,26 @@ object frmSettings: TfrmSettings
           Caption = 'Highlight Speech/Choice events with missing audio'
           TabOrder = 1
         end
-        object chkSelectEventsGradientFill: TCheckBox
-          Left = 11
-          Top = 46
-          Width = 238
-          Height = 17
-          Hint = 'If not checked, use single color to highlight events.'
-          Caption = 'Highlight selected event with gradient fill'
-          TabOrder = 2
-          OnClick = chkSelectEventsGradientFillClick
-        end
         object chkUseSelectionFrame: TCheckBox
           Left = 11
           Top = 23
-          Width = 114
+          Width = 201
           Height = 17
           Hint = 'Use 3D frame in addition to selection color(s).'
-          Caption = 'Use 3D frame?'
-          TabOrder = 3
-          OnClick = chkSelectEventsGradientFillClick
-        end
-        object chkSelectedTextIsWhite: TCheckBox
-          Left = 11
-          Top = 69
-          Width = 209
-          Height = 17
-          Hint = 'Use this option if you want to use dark selection colors. '
-          Caption = 'Selected event text is bright'
-          TabOrder = 4
+          Caption = 'Use 3D frame for selected event?'
+          TabOrder = 2
           OnClick = chkSelectEventsGradientFillClick
         end
         object chkFlatControlsMainWin: TCheckBox
-          Left = 246
-          Top = 161
+          Left = 11
+          Top = 69
           Width = 175
           Height = 17
           Hint = 
             'Toggle slight 3D effect for toolbar buttons and Events list head' +
             'er'
           Caption = 'Flat toolbar/event list header'
-          TabOrder = 5
+          TabOrder = 3
         end
         object cbbReorderEventsModKey: TComboBox
           Left = 180
@@ -199,34 +125,12 @@ object frmSettings: TfrmSettings
           Hint = 'Hold this key and drag selected event with mouse to change order'
           Style = csOwnerDrawVariable
           ItemIndex = 0
-          TabOrder = 6
+          TabOrder = 4
           Text = 'Ctrl'
           Items.Strings = (
             'Ctrl'
             'Shift'
             'Alt')
-        end
-        object btnResetToDefaults: TButton
-          Left = 257
-          Top = 69
-          Width = 164
-          Height = 23
-          Hint = 'Set selection colors like in original ConEdit'
-          Caption = 'Set original ConEdit style'
-          TabOrder = 7
-          WordWrap = True
-          OnClick = btnResetToDefaultsClick
-        end
-        object chkDarkModeEventList: TCheckBox
-          Left = 246
-          Top = 138
-          Width = 175
-          Height = 17
-          Hint = 
-            '(Dark theme is not implemented yet) Use dark theme colors for ev' +
-            'ents list. You can use this option as an addition to dark theme.'
-          Caption = 'Dark mode for events list'
-          TabOrder = 8
         end
         object chkAskConversationDelete: TCheckBox
           Left = 11
@@ -234,7 +138,7 @@ object frmSettings: TfrmSettings
           Width = 185
           Height = 17
           Caption = 'Ask for Conversation deletion'
-          TabOrder = 9
+          TabOrder = 5
         end
         object chkAskDeleteEvent: TCheckBox
           Left = 11
@@ -242,7 +146,7 @@ object frmSettings: TfrmSettings
           Width = 142
           Height = 17
           Caption = 'Ask For Event Deletion'
-          TabOrder = 10
+          TabOrder = 6
         end
         object chkDblClickTreeFlag: TCheckBox
           Left = 11
@@ -251,7 +155,19 @@ object frmSettings: TfrmSettings
           Height = 17
           Hint = 'Toggle flag value in conversations tree by double-clicking it. '
           Caption = 'DblClick tree flag to change value'
-          TabOrder = 11
+          TabOrder = 7
+        end
+        object chkVerifyLabelNames: TCheckBox
+          Left = 11
+          Top = 46
+          Width = 201
+          Height = 17
+          Hint = 
+            'Check if Label of event is valid. Disable if you want to bypass ' +
+            'that check.'
+          Caption = 'Veryfy Event Labels?'
+          TabOrder = 8
+          OnClick = chkSelectEventsGradientFillClick
         end
       end
     end
@@ -263,7 +179,7 @@ object frmSettings: TfrmSettings
         Top = 7
         Width = 434
         Height = 236
-        Caption = 'ToDo: add options to customize eventList colors'
+        Caption = 'Override Event list colors and themes'
         DefaultHeaderFont = False
         HeaderFont.Charset = DEFAULT_CHARSET
         HeaderFont.Color = clWindowText
@@ -289,6 +205,51 @@ object frmSettings: TfrmSettings
           Brush.Color = clYellow
           OnMouseDown = shpPlayerSpeechBGColorMouseDown
         end
+        object shpGridColor: TShape
+          Left = 151
+          Top = 121
+          Width = 20
+          Height = 20
+          Cursor = crHandPoint
+          Brush.Color = clYellow
+          OnMouseDown = shpGridColorMouseDown
+        end
+        object shpHighlightColorFrom: TShape
+          Left = 255
+          Top = 97
+          Width = 20
+          Height = 20
+          Cursor = crHandPoint
+          Brush.Color = clSilver
+          OnMouseDown = shpHighlightColorFromMouseDown
+        end
+        object shpHighlightColorSingle: TShape
+          Left = 255
+          Top = 97
+          Width = 20
+          Height = 20
+          Cursor = crHandPoint
+          Brush.Color = clYellow
+          OnMouseDown = shpHighlightColorSingleMouseDown
+        end
+        object shpHighlightColorTo: TShape
+          Left = 281
+          Top = 97
+          Width = 20
+          Height = 20
+          Cursor = crHandPoint
+          Brush.Color = clGreen
+          OnMouseDown = shpHighlightColorToMouseDown
+        end
+        object shpOriginalStyle: TShape
+          Left = 9
+          Top = 203
+          Width = 167
+          Height = 26
+          Brush.Style = bsClear
+          Pen.Color = clRed
+          Pen.Width = 4
+        end
         object chkPlayerBindNameColor: TCheckBox
           Left = 11
           Top = 23
@@ -296,7 +257,7 @@ object frmSettings: TfrmSettings
           Height = 17
           Hint = 
             'If checked, custom color for JCDenton bindname will be used. Oth' +
-            'erwise use regular color (usually black)'
+            'erwise use color from current theme'
           Caption = 'Player BindName Color:'
           TabOrder = 0
         end
@@ -307,6 +268,46 @@ object frmSettings: TfrmSettings
           Height = 17
           Caption = 'Player Speech background color:'
           TabOrder = 1
+        end
+        object btnResetToDefaults: TButton
+          Left = 11
+          Top = 205
+          Width = 164
+          Height = 23
+          Hint = 'Set selection colors like in original ConEdit'
+          Caption = 'Set original ConEdit style'
+          TabOrder = 2
+          WordWrap = True
+          OnClick = btnResetToDefaultsClick
+        end
+        object chkSelectedTextIsWhite: TCheckBox
+          Left = 11
+          Top = 171
+          Width = 209
+          Height = 17
+          Hint = 'Use this option if you want to use dark selection colors. '
+          Caption = 'Selected event text is bright'
+          TabOrder = 3
+          OnClick = chkSelectEventsGradientFillClick
+        end
+        object chkSelectEventsGradientFill: TCheckBox
+          Left = 11
+          Top = 98
+          Width = 238
+          Height = 17
+          Hint = 'If not checked, use single color to highlight events.'
+          Caption = 'Highlight selected event with gradient fill'
+          TabOrder = 4
+          OnClick = chkSelectEventsGradientFillClick
+        end
+        object chkGridColor: TCheckBox
+          Left = 11
+          Top = 121
+          Width = 134
+          Height = 17
+          Caption = 'Event separator color'
+          TabOrder = 5
+          OnClick = chkGridColorClick
         end
       end
     end

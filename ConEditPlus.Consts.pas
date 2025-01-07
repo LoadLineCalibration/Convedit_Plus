@@ -237,7 +237,7 @@ ResourceString // These strings can be translated.
 
     strDependsOnFlag = 'Flags: ';
 
-    strLabelStartsWithNumber = 'Cannot add label since it starts with number.';
+    strInvalidFName = 'Invalid name! Allowed characters: Latin letters, underscore, and digits, but the name must not start with a digit.';
     strSpeechTextIsEmpty = 'Speech text cannot be empty! Please enter some text.';
 
     strCommentTextIsEmpty = 'Comment text cannot be empty! Please enter some text.';
@@ -383,8 +383,6 @@ ResourceString // These strings can be translated.
 
     strCannotRenameConversation = 'Another conversation with such name already exists or name contains invalid characters!' + #13#10#13#10 +
                                   'Cannot rename this conversation.';
-
-    strNameStartsFromDigit = 'Conversation name cannot start with number!'; // Remove?
 
     strUniqueLabelRequired = 'The EventLabel you entered is not unique, please choose another.';
 

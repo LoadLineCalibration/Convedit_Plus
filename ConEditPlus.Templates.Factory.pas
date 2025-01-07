@@ -13,6 +13,8 @@ function GenerateChoice(aLabel: string; NumChoices: Integer; ChoicesLabels: arra
 function GenerateRandom(aLabel: string; JumpLabels: array of string; _bCycle, _bCycleOnce, _bCycleRandom: Boolean): TConEventRandom;
 function GenerateEnd(aLabel: string = ''): TConEventEnd;
 
+function GenerateConversation(Preset: TConversationPreset): TConversation;
+
 
 implementation
 
@@ -42,6 +44,7 @@ function GenerateChoice(aLabel: string; NumChoices: Integer; ChoicesLabels: arra
 begin
     var NewChoice := TConEventChoice.Create();
 
+
     Result := NewChoice;
 end;
 
@@ -69,5 +72,13 @@ begin
 
     Result := EndEvent;
 end;
+
+function GenerateConversation(Preset: TConversationPreset): TConversation;
+begin
+    var NewConvo := TConversation.Create();
+
+    Result := NewConvo;
+end;
+
 
 end.

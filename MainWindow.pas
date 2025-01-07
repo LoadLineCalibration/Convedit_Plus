@@ -712,17 +712,53 @@ type
     var listObjects: TStringList;
 
     // Configuration file variables begin
-    // color variables for configuration file (clrGrid is color of separators between events)
+    // Override some colors (e.g. theme is ok, but user wants to change some colors)
     var clrHighlightEvent, clrHighlightEventFrom, clrHighlightEventTo, clrGrid: TColor;
+    var clPlayerBindNameColor: TColor;
+    var clPlayerSpeechBGColor: TColor;
 
     // Events colors
     var EventListColors: ConEditPlus.Colors.TEventListColors;
 
-    var clSpeechBG, clSpeechNoAudioBG, clSpeechText: TColor;
-    var clChoiceBG, clChoiceNoAudioBG, clChoiceText: TColor;
+    // boolean variables for configuration file
+    var bShowAudioFiles,
+        bShowStatusBar,
+        bShowToolbar,
+        bHighlightRelatedEvents,
+        bAskForConvoDelete,
+        bAskForEventDelete,
+        bHglEventWithNoAudio,
+        bHglEventsGradient,
+        bFlatToolbar,
+        bUse3DSelectionFrame,
+        bUseWhiteSelectedText,
+        bDrawEventIdx,
+        bUseLogging,
+        bVerifyEventLabel,
+        bUsePlayerBindNameColor,
+        bUsePlayerSpeechBGColor,
+        bUseCustomHighlightEventColor,
+        bUseCustomGradientHighlightEventColor,
+        bUseCustomGridColor : Boolean;
 
-    var clPlayerBindNameColor: TColor;
-    var clPlayerSpeechBGColor: TColor;
+    property bAutoSaveEnabled: Boolean read GetAutoSaveEnabled write SetAutoSaveEnabled;
+
+    // strings
+    var ConversationUserName, ConFilePath, ConFileBakPath, ConFileAudioPath: string;
+    var CurrentTheme: string; // save and restore theme (skin).
+
+    // Integer values
+    var AutoSaveMinutes: Integer;
+    var OpenFileFilterIndex, SaveFileFilterIndex: Integer; // save last selected file filter when opening/saving file.
+
+    // to store recent files!
+    var RecentFiles: array[0..CEP_MAX_RECENT_FILES] of string;
+
+    // Hold xxx key to reorder events
+    var ReorderModKey: TReorderEventsModKey;
+
+    var bEnableDblClickTreeFlag: Boolean;
+    // Configuration file variables end
 
     // variables for Event Filter
     var bchkSpeech: Boolean;
@@ -745,36 +781,6 @@ type
     var bchkAddNote: Boolean;
     var bchkEnd: Boolean;
 
-
-    // boolean variables for configuration file
-    var bShowAudioFiles, bShowStatusBar, bShowToolbar, bExpandedEventList,
-        bHighlightRelatedEvents,
-        bAskForConvoDelete, bAskForEventDelete, bHglEventWithNoAudio,
-        bHglEventsGradient, bFlatToolbar,
-        bUse3DSelectionFrame, bUseWhiteSelectedText, bDrawEventIdx, bUseLogging,
-        bUsePlayerBindNameColor, bUsePlayerSpeechBGColor : Boolean;
-
-    property bAutoSaveEnabled: Boolean read GetAutoSaveEnabled write SetAutoSaveEnabled;
-
-    // strings
-    var ConversationUserName, ConFilePath, ConFileBakPath, ConFileAudioPath: string;
-    var CurrentTheme: string; // save and restore theme (skin).
-
-    // Integer values
-    var AutoSaveMinutes: Integer;
-    var OpenFileFilterIndex, SaveFileFilterIndex: Integer; // save last selected file filter when opening/saving file.
-
-    // to store recent files!
-    var RecentFiles: array[0..CEP_MAX_RECENT_FILES] of string;
-
-    // Hold xxx key to reorder events
-    var ReorderModKey: TReorderEventsModKey;
-
-    // Events list mode (regular/dark)
-    var EventListColorsMode: TEventListColorsMode;
-
-    var bEnableDblClickTreeFlag: Boolean;
-    // Configuration file variables end
 
     var MainFormIni: TIniFile;     // ini file
 
@@ -3185,6 +3191,8 @@ begin
        clPlayerBindNameColor := ReadInteger('frmMain', 'clPlayerBindNameColor', clNavy);
        bUsePlayerBindNameColor := ReadBool('frmMain', 'bUsePlayerBindNameColor', True);
 
+       bVerifyEventLabel := ReadBool('frmMain', 'bVerifyEventLabel', True); // проверять правильность метки события илити нет?
+
        clPlayerSpeechBGColor := ReadInteger('frmMain', 'clPlayerSpeechBGColor', clMoneyGreen);
        bUsePlayerSpeechBGColor := ReadBool('frmMain', 'bUsePlayerSpeechBGColor', True);
 
@@ -3202,12 +3210,6 @@ begin
        OpenFileFilterIndex := ReadInteger('OpenFileDialog', 'OpenFileFilterIndex', 1);
        SaveFileFilterIndex := ReadInteger('SaveFileDialog', 'SaveFileFilterIndex', 2);
 
-       EventListColorsMode := TEventListColorsMode(ReadInteger('frmMain', 'EventListColorsMode', 0));
-
-        case EventListColorsMode of
-            ELCM_Default: ConEventList.Color := clWindow;
-            ELCM_Dark: ConEventList.Color := RGB(60, 60, 60);
-        end;
 
         bEnableDblClickTreeFlag := ReadBool('frmMain', 'bEnableDblClickTreeFlag', True);
 
@@ -3265,6 +3267,7 @@ begin
 
             WriteBool('frmMain', 'bUse3DSelectionFrame', bUse3DSelectionFrame);
             WriteBool('frmMain', 'bUseWhiteSelectedText', bUseWhiteSelectedText);
+            WriteBool('frmMain', 'bVerifyEventLabel', bVerifyEventLabel); // проверять правильность метки события илити нет?
 
             WriteBool('frmMain', 'bUseLogging', bUseLogging);
 
@@ -5539,7 +5542,7 @@ begin
         end;
 
         //HighlightSelectedEvent(Control, Index, Rect, State);
-        //ConEventList.Color := clBlack;
+        ConEventList.Color := EventListColors.EventListBG;
     end;
 end;
 
@@ -6401,7 +6404,7 @@ end;
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
     ResetEventFilter();
-    EventListColors := ConEditPlus.Colors.SofterTEventsColors; //ConEditPlus.Colors.DefaultTEventsColors; // set record defaults
+    EventListColors := ConEditPlus.Colors.ShadesOfGrayTEventsColors; //ConEditPlus.Colors.DefaultTEventsColors; // set record defaults
     //EventListColors := ConEditPlus.Colors.DefaultTEventsColors_Dark;
 
     CF_ConEditPlus := RegisterClipboardFormat('CF_ConEditPlus'); // register new clipboard format
@@ -7462,35 +7465,30 @@ procedure TfrmMain.ApplyStyle(styleName: string);
 begin
     if styleName = 'Charcoal Dark Slate' then
     begin
-        EventListColorsMode := ELCM_Dark;
         TStyleManager.SetStyle(styleName);
         CurrentTheme := styleName;
         mnuCharcoalDarkSlate.Checked := True;
     end else
     if styleName = 'Onyx Blue' then
     begin
-        EventListColorsMode := ELCM_Dark;
         TStyleManager.SetStyle(styleName);
         CurrentTheme := styleName;
         mnuOnyxBlueTheme.Checked := True;
     end else
     if styleName = 'Luna' then
     begin
-        EventListColorsMode := ELCM_Default;
         TStyleManager.SetStyle(styleName);
         CurrentTheme := styleName;
         mnuLunaTheme.Checked := True;
     end else
     if styleName = 'Silver' then
     begin
-        EventListColorsMode := ELCM_Default;
         TStyleManager.SetStyle(styleName);
         CurrentTheme := styleName;
         mnuSilverTheme.Checked := True;
     end else
     if styleName = 'Windows' then
     begin
-        EventListColorsMode := ELCM_Default;
         TStyleManager.SetStyle(styleName);
         CurrentTheme := styleName;
         mnuSystemTheme.Checked := True;

@@ -40,14 +40,12 @@ type
     shpUserName: TShape;
     shpOriginalStyle: TShape;
     shpGridColor: TShape;
-    lblGridColor: TLabel;
     cbbReorderEventsModKey: TComboBox;
     lblReorderKey: TLabel;
     dlgSelectFolder: TFileOpenDialog;
     chkEnableLogging: TCheckBox;
     chkDblClickTreeFlag: TCheckBox;
     grpEventsList: TGroupBox;
-    chkDarkModeEventList: TCheckBox;
     pgcSettings: TPageControl;
     Page1: TTabSheet;
     PageA: TTabSheet;
@@ -62,6 +60,8 @@ type
     shpPlayerBindNameColor: TShape;
     chkPlayerSpeechBGColor: TCheckBox;
     shpPlayerSpeechBGColor: TShape;
+    chkGridColor: TCheckBox;
+    chkVerifyLabelNames: TCheckBox;
 
     // new procedures
     procedure SaveChanges();
@@ -90,6 +90,7 @@ type
     procedure btnEmptyBakPathClick(Sender: TObject);
     procedure shpPlayerBindNameColorMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure shpPlayerSpeechBGColorMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure chkGridColorClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -116,6 +117,7 @@ begin
         edtAudioPath.Text := ConFileAudioPath;
 
         chkHighlightRelatedEvents.Checked := bHighlightRelatedEvents;
+        chkVerifyLabelNames.Checked := bVerifyEventLabel; // verify if label name is valid?
         chkAskConversationDelete.Checked := bAskForConvoDelete;
         chkAskDeleteEvent.Checked := bAskForEventDelete;
         chkHighlightspeechChoiceEventsNoneAudio.Checked := bHglEventWithNoAudio;
@@ -140,8 +142,8 @@ begin
 
         chkDblClickTreeFlag.Checked := bEnableDblClickTreeFlag;
 
-        chkPlayerBindNameColor.Checked := bUsePlayerBindNameColor;  // Player BindName
-        shpPlayerBindNameColor.Brush.Color := clPlayerBindNameColor; // and color
+        chkPlayerBindNameColor.Checked := bUsePlayerBindNameColor;  // Player BindName and color
+        shpPlayerBindNameColor.Brush.Color := clPlayerBindNameColor; //
 
         chkPlayerSpeechBGColor.Checked := bUsePlayerSpeechBGColor;
         shpPlayerSpeechBGColor.Brush.Color := clPlayerSpeechBGColor;
@@ -162,6 +164,7 @@ begin
         ConFileAudioPath := edtAudioPath.Text;
 
         bHighlightRelatedEvents := chkHighlightRelatedEvents.Checked;
+        bVerifyEventLabel := chkVerifyLabelNames.Checked;
         bAskForConvoDelete := chkAskConversationDelete.Checked;
         bAskForEventDelete := chkAskDeleteEvent.Checked;
         bHglEventWithNoAudio := chkHighlightspeechChoiceEventsNoneAudio.Checked;
@@ -274,6 +277,11 @@ begin
     shpHighlightColorSingle.Brush.Color := RGB(0,0,128);
 
     chkFlatControlsMainWin.Checked := False;
+end;
+
+procedure TfrmSettings.chkGridColorClick(Sender: TObject);
+begin
+    shpGridColor.Visible := chkGridColor.Checked;
 end;
 
 procedure TfrmSettings.chkSelectEventsGradientFillClick(Sender: TObject);

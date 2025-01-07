@@ -85,11 +85,11 @@
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
-        <VerInfo_Build>708</VerInfo_Build>
-        <VerInfo_MajorVer>2024</VerInfo_MajorVer>
-        <VerInfo_MinorVer>12</VerInfo_MinorVer>
-        <VerInfo_Release>28</VerInfo_Release>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=2024.12.28.708;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;LastCompiledTime=2024.12.28 14:06:40</VerInfo_Keys>
+        <VerInfo_Build>716</VerInfo_Build>
+        <VerInfo_MajorVer>2025</VerInfo_MajorVer>
+        <VerInfo_MinorVer>1</VerInfo_MinorVer>
+        <VerInfo_Release>7</VerInfo_Release>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=2025.1.7.716;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;LastCompiledTime=2025.01.07 20:05:37</VerInfo_Keys>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <Icon_MainIcon>ConEditPlus_Icon.ico</Icon_MainIcon>

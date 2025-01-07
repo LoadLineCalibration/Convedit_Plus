@@ -2388,10 +2388,10 @@ begin
         Exit();
     end;
 
-    //if StringStartsFromDigit(Trim(editEventLabel.Text)) then
-    if ConEditPlus.Helpers.ValidateFName(Trim(editEventLabel.Text)) = False then
+    //if ConEditPlus.Helpers.ValidateFName(Trim(editEventLabel.Text)) = False then
+    if (frmMain.bVerifyEventLabel = True) and (ConEditPlus.Helpers.ValidateFName(Trim(editEventLabel.Text)) = False) then
     begin
-        MessageBox(frmMain.Handle, PChar(strLabelStartsWithNumber), PChar(strErrorTitle), MB_OK + MB_ICONERROR + MB_TOPMOST);
+        MessageBox(frmMain.Handle, PChar(strInvalidFName), PChar(strErrorTitle), MB_OK + MB_ICONERROR + MB_TOPMOST);
         Exit();
     end;
 

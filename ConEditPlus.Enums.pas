@@ -23,12 +23,6 @@ type TConversationEditMode =
     em_Create
 );
 
-type TEventListColorsMode =
-(
-    ELCM_Default, // for classic or light themes
-    ELCM_Dark     // for dark mode themes.
-);
-
 type TChoiceMP3CopyMode =
 (
     CM_PathAndFilename,
@@ -57,6 +51,12 @@ type TBarkModes =
     BM_BarkSearchGiveUp,
     BM_BarkAllianceHostile,
     BM_BarkAllianceFriendly
+);
+
+type TConversationPreset =
+(
+    CP_AIBarkToSelf,
+    CP_AIBarkToPlayer
 );
 
 

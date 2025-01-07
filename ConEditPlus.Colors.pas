@@ -90,6 +90,8 @@ type
 
     EventWithLabel: TColor; // Left part of the event, only if contains a label
     EventLabelText: TColor; // ...and label text color
+
+    EventListBG: TColor;
   end;
 
 const // Default colors for regular mode
@@ -177,6 +179,8 @@ const // Default colors for regular mode
 
     EventWithLabel: clLime;
     EventLabelText: clMaroon;
+
+    EventListBG: clWhite;
   );
 
 const // Softer colors for regular mode
@@ -264,6 +268,8 @@ const // Softer colors for regular mode
 
     EventWithLabel: $98FB98; // pale green
     EventLabelText: $8B4513; // saddle brown
+
+    EventListBG: clWhite;
   );
 
 const
@@ -351,6 +357,97 @@ const
 
     EventWithLabel: $32CD32; // lime green
     EventLabelText: clSilver;
+
+    EventListBG: clBlack;
+  );
+
+const // Shades of gray for dark mode
+  ShadesOfGrayTEventsColors: TEventListColors =
+  (
+    SpeechBG: $1A1A1A; // very dark gray
+    SpeechBGNoAudio: $333333; // dark gray
+    SpeechText: clWhite;
+
+    PlayerSpeechBG: $2B2B2B; // dark gray
+    PlayerSpeechBindName: $A9A9A9; // dark gray
+    PlayerSpeechText: $D3D3D3; // light gray
+
+    ChoiceBG: $3A3A3A; // medium dark gray
+    ChoiceBGNoAudio: $4F4F4F; // medium gray
+    ChoiceText: clWhite;
+    ChoiceFlagsText: $B0B0B0; // light gray
+
+    SetFlagBG: $2E2E2E;
+    SetFlagText: clWhite;
+
+    CheckFlagBG: $383838;
+    CheckFlagText: clWhite;
+
+    CheckObjectBG: $2E2E2E;
+    CheckObjectText: clWhite;
+
+    TransferObjectBG: $383838;
+    TransferObjectText: clWhite;
+
+    MoveCameraBG: $2E2E2E;
+    MoveCameraText: clWhite;
+
+    AnimationBG: $2E2E2E;
+    AnimationText: clWhite;
+
+    TradeBG: $1A1A1A;
+    TradeText: clWhite;
+
+    JumpBG: $2B2B2B; // dark gray
+    JumpText: clWhite;
+    JumpLink: $B0C4DE; // light steel blue
+
+    RandomBG: $383838;
+    RandomText: clWhite;
+    RandomLabels: $B0B0B0; // light gray
+
+    TriggerBG: $2B2B2B; // dark gray
+    TriggerText: clWhite;
+
+    AddGoalBG: $333333; // dark gray
+    AddGoalText: clWhite;
+
+    AddNoteBG: $2B2B2B; // dark gray
+    AddNoteText: clWhite;
+
+    AddSkillPointsBG: $3A2A3A; // dark pink
+    AddSkillPointsText: $B0B0B0; // light gray
+
+    AddCreditsBG: $3A2A3A; // dark pink
+    AddCreditsText: clWhite;
+
+    CheckPersonaBG: $2A2A3A; // dark lavender
+    CheckPersonaText: clWhite;
+
+    CommentBG: $1A1A1A;
+    CommentText: clWhite;
+
+    EndBG: $1A1A1A;
+
+    HighlightEvent: $505050; // medium gray
+    HighlightEventFrom: $696969; // dim gray
+    HighlightEventTo: $808080; // gray
+
+    GridBG: $1A1A1A;
+    GridColor: $A9A9A9; // dark gray
+
+    EventHeaderText: clWhite;
+
+    RelatedEventFrom: clSilver; // dark gray
+    RelatedEventTo: clGray; // medium gray
+
+    ErrorEventFrom: clWebDarkOrange;
+    ErrorEventTo: clWebMoccasin;
+
+    EventWithLabel: $2E8B57; // sea green
+    EventLabelText: clWhite; // dark red
+
+    EventListBG: clBlack;
   );
 
 

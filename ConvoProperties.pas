@@ -566,7 +566,7 @@ begin
             //if StringStartsFromDigit(editConvoName.Text) = True then
             if ConEditPlus.Helpers.ValidateFName(editConvoName.Text) = False then
             begin
-                MessageDlg(strNameStartsFromDigit,  mtError, [mbOK], 0);
+                MessageDlg(ConEditPlus.Consts.strInvalidFName,  mtError, [mbOK], 0);
                 Exit();
             end;
 
