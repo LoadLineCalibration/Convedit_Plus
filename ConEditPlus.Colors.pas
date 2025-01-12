@@ -4,7 +4,7 @@ unit ConEditPlus.Colors;
 interface
 
 uses
-    Vcl.Graphics;
+    System.SysUtils, Vcl.Graphics;
 
 type
   TEventListColors = record
@@ -92,7 +92,12 @@ type
     EventLabelText: TColor; // ...and label text color
 
     EventListBG: TColor;
+
+    // Я тебе должна ещё и сравнение реализовать? А чего сам не умеешь?
+    class operator Equal(const Left, Right: TEventListColors): Boolean;
   end;
+
+
 
 const // Default colors for regular mode
   DefaultTEventsColors: TEventListColors =
@@ -455,5 +460,95 @@ const // Shades of gray for dark mode
 implementation
 
 
+
+{ TEventListColors }
+
+class operator TEventListColors.Equal(const Left, Right: TEventListColors): Boolean;
+begin
+  Result := (Left.SpeechBG = Right.SpeechBG) and
+            (Left.SpeechBGNoAudio = Right.SpeechBGNoAudio) and
+            (Left.SpeechText = Right.SpeechText) and
+
+            (Left.PlayerSpeechBG = Right.PlayerSpeechBG) and
+            (Left.PlayerSpeechBindName = Right.PlayerSpeechBindName) and
+            (Left.PlayerSpeechText = Right.PlayerSpeechText) and
+
+            (Left.ChoiceBG = Right.ChoiceBG) and
+            (Left.ChoiceBGNoAudio = Right.ChoiceBGNoAudio) and
+            (Left.ChoiceText = Right.ChoiceText) and
+            (Left.ChoiceFlagsText = Right.ChoiceFlagsText) and
+
+            (Left.SetFlagBG = Right.SetFlagBG) and
+            (Left.SetFlagText = Right.SetFlagText) and
+
+            (Left.CheckFlagBG = Right.CheckFlagBG) and
+            (Left.CheckFlagText = Right.CheckFlagText) and
+
+            (Left.CheckObjectBG = Right.CheckObjectBG) and
+            (Left.CheckObjectText = Right.CheckObjectText) and
+
+            (Left.TransferObjectBG = Right.TransferObjectBG) and
+            (Left.TransferObjectText = Right.TransferObjectText) and
+
+            (Left.MoveCameraBG = Right.MoveCameraBG) and
+            (Left.MoveCameraText = Right.MoveCameraText) and
+
+            (Left.AnimationBG = Right.AnimationBG) and
+            (Left.AnimationText = Right.AnimationText) and
+
+            (Left.TradeBG = Right.TradeBG) and
+            (Left.TradeText = Right.TradeText) and
+
+            (Left.JumpBG = Right.JumpBG) and
+            (Left.JumpText = Right.JumpText) and
+            (Left.JumpLink = Right.JumpLink) and
+
+            (Left.RandomBG = Right.RandomBG) and
+            (Left.RandomText = Right.RandomText) and
+            (Left.RandomLabels = Right.RandomLabels) and
+
+            (Left.TriggerBG = Right.TriggerBG) and
+            (Left.TriggerText = Right.TriggerText) and
+
+            (Left.AddGoalBG = Right.AddGoalBG) and
+            (Left.AddGoalText = Right.AddGoalText) and
+
+            (Left.AddNoteBG = Right.AddNoteBG) and
+            (Left.AddNoteText = Right.AddNoteText) and
+
+            (Left.AddSkillPointsBG = Right.AddSkillPointsBG) and
+            (Left.AddSkillPointsText = Right.AddSkillPointsText) and
+
+            (Left.AddCreditsBG = Right.AddCreditsBG) and
+            (Left.AddCreditsText = Right.AddCreditsText) and
+
+            (Left.CheckPersonaBG = Right.CheckPersonaBG) and
+            (Left.CheckPersonaText = Right.CheckPersonaText) and
+
+            (Left.CommentBG = Right.CommentBG) and
+            (Left.CommentText = Right.CommentText) and
+
+            (Left.EndBG = Right.EndBG) and
+
+            (Left.HighlightEvent = Right.HighlightEvent) and
+            (Left.HighlightEventFrom = Right.HighlightEventFrom) and
+            (Left.HighlightEventTo = Right.HighlightEventTo) and
+
+            (Left.GridBG = Right.GridBG) and
+            (Left.GridColor = Right.GridColor) and
+
+            (Left.EventHeaderText = Right.EventHeaderText) and
+
+            (Left.RelatedEventFrom = Right.RelatedEventFrom) and
+            (Left.RelatedEventTo = Right.RelatedEventTo) and
+
+            (Left.ErrorEventFrom = Right.ErrorEventFrom) and
+            (Left.ErrorEventTo = Right.ErrorEventTo) and
+
+            (Left.EventWithLabel = Right.EventWithLabel) and
+            (Left.EventLabelText = Right.EventLabelText) and
+
+            (Left.EventListBG = Right.EventListBG);
+end;
 
 end.
