@@ -502,6 +502,9 @@ type
     procedure HighlightRelatedEvents();
     procedure UnhighlightRelatedEvents();
 
+    // selected event
+    procedure DrawEventSelection(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
+
     // To copy/paste events
     procedure CopyEventToClipboard(var Event: TConEvent);
     procedure PasteEventFromClipboard();
@@ -3324,6 +3327,8 @@ begin
     begin
         if odSelected in State then
         begin
+            DrawEventSelection(Control, Index, Rect, State);
+            {
             if bUse3DSelectionFrame = True then
                 DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
 
@@ -3336,6 +3341,7 @@ begin
                 Brush.Color := EventListColors.HighlightEvent;
                 FillRect(Rect); // Заполнение цветом
             end
+            }
         end else
         begin
             if (bHglEventWithNoAudio = True) and (mp3str = '') then // what the point?
@@ -3427,6 +3433,8 @@ begin
     begin
         if odSelected in State then
         begin
+            DrawEventSelection(Control, Index, Rect, State);
+            {
             if bUse3DSelectionFrame = True then
                 DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
             if (bHglEventsGradient = True) then
@@ -3438,6 +3446,7 @@ begin
                 Brush.Color := EventListColors.HighlightEvent;
                 FillRect(Rect); // Заполнение цветом
             end
+            }
         end else
         begin
             var bHasMP3String:= True;
@@ -3585,6 +3594,8 @@ begin
     begin
         if odSelected in State then
         begin
+            DrawEventSelection(Control, Index, Rect, State);
+            {
            if bUse3DSelectionFrame = True then
               DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
            if (bHglEventsGradient = True) then
@@ -3595,6 +3606,7 @@ begin
                Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
                end
+               }
         end else
         begin
             //Brush.Color := RGB(240,240,240);
@@ -3655,6 +3667,8 @@ begin
     begin
         if odSelected in State then
         begin
+            DrawEventSelection(Control, Index, Rect, State);
+            {
            if bUse3DSelectionFrame = True then
               DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
            if (bHglEventsGradient = True) then
@@ -3665,6 +3679,7 @@ begin
                Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
                end
+               }
         end else
         begin
             //Brush.Color := RGB(245,245,245);
@@ -3723,6 +3738,8 @@ begin
     begin
         if odSelected in State then
         begin
+            DrawEventSelection(Control, Index, Rect, State);
+            {
            if bUse3DSelectionFrame = True then
               DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
            if (bHglEventsGradient = True) then
@@ -3733,6 +3750,7 @@ begin
                Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
                end
+               }
         end else
         begin
             //Brush.Color := RGB(240,240,240);
@@ -3780,6 +3798,8 @@ begin
     begin
         if odSelected in State then
         begin
+            DrawEventSelection(Control, Index, Rect, State);
+            {
            if bUse3DSelectionFrame = True then
               DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
            if (bHglEventsGradient = True) then
@@ -3790,6 +3810,7 @@ begin
                Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
                end
+               }
         end else
         begin
             //Brush.Color := RGB(245,245,245);
@@ -3859,6 +3880,8 @@ begin
     begin
         if odSelected in State then
         begin
+            DrawEventSelection(Control, Index, Rect, State);
+            {
            if bUse3DSelectionFrame = True then
               DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
            if (bHglEventsGradient = True) then
@@ -3869,6 +3892,7 @@ begin
                Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
                end
+               }
         end else
         begin
             //Brush.Color := RGB(240,240,240);
@@ -3926,6 +3950,8 @@ begin
     begin
         if odSelected in State then
         begin
+            DrawEventSelection(Control, Index, Rect, State);
+            {
            if bUse3DSelectionFrame = True then
               DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
            if (bHglEventsGradient = True) then
@@ -3936,6 +3962,7 @@ begin
                Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
                end
+               }
         end else
         begin
             //Brush.Color := RGB(240,240,240);
@@ -4028,6 +4055,8 @@ begin
     begin
         if odSelected in State then
         begin
+            DrawEventSelection(Control, Index, Rect, State);
+            {
             if bUse3DSelectionFrame = True then
                DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
             if (bHglEventsGradient = True) then
@@ -4038,6 +4067,7 @@ begin
                Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
                end
+               }
         end else
         begin
             //Brush.Color := RGB(250,255,240);
@@ -4109,6 +4139,8 @@ begin
     begin
         if odSelected in State then
         begin
+            DrawEventSelection(Control, Index, Rect, State);
+            {
            if bUse3DSelectionFrame = True then
               DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
            if (bHglEventsGradient = True) then
@@ -4119,6 +4151,7 @@ begin
                Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
                end
+               }
         end else
         begin
             //Brush.Color := RGB(245,245,245);
@@ -4192,6 +4225,8 @@ begin
     begin
         if odSelected in State then
         begin
+            DrawEventSelection(Control, Index, Rect, State);
+            {
             if bUse3DSelectionFrame = True then
                DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
             if (bHglEventsGradient = True) then
@@ -4202,6 +4237,7 @@ begin
                 Brush.Color := EventListColors.HighlightEvent;
                 FillRect(Rect); // Заполнение цветом
                 end
+                }
         end else
         begin
             //Brush.Color := RGB(240,255,240);
@@ -4261,6 +4297,8 @@ begin
     begin
         if odSelected in State then
         begin
+            DrawEventSelection(Control, Index, Rect, State);
+            {
             if bUse3DSelectionFrame = True then
                 DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
             if (bHglEventsGradient = True) then
@@ -4271,6 +4309,7 @@ begin
                 Brush.Color := EventListColors.HighlightEvent;
                 FillRect(Rect); // Заполнение цветом
                 end
+                }
         end else
         begin
             //Brush.Color := RGB(255,255,245);
@@ -4344,6 +4383,8 @@ begin
     begin
         if odSelected in State then
         begin
+            DrawEventSelection(Control, Index, Rect, State);
+            {
            if bUse3DSelectionFrame = True then
               DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
            if (bHglEventsGradient = True) then
@@ -4354,6 +4395,7 @@ begin
                Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
                end
+               }
         end else
         begin
             //Brush.Color := RGB(240,255,240);
@@ -4408,6 +4450,8 @@ begin
     begin
         if odSelected in State then
         begin
+            DrawEventSelection(Control, Index, Rect, State);
+            {
             if bUse3DSelectionFrame = True then
                 DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
             if (bHglEventsGradient = True) then
@@ -4418,6 +4462,7 @@ begin
                Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
             end
+            }
         end else
         begin
             //Brush.Color := RGB(245,240,245);
@@ -4472,6 +4517,8 @@ begin
     begin
         if odSelected in State then // selected event
         begin
+            DrawEventSelection(Control, Index, Rect, State);
+            {
             if bUse3DSelectionFrame = True then
                 DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
             if (bHglEventsGradient = True) then
@@ -4482,6 +4529,7 @@ begin
                Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
                end
+               }
         end else
         begin
            //Brush.Color := RGB(255,244,245);
@@ -4531,17 +4579,17 @@ begin
     if ((CurrentConversation <> nil) and (TConEventCheckPersona(ConEventList.Items.Objects[Index]) <> nil)) then
     begin
         case TConEventCheckPersona(ConEventList.Items.Objects[Index]).AttrToCheck of
-        	EP_Credits: CheckString := ConEditPlus.Consts.strCheckCredits; // 'Credits';
-        	EP_Health: CheckString := ConEditPlus.Consts.strCheckHealth; //'Health';
-        	EP_SkillPoints: CheckString := ConEditPlus.Consts.strCheckSkillPts;// 'SkillPoints';
+            EP_Credits: CheckString := ConEditPlus.Consts.strCheckCredits; // 'Credits';
+            EP_Health: CheckString := ConEditPlus.Consts.strCheckHealth; //'Health';
+            EP_SkillPoints: CheckString := ConEditPlus.Consts.strCheckSkillPts;// 'SkillPoints';
         end;
 
         case TConEventCheckPersona(ConEventList.Items.Objects[Index]).Condition of
-        	EC_Less:         ConditionString:= ConEditPlus.Consts.strCheckConditionLessThan;// ' Less than (<) ';
-        	EC_LessEqual:    ConditionString:= ConEditPlus.Consts.strCheckConditionLessThanEqualTo;// ' Less than or Equal to (<=) ';
-        	EC_Equal:        ConditionString:= ConEditPlus.Consts.strCheckConditionEqual; //' Equal to (=) ';
-        	EC_GreaterEqual: ConditionString:= ConEditPlus.Consts.strCheckConditionGreaterThan;// ' Greater than or Equal to (>=) ';
-        	EC_Greater:      ConditionString:= ConEditPlus.Consts.strCheckConditionGreater;// ' Greater than (>) ';
+            EC_Less:         ConditionString:= ConEditPlus.Consts.strCheckConditionLessThan;// ' Less than (<) ';
+            EC_LessEqual:    ConditionString:= ConEditPlus.Consts.strCheckConditionLessThanEqualTo;// ' Less than or Equal to (<=) ';
+            EC_Equal:        ConditionString:= ConEditPlus.Consts.strCheckConditionEqual; //' Equal to (=) ';
+            EC_GreaterEqual: ConditionString:= ConEditPlus.Consts.strCheckConditionGreaterThan;// ' Greater than or Equal to (>=) ';
+            EC_Greater:      ConditionString:= ConEditPlus.Consts.strCheckConditionGreater;// ' Greater than (>) ';
         end;
 
         CheckValue := TConEventCheckPersona(ConEventList.Items.Objects[Index]).CheckValue;
@@ -4557,6 +4605,8 @@ begin
     begin
         if odSelected in State then
         begin
+            DrawEventSelection(Control, Index, Rect, State);
+           {
            if bUse3DSelectionFrame = True then
               DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
            if (bHglEventsGradient = True) then
@@ -4567,11 +4617,12 @@ begin
                Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
                end
+               }
         end else
         begin
            //Brush.Color := RGB(244,244,255);
-           Brush.Color := EventListColors.CheckPersonaBG;
-           FillRect(Rect); // Заполнение цветом
+            Brush.Color := EventListColors.CheckPersonaBG;
+            FillRect(Rect); // Заполнение цветом
         end;
 
         //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
@@ -4617,6 +4668,8 @@ begin
     begin
         if odSelected in State then
         begin
+            DrawEventSelection(Control, Index, Rect, State);
+            {
            if bUse3DSelectionFrame = True then
               DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO); // 3D рамка
            if (bHglEventsGradient = True) then
@@ -4626,12 +4679,12 @@ begin
                //Brush.Color := clrHighlightEvent;
                Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect); // Заполнение цветом
-               end
+               end}
         end else
         begin
            //Brush.Color := RGB(238,238,238);
-           Brush.Color := EventListColors.CommentBG;
-           FillRect(Rect); // Заполнение цветом
+            Brush.Color := EventListColors.CommentBG;
+            FillRect(Rect); // Заполнение цветом
         end;
 
         //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
@@ -4671,6 +4724,8 @@ begin
 
         if odSelected in State then
         begin
+            DrawEventSelection(Control, Index, Rect, State);
+            {
             if bUse3DSelectionFrame = True then
                DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO);
 
@@ -4682,6 +4737,7 @@ begin
                Brush.Color := EventListColors.HighlightEvent;
                FillRect(Rect);
             end;
+            }
         end
         else
         begin
@@ -4790,6 +4846,25 @@ begin
                Font.Color := clYellow else Font.Color := clBlue;
 
             TextOut(Rect.Left, Rect.Top + 4, idxStr);
+        end;
+    end;
+end;
+
+procedure TfrmMain.DrawEventSelection(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState); // if event is selected
+begin
+    with (Control as TListBox).Canvas do
+    begin
+        if bUse3DSelectionFrame = True then
+           DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO);
+
+        if (bHglEventsGradient = True) then
+        begin
+            GradientFillCanvas(ConEventList.Canvas, EventListColors.HighlightEventFrom, EventListColors.HighlightEventTo, Rect, gdVertical)
+        end
+        else
+        begin
+            Brush.Color := EventListColors.HighlightEvent;
+            FillRect(Rect);
         end;
     end;
 end;
