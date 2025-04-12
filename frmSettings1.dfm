@@ -53,7 +53,7 @@ object frmSettings: TfrmSettings
     Top = 161
     Width = 446
     Height = 277
-    ActivePage = Page1
+    ActivePage = TabSheet1
     Style = tsFlatButtons
     TabOrder = 9
     object Page1: TTabSheet
@@ -176,7 +176,7 @@ object frmSettings: TfrmSettings
       ImageIndex = 2
       object grpEventListColors: TGroupBox
         Left = 1
-        Top = 7
+        Top = 8
         Width = 434
         Height = 236
         Caption = 'Override Event list colors and themes'
@@ -215,8 +215,8 @@ object frmSettings: TfrmSettings
           OnMouseDown = shpGridColorMouseDown
         end
         object shpHighlightColorFrom: TShape
-          Left = 255
-          Top = 97
+          Left = 283
+          Top = 93
           Width = 20
           Height = 20
           Cursor = crHandPoint
@@ -224,8 +224,8 @@ object frmSettings: TfrmSettings
           OnMouseDown = shpHighlightColorFromMouseDown
         end
         object shpHighlightColorSingle: TShape
-          Left = 255
-          Top = 97
+          Left = 283
+          Top = 93
           Width = 20
           Height = 20
           Cursor = crHandPoint
@@ -233,8 +233,8 @@ object frmSettings: TfrmSettings
           OnMouseDown = shpHighlightColorSingleMouseDown
         end
         object shpHighlightColorTo: TShape
-          Left = 281
-          Top = 97
+          Left = 309
+          Top = 93
           Width = 20
           Height = 20
           Cursor = crHandPoint
@@ -249,6 +249,15 @@ object frmSettings: TfrmSettings
           Brush.Style = bsClear
           Pen.Color = clRed
           Pen.Width = 4
+        end
+        object Label1: TLabel
+          Left = 14
+          Top = 167
+          Width = 138
+          Height = 23
+          AutoSize = False
+          Caption = 'Events List color theme:'
+          Layout = tlCenter
         end
         object chkPlayerBindNameColor: TCheckBox
           Left = 11
@@ -282,7 +291,7 @@ object frmSettings: TfrmSettings
         end
         object chkSelectedTextIsWhite: TCheckBox
           Left = 11
-          Top = 171
+          Top = 144
           Width = 209
           Height = 17
           Hint = 'Use this option if you want to use dark selection colors. '
@@ -291,8 +300,8 @@ object frmSettings: TfrmSettings
           OnClick = chkSelectEventsGradientFillClick
         end
         object chkSelectEventsGradientFill: TCheckBox
-          Left = 11
-          Top = 98
+          Left = 39
+          Top = 94
           Width = 238
           Height = 17
           Hint = 'If not checked, use single color to highlight events.'
@@ -308,6 +317,34 @@ object frmSettings: TfrmSettings
           Caption = 'Event separator color'
           TabOrder = 5
           OnClick = chkGridColorClick
+        end
+        object chkOverrideSelectedEventColor: TCheckBox
+          Left = 11
+          Top = 69
+          Width = 218
+          Height = 17
+          Caption = 'Override color of the selected event'
+          TabOrder = 6
+          OnClick = chkOverrideSelectedEventColorClick
+        end
+        object cmbEventsColorTheme: TComboBox
+          Left = 158
+          Top = 167
+          Width = 243
+          Height = 22
+          Style = csOwnerDrawFixed
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -12
+          Font.Name = 'Verdana'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 7
+          Items.Strings = (
+            'ConEditPlus.Colors.DefaultTEventsColors'
+            'ConEditPlus.Colors.SofterTEventsColors'
+            'ConEditPlus.Colors.SofterDarkerTEventsColors'
+            'ConEditPlus.Colors.ShadesOfGrayTEventsColors')
         end
       end
     end

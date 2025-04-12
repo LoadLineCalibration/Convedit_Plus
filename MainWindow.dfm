@@ -6283,6 +6283,12 @@ object frmMain: TfrmMain
         Action = FileSaveAs
         ImageIndex = 6
       end
+      object N17: TMenuItem
+        Caption = '-'
+      end
+      object Exportastext1: TMenuItem
+        Action = FileExport
+      end
       object N7: TMenuItem
         Caption = '-'
       end
@@ -9824,6 +9830,11 @@ object frmMain: TfrmMain
       Caption = 'Template for AI BarkFutz'
       ImageIndex = 17
       OnExecute = Conversation_Create_AIBarkFutz_TemplateExecute
+    end
+    object FileExport: TAction
+      Category = 'File'
+      Caption = 'Export as text...'
+      OnExecute = FileExportExecute
     end
   end
   object FileSaveDialog: TFileSaveDialog

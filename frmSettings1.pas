@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, System.UITypes,
-  Vcl.Samples.Spin, Conversation.Classes, ConEditPlus.Enums, ConEditPlus.Consts;
+  Vcl.Samples.Spin, Conversation.Classes, ConEditPlus.Enums, ConEditPlus.Consts, ConEditPlus.Colors;
 
 type
   TfrmSettings = class(TForm)
@@ -62,10 +62,14 @@ type
     shpPlayerSpeechBGColor: TShape;
     chkGridColor: TCheckBox;
     chkVerifyLabelNames: TCheckBox;
+    chkOverrideSelectedEventColor: TCheckBox;
+    cmbEventsColorTheme: TComboBox;
+    Label1: TLabel;
 
     // new procedures
     procedure SaveChanges();
     procedure LoadSettings();
+    procedure FillThemesCombo();
     procedure FirstTimeLaunch();
 
     procedure chkSelectEventsGradientFillClick(Sender: TObject);
@@ -91,6 +95,7 @@ type
     procedure shpPlayerBindNameColorMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure shpPlayerSpeechBGColorMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure chkGridColorClick(Sender: TObject);
+    procedure chkOverrideSelectedEventColorClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -107,6 +112,7 @@ uses MainWindow;
 
 procedure TfrmSettings.LoadSettings();
 begin
+    chkOverrideSelectedEventColorClick(Self);
     chkSelectEventsGradientFillClick(self);
 
     with frmMain do
@@ -123,11 +129,6 @@ begin
         chkHighlightspeechChoiceEventsNoneAudio.Checked := bHglEventWithNoAudio;
         chkSelectEventsGradientFill.Checked := bHglEventsGradient;
 
-        shpHighlightColorSingle.Brush.Color := clrHighlightEvent;
-        shpHighlightColorFrom.Brush.Color := clrHighlightEventFrom;
-        shpHighlightColorTo.Brush.Color := clrHighlightEventTo;
-        shpGridColor.Brush.Color := clrGrid;
-
         chkFlatControlsMainWin.Checked := bFlatToolbar;
 
         chkAutoSaveEnabled.Checked := bAutoSaveEnabled;
@@ -142,11 +143,25 @@ begin
 
         chkDblClickTreeFlag.Checked := bEnableDblClickTreeFlag;
 
-        chkPlayerBindNameColor.Checked := bUsePlayerBindNameColor;  // Player BindName and color
-        shpPlayerBindNameColor.Brush.Color := clPlayerBindNameColor; //
+        if EventListColors = ConEditPlus.Colors.DefaultTEventsColors then
+            cmbEventsColorTheme.ItemIndex := 0
+        else if EventListColors = ConEditPlus.Colors.SofterTEventsColors then
+            cmbEventsColorTheme.ItemIndex := 1
+        else if EventListColors = ConEditPlus.Colors.SofterDarkerTEventsColors then
+            cmbEventsColorTheme.ItemIndex := 2
+        else if EventListColors = ConEditPlus.Colors.ShadesOfGrayTEventsColors then
+            cmbEventsColorTheme.ItemIndex := 3;
 
-        chkPlayerSpeechBGColor.Checked := bUsePlayerSpeechBGColor;
-        shpPlayerSpeechBGColor.Brush.Color := clPlayerSpeechBGColor;
+        shpHighlightColorSingle.Brush.Color := clrHighlightEvent;
+        shpHighlightColorFrom.Brush.Color := clrHighlightEventFrom;
+        shpHighlightColorTo.Brush.Color := clrHighlightEventTo;
+        shpGridColor.Brush.Color := clrGrid;
+
+        chkPlayerBindNameColor.Checked := bUsePlayerBindNameColor;  // Override Player BindName and color
+        shpPlayerBindNameColor.Brush.Color := clPlayerBindNameColor; // Color
+
+        chkPlayerSpeechBGColor.Checked := bUsePlayerSpeechBGColor; // Override Player BindName color
+        shpPlayerSpeechBGColor.Brush.Color := clPlayerSpeechBGColor; // Color
     end;
 end;
 
@@ -168,12 +183,6 @@ begin
         bAskForConvoDelete := chkAskConversationDelete.Checked;
         bAskForEventDelete := chkAskDeleteEvent.Checked;
         bHglEventWithNoAudio := chkHighlightspeechChoiceEventsNoneAudio.Checked;
-        bHglEventsGradient := chkSelectEventsGradientFill.Checked;
-
-        clrHighlightEvent := shpHighlightColorSingle.Brush.Color;
-        clrHighlightEventFrom := shpHighlightColorFrom.Brush.Color;
-        clrHighlightEventTo := shpHighlightColorTo.Brush.Color;
-        clrGrid := shpGridColor.Brush.Color;
 
         bFlatToolbar := chkFlatControlsMainWin.Checked;
         mainToolBar.Flat := bFlatToolbar;
@@ -193,11 +202,28 @@ begin
 
         bEnableDblClickTreeFlag := chkDblClickTreeFlag.Checked;
 
+        // сохранить тему
+        case frmSettings.cmbEventsColorTheme.ItemIndex of
+            0: EventListColors := ConEditPlus.Colors.DefaultTEventsColors;
+            1: EventListColors := ConEditPlus.Colors.SofterTEventsColors;
+            2: EventListColors := ConEditPlus.Colors.SofterDarkerTEventsColors;
+            3: EventListColors := ConEditPlus.Colors.ShadesOfGrayTEventsColors;
+        end;
+
+        // и переопределённые цвета
         bUsePlayerBindNameColor := chkPlayerBindNameColor.Checked;  // Player BindName
         clPlayerBindNameColor := shpPlayerBindNameColor.Brush.Color; // and color
 
         bUsePlayerSpeechBGColor := chkPlayerSpeechBGColor.Checked;
         clPlayerSpeechBGColor := shpPlayerSpeechBGColor.Brush.Color;
+
+        clrHighlightEvent := shpHighlightColorSingle.Brush.Color;
+        clrHighlightEventFrom := shpHighlightColorFrom.Brush.Color;
+        clrHighlightEventTo := shpHighlightColorTo.Brush.Color;
+        clrGrid := shpGridColor.Brush.Color;
+
+        bUseCustomHighlightEventColor := chkOverrideSelectedEventColor.Checked; // Переопределить цвет выбранного события
+        bHglEventsGradient := chkSelectEventsGradientFill.Checked;
 
         ConEventList.Invalidate(); // Refresh the event list
     end;
@@ -284,6 +310,14 @@ begin
     shpGridColor.Visible := chkGridColor.Checked;
 end;
 
+procedure TfrmSettings.chkOverrideSelectedEventColorClick(Sender: TObject);
+begin
+    chkSelectEventsGradientFill.Visible := chkOverrideSelectedEventColor.Checked;
+    shpHighlightColorSingle.Visible := chkOverrideSelectedEventColor.Checked;
+    shpHighlightColorFrom.Visible := chkOverrideSelectedEventColor.Checked;
+    shpHighlightColorTo.Visible := chkOverrideSelectedEventColor.Checked;
+end;
+
 procedure TfrmSettings.chkSelectEventsGradientFillClick(Sender: TObject);
 begin
     shpHighlightColorSingle.Visible := not chkSelectEventsGradientFill.Checked;
@@ -300,6 +334,7 @@ procedure TfrmSettings.FormCreate(Sender: TObject);
 begin
     Icon := frmMain.Icon;
 
+    FillThemesCombo();
     LoadSettings();
     edtUserNameChange(self);
 end;
@@ -384,9 +419,22 @@ begin
     end;
 end;
 
+procedure TfrmSettings.FillThemesCombo();
+begin
+    with cmbEventsColorTheme.Items do
+    begin
+        Clear();
+        Add('Default [regular]');
+        Add('Softer [regular]');
+        Add('SofterDarker [dark]');
+        Add('ShadesOfGray [dark]');
+    end;
+end;
+
 procedure TfrmSettings.FirstTimeLaunch();
 begin
   //
 end;
 
 end.
+

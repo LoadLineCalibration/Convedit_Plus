@@ -5428,6 +5428,7 @@ object frmEventInsAdd: TfrmEventInsAdd
       Anchors = [akLeft, akTop, akRight]
       PopupMenu = MemoPopup
       TabOrder = 1
+      OnChange = editEventLabelChange
       OnKeyPress = AllowFNameInput
     end
   end
@@ -5436,7 +5437,7 @@ object frmEventInsAdd: TfrmEventInsAdd
     Top = 114
     Width = 556
     Height = 406
-    ActivePage = TabSheet13
+    ActivePage = TabSheet1
     Anchors = [akLeft, akTop, akRight, akBottom]
     DoubleBuffered = True
     ParentDoubleBuffered = False
@@ -6451,7 +6452,6 @@ object frmEventInsAdd: TfrmEventInsAdd
           MinValue = 0
           TabOrder = 4
           Value = 0
-          OnChange = editConditionValueChange
         end
         object btnObjectToTransfer: TButton
           Left = 389
@@ -7577,7 +7577,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   object mp1: TMediaPlayer
     Left = 294
     Top = 522
-    Width = -1
+    Width = 57
     Height = 20
     VisibleButtons = [btPlay, btPause]
     DoubleBuffered = True

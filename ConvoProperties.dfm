@@ -5,7 +5,7 @@ object frmConvoProperties: TfrmConvoProperties
   Caption = 'Conversation Properties'
   ClientHeight = 471
   ClientWidth = 416
-  Color = 13160660
+  Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -12
@@ -193,6 +193,15 @@ object frmConvoProperties: TfrmConvoProperties
           TabOrder = 7
           OnClick = btnAddAiBarkTemplateClick
         end
+        object Button1: TButton
+          Left = 225
+          Top = 171
+          Width = 147
+          Height = 20
+          Caption = 'Add JCDenton bindname'
+          TabOrder = 8
+          Visible = False
+        end
       end
       object Flags: TTabSheet
         Caption = 'Flags'
@@ -286,7 +295,6 @@ object frmConvoProperties: TfrmConvoProperties
           Top = 45
           Width = 314
           Height = 17
-          Cursor = crHandPoint
           Caption = 'Player (PC) Frobs NPC'
           Checked = True
           State = cbChecked
@@ -319,7 +327,6 @@ object frmConvoProperties: TfrmConvoProperties
           Top = 149
           Width = 314
           Height = 17
-          Cursor = crHandPoint
           Caption = 'NPC Enters Player (PC) Radius'
           TabOrder = 3
           StyleElements = []
@@ -355,7 +362,6 @@ object frmConvoProperties: TfrmConvoProperties
           Top = 56
           Width = 257
           Height = 17
-          Cursor = crHandPoint
           Caption = 'Display Conversation Only Once'
           Checked = True
           State = cbChecked
@@ -368,7 +374,6 @@ object frmConvoProperties: TfrmConvoProperties
           Top = 173
           Width = 314
           Height = 17
-          Cursor = crHandPoint
           Hint = 'Use this option to hide speaker name(s).'
           Caption = 'Non-interactive Conversation'
           TabOrder = 2
@@ -379,7 +384,6 @@ object frmConvoProperties: TfrmConvoProperties
           Top = 134
           Width = 314
           Height = 17
-          Cursor = crHandPoint
           Hint = 
             'Special option for Infolink (DataLink) messages.'#13#10'Using "DL_" pr' +
             'efix is recommended, so it will be automatically added.'
@@ -393,7 +397,6 @@ object frmConvoProperties: TfrmConvoProperties
           Top = 212
           Width = 314
           Height = 17
-          Cursor = crHandPoint
           Hint = 'In this mode choices are not supported.'
           Caption = 'Remain in First-Person Mode'
           TabOrder = 3
@@ -404,7 +407,6 @@ object frmConvoProperties: TfrmConvoProperties
           Top = 251
           Width = 314
           Height = 17
-          Cursor = crHandPoint
           Caption = 'Random Camera Placement'
           TabOrder = 4
           StyleElements = []
@@ -414,7 +416,6 @@ object frmConvoProperties: TfrmConvoProperties
           Top = 290
           Width = 314
           Height = 17
-          Cursor = crHandPoint
           Caption = 'Can be Interrupded by Another Conversation'
           TabOrder = 5
           StyleElements = []
@@ -424,7 +425,6 @@ object frmConvoProperties: TfrmConvoProperties
           Top = 321
           Width = 314
           Height = 33
-          Cursor = crHandPoint
           Caption = 'Absolutely CANNOT be Interrupted by Another Conversation'
           TabOrder = 6
           WordWrap = True
@@ -435,7 +435,6 @@ object frmConvoProperties: TfrmConvoProperties
           Top = 95
           Width = 169
           Height = 17
-          Cursor = crHandPoint
           Hint = 
             'Only for "Only Once" conversations. '#13#10'Adds "conversationName_Pla' +
             'yed" flag to list, so you can use it somewhere.'#13#10'Deus Ex will se' +
@@ -532,7 +531,6 @@ object frmConvoProperties: TfrmConvoProperties
     Top = 440
     Width = 111
     Height = 25
-    Cursor = crHelp
     Hint = 'Click here to get help'
     Kind = bkHelp
     NumGlyphs = 2

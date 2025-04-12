@@ -370,6 +370,9 @@ type
     chkEventIdx: TCheckBox;
     Setfilter1: TMenuItem;
     btnApplyFilter: TButton;
+    FileExport: TAction;
+    Exportastext1: TMenuItem;
+    N17: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -528,6 +531,10 @@ type
 
     procedure CreateAIBarksExample(bBarkFutz: Boolean);
 
+    procedure ExportConversationAsText(const filename: string);
+
+
+
     procedure FormResize(Sender: TObject);
     procedure CollapseAll2Click(Sender: TObject);
     procedure ConvoTreeEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
@@ -683,6 +690,7 @@ type
     procedure btnOnlyTextEventsClick(Sender: TObject);
     procedure Setfilter1Click(Sender: TObject);
     procedure btnApplyFilterClick(Sender: TObject);
+    procedure FileExportExecute(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -2715,6 +2723,68 @@ begin
 
     bFileModified := True;
 end;
+
+procedure TfrmMain.ExportConversationAsText(const filename: string);
+begin
+    var TxtFile := TStringList.Create();
+
+    try
+        for var con in ConversationsList do
+        begin
+            TxtFile.Add(TEX_CONVERSATION_SEPARATOR); // Добавить разделитель диалогов
+            TxtFile.Add(Format(TEX_OWNER, [con.conOwnerName]));
+            TxtFile.Add(Format(TEX_NAME, [con.conName]) + sLineBreak);
+
+            for var e := 0 to High(con.Events) do
+            begin
+                if con.Events[e] is TConEventSpeech then
+                begin
+                    TxtFile.Add(Format(TEX_SPEECH_TEXT, [con.conOwnerName ,TConEventSpeech(con.Events[e]).TextLine]) + sLineBreak);
+                end;
+
+                if con.Events[e] is TConEventChoice then
+                begin
+                    var ChoiceEvent := TConEventChoice(con.Events[e]);
+
+                    TxtFile.Add(Format(TEX_NUM_CHOICES, [ChoiceEvent.NumChoices]) + sLineBreak);
+
+                    for var choiceItem in ChoiceEvent.Choices do
+                    begin
+                        TxtFile.Add(Format(TEX_CHOICE_TEXT, [choiceItem.textline]) + sLineBreak);
+                    end;
+                end;
+
+                if con.Events[e] is TConEventAddGoal then
+                begin
+                    TxtFile.Add(Format(TEX_GOAL_TEXT, [TConEventAddGoal(con.Events[e]).GoalText]) + sLineBreak);
+                end;
+
+                if con.Events[e] is TConEventAddNote then
+                begin
+                    TxtFile.Add(Format(TEX_NOTE_TEXT, [TConEventAddNote(con.Events[e]).TextLine]) + sLineBreak);
+                end;
+
+                //if con.Events[e] is TConEventAddSkillPoints then
+                //begin
+                //    TxtFile.Add(Format(TEX_NOTE_TEXT, [TConEventAddSkillPoints(con.Events[e]).TextLine]) + sLineBreak);
+                //end;
+
+                if con.Events[e] is TConEventComment then
+                begin
+                    TxtFile.Add(Format(TEX_COMMENT_TEXT, [TConEventComment(con.Events[e]).TextLine]) + sLineBreak);
+                end;
+            end;
+        end;
+
+    finally
+        TxtFile.SaveToFile(filename);
+        TxtFile.Free();
+
+        MessageBox(Handle, PChar('File has been exported as ' + filename), 'Done!', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+
+    end;
+end;
+
 
 procedure TfrmMain.CopyChoicetext1Click(Sender: TObject);
 begin
@@ -4857,14 +4927,29 @@ begin
         if bUse3DSelectionFrame = True then
            DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO);
 
-        if (bHglEventsGradient = True) then
+        if bUseCustomHighlightEventColor = True then // override colors?
         begin
-            GradientFillCanvas(ConEventList.Canvas, EventListColors.HighlightEventFrom, EventListColors.HighlightEventTo, Rect, gdVertical)
+            if (bHglEventsGradient = True) then
+            begin
+                GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
+            end
+            else
+            begin
+                Brush.Color := clrHighlightEventFrom;
+                FillRect(Rect);
+            end;
         end
-        else
+        else // Or use from selected theme?
         begin
-            Brush.Color := EventListColors.HighlightEvent;
-            FillRect(Rect);
+            if (bHglEventsGradient = False) then
+            begin
+                GradientFillCanvas(ConEventList.Canvas, EventListColors.HighlightEventFrom, EventListColors.HighlightEventTo, Rect, gdVertical)
+            end
+            else
+            begin
+                Brush.Color := EventListColors.HighlightEvent;
+                FillRect(Rect);
+            end;
         end;
     end;
 end;
@@ -6632,6 +6717,11 @@ begin
         frmFindRefs.lvRefs.Clear();
         frmFindRefs.Close();
     end;
+end;
+
+procedure TfrmMain.FileExportExecute(Sender: TObject);
+begin
+    ExportConversationAsText('C:\Temp\1.txt');
 end;
 
 procedure TfrmMain.FileGenerateAudioNamesExecute(Sender: TObject);

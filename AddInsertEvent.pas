@@ -408,6 +408,7 @@ type
     procedure btnSwapNowClick(Sender: TObject);
     procedure btnPlayChoiceAudioClick(Sender: TObject);
     procedure editSkillPointsAmountChange(Sender: TObject);
+    procedure editEventLabelChange(Sender: TObject);
   private
     { Private declarations }
   public
@@ -2399,79 +2400,79 @@ begin
 
     if (event is TConEventSpeech) and (cmbEventType.ItemIndex = 0) then
     begin
-       ValidateSpeech(TConEventSpeech(event));
+        ValidateSpeech(TConEventSpeech(event));
     end else
     if (event is TConEventChoice) and (cmbEventType.ItemIndex = 1) then
     begin
-       ValidateChoice(TConEventChoice(event));
+        ValidateChoice(TConEventChoice(event));
     end else
     if (event is TConEventSetFlag) and (cmbEventType.ItemIndex = 2) then
     begin
-       ValidateSetFlags(TConEventSetFlag(event));
+        ValidateSetFlags(TConEventSetFlag(event));
     end else
     if (event is TConEventCheckFlag) and (cmbEventType.ItemIndex = 3) then
     begin
-       ValidateCheckFlags(TConEventCheckFlag(event));
+        ValidateCheckFlags(TConEventCheckFlag(event));
     end else
     if (event is TConEventCheckObject) and (cmbEventType.ItemIndex = 4) then
     begin
-       ValidateCheckObject(TConEventCheckObject(event));
+        ValidateCheckObject(TConEventCheckObject(event));
     end else
     if (event is TConEventTransferObject) and (cmbEventType.ItemIndex = 5) then
     begin
-       ValidateTransferObject(TConEventTransferObject(event));
+        ValidateTransferObject(TConEventTransferObject(event));
     end else
     if (event is TConEventMoveCamera) and (cmbEventType.ItemIndex = 6) then
     begin
-       ValidateMoveCamera(TConEventMoveCamera(event));
+        ValidateMoveCamera(TConEventMoveCamera(event));
     end else
     if (event is TConEventAnimation) and (cmbEventType.ItemIndex = 7) then
     begin
-       ValidatePlayAnim(TConEventAnimation(event));
+        ValidatePlayAnim(TConEventAnimation(event));
     end else
     if (event is TConEventTrade) and (cmbEventType.ItemIndex = 8) then
     begin
-       ValidateBuySellTrade(TConEventTrade(event));
+        ValidateBuySellTrade(TConEventTrade(event));
     end else
     if (event is TConEventJump) and (cmbEventType.ItemIndex = 9) then
     begin
-       ValidateJump(TConEventJump(event));
+        ValidateJump(TConEventJump(event));
     end else
     if (event is TConEventRandom) and (cmbEventType.ItemIndex = 10) then
     begin
-       ValidateRandom(TConEventRandom(event));
+        ValidateRandom(TConEventRandom(event));
     end else
     if (event is TConEventTrigger) and (cmbEventType.ItemIndex = 11) then
     begin
-       ValidateTrigger(TConEventTrigger(event));
+        ValidateTrigger(TConEventTrigger(event));
     end else
     if (event is TConEventAddGoal) and (cmbEventType.ItemIndex = 12) then
     begin
-       ValidateAddCompGoal(TConEventAddGoal(event));
+        ValidateAddCompGoal(TConEventAddGoal(event));
     end else
     if (event is TConEventAddNote) and (cmbEventType.ItemIndex = 13) then
     begin
-       ValidateAddNote(TConEventAddNote(event));
+        ValidateAddNote(TConEventAddNote(event));
     end else
     if (event is TConEventAddSkillPoints) and (cmbEventType.ItemIndex = 14) then
     begin
-       ValidateAddSkillPoints(TConEventAddSkillPoints(event));
+        ValidateAddSkillPoints(TConEventAddSkillPoints(event));
     end else
     if (event is TConEventAddCredits) and (cmbEventType.ItemIndex = 15) then
     begin
-       ValidateAddCredits(TConEventAddCredits(event));
+        ValidateAddCredits(TConEventAddCredits(event));
     end else
     if (event is TConEventCheckPersona) and (cmbEventType.ItemIndex = 16) then
     begin
-       ValidateCheckPersona(TConEventCheckPersona(event));
+        ValidateCheckPersona(TConEventCheckPersona(event));
     end else
     if (event is TConEventComment) and (cmbEventType.ItemIndex = 17) then
     begin
-       ValidateComment(TConEventComment(event));
+        ValidateComment(TConEventComment(event));
     end else
     if (event is TConEventEnd) and (cmbEventType.ItemIndex = 18) then
     begin
-       ValidateEnd(TConEventEnd(event));
+        ValidateEnd(TConEventEnd(event));
     end;
 end;
 
@@ -3042,6 +3043,31 @@ begin
     btnUpdate.Enabled := editSkillPointsAmount.Value > 0;
 end;
 
+procedure TfrmEventInsAdd.editEventLabelChange(Sender: TObject);
+begin
+    case EventsPages.TabIndex of
+    0: memoSpeechChange(memoSpeech); // speech
+    1: btnUpdate.Enabled := lvChoiceList.Items.Count > 0; // choice
+    2: btnUpdate.Enabled := lvSetFlags.Items.Count > 0; // set flag(s)
+    3: cmbChkFlgJumpToLabelChange(cmbChkFlgJumpToLabel); // check flag(s)
+    4: cmbObjectToCheckChange(cmbObjectToCheck); // check object
+    5: cmbObjectToTransferChange(cmbObjectToTransfer); // transfer object
+    6: ; // move camera
+    7:  cmbPawnToAnimateChange(cmbPawnToAnimate); // play animation
+    8: ; // Trade has no input fields (for now)
+    9:  btnUpdate.Enabled := cboJumpConv.ItemIndex <> -1; // Jump to conversation/label
+    10: UpdateAddRandomLabelButtonState(); // random
+    11: editTriggerTagChange(editTriggerTag); // trigger
+    12: editGoalNameChange(editGoalName); // add/complete goal
+    13: memoNoteTextChange(memoNoteText); // add note to player's Datavault.
+    14: editSkillPointsAmountChange(editSkillPointsAmount); // skill Points
+    15: btnUpdate.Enabled := seAddCredits.Value <> 0; // add credits
+    16: begin editConditionValueChange(editConditionValue); editConditionValueChange(editConditionValue); end; // check persona
+    17: memoCommentTextChange(memoCommentText); // comment
+    18: btnUpdate.Enabled := True; // end
+    end;
+end;
+
 procedure TfrmEventInsAdd.editGoalNameChange(Sender: TObject);
 begin
     if rbAddGoal.Checked = True then
@@ -3315,7 +3341,8 @@ end;
 
 procedure TfrmEventInsAdd.memoSpeechChange(Sender: TObject);
 begin
-    btnUpdate.Enabled := (Trim(memoSpeech.Text) <> '') and (cmbSpeakingFrom.ItemIndex <> -1) and (cmbSpeakingTo.ItemIndex <> -1);
+    //btnUpdate.Enabled := (Trim(memoSpeech.Text) <> '') and (cmbSpeakingFrom.ItemIndex <> -1) and (cmbSpeakingTo.ItemIndex <> -1);
+    btnUpdate.Enabled := (memoSpeech.Text <> '') and (cmbSpeakingFrom.ItemIndex <> -1) and (cmbSpeakingTo.ItemIndex <> -1);
 end;
 
 procedure TfrmEventInsAdd.mmoChoiceTextChange(Sender: TObject);

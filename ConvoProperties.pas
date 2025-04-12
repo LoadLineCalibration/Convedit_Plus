@@ -62,6 +62,7 @@ type
     cmbAIBarksMode: TComboBox;
     chkAddAiBarksSuffix: TCheckBox;
     btnAddAiBarkTemplate: TButton;
+    Button1: TButton;
     procedure btnCancelClick(Sender: TObject);
     procedure chkDataLinkConvoClick(Sender: TObject);
     procedure chkNPCentersPCRadiusClick(Sender: TObject);

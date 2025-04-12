@@ -153,6 +153,27 @@ const
     CLIPBOARD_CONVERSATION_ID = 'id_CONVERSATION';
     PLAYED_SUFF = '_Played';
 
+    // Import/Export (TextEXport). For localization, voice actors, etc.
+    TEX_CONVERSATION_SEPARATOR = '-----------------------------------------------------------------';
+    TEX_OWNER = '[Owner: %s]';
+    TEX_NAME = '[Name:  %s]';
+
+    TEX_SPEECH_TEXT = '[SPEECH: %s]' + sLineBreak + '%s'; // Speech text
+
+    TEX_NUM_CHOICES = '[CHOICES:%d]'; // This is choice header
+    TEX_CHOICE_TEXT = '[CHOICE:]' + sLineBreak + '%s'; // choice item
+
+    TEX_GOAL_TEXT = '[GOAL:]' + sLineBreak + '%s'; // Goal text
+
+    TEX_NOTE_TEXT = '[NOTE:]' + sLineBreak + '%s'; // Note text
+
+    TEX_ADDSKILLPTS_TEXT = '[SKILLPOINTS:]' + sLineBreak + '%s'; // SkillPoints message text
+
+    TEX_COMMENT_TEXT = '[COMMENT]' + sLineBreak + '%s'; // Comment text
+    // End of Import/Export
+
+
+
     CHECK_OBJECT_HEIGHT = 25;
     TRANSFER_OBJECT_HEIGHT = 35;
     MOVE_CAMERA_HEIGHT = 25;
