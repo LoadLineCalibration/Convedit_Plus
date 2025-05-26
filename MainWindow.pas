@@ -905,7 +905,7 @@ begin
     try
         for var i := 0 to Screen.FormCount - 1 do
         begin
-            if (Screen.Forms[i] <> Application.MainForm) and (Screen.Forms[i].Visible) then
+            if (Screen.Forms[i] <> Application.MainForm) and (Screen.Forms[i].Visible = True) then // Не открывать файл если открыто какое-либо окно программы
             begin
                 Exit();
             end;
@@ -913,8 +913,13 @@ begin
 
         if DragQueryFile(Msg.Drop, 0, FileName, MAX_PATH) > 0 then
         begin
-            // Close current file first!
-            FileCloseExecute(Self);
+            if FileExists(FileName) = False then
+            begin
+                MessageBox(Handle, PChar(Format(strFileDoesNotExists, [FileName])), PChar(strErrorTitle), MB_OK + MB_ICONSTOP + MB_TOPMOST);
+                Exit();
+            end;
+
+            FileCloseExecute(Self);             // Close current file first!
 
             if UpperCase(ExtractFileExt(FileName)) = '.XML' then
             begin
@@ -927,7 +932,8 @@ begin
                 BuildConvoTree();
             end else
             begin
-                MessageDlg(strSelectConXML,  mtError, [mbOK], 0);
+                //MessageDlg(strSelectConXML,  mtError, [mbOK], 0);
+                MessageBox(Handle, PChar(strSelectConXML), PChar(strErrorTitle), MB_OK + MB_ICONSTOP + MB_TOPMOST);
                 Exit();
             end;
 
@@ -2754,7 +2760,7 @@ begin
                     end;
                 end;
 
-                if con.Events[e] is TConEventAddGoal then
+                if (con.Events[e] is TConEventAddGoal) and (TConEventAddGoal(con.Events[e]).bComplete = False) then // Не экспортировать завершённые цели
                 begin
                     TxtFile.Add(Format(TEX_GOAL_TEXT, [TConEventAddGoal(con.Events[e]).GoalText]) + sLineBreak);
                 end;
@@ -2764,10 +2770,10 @@ begin
                     TxtFile.Add(Format(TEX_NOTE_TEXT, [TConEventAddNote(con.Events[e]).TextLine]) + sLineBreak);
                 end;
 
-                //if con.Events[e] is TConEventAddSkillPoints then
-                //begin
-                //    TxtFile.Add(Format(TEX_NOTE_TEXT, [TConEventAddSkillPoints(con.Events[e]).TextLine]) + sLineBreak);
-                //end;
+                if (con.Events[e] is TConEventAddSkillPoints) and (TConEventAddSkillPoints(con.Events[e]).TextLine.IsEmpty = False)  then // Экспорт только если строка не пустая
+                begin
+                    TxtFile.Add(Format(TEX_ADDSKILLPTS_TEXT, [TConEventAddSkillPoints(con.Events[e]).TextLine]) + sLineBreak);
+                end;
 
                 if con.Events[e] is TConEventComment then
                 begin
@@ -4935,7 +4941,8 @@ begin
             end
             else
             begin
-                Brush.Color := clrHighlightEventFrom;
+                //Brush.Color := clrHighlightEventFrom;
+                Brush.Color := clrHighlightEvent;
                 FillRect(Rect);
             end;
         end
@@ -5647,7 +5654,12 @@ begin
         Font.Name := CEP_EVENT_LIST_FONT_NAME;
 
         Pen.Style := psInsideFrame;
-        Frame3D(TListBox(Control).Canvas, Rect, EventListColors.GridBG, EventListColors.GridColor, 1); // разделитель
+        if bUseCustomGridColor = True then
+            Frame3D(TListBox(Control).Canvas, Rect, clrGrid, clrGrid, 1) // разделитель
+        else
+            Frame3D(TListBox(Control).Canvas, Rect, EventListColors.GridBG, EventListColors.GridColor, 1); // разделитель
+
+        //Frame3D(TListBox(Control).Canvas, Rect, EventListColors.GridBG, EventListColors.GridColor, 1); // разделитель
 
         //Brush.Style := bsSolid;
         //Brush.Color := clBlack;

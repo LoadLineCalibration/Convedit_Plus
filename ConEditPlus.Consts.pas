@@ -160,8 +160,8 @@ const
 
     TEX_SPEECH_TEXT = '[SPEECH: %s]' + sLineBreak + '%s'; // Speech text
 
-    TEX_NUM_CHOICES = '[CHOICES:%d]'; // This is choice header
-    TEX_CHOICE_TEXT = '[CHOICE:]' + sLineBreak + '%s'; // choice item
+    TEX_NUM_CHOICES = '[CHOICES:%d]'; // This is choice header, like [CHOICES:5]
+    TEX_CHOICE_TEXT = '[CHOICE:]' + sLineBreak + '%s'; // choice item, like:[CHOICE:]<LineBreak>Choice Text
 
     TEX_GOAL_TEXT = '[GOAL:]' + sLineBreak + '%s'; // Goal text
 
@@ -169,9 +169,8 @@ const
 
     TEX_ADDSKILLPTS_TEXT = '[SKILLPOINTS:]' + sLineBreak + '%s'; // SkillPoints message text
 
-    TEX_COMMENT_TEXT = '[COMMENT]' + sLineBreak + '%s'; // Comment text
+    TEX_COMMENT_TEXT = '[COMMENT:]' + sLineBreak + '%s'; // Comment text
     // End of Import/Export
-
 
 
     CHECK_OBJECT_HEIGHT = 25;
@@ -227,7 +226,7 @@ ResourceString // These strings can be translated.
                                      'Existing items will not be lost. Do you want to proceed?';
 
     strAddDefInfoLinkNamesQuestion = 'This will add default InfoLink names (like PaulDenton, BobPage, Icarus, etc.) from the original Deus Ex game into the table. ' +
-                                     'Existing items will not be lost. Do you want to proceed?';
+                                     'Existing items will NOT be lost. Do you want to proceed?';
 
 
     // for events list (MainWindow.pas)
