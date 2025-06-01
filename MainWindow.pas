@@ -442,8 +442,8 @@ type
     procedure SetEventIndexes();
 
     // loading and saving configuration file
-    procedure LoadCfg();
-    procedure SaveCfg();
+    procedure LoadSettings();
+    procedure SaveSettings();
 
     procedure AddRecentFile(aFile: string); // add opened file to "recent" list
     procedure ClearRecentFiles();
@@ -3205,7 +3205,7 @@ begin
     ApplyStyle('Silver');
 end;
 
-procedure TfrmMain.LoadCfg();
+procedure TfrmMain.LoadSettings();
 begin
     MainFormIni := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
     try
@@ -3303,7 +3303,7 @@ begin
     end;
 end;
 
-procedure TfrmMain.SaveCfg();
+procedure TfrmMain.SaveSettings();
 begin
     MainFormIni := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
     try
@@ -3426,7 +3426,12 @@ begin
             else
             begin
                 if (bUsePlayerSpeechBGColor = True) and (ActorNameStr = PLAYER_BINDNAME) then
-                    Brush.Color := EventListColors.PlayerSpeechBG //clPlayerSpeechBGColor
+                begin
+                    if clPlayerSpeechBGColor <> clNone then // Если цвет отличается от clNone, то берём его.
+                        Brush.Color := clPlayerSpeechBGColor
+                    else
+                        Brush.Color := EventListColors.PlayerSpeechBG // В противном случае берём из темы.
+                end
                 else
                     Brush.Color := EventListColors.SpeechBG;
                     //Brush.Color := RGB(192,255,192); // green
@@ -3436,14 +3441,24 @@ begin
         end;
 
         //if ((odSelected in State) and (bUseWhiteSelectedText = true)) then Font.Color := clWhite else Font.Color := clBlack;
-        if ((odSelected in State) and (bUseWhiteSelectedText = true)) then
+        if ((odSelected in State) and (bUseWhiteSelectedText = True)) then
         begin
-            Font.Color := clWhite;
+            //if clPlayerBindNameColor <> clNone then
+            //    Font.Color := clPlayerBindNameColor
+            //else
+                Font.Color := clWhite;
         end
         else
         begin
             if (ActorNameStr = PLAYER_BINDNAME) and (bUsePlayerBindNameColor = True) then
-                Font.Color := EventListColors.PlayerSpeechBindName else Font.Color := EventListColors.EventHeaderText;
+            begin
+                if clPlayerBindNameColor <> clNone then
+                    Font.Color := clPlayerBindNameColor
+                else
+                    Font.Color := EventListColors.PlayerSpeechBindName
+            end
+                else Font.Color := EventListColors.PlayerSpeechBindName;
+                //Font.Color := EventListColors.PlayerSpeechBindName else Font.Color := EventListColors.EventHeaderText;
                 //Font.Color := clPlayerBindNameColor else Font.Color := clBlack;
         end;
 
@@ -6524,7 +6539,7 @@ end;
 
 procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-    SaveCfg();
+    SaveSettings();
 end;
 
 procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -6588,7 +6603,7 @@ begin
     Application.Title := strAppTitle;
     frmMain.Caption := Application.Title;
 
-    LoadCfg();
+    LoadSettings();
     CreateObjectLists();
 
     ToggleMenusPanels(False);
