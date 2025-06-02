@@ -5325,6 +5325,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   PopupMode = pmExplicit
   Position = poOwnerFormCenter
   ShowHint = True
+  OnActivate = FormActivate
   OnCreate = FormCreate
   OnMouseWheelDown = FormMouseWheelDown
   OnMouseWheelUp = FormMouseWheelUp

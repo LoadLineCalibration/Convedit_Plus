@@ -320,6 +320,8 @@ type
     procedure FillEnd(endEvent: TConEventEnd);
     procedure PlayMP3Speech(const mp3file: string);
 
+    procedure RestoreVolumeTrackbar();
+
 
     procedure cmbEventTypeChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -409,6 +411,7 @@ type
     procedure btnPlayChoiceAudioClick(Sender: TObject);
     procedure editSkillPointsAmountChange(Sender: TObject);
     procedure editEventLabelChange(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -3135,6 +3138,11 @@ begin
     Result := bDuplicateFound;
 end;
 
+procedure TfrmEventInsAdd.FormActivate(Sender: TObject);
+begin
+    RestoreVolumeTrackbar();
+end;
+
 procedure TfrmEventInsAdd.FormCreate(Sender: TObject);
 begin
     lblStatus.Caption := '';
@@ -3144,6 +3152,8 @@ begin
 
     cmbEventTypeChange(self);
     UpdateControlsState();
+
+    RestoreVolumeTrackbar();
 end;
 
 procedure TfrmEventInsAdd.FormMouseWheelDown(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
@@ -3444,6 +3454,14 @@ begin
     frmMain.UpdateEventListHeights();
     frmMain.ConEventList.SetFocus(); // repaint selected event
     SetFocus();
+end;
+
+procedure TfrmEventInsAdd.RestoreVolumeTrackbar();
+var
+    vol: DWORD;
+begin
+    if waveOutGetVolume(0, @vol) = MMSYSERR_NOERROR then
+        mp3VolumeControl.Position := LOWORD(vol); // или среднее, если вдруг каналы разные
 end;
 
 procedure TfrmEventInsAdd.SaveChoiceItem;
