@@ -3,7 +3,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   Top = 0
   AlphaBlendValue = 128
   BorderIcons = [biSystemMenu]
-  Caption = 'Event'
+  Caption = 'Add/Edit event'
   ClientHeight = 594
   ClientWidth = 564
   Color = clBtnFace
@@ -5438,7 +5438,7 @@ object frmEventInsAdd: TfrmEventInsAdd
     Top = 114
     Width = 556
     Height = 406
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Anchors = [akLeft, akTop, akRight, akBottom]
     DoubleBuffered = True
     ParentDoubleBuffered = False

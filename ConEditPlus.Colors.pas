@@ -172,7 +172,7 @@ const // Default colors for regular mode
     HighlightEventTo: 16777215;
 
     GridBG: clWhite;
-    GridColor:$808080;
+    GridColor: clBlack;  //$808080;
 
     EventHeaderText: clBlack;
 

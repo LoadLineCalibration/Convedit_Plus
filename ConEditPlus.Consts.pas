@@ -186,6 +186,18 @@ const
 
     FILTER_ITEM_HEIGHT = 1;
 
+    // ConEventlist color themes
+    ELC_DEFAULT = 'Default [regular]';
+    ELC_SOFTER = 'Softer [regular]';
+    ELC_SOFTER_DARKER = 'SofterDarker [dark]';
+    ELC_SHADES_OF_GRAY = 'ShadesOfGray [dark]';
+
+    // ConEventList header
+    CLH_WIDTH_COL1 = 150;
+    CLH_WIDTH_COL2 = 150;
+    CLH_WIDTH_COL3 = 500;
+
+
 
 ResourceString // These strings can be translated.
 

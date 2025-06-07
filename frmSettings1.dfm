@@ -153,7 +153,9 @@ object frmSettings: TfrmSettings
           Top = 184
           Width = 209
           Height = 17
-          Hint = 'Toggle flag value in conversations tree by double-clicking it. '
+          Hint = 
+            'Toggle flag value in conversations tree by double-clicking it (l' +
+            'ike in the original ConEdit).'
           Caption = 'DblClick tree flag to change value'
           TabOrder = 7
         end
@@ -175,7 +177,7 @@ object frmSettings: TfrmSettings
       Caption = 'EventList colors'
       ImageIndex = 2
       object grpEventListColors: TGroupBox
-        Left = 1
+        Left = 0
         Top = 8
         Width = 434
         Height = 236
@@ -188,7 +190,7 @@ object frmSettings: TfrmSettings
         HeaderFont.Style = [fsBold]
         TabOrder = 0
         object shpPlayerBindNameColor: TShape
-          Left = 172
+          Left = 219
           Top = 23
           Width = 20
           Height = 20
@@ -197,8 +199,8 @@ object frmSettings: TfrmSettings
           OnMouseDown = shpPlayerBindNameColorMouseDown
         end
         object shpPlayerSpeechBGColor: TShape
-          Left = 215
-          Top = 47
+          Left = 261
+          Top = 46
           Width = 20
           Height = 20
           Cursor = crHandPoint
@@ -206,8 +208,8 @@ object frmSettings: TfrmSettings
           OnMouseDown = shpPlayerSpeechBGColorMouseDown
         end
         object shpGridColor: TShape
-          Left = 151
-          Top = 121
+          Left = 198
+          Top = 120
           Width = 20
           Height = 20
           Cursor = crHandPoint
@@ -215,8 +217,8 @@ object frmSettings: TfrmSettings
           OnMouseDown = shpGridColorMouseDown
         end
         object shpHighlightColorFrom: TShape
-          Left = 283
-          Top = 93
+          Left = 279
+          Top = 97
           Width = 20
           Height = 20
           Cursor = crHandPoint
@@ -224,8 +226,8 @@ object frmSettings: TfrmSettings
           OnMouseDown = shpHighlightColorFromMouseDown
         end
         object shpHighlightColorSingle: TShape
-          Left = 283
-          Top = 93
+          Left = 243
+          Top = 70
           Width = 20
           Height = 20
           Cursor = crHandPoint
@@ -233,8 +235,8 @@ object frmSettings: TfrmSettings
           OnMouseDown = shpHighlightColorSingleMouseDown
         end
         object shpHighlightColorTo: TShape
-          Left = 309
-          Top = 93
+          Left = 305
+          Top = 97
           Width = 20
           Height = 20
           Cursor = crHandPoint
@@ -252,7 +254,7 @@ object frmSettings: TfrmSettings
         end
         object Label1: TLabel
           Left = 14
-          Top = 167
+          Top = 175
           Width = 138
           Height = 23
           AutoSize = False
@@ -262,21 +264,23 @@ object frmSettings: TfrmSettings
         object chkPlayerBindNameColor: TCheckBox
           Left = 11
           Top = 23
-          Width = 155
-          Height = 17
+          Width = 202
+          Height = 20
           Hint = 
             'If checked, custom color for JCDenton bindname will be used. Oth' +
             'erwise use color from current theme'
-          Caption = 'Player BindName Color:'
+          Caption = 'Override Player BindName Color:'
           TabOrder = 0
+          OnClick = chkPlayerBindNameColorClick
         end
         object chkPlayerSpeechBGColor: TCheckBox
           Left = 11
-          Top = 46
-          Width = 198
-          Height = 17
-          Caption = 'Player Speech background color:'
+          Top = 47
+          Width = 244
+          Height = 20
+          Caption = 'Override Player Speech background color:'
           TabOrder = 1
+          OnClick = chkPlayerSpeechBGColorClick
         end
         object btnResetToDefaults: TButton
           Left = 11
@@ -293,7 +297,7 @@ object frmSettings: TfrmSettings
           Left = 11
           Top = 144
           Width = 209
-          Height = 17
+          Height = 20
           Hint = 'Use this option if you want to use dark selection colors. '
           Caption = 'Selected event text is bright'
           TabOrder = 3
@@ -301,9 +305,9 @@ object frmSettings: TfrmSettings
         end
         object chkSelectEventsGradientFill: TCheckBox
           Left = 39
-          Top = 94
+          Top = 96
           Width = 238
-          Height = 17
+          Height = 20
           Hint = 'If not checked, use single color to highlight events.'
           Caption = 'Highlight selected event with gradient fill'
           TabOrder = 4
@@ -311,25 +315,25 @@ object frmSettings: TfrmSettings
         end
         object chkGridColor: TCheckBox
           Left = 11
-          Top = 121
-          Width = 134
-          Height = 17
-          Caption = 'Event separator color'
+          Top = 120
+          Width = 181
+          Height = 20
+          Caption = 'Override Event separator color'
           TabOrder = 5
           OnClick = chkGridColorClick
         end
         object chkOverrideSelectedEventColor: TCheckBox
           Left = 11
-          Top = 69
+          Top = 71
           Width = 218
-          Height = 17
-          Caption = 'Override color of the selected event'
+          Height = 20
+          Caption = 'Override color of the selected event:'
           TabOrder = 6
           OnClick = chkOverrideSelectedEventColorClick
         end
         object cmbEventsColorTheme: TComboBox
           Left = 158
-          Top = 167
+          Top = 175
           Width = 243
           Height = 22
           Style = csOwnerDrawFixed
@@ -345,6 +349,53 @@ object frmSettings: TfrmSettings
             'ConEditPlus.Colors.SofterTEventsColors'
             'ConEditPlus.Colors.SofterDarkerTEventsColors'
             'ConEditPlus.Colors.ShadesOfGrayTEventsColors')
+        end
+        object btnResetPlayerBindNameColor: TButton
+          Left = 354
+          Top = 23
+          Width = 73
+          Height = 20
+          Hint = 'Reset color to use it from the selected theme. '
+          Caption = 'Reset color'
+          TabOrder = 8
+          OnClick = btnResetPlayerBindNameColorClick
+        end
+        object btnResetPlayerSpeechBGColor: TButton
+          Left = 354
+          Top = 47
+          Width = 73
+          Height = 20
+          Hint = 'Reset color to use it from the selected theme. '
+          Caption = 'Reset color'
+          TabOrder = 9
+          OnClick = btnResetPlayerSpeechBGColorClick
+        end
+        object Button2: TButton
+          Left = 354
+          Top = 71
+          Width = 73
+          Height = 20
+          Caption = 'Reset color'
+          TabOrder = 10
+          Visible = False
+        end
+        object Button3: TButton
+          Left = 354
+          Top = 96
+          Width = 73
+          Height = 20
+          Caption = 'Reset colors'
+          TabOrder = 11
+          Visible = False
+        end
+        object Button4: TButton
+          Left = 354
+          Top = 120
+          Width = 73
+          Height = 20
+          Caption = 'Reset color'
+          TabOrder = 12
+          Visible = False
         end
       end
     end

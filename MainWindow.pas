@@ -10,11 +10,12 @@ uses
   System.Actions, Vcl.ActnList, System.Generics.Collections, System.TypInfo, xml.VerySimple, System.StrUtils,
   system.Math, Vcl.MPlayer, ConEditPlus.Enums, Winapi.ShellAPI, ConEditPlus.Helpers, Vcl.Clipbrd, system.Rtti,
   ConEditPlus.Clipboard.Helper, ConEditPlus.Templates.Factory, Vcl.AppEvnts, System.Threading,
-  system.DateUtils, vcl.Styles, vcl.Themes, ConEditPlus.Colors;
+  system.DateUtils, vcl.Styles, vcl.Themes, ConEditPlus.Colors, Winapi.DwmApi;
 
 
 type
   TfrmMain = class(TForm)
+
 
     PopupTree: TPopupMenu;
     MenuMain: TMainMenu;
@@ -749,7 +750,7 @@ type
         bUsePlayerBindNameColor,
         bUsePlayerSpeechBGColor,
         bUseCustomHighlightEventColor,
-        bUseCustomGradientHighlightEventColor,
+//        bUseCustomGradientHighlightEventColor,
         bUseCustomGridColor : Boolean;
 
     property bAutoSaveEnabled: Boolean read GetAutoSaveEnabled write SetAutoSaveEnabled;
@@ -812,8 +813,12 @@ type
 var
   frmMain: TfrmMain;
 
+type
+  TListBoxCracker = class(TListBox);
+
 
 implementation
+
 
 {$R *.dfm}
 {$R SoundResources.res} // contains final.mp3
@@ -3211,91 +3216,105 @@ begin
     try
     with MainFormIni do
     begin
-       // Main Form
-       pnlConvoTree.Width  := ReadInteger('frmMain', 'SplitterPosition',pnlConvoTree.Width);
-       Height  := ReadInteger('frmMain', 'Height',Height);
-       Width   := ReadInteger('frmMain', 'Width',Width);
+        // Main Form
+        pnlConvoTree.Width  := ReadInteger('frmMain', 'SplitterPosition',pnlConvoTree.Width);
+        Height  := ReadInteger('frmMain', 'Height',Height);
+        Width   := ReadInteger('frmMain', 'Width',Width);
 
-       if ReadBool('frmMain', 'bMaximized', false) then WindowState := wsMaximized else WindowState := wsNormal;
+        if ReadBool('frmMain', 'bMaximized', false) then WindowState := wsMaximized else WindowState := wsNormal;
 
-       bShowAudioFiles := ReadBool('frmMain', 'bShowAudioFiles', true);
-       mnuShowAudioFiles1.Checked := bShowAudioFiles;
+        bShowAudioFiles := ReadBool('frmMain', 'bShowAudioFiles', true);
+        mnuShowAudioFiles1.Checked := bShowAudioFiles;
 
-       bShowStatusBar := ReadBool('frmMain', 'bShowStatusBar', true);
-       StatusBar.Visible := bShowStatusBar;
-       mnuStatusbar.Checked := bShowStatusBar;
+        bShowStatusBar := ReadBool('frmMain', 'bShowStatusBar', true);
+        StatusBar.Visible := bShowStatusBar;
+        mnuStatusbar.Checked := bShowStatusBar;
 
-       bShowToolbar := ReadBool('frmMain', 'bShowToolbar', true);
-       MainToolBar.Visible := bShowToolbar;
-       mnuToggleMainToolBar.Checked := bShowToolbar;
+        bShowToolbar := ReadBool('frmMain', 'bShowToolbar', true);
+        MainToolBar.Visible := bShowToolbar;
+        mnuToggleMainToolBar.Checked := bShowToolbar;
 
-       bDrawEventIdx := ReadBool('frmMain', 'bDrawEventIdx', true);
-       chkEventIdx.Checked := bDrawEventIdx;
+        bDrawEventIdx := ReadBool('frmMain', 'bDrawEventIdx', true);
+        chkEventIdx.Checked := bDrawEventIdx;
 
 
-       // Settings form
-       ConversationUserName := ReadString('frmMain', 'UserName', strAppTitle);
-       ConFilePath := ReadString('frmMain', 'ConFilePath', '');
-       ConFileBakPath := ReadString('frmMain', 'ConFileBakPath', '');
-       ConFileAudioPath := ReadString('frmMain', 'ConFileAudioPath', '');
+        // Settings form
+        ConversationUserName := ReadString('frmMain', 'UserName', strAppTitle);
+        ConFilePath := ReadString('frmMain', 'ConFilePath', '');
+        ConFileBakPath := ReadString('frmMain', 'ConFileBakPath', '');
+        ConFileAudioPath := ReadString('frmMain', 'ConFileAudioPath', '');
 
-       CurrentTheme := ReadString('frmMain', 'CurrentTheme', TStyleManager.cSystemStyleName);
-       ApplyStyle(CurrentTheme);
+        // Skin/Theme
+        CurrentTheme := ReadString('frmMain', 'CurrentTheme', TStyleManager.cSystemStyleName);
+        ApplyStyle(CurrentTheme);
 
-//                   WriteString('frmMain', 'CurrentTheme', CurrentTheme)
-
-       bHighlightRelatedEvents := ReadBool('frmMain', 'bHighlightRelatedEvents',true);
-       bAskForConvoDelete := ReadBool('frmMain', 'bAskForConvoDelete', true);
-       bAskForEventDelete := ReadBool('frmMain', 'bAskForEventDelete', true);
-       bHglEventWithNoAudio := ReadBool('frmMain', 'bHglEventWithNoAudio', true);
-       bHglEventsGradient := ReadBool('frmMain', 'bHglEventsGradient', true);
-       bFlatToolbar := ReadBool('frmMain', 'bFlatToolbar', false);
+        bHighlightRelatedEvents := ReadBool('frmMain', 'bHighlightRelatedEvents',true);
+        bAskForConvoDelete := ReadBool('frmMain', 'bAskForConvoDelete', true);
+        bAskForEventDelete := ReadBool('frmMain', 'bAskForEventDelete', true);
+        bHglEventWithNoAudio := ReadBool('frmMain', 'bHglEventWithNoAudio', true);
+        bHglEventsGradient := ReadBool('frmMain', 'bHglEventsGradient', true);
+        bFlatToolbar := ReadBool('frmMain', 'bFlatToolbar', false);
           mainToolBar.Flat := bFlatToolbar;
           if bFlatToolbar = true then HeaderControl1.Style := hsFlat else HeaderControl1.Style := hsButtons;
 
-       bAutoSaveEnabled := ReadBool('frmMain', 'bAutoSaveEnabled', false);
-       AutoSaveMinutes := ReadInteger('frmMain', 'AutoSaveMinutes', 5);
-       AutoSaveTimer.Interval := AutoSaveMinutes * 60000;
+        bAutoSaveEnabled := ReadBool('frmMain', 'bAutoSaveEnabled', false);
+        AutoSaveMinutes := ReadInteger('frmMain', 'AutoSaveMinutes', 5);
+        AutoSaveTimer.Interval := AutoSaveMinutes * 60000;
 
-       clrHighlightEvent := ReadInteger('frmMain', 'clrHighlightEvent', 16767927);
-       clrHighlightEventFrom := ReadInteger('frmMain', 'clrHighlightEventFrom', 16767927);
-       clrHighlightEventTo := ReadInteger('frmMain', 'clrHighlightEventTo', 16777215);
-       clrGrid := ReadInteger('frmMain', 'clrGrid',  clGray);
+        clPlayerBindNameColor := ReadInteger('frmMain', 'clPlayerBindNameColor', clNavy);
+        clPlayerSpeechBGColor := ReadInteger('frmMain', 'clPlayerSpeechBGColor', clMoneyGreen);
+        clrHighlightEvent := ReadInteger('frmMain', 'clrHighlightEvent', 16767927);
+        clrHighlightEventFrom := ReadInteger('frmMain', 'clrHighlightEventFrom', 16767927);
+        clrHighlightEventTo := ReadInteger('frmMain', 'clrHighlightEventTo', 16777215);
+        clrGrid := ReadInteger('frmMain', 'clrGrid',  clGray);
 
-       bUse3DSelectionFrame := ReadBool('frmMain', 'bUse3DSelectionFrame', true);
-       bUseWhiteSelectedText := ReadBool('frmMain', 'bUseWhiteSelectedText', false);
+        bUsePlayerBindNameColor := ReadBool('frmMain','bUsePlayerBindNameColor', False);
+        bUsePlayerSpeechBGColor := ReadBool('frmMain','bUsePlayerSpeechBGColor',False);
+        bUseCustomHighlightEventColor := ReadBool('frmMain','bUseCustomHighlightEventColor',False);
+        //bUseCustomGradientHighlightEventColor := ReadBool('frmMain','bUseCustomGradientHighlightEventColor',False);
+        bUseCustomGridColor := ReadBool('frmMain','bUseCustomGridColor', False);
 
-       bUseLogging := ReadBool('frmMain', 'bUseLogging', false);
+        bUseWhiteSelectedText := ReadBool('frmMain', 'bUseWhiteSelectedText', false);
 
-       clPlayerBindNameColor := ReadInteger('frmMain', 'clPlayerBindNameColor', clNavy);
-       bUsePlayerBindNameColor := ReadBool('frmMain', 'bUsePlayerBindNameColor', True);
+        // ConEventList theme
+        var TempEventListColors := ReadString('frmMain', 'EventListColors', ELC_DEFAULT);
 
-       bVerifyEventLabel := ReadBool('frmMain', 'bVerifyEventLabel', True); // проверять правильность метки события илити нет?
+        if TempEventListColors = ELC_DEFAULT then
+            EventListColors := ConEditPlus.Colors.DefaultTEventsColors
+        else if TempEventListColors = ELC_SOFTER then
+            EventListColors := ConEditPlus.Colors.SofterTEventsColors
+        else if TempEventListColors = ELC_SOFTER_DARKER then
+            EventListColors := ConEditPlus.Colors.SofterDarkerTEventsColors
+        else if TempEventListColors = ELC_SHADES_OF_GRAY then
+            EventListColors := ConEditPlus.Colors.ShadesOfGrayTEventsColors;
+        // end of ConEventList theme
 
-       clPlayerSpeechBGColor := ReadInteger('frmMain', 'clPlayerSpeechBGColor', clMoneyGreen);
-       bUsePlayerSpeechBGColor := ReadBool('frmMain', 'bUsePlayerSpeechBGColor', True);
 
-       ReorderModKey := TReorderEventsModKey(ReadInteger('frmMain', 'ReorderModKey', 0));
+        bUse3DSelectionFrame := ReadBool('frmMain', 'bUse3DSelectionFrame', true);
+        bUseLogging := ReadBool('frmMain', 'bUseLogging', false);
+        bVerifyEventLabel := ReadBool('frmMain', 'bVerifyEventLabel', True); // проверять правильность метки события илити нет?
 
-       btnReorder.Hint := GetReorderButtonHint(); // Update button tooltip
+        ReorderModKey := TReorderEventsModKey(ReadInteger('frmMain', 'ReorderModKey', 0));
 
-       // up to 8 recent files
-       for var i := 0 to CEP_MAX_RECENT_FILES do
-       begin
-           RecentFiles[i] := ReadString('RecentFiles', 'RecentFile'+i.ToString , '');
-           mniRecent.Items[i].Caption := RecentFiles[i];
-       end;
+        btnReorder.Hint := GetReorderButtonHint(); // Update button tooltip
 
-       OpenFileFilterIndex := ReadInteger('OpenFileDialog', 'OpenFileFilterIndex', 1);
-       SaveFileFilterIndex := ReadInteger('SaveFileDialog', 'SaveFileFilterIndex', 2);
+        // up to 8 recent files
+        for var i := 0 to CEP_MAX_RECENT_FILES do
+        begin
+            RecentFiles[i] := ReadString('RecentFiles', 'RecentFile'+i.ToString , '');
+            mniRecent.Items[i].Caption := RecentFiles[i];
+        end;
+
+        OpenFileFilterIndex := ReadInteger('OpenFileDialog', 'OpenFileFilterIndex', 1);
+        SaveFileFilterIndex := ReadInteger('SaveFileDialog', 'SaveFileFilterIndex', 2);
 
 
         bEnableDblClickTreeFlag := ReadBool('frmMain', 'bEnableDblClickTreeFlag', True);
 
         // Events List header
-        HeaderControl1.Sections[0].Width := ReadInteger('frmMain', 'HeaderControl1.Sections[0].Width', 150);
-        HeaderControl1.Sections[1].Width := ReadInteger('frmMain', 'HeaderControl1.Sections[1].Width', 150);
-        HeaderControl1.Sections[2].Width := ReadInteger('frmMain', 'HeaderControl1.Sections[2].Width', 500);
+        HeaderControl1.Sections[0].Width := ReadInteger('frmMain', 'HeaderControl1.Sections[0].Width', CLH_WIDTH_COL1);
+        HeaderControl1.Sections[1].Width := ReadInteger('frmMain', 'HeaderControl1.Sections[1].Width', CLH_WIDTH_COL2);
+        HeaderControl1.Sections[2].Width := ReadInteger('frmMain', 'HeaderControl1.Sections[2].Width', CLH_WIDTH_COL3);
     end;
 
     finally
@@ -3325,6 +3344,20 @@ begin
             WriteString('frmMain', 'ConFileAudioPath', ConFileAudioPath);
             WriteString('frmMain', 'CurrentTheme', CurrentTheme);
 
+
+            // ConEventList theme
+            if EventListColors = ConEditPlus.Colors.DefaultTEventsColors then
+                WriteString('frmMain', 'EventListColors', ELC_DEFAULT)
+            else if EventListColors = ConEditPlus.Colors.SofterTEventsColors then
+                WriteString('frmMain', 'EventListColors', ELC_SOFTER)
+            else if EventListColors = ConEditPlus.Colors.SofterDarkerTEventsColors then
+                WriteString('frmMain', 'EventListColors', ELC_SOFTER_DARKER)
+            else if EventListColors = ConEditPlus.Colors.ShadesOfGrayTEventsColors then
+                WriteString('frmMain', 'EventListColors', ELC_SHADES_OF_GRAY);
+            // end of ConEventList theme
+
+
+
             WriteBool('frmMain', 'bHighlightRelatedEvents', bHighlightRelatedEvents);
             WriteBool('frmMain', 'bAskForConvoDelete', bAskForConvoDelete);
             WriteBool('frmMain', 'bAskForEventDelete', bAskForEventDelete);
@@ -3346,7 +3379,7 @@ begin
 
             WriteBool('frmMain', 'bUse3DSelectionFrame', bUse3DSelectionFrame);
             WriteBool('frmMain', 'bUseWhiteSelectedText', bUseWhiteSelectedText);
-            WriteBool('frmMain', 'bVerifyEventLabel', bVerifyEventLabel); // проверять правильность метки события илити нет?
+            WriteBool('frmMain', 'bVerifyEventLabel', bVerifyEventLabel); // проверять правильность метки события или нет?
 
             WriteBool('frmMain', 'bUseLogging', bUseLogging);
 
@@ -3365,6 +3398,13 @@ begin
             WriteInteger('frmMain', 'HeaderControl1.Sections[0].Width', HeaderControl1.Sections[0].Width);
             WriteInteger('frmMain', 'HeaderControl1.Sections[1].Width', HeaderControl1.Sections[1].Width);
             WriteInteger('frmMain', 'HeaderControl1.Sections[2].Width', HeaderControl1.Sections[2].Width);
+
+            // Новые параметры
+            WriteBool('frmMain','bUsePlayerBindNameColor',bUsePlayerBindNameColor);
+            WriteBool('frmMain','bUsePlayerSpeechBGColor',bUsePlayerSpeechBGColor);
+            WriteBool('frmMain','bUseCustomHighlightEventColor',bUseCustomHighlightEventColor);
+            //WriteBool('frmMain','bUseCustomGradientHighlightEventColor',bUseCustomGradientHighlightEventColor);
+            WriteBool('frmMain','bUseCustomGridColor',bUseCustomGridColor);
         end;
 
     finally
@@ -5742,8 +5782,11 @@ end;
 
 procedure TfrmMain.ConEventListKeyPress(Sender: TObject; var Key: Char);
 begin
-    if (Key = #32) and (CurrentEvent is TConEventSpeech) and (frmEventInsAdd.Visible = True) then
+    if (Key = #32) and (CurrentEvent is TConEventSpeech) then // and (frmEventInsAdd.Visible = True) then
     begin
+        if frmEventInsAdd.Visible = False then
+            ConEventListDblClick(Sender); // Open window
+
         frmEventInsAdd.btnPlayAudioFile.Click();
     end;
 end;
@@ -7778,6 +7821,7 @@ begin
 
     UpdateEventListHeights();
     UpdateEventListFixedHeights();
+
     ToggleEventIdx();
     SetEventsListScrollbars();
 
