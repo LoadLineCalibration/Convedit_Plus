@@ -3,7 +3,7 @@
 Deus Ex conversation editor (ConEdit/ConvEdit) remake in Delphi Language (Pascal). 
 
 ToDo list:
-* Full support for dark mode/customizable colors
+* ~Full support for dark mode/customizable colors~
 * Fix bugs and exceptions, write error handling for all possible cases
 * ~AutoSave~
 * ~Only unique event labels~
@@ -18,6 +18,8 @@ ToDo list:
 
 
 Known bugs I have not fixed yet:
+* Event filter is not perfect, I have to use items with height set to 1 pixel, to "hide" them. Maybe I will use TDrawGrid or some other control in the future.
+* Changing application theme/skin leads to empty events list. Temporary solution: change theme only if no conversation selected in the tree.
 * ~Duplication of Choice leads to "sync" editing of both events. This is because the copy contains pointers to nested objects from an original event.~
 * Should be fixed starting from beta 7. ~For unknown reason (at least at the moment), the original ConEdit refuses to load some files, saved or created in ConEditPlus. These files, however, do work just fine in-game, and can be decompiled with DEED. I suppose this due to some "unknown" fields in  the .con files.~
 
