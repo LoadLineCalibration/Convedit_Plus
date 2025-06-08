@@ -2612,8 +2612,16 @@ begin
         id := ConversationsList.IndexOfItem(AIBarksConvo, TList.TDirection.FromBeginning); // set id from list
 
         conDescription := strConvoDescGenerated;
+
+        //conCreatedByDate:  // Автоматически добавляется в конструкторе
+        conCreatedByName := ConversationUserName; // Начальное значение
+
+        //conModifiedByDate:
+        conModifiedByName := ConversationUserName; // Изменится когда диалог будет обновлён
+
+
         conNotes := strConvoNotesGenerated;
-        conName := 'GeneratedConversation' + ConEditPlus.Helpers.GenerateRandomSuffix(); // Generate random?
+        conName := 'GeneratedConversation' + ConEditPlus.Helpers.GenerateRandomSuffix(6); // Generate random
 
         conOwnerIndex:= ConvoOwnerIdx;
         conOwnerName:= ConvoOwnerName;

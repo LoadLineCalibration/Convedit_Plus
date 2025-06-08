@@ -12,7 +12,7 @@ uses
 // functions
 function ValidateFName(const AString: string): Boolean;
 function GetDPIAsRatio(): Single;
-function GenerateRandomSuffix(): string;
+function GenerateRandomSuffix(Count: Integer = 3): string;
 function FormatConversationDetails(const Conversation: TConversation): string;
 
 // procedures
@@ -74,13 +74,13 @@ begin
     ReleaseDC(0, DC);
 end;
 
-function GenerateRandomSuffix(): string;
+function GenerateRandomSuffix(Count: Integer = 3): string;
+const
+    Chars: string = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 begin
-    Randomize();
     Result := '_';
-
-    for var i := 1 to 3 do
-        Result := Result + Chr(Ord('a') + Random(26));
+    for var i := 1 to Count do
+        Result := Result + Chars[Random(Length(Chars)) + 1];
 end;
 
 function FormatConversationDetails(const Conversation: TConversation): string;
