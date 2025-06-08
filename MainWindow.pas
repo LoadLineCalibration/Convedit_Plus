@@ -374,6 +374,24 @@ type
     FileExport: TAction;
     Exportastext1: TMenuItem;
     N17: TMenuItem;
+    With3Speechevents1: TMenuItem;
+    With4Speechevents1: TMenuItem;
+    With5Speechevents1: TMenuItem;
+    With6Speechevents1: TMenuItem;
+    With6Speechevents2: TMenuItem;
+    With8Speechevents1: TMenuItem;
+    With9Speechevents1: TMenuItem;
+    With10Speechevents1: TMenuItem;
+    With11Speechevents1: TMenuItem;
+    N39: TMenuItem;
+    With4Speechevents2: TMenuItem;
+    With5Speechevents2: TMenuItem;
+    With6Speechevents3: TMenuItem;
+    With7Speechevents1: TMenuItem;
+    With8Speechevents2: TMenuItem;
+    With9Speechevents2: TMenuItem;
+    With10Speechevents2: TMenuItem;
+    With11Speechevents2: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -530,7 +548,7 @@ type
 
     procedure CopyChoiceMp3Path(ChoiceMP3CopyMode: TChoiceMP3CopyMode; idx: Integer);
 
-    procedure CreateAIBarksExample(bBarkFutz: Boolean);
+    procedure CreateAIBarksExample(bBarkFutz: Boolean; SpeechCount: Integer = 3);
 
     procedure ExportConversationAsText(const filename: string);
 
@@ -2580,22 +2598,18 @@ begin
     end;
 end;
 
-procedure TfrmMain.CreateAIBarksExample(bBarkFutz: Boolean);
+procedure TfrmMain.CreateAIBarksExample(bBarkFutz: Boolean; SpeechCount: Integer = 3);
 begin
     // Initial setup
     var ConvoOwnerName: string;
     var OwnerNode: TTreeNode;
     var JCDentonIdx := FindTableIdByName(TM_ActorsPawns, PLAYER_BINDNAME); // Find conversation owner ID in the table
 
-    if bBarkFutz = True then
+    if (bBarkFutz = True) and (JCDentonIdx = -1) then
     begin
-        if JCDentonIdx = -1 then
-        begin
-            MessageBox(Handle, PChar(strAddPlayerFirst), PChar(strWarningTitle), MB_OK + MB_ICONWARNING + MB_TOPMOST);
-            Exit();
-        end;
+        MessageBox(Handle, PChar(strAddPlayerFirst), PChar(strWarningTitle), MB_OK + MB_ICONWARNING + MB_TOPMOST);
+        Exit();
     end;
-
 
     OwnerNode := ConvoTree.Selected;
 
@@ -2603,25 +2617,28 @@ begin
         OwnerNode := OwnerNode.Parent;
 
     ConvoOwnerName := OwnerNode.Text;
-
     var ConvoOwnerIdx := FindTableIdByName(TM_ActorsPawns, ConvoOwnerName); // Find conversation owner ID in the table
+
     var AIBarksConvo := TConversation.Create(); // Create TConversation object
     with AIBarksConvo do
     begin
-        ConversationsList.Add(AIBarksConvo); // Add to list
+        ConversationsList.Add(AIBarksConvo); // Add new to the list
         id := ConversationsList.IndexOfItem(AIBarksConvo, TList.TDirection.FromBeginning); // set id from list
 
         conDescription := strConvoDescGenerated;
 
-        //conCreatedByDate:  // Автоматически добавляется в конструкторе
         conCreatedByName := ConversationUserName; // Начальное значение
-
-        //conModifiedByDate:
         conModifiedByName := ConversationUserName; // Изменится когда диалог будет обновлён
 
-
         conNotes := strConvoNotesGenerated;
-        conName := 'GeneratedConversation' + ConEditPlus.Helpers.GenerateRandomSuffix(6); // Generate random
+
+        if bBarkFutz = True then
+        begin
+            var temp := Copy(GetEnumName(TypeInfo(TBarkModes), Ord(BM_BarkFutz)), 3, MaxInt); // Just don't use hardcoded string, okay?
+            conName := ConEditPlus.Consts.GENERATED_CONVO + temp + ConEditPlus.Helpers.GenerateRandomSuffix(6) // Generate random
+        end
+            else
+        conName := ConEditPlus.Consts.GENERATED_CONVO + ConEditPlus.Helpers.GenerateRandomSuffix(6); // Generate random
 
         conOwnerIndex:= ConvoOwnerIdx;
         conOwnerName:= ConvoOwnerName;
@@ -2639,10 +2656,64 @@ begin
         distance        := 0;
 
         // Now events...
-        numEventList:= 8;
+        {numEventList:= 8;
         unknown0 := 8;
-        SetLength(Events, 8);
+        SetLength(Events, 8);}
+                // Гибкая генерация событий
+        numEventList := 1 + SpeechCount * 2;  // 1 Random + (Speech + End) * SpeechCount
+        unknown0 := numEventList;
+        SetLength(Events, numEventList);
 
+        Events[0] := TConEventRandom.Create();
+        with Events[0] as TConEventRandom do
+        begin
+            bCycle := True;
+            bCycleOnce := False;
+            bCycleRandom := True;
+            numLabels := SpeechCount;
+            SetLength(GoToLabels, numLabels);
+            for var i := 0 to SpeechCount - 1 do
+                GoToLabels[i] := Format('Label%d', [i + 1]);
+        end;
+
+        for var i := 0 to SpeechCount - 1 do
+        begin
+            // Speech Event
+            Events[1 + i * 2] := TConEventSpeech.Create();
+            with Events[1 + i * 2] as TConEventSpeech do
+            begin
+                EventLabel := Format('Label%d', [i + 1]);
+                //TextLine   := Format('Speech Text Example %d', [i + 1]);
+                var JokeIdx := Random(Length(ConEditPlus.Consts.AIBarkJokes));
+
+                if bBarkFutz = True then
+                    TextLine := ConEditPlus.Consts.AIBarkFutz[JokeIdx]
+                else
+                    TextLine := ConEditPlus.Consts.AIBarkJokes[JokeIdx];
+
+                ActorIndex := AIBarksConvo.conOwnerIndex;
+                ActorValue := AIBarksConvo.conOwnerName;
+
+                if bBarkFutz = True then
+                begin
+                    ActorToIndex := JCDentonIdx;
+                    ActorToValue := PLAYER_BINDNAME;
+                end
+                else
+                begin
+                    ActorToIndex := AIBarksConvo.conOwnerIndex;
+                    ActorToValue := AIBarksConvo.conOwnerName;
+                end;
+            end;
+
+            // End Event
+            Events[2 + i * 2] := TConEventEnd.Create();
+        end;
+    end;
+
+
+
+        {
         Events[0] := TConEventRandom.Create(); // Create TConEventRandom
         with Events[0] as TConEventRandom do
         begin
@@ -2728,7 +2799,9 @@ begin
         end;
 
         Events[7] := TConEventEnd.Create(); // create End event
-    end;
+        }
+//    end;
+
 
     ConEditPlus.Helpers.SetConversationEventsIdx(AIBarksConvo);
 
@@ -6046,7 +6119,8 @@ procedure TfrmMain.Conversation_Create_AIBarkFutz_TemplateExecute(Sender: TObjec
 begin
     if MessageBox(Handle, PChar(strAskToAddAIBarkFutzExample), PChar(strQuiestion), MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = ID_YES then
     begin
-        CreateAIBarksExample(True);
+        var NumSpeechEvents := (Sender as TMenuItem).Tag;
+        CreateAIBarksExample(True, NumSpeechEvents);
     end;
 end;
 
@@ -6054,7 +6128,8 @@ procedure TfrmMain.Conversation_Create_AIBark_TemplateExecute(Sender: TObject);
 begin
     if MessageBox(Handle, PChar(strAskToAddAIBarksExample), PChar(strQuiestion), MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = ID_YES then
     begin
-        CreateAIBarksExample(False);
+        var NumSpeechEvents := (Sender as TMenuItem).Tag;
+        CreateAIBarksExample(False, NumSpeechEvents);
     end;
 end;
 

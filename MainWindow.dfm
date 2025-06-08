@@ -6204,10 +6204,120 @@ object frmMain: TfrmMain
     object AddTemplateConversation1: TMenuItem
       Caption = 'Add...'
       object AddAIBarktemplateconversation1: TMenuItem
-        Action = Conversation_Create_AIBark_Template
+        Caption = 'Template for AI Barks'
+        ImageIndex = 18
+        object With3Speechevents1: TMenuItem
+          Tag = 3
+          Caption = 'With 3 Speech Events'
+          ImageIndex = 18
+          OnClick = Conversation_Create_AIBark_TemplateExecute
+        end
+        object With4Speechevents1: TMenuItem
+          Tag = 4
+          Caption = 'With 4 Speech Events'
+          ImageIndex = 18
+          OnClick = Conversation_Create_AIBark_TemplateExecute
+        end
+        object With5Speechevents1: TMenuItem
+          Tag = 5
+          Caption = 'With 5 Speech Events'
+          ImageIndex = 18
+          OnClick = Conversation_Create_AIBark_TemplateExecute
+        end
+        object With6Speechevents1: TMenuItem
+          Tag = 6
+          Caption = 'With 6 Speech Events'
+          ImageIndex = 18
+          OnClick = Conversation_Create_AIBark_TemplateExecute
+        end
+        object With6Speechevents2: TMenuItem
+          Tag = 7
+          Caption = 'With 7 Speech Events'
+          ImageIndex = 18
+          OnClick = Conversation_Create_AIBark_TemplateExecute
+        end
+        object With8Speechevents1: TMenuItem
+          Tag = 8
+          Caption = 'With 8 Speech Events'
+          ImageIndex = 18
+          OnClick = Conversation_Create_AIBark_TemplateExecute
+        end
+        object With9Speechevents1: TMenuItem
+          Tag = 9
+          Caption = 'With 9 Speech Events'
+          ImageIndex = 18
+          OnClick = Conversation_Create_AIBark_TemplateExecute
+        end
+        object With10Speechevents1: TMenuItem
+          Tag = 10
+          Caption = 'With 10 Speech Events'
+          ImageIndex = 18
+          OnClick = Conversation_Create_AIBark_TemplateExecute
+        end
+        object With11Speechevents1: TMenuItem
+          Tag = 11
+          Caption = 'With 11 Speech Events'
+          ImageIndex = 18
+          OnClick = Conversation_Create_AIBark_TemplateExecute
+        end
       end
       object emplateforAIBarkFutz1: TMenuItem
-        Action = Conversation_Create_AIBarkFutz_Template
+        Caption = 'Template for AI BarkFutz'
+        ImageIndex = 17
+        object N39: TMenuItem
+          Tag = 3
+          Caption = 'With 3 Speech Events'
+          ImageIndex = 17
+          OnClick = Conversation_Create_AIBarkFutz_TemplateExecute
+        end
+        object With4Speechevents2: TMenuItem
+          Tag = 4
+          Caption = 'With 4 Speech Events'
+          ImageIndex = 17
+          OnClick = Conversation_Create_AIBarkFutz_TemplateExecute
+        end
+        object With5Speechevents2: TMenuItem
+          Tag = 5
+          Caption = 'With 5 Speech Events'
+          ImageIndex = 17
+          OnClick = Conversation_Create_AIBarkFutz_TemplateExecute
+        end
+        object With6Speechevents3: TMenuItem
+          Tag = 6
+          Caption = 'With 6 Speech Events'
+          ImageIndex = 17
+          OnClick = Conversation_Create_AIBarkFutz_TemplateExecute
+        end
+        object With7Speechevents1: TMenuItem
+          Tag = 7
+          Caption = 'With 7 Speech Events'
+          ImageIndex = 17
+          OnClick = Conversation_Create_AIBarkFutz_TemplateExecute
+        end
+        object With8Speechevents2: TMenuItem
+          Tag = 8
+          Caption = 'With 8 Speech Events'
+          ImageIndex = 17
+          OnClick = Conversation_Create_AIBarkFutz_TemplateExecute
+        end
+        object With9Speechevents2: TMenuItem
+          Tag = 9
+          Caption = 'With 9 Speech Events'
+          ImageIndex = 17
+          OnClick = Conversation_Create_AIBarkFutz_TemplateExecute
+        end
+        object With10Speechevents2: TMenuItem
+          Tag = 10
+          Caption = 'With 10 Speech Events'
+          ImageIndex = 17
+          OnClick = Conversation_Create_AIBarkFutz_TemplateExecute
+        end
+        object With11Speechevents2: TMenuItem
+          Tag = 11
+          Caption = 'With 11 Speech Events'
+          ImageIndex = 17
+          OnClick = Conversation_Create_AIBarkFutz_TemplateExecute
+        end
       end
     end
     object Delete2: TMenuItem
@@ -9954,16 +10064,14 @@ object frmMain: TfrmMain
       OnExecute = Event_BrowseToExecute
     end
     object Conversation_Create_AIBark_Template: TAction
-      Category = 'Conversation'
+      Category = 'Templates'
       Caption = 'Template for AI Barks'
       ImageIndex = 18
-      OnExecute = Conversation_Create_AIBark_TemplateExecute
     end
     object Conversation_Create_AIBarkFutz_Template: TAction
-      Category = 'Conversation'
+      Category = 'Templates'
       Caption = 'Template for AI BarkFutz'
       ImageIndex = 17
-      OnExecute = Conversation_Create_AIBarkFutz_TemplateExecute
     end
     object FileExport: TAction
       Category = 'File'
