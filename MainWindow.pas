@@ -392,6 +392,8 @@ type
     With9Speechevents2: TMenuItem;
     With10Speechevents2: TMenuItem;
     With11Speechevents2: TMenuItem;
+    Event_RemoveRefences: TAction;
+    Deleteandremovelabelreferences1: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -484,7 +486,9 @@ type
     procedure AddLog(msg: string);
 
     procedure DeleteCurrentEvent();
+    procedure RemoveLabelRefs();
     procedure DeleteCurrentConversation();
+
 
     procedure CreateObjectLists();
 
@@ -710,6 +714,7 @@ type
     procedure Setfilter1Click(Sender: TObject);
     procedure btnApplyFilterClick(Sender: TObject);
     procedure FileExportExecute(Sender: TObject);
+    procedure Event_RemoveRefencesExecute(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -3663,6 +3668,7 @@ begin
         begin
             var bHasMP3String:= True;
 
+            //for var d:= 0 to Length(EventChoice.Choices) -1 do
             for var d:= 0 to EventChoice.NumChoices -1 do
             begin
                 if EventChoice.Choices[d].mp3 = '' then
@@ -6412,6 +6418,39 @@ begin
     frmMain.bFileModified := True;
 end;
 
+procedure TfrmMain.RemoveLabelRefs();
+begin
+    if CurrentEvent = Nil then Exit();
+
+    var LabelToRemove := CurrentEvent.EventLabel;
+
+    if LabelToRemove = '' then
+    begin
+        MessageBox(Handle, 'This event has no label!', 'Info', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+        Exit();
+    end;
+    for var Event in CurrentConversation.Events do
+    begin
+        if Event is TConEventChoice then
+        begin
+            var ChoiceEvent := TConEventChoice(Event);
+            // »дЄм с конца, чтобы не пропускать смещЄнные элементы!
+            for var i := High(ChoiceEvent.Choices) downto 0 do
+            begin
+                if UpperCase(ChoiceEvent.Choices[i].GoToLabel) = UpperCase(LabelToRemove) then
+                begin
+                    ChoiceEvent.Choices[i].Free(); // Free and remove from array
+                    for var j := i to High(ChoiceEvent.Choices) - 1 do
+                        ChoiceEvent.Choices[j] := ChoiceEvent.Choices[j + 1];
+                    ChoiceEvent.NumChoices := Length(ChoiceEvent.Choices) -1;
+                    SetLength(ChoiceEvent.Choices, Length(ChoiceEvent.Choices) - 1);
+                end;
+            end;
+        end;
+    end;
+    bFileModified := True;
+end;
+
 procedure TfrmMain.CheckDpiRatioClick(Sender: TObject);
 begin
     var TestString: string;
@@ -6632,6 +6671,16 @@ begin
     PasteEventFromClipboard();
 
     bFileModified := True;
+end;
+
+procedure TfrmMain.Event_RemoveRefencesExecute(Sender: TObject);
+begin
+    if MessageBox(Handle,
+        'Are you sure you want to remove all references to this eventТs label?',
+        '?', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
+    begin
+        RemoveLabelRefs();
+    end;
 end;
 
 procedure TfrmMain.Exit1Click(Sender: TObject);

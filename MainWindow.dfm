@@ -6783,7 +6783,10 @@ object frmMain: TfrmMain
     end
     object Delete1: TMenuItem
       Action = Event_Delete
-      ImageIndex = 5
+    end
+    object Deleteandremovelabelreferences1: TMenuItem
+      Action = Event_RemoveRefences
+      Visible = False
     end
     object N11: TMenuItem
       Caption = '-'
@@ -10008,7 +10011,7 @@ object frmMain: TfrmMain
       Category = 'Events'
       Caption = 'Delete'
       Hint = 'Delete selected event'
-      ImageIndex = 4
+      ImageIndex = 5
       OnExecute = Event_DeleteExecute
     end
     object ShowOptions: TAction
@@ -10077,6 +10080,11 @@ object frmMain: TfrmMain
       Category = 'File'
       Caption = 'Export as text...'
       OnExecute = FileExportExecute
+    end
+    object Event_RemoveRefences: TAction
+      Category = 'Events'
+      Caption = 'Remove label references to this event'
+      OnExecute = Event_RemoveRefencesExecute
     end
   end
   object FileSaveDialog: TFileSaveDialog

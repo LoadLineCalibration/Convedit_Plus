@@ -219,7 +219,6 @@ const AIBarkJokes: array[0..99] of string =
     'This place needs better lighting.',
     'If this is the future, I''d like a refund.'
 );
-
 const AIBarkFutz: array[0..99] of string =
 (
     'Did you just throw a chair at me?',
@@ -323,7 +322,6 @@ const AIBarkFutz: array[0..99] of string =
     'No more jokes about nano-viruses.',
     'Yes, that was weird. Very weird.'
 );
-
 
 
 
