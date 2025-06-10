@@ -679,7 +679,7 @@ ResourceString // These strings can be translated.
     strCheckConditionGreaterThan = ' greater than or equial to (>=)';
     strCheckConditionGreater = ' greater than (>) ';
 
-    strJumpToLabel = 'then JumpToLabel: ';
+    strJumpToLabel = ' then JumpToLabel: ';
     // end of strings for "Check Persona" event
 
 
