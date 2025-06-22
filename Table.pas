@@ -58,6 +58,8 @@ type
     procedure RenameSkill(renameFrom: string; renameTo: string);
     procedure RenameObject(renameFrom: string; renameTo: string);
 
+    procedure SaveAndRestoreComboBoxSelection(cmb: TComboBox; newItems: TStrings);
+
     procedure editTableKeyPress(Sender: TObject; var Key: Char);
     procedure btnCloseClick(Sender: TObject);
     procedure lstTableContentsClick(Sender: TObject);
@@ -327,13 +329,19 @@ begin
 
             if frmEventInsAdd.Visible = True then
             begin
-                frmEventInsAdd.cmbSpeakingFrom.Items.Assign(lstTableContents.Items);
+                SaveAndRestoreComboBoxSelection(frmEventInsAdd.cmbSpeakingFrom, lstTableContents.Items);
+                SaveAndRestoreComboBoxSelection(frmEventInsAdd.cmbSpeakingTo, lstTableContents.Items);
+                SaveAndRestoreComboBoxSelection(frmEventInsAdd.cmbTransferObjectTo, lstTableContents.Items);
+                SaveAndRestoreComboBoxSelection(frmEventInsAdd.cmbTransferObjectFrom, lstTableContents.Items);
+                SaveAndRestoreComboBoxSelection(frmEventInsAdd.cmbPawnToAnimate, lstTableContents.Items);
+
+                {frmEventInsAdd.cmbSpeakingFrom.Items.Assign(lstTableContents.Items);
                 frmEventInsAdd.cmbSpeakingTo.Items.Assign(lstTableContents.Items);
 
                 frmEventInsAdd.cmbTransferObjectTo.Items.Assign(lstTableContents.Items);
                 frmEventInsAdd.cmbTransferObjectFrom.Items.Assign(lstTableContents.Items);
 
-                frmEventInsAdd.cmbPawnToAnimate.Items.Assign(lstTableContents.Items);
+                frmEventInsAdd.cmbPawnToAnimate.Items.Assign(lstTableContents.Items);}
             end;
         end;
 
@@ -935,6 +943,30 @@ begin
     btnAddItemClick(self);
 end;
 
+procedure TfrmTableEdit.SaveAndRestoreComboBoxSelection(cmb: TComboBox; newItems: TStrings);
+var
+    savedValue: string;
+    newIndex: Integer;
+begin
+    // Запоминаем текущий выбранный элемент как строку
+    if cmb.ItemIndex >= 0 then
+        savedValue := cmb.Items[cmb.ItemIndex]
+    else
+        savedValue := '';
+
+    // Обновляем список
+    cmb.Items.Assign(newItems);
+
+    // Пытаемся восстановить выбранный элемент по строке
+    if savedValue <> '' then
+    begin
+        newIndex := cmb.Items.IndexOf(savedValue);
+        cmb.ItemIndex := newIndex;
+    end
+    else
+        cmb.ItemIndex := 0; // -1 вызовет исключение, ставим нулевой Item
+end;
+
 procedure TfrmTableEdit.SendTableDataBack(); // Send data back to listbox, editbox, etc.
 var
     idx, current: Integer;
@@ -947,7 +979,8 @@ begin
        idx := TListBox(TableItemreceiver).ItemIndex;
        TListBox(TableItemreceiver).Items[idx] := lstTableContents.Items[current];
     end;
-    {else }if TableItemReceiver is TComboBox then
+    {else }
+    if TableItemReceiver is TComboBox then
     begin
         var cmbReceiver := TComboBox(TableItemReceiver);
 
@@ -979,10 +1012,10 @@ begin
 
 
     case TableMode of
-      TM_ActorsPawns: RenameActor(renameFrom, renameTo);
-      TM_Flags:       RenameFlag(renameFrom, renameTo);
-      TM_Skills:      RenameSkill(renameFrom, renameTo);
-      TM_Objects:     RenameObject(renameFrom, renameTo);
+        TM_ActorsPawns: RenameActor(renameFrom, renameTo);
+        TM_Flags:       RenameFlag(renameFrom, renameTo);
+        TM_Skills:      RenameSkill(renameFrom, renameTo);
+        TM_Objects:     RenameObject(renameFrom, renameTo);
     end;
 
     //ShowMessage('From: ' + renameFrom + ' To: ' + renameTo);

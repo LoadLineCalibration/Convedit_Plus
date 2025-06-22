@@ -487,6 +487,8 @@ ResourceString // These strings can be translated.
     strAudioFileNotFound = 'Audio file NOT found:'  + #13#10 + #13#10 + '"%s"'
                          + #13#10 + #13#10 + 'Please make sure your file exists and you used the correct path in the program options.';
 
+    strAudioPathNotFound = 'Cannot find Audio directory! (%s)';
+
     strAskDeleteEventText = 'Are you sure you wish to Delete this event?';
     strAskDeleteEventTitle = 'Delete?';
 
@@ -598,6 +600,7 @@ ResourceString // These strings can be translated.
     strErrorTitle = 'Error!';
     strWarningTitle = 'Warning!';
     strQuiestion = 'Confirm?';
+    strInformation = 'Information';
 
     // Error messages when trying to save file
     strSaveError = 'Error saving file (%s):' + #13#10 +'%s';

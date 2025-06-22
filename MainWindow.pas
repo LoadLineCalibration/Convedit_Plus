@@ -10,12 +10,12 @@ uses
   System.Actions, Vcl.ActnList, System.Generics.Collections, System.TypInfo, xml.VerySimple, System.StrUtils,
   system.Math, Vcl.MPlayer, ConEditPlus.Enums, Winapi.ShellAPI, ConEditPlus.Helpers, Vcl.Clipbrd, system.Rtti,
   ConEditPlus.Clipboard.Helper, ConEditPlus.Templates.Factory, Vcl.AppEvnts, System.Threading,
-  system.DateUtils, vcl.Styles, vcl.Themes, ConEditPlus.Colors, Winapi.DwmApi;
+  system.DateUtils, vcl.Styles, vcl.Themes, ConEditPlus.Colors, ConEditPlus.ShellContextMenuHelper,
+  ConEditPlus.IniExporter;
 
 
 type
   TfrmMain = class(TForm)
-
 
     PopupTree: TPopupMenu;
     MenuMain: TMainMenu;
@@ -394,6 +394,19 @@ type
     With11Speechevents2: TMenuItem;
     Event_RemoveRefences: TAction;
     Deleteandremovelabelreferences1: TMenuItem;
+    Exportasini1: TMenuItem;
+    Exportasinifiltered1: TMenuItem;
+    OpenDirWithCurrentFile: TAction;
+    N40: TMenuItem;
+    Browsetodirectorywithcurrentfile1: TMenuItem;
+    More1: TMenuItem;
+    OpenDirWithAudio: TAction;
+    BrowsetodirectorywithAudiofiles1: TMenuItem;
+    N41: TMenuItem;
+    SetAudioDirFromCurrentFile: TAction;
+    SetAudiodirectoryusingpathtocurrentfile1: TMenuItem;
+    est1: TMenuItem;
+    FileShowShellMenu: TAction;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -715,6 +728,13 @@ type
     procedure btnApplyFilterClick(Sender: TObject);
     procedure FileExportExecute(Sender: TObject);
     procedure Event_RemoveRefencesExecute(Sender: TObject);
+    procedure Exportasini1Click(Sender: TObject);
+    procedure Exportasinifiltered1Click(Sender: TObject);
+    procedure OpenDirWithCurrentFileExecute(Sender: TObject);
+    procedure OpenDirWithAudioExecute(Sender: TObject);
+    procedure SetAudioDirFromCurrentFileExecute(Sender: TObject);
+    procedure Wholeconversation2DrawItem(Sender: TObject; ACanvas: TCanvas; ARect: TRect; Selected: Boolean);
+    procedure FileShowShellMenuExecute(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -722,6 +742,8 @@ type
 
     function GetFileModified(): Boolean; // Getter function
     procedure SetFileModified(const Value: Boolean); // Setter procedure
+
+    procedure UpdateConvoModifiedBy();
 
     function GetAutoSaveEnabled(): Boolean;
     procedure SetAutoSaveEnabled(const Value: Boolean);
@@ -836,8 +858,8 @@ type
 var
   frmMain: TfrmMain;
 
-type
-  TListBoxCracker = class(TListBox);
+//type
+
 
 
 implementation
@@ -861,7 +883,11 @@ begin
     FFileModified := Value;
 
     case Value of
-        True: Caption := strAppTitle + strFileModiefied;
+        True:
+        begin
+            Caption := strAppTitle + strFileModiefied;
+            UpdateConvoModifiedBy();
+        end;
         False: Caption := strAppTitle;
     end;
 
@@ -873,10 +899,45 @@ begin
     Result := FAutoSaveEnabled;
 end;
 
+procedure TfrmMain.SetAudioDirFromCurrentFileExecute(Sender: TObject);
+begin
+    if currentConFile <> '' then
+    begin
+        var TempPath := ExtractFilePath(currentConFile); // C:\Games\DeusEx_RTX\RussianAIBarks\Conversations\
+        var ParentPath := ExcludeTrailingPathDelimiter(TempPath); // Убираем лишний слэш
+
+        ParentPath := ExtractFilePath(ParentPath); // Теперь: C:\Games\DeusEx_RTX\RussianAIBarks\
+        var AudioPath := IncludeTrailingPathDelimiter(ParentPath + 'Audio');
+
+        if DirectoryExists(AudioPath) then
+        begin
+            ConFileAudioPath := AudioPath;
+            MessageBox(Handle, PChar(Format('Audio path has been set to [%s].'#13#10#13#10'You can always change it in program options', [AudioPath])),
+              PChar(strInformation), MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+        end
+        else
+            MessageBox(Handle, PChar(Format(strAudioPathNotFound, [AudioPath])), PChar(strWarningTitle), MB_OK + MB_ICONWARNING + MB_TOPMOST);
+    end;
+end;
+
 procedure TfrmMain.SetAutoSaveEnabled(const Value: Boolean);
 begin
     FAutoSaveEnabled := Value;
     AutoSaveTimer.Enabled := Value;
+end;
+
+procedure TfrmMain.UpdateConvoModifiedBy();
+begin
+    // Обновить информацию о том, кто редактировал данный диалог.
+    if CurrentConversation <> nil then
+    begin
+        CurrentConversation.conModifiedByDate := Conversation.Classes.conXMLDateTime;
+
+        if ConversationUserName <> '' then
+            CurrentConversation.conModifiedByName := ConversationUserName
+        else
+            CurrentConversation.conModifiedByName := strAppTitle;   // Just in case...
+    end;
 end;
 
 procedure TfrmMain.Wholeconversation1Click(Sender: TObject);
@@ -896,6 +957,26 @@ begin
     finally
         TextToCopy.Free();
     end;
+end;
+
+procedure TfrmMain.Wholeconversation2DrawItem(Sender: TObject; ACanvas: TCanvas; ARect: TRect; Selected: Boolean);
+var
+    Item: TMenuItem;
+    TextRect: TRect;
+begin
+    Item := Sender as TMenuItem;
+
+    ACanvas.Brush.Color := clMenu;
+    ACanvas.FillRect(ARect);
+
+    ACanvas.Font.Assign(Screen.MenuFont);
+    ACanvas.Font.Style := [fsBold];
+    ACanvas.Font.Color := clMenuText;
+
+    TextRect := ARect;
+    TextRect.Left := 4;
+
+    DrawText(ACanvas.Handle, PChar(Item.Caption), -1, TextRect, DT_SINGLELINE or DT_VCENTER or DT_LEFT or DT_NOPREFIX);
 end;
 
 procedure TfrmMain.Withchoicesifany1Click(Sender: TObject);
@@ -2821,6 +2902,20 @@ begin
     bFileModified := True;
 end;
 
+procedure TfrmMain.Exportasini1Click(Sender: TObject);
+begin
+    ConEditPlus.IniExporter.SaveConversationsToIni(ConversationsList,conFileParameters, 'C:\Temp\Dialogs.ini');
+end;
+
+procedure TfrmMain.Exportasinifiltered1Click(Sender: TObject);
+begin
+    ConEditPlus.IniExporter.SaveConversationsToIniFiltered(
+      ConversationsList,
+      conFileParameters,
+      [ET_Speech, ET_Choice, ET_AddGoal, ET_AddNote, ET_AddSkillPoints],
+      'C:\Temp\DialogsFiltered.ini');
+end;
+
 procedure TfrmMain.ExportConversationAsText(const filename: string);
 begin
     var TxtFile := TStringList.Create();
@@ -2881,7 +2976,6 @@ begin
 
     end;
 end;
-
 
 procedure TfrmMain.CopyChoicetext1Click(Sender: TObject);
 begin
@@ -3194,6 +3288,34 @@ end;
 procedure TfrmMain.ClearForNewFile1Click(Sender: TObject);
 begin
     ClearForNewFile();
+end;
+
+procedure TfrmMain.OpenDirWithAudioExecute(Sender: TObject);
+begin
+    if currentConFile <> '' then
+    begin
+        var TempPath := ExtractFilePath(currentConFile); // Например: C:\Games\DeusEx_RTX\RussianAIBarks\Conversations\
+        var ParentPath := ExcludeTrailingPathDelimiter(TempPath); // Убираем лишний слэш
+
+        ParentPath := ExtractFilePath(ParentPath); // Теперь: C:\Games\DeusEx_RTX\RussianAIBarks\
+        var AudioPath := IncludeTrailingPathDelimiter(ParentPath + 'Audio');
+
+        if DirectoryExists(AudioPath) then
+            ShellExecute(0, 'open', PChar(AudioPath), nil, nil, SW_SHOWNORMAL)
+        else
+            MessageBox(Handle, PChar(Format(strAudioPathNotFound, [AudioPath])), PChar(strWarningTitle), MB_OK + MB_ICONWARNING + MB_TOPMOST);
+    end;
+end;
+
+procedure TfrmMain.OpenDirWithCurrentFileExecute(Sender: TObject);
+begin
+    if currentConFile <> '' then
+    begin
+        var TempPath := ExtractFilePath(currentConFile);
+
+        if DirectoryExists(TempPath) then
+            ShellExecute(0, 'open', PChar(TempPath), nil, nil, SW_SHOWNORMAL);
+    end;
 end;
 
 procedure TfrmMain.OpenRecentFile(aFile: string);
@@ -7134,6 +7256,34 @@ begin
     FileSaveAsExecute(FileSaveAs);
 end;
 
+procedure TfrmMain.FileShowShellMenuExecute(Sender: TObject);
+begin
+    var FileToCheck := '';
+
+    if CurrentEvent <> nil then
+    begin
+        if CurrentEvent is TConEventSpeech then
+        begin
+            FileToCheck := IncludeTrailingPathDelimiter(ConFileAudioPath) + TConEventSpeech(CurrentEvent).mp3File;
+
+            var bFileExists := TFile.Exists(FileToCheck);
+
+            if bFileExists = False then Exit();
+        end
+        else
+            Exit();
+    end;
+
+    var pt := Mouse.CursorPos; // Курсор здесь!
+    var ContextMenu := ConEditPlus.ShellContextMenuHelper.TShellContextMenu.Create();
+
+    try
+        ContextMenu.ShowContextMenu(FileToCheck, Self.Handle, pt);
+    finally
+        ContextMenu.Free();
+    end;
+end;
+
 procedure TfrmMain.Flags1Click(Sender: TObject);
 begin
     frmTableEdit.TableMode := TM_Flags;
@@ -8181,6 +8331,17 @@ begin
             end;
         end;
     end;
+
+    // Check if .mp3 exists
+    if SpeechObj <> nil then
+    begin
+        var FileToCheck := IncludeTrailingPathDelimiter(ConFileAudioPath) + TConEventSpeech(CurrentEvent).mp3File;
+        var bFileExists := TFile.Exists(FileToCheck);
+
+        FileShowShellMenu.Enabled := bFileExists;
+    end
+    else
+        FileShowShellMenu.Enabled := False;
 end;
 
 procedure TfrmMain.PopupTreePopup(Sender: TObject); // block some menu items depending on selection
@@ -8379,5 +8540,8 @@ begin
     if bUseLogging = False then
         mmoOutput.Text := 'Logging is disabled. To see log messages, enable logging in program options.';
 end;
+
+{ TMenuItemHelper }
+
 
 end.

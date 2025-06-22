@@ -6364,6 +6364,24 @@ object frmMain: TfrmMain
       Caption = 'Collapse All'
       OnClick = CollapseAll2Click
     end
+    object N40: TMenuItem
+      Caption = '-'
+    end
+    object More1: TMenuItem
+      Caption = 'More...'
+      object Browsetodirectorywithcurrentfile1: TMenuItem
+        Action = OpenDirWithCurrentFile
+      end
+      object BrowsetodirectorywithAudiofiles1: TMenuItem
+        Action = OpenDirWithAudio
+      end
+      object N41: TMenuItem
+        Caption = '-'
+      end
+      object SetAudiodirectoryusingpathtocurrentfile1: TMenuItem
+        Action = SetAudioDirFromCurrentFile
+      end
+    end
   end
   object MenuMain: TMainMenu
     Images = MenusImageList
@@ -6399,6 +6417,16 @@ object frmMain: TfrmMain
       object Exportastext1: TMenuItem
         Action = FileExport
         Visible = False
+      end
+      object Exportasini1: TMenuItem
+        Caption = 'Export as .ini...'
+        Visible = False
+        OnClick = Exportasini1Click
+      end
+      object Exportasinifiltered1: TMenuItem
+        Caption = 'Export as .ini filtered'
+        Visible = False
+        OnClick = Exportasinifiltered1Click
       end
       object N7: TMenuItem
         Caption = '-'
@@ -6575,6 +6603,9 @@ object frmMain: TfrmMain
     OnPopup = PopupConvoEventListPopup
     Left = 428
     Top = 223
+    object est1: TMenuItem
+      Action = FileShowShellMenu
+    end
     object Setfilter1: TMenuItem
       Caption = 'Set filter...'
       ImageIndex = 19
@@ -6821,6 +6852,7 @@ object frmMain: TfrmMain
       object Wholeconversation2: TMenuItem
         Caption = 'Whole conversation:'
         Enabled = False
+        OnDrawItem = Wholeconversation2DrawItem
       end
       object Wholeconversation1: TMenuItem
         Caption = 'Speaker + Text, no choices'
@@ -6833,6 +6865,7 @@ object frmMain: TfrmMain
       object Partial1: TMenuItem
         Caption = 'Partial:'
         Enabled = False
+        OnDrawItem = Wholeconversation2DrawItem
       end
       object Alllinesofselectedspeaker1: TMenuItem
         Caption = 'All lines of selected speaker'
@@ -10085,6 +10118,26 @@ object frmMain: TfrmMain
       Category = 'Events'
       Caption = 'Remove label references to this event'
       OnExecute = Event_RemoveRefencesExecute
+    end
+    object OpenDirWithCurrentFile: TAction
+      Category = 'Directory'
+      Caption = 'Browse to directory with current file'
+      OnExecute = OpenDirWithCurrentFileExecute
+    end
+    object OpenDirWithAudio: TAction
+      Category = 'Directory'
+      Caption = 'Browse to directory with Audio files'
+      OnExecute = OpenDirWithAudioExecute
+    end
+    object SetAudioDirFromCurrentFile: TAction
+      Category = 'Directory'
+      Caption = 'Set Audio directory using path to current file'
+      OnExecute = SetAudioDirFromCurrentFileExecute
+    end
+    object FileShowShellMenu: TAction
+      Category = 'File'
+      Caption = 'Show system context menu'
+      OnExecute = FileShowShellMenuExecute
     end
   end
   object FileSaveDialog: TFileSaveDialog

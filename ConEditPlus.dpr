@@ -1,4 +1,4 @@
-{
+﻿{
     ConEditPlus project.
 
     Created by Veronika Afanasyeva (Andrievskaya) aka LoadLine Calibration.
@@ -7,6 +7,10 @@
 
     Open-source. Feel free to modify...
 
+    Primăvara va veni,
+    Pietrele vor înflori,
+    Voi cânta iubirea, pacea, fericirea,
+    Viaţa voi cânta!
 }
 
 program ConEditPlus;
@@ -36,18 +40,22 @@ uses
   uFrmLabelErrors in 'uFrmLabelErrors.pas' {frmLabelErrors},
   ConEditPlus.Clipboard.Helper in 'ConEditPlus.Clipboard.Helper.pas',
   ufrmAudioDirectories in 'ufrmAudioDirectories.pas' {frmAudioDirectories},
-  Vcl.Themes,
-  Vcl.Styles,
   UfrmConversationPlayer in 'UfrmConversationPlayer.pas' {frmConversationPlayer},
   uFrmFindRefs in 'uFrmFindRefs.pas' {frmFindRefs},
   ConEditPlus.Templates.Factory in 'ConEditPlus.Templates.Factory.pas',
-  ConEditPlus.Colors in 'ConEditPlus.Colors.pas';
+  ConEditPlus.Colors in 'ConEditPlus.Colors.pas',
+  ConEditPlus.IniExporter in 'ConEditPlus.IniExporter.pas',
+  ConEditPlus.ConEventList.Utils in 'ConEditPlus.ConEventList.Utils.pas',
+  Vcl.Themes,
+  Vcl.Styles,
+  ConEditPlus.ShellContextMenuHelper in 'ConEditPlus.ShellContextMenuHelper.pas';
 
 {$R *.res}
 {$SETPEOSVERSION 5.1} // Windows XP
 {$SETPESUBSYSVERSION 5.1}
 
 begin
+  Randomize(); //
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TfrmMain, frmMain);
@@ -67,7 +75,7 @@ begin
   Application.CreateForm(TfrmConversationPlayer, frmConversationPlayer);
   Application.CreateForm(TfrmFindRefs, frmFindRefs);
   Application.HintHidePause := 30000; // hint delay
-  Application.Run;
+  Application.Run();
   ReportMemoryLeaksOnShutdown := True;
 
 end.
