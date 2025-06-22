@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.StdActns, Conversation.Classes,
   System.Actions, Vcl.ActnList, Vcl.Menus, Vcl.Samples.Spin, WinApi.ActiveX, Vcl.Buttons, Vcl.Imaging.pngimage,
   ConEditPlus.Helpers, System.ImageList, Vcl.ImgList, Vcl.MPlayer, Winapi.MMSystem, system.UITypes, ES.BaseControls,
-  ES.Layouts, ConEditPlus.Enums, ConEditPlus.Consts;
+  ES.Layouts, ConEditPlus.Enums, ConEditPlus.Consts, ConEditPlus.ShellContextMenuHelper, System.IOUtils;
 
 type
   TfrmEventInsAdd = class(TForm)
@@ -412,6 +412,7 @@ type
     procedure editSkillPointsAmountChange(Sender: TObject);
     procedure editEventLabelChange(Sender: TObject);
     procedure FormActivate(Sender: TObject);
+    procedure lvChoiceListMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
   private
     { Private declarations }
   public
@@ -3301,6 +3302,33 @@ begin
         btnPlayChoiceAudio.Caption := strStopMP3
     else
         btnPlayChoiceAudio.Caption := strPlayMP3;
+end;
+
+procedure TfrmEventInsAdd.lvChoiceListMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+    if Button = TMouseButton.mbRight then // Если нажата ПКМ...
+    begin
+        var ChoiceItemData := lvChoiceList.Items[lvChoiceList.ItemIndex].Data;
+
+        if Assigned(ChoiceItemData) then
+        begin
+            if TChoiceItemObject(ChoiceItemData).mp3 <> '' then
+            begin
+                var Mp3File := IncludeTrailingPathDelimiter(frmMain.ConFileAudioPath) + TChoiceItemObject(ChoiceItemData).mp3;
+                if TFile.Exists(Mp3File) = True then
+                begin
+                    var pt := Mouse.CursorPos; // Курсор здесь!
+                    var ContextMenu := ConEditPlus.ShellContextMenuHelper.TShellContextMenu.Create();
+
+                    try
+                        ContextMenu.ShowContextMenu(Mp3File, Self.Handle, pt);
+                    finally
+                        ContextMenu.Free();
+                    end;
+                end;
+            end;
+        end;
+    end;
 end;
 
 procedure TfrmEventInsAdd.lvSetFlagsChange(Sender: TObject; Item: TListItem; Change: TItemChange);

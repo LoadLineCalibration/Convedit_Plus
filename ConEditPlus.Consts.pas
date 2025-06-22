@@ -599,8 +599,10 @@ ResourceString // These strings can be translated.
     // MessageBox title
     strErrorTitle = 'Error!';
     strWarningTitle = 'Warning!';
-    strQuiestion = 'Confirm?';
+    strQuestion = 'Confirm?';
     strInformation = 'Information';
+
+    strRemoveLabelRefs = 'Are you sure you want to remove all references to this event’s label?';
 
     // Error messages when trying to save file
     strSaveError = 'Error saving file (%s):' + #13#10 +'%s';

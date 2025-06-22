@@ -10095,7 +10095,7 @@ object frmMain: TfrmMain
     end
     object Event_BrowseTo: TAction
       Category = 'Events'
-      Caption = 'Open path\ to .mp3 in Explorer'
+      Caption = 'Open .mp3 location in Explorer'
       ImageIndex = 13
       OnExecute = Event_BrowseToExecute
     end

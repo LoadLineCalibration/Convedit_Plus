@@ -2,11 +2,9 @@
 unit ConEditPlus.ShellContextMenuHelper;
 
 interface
-
 uses
   Winapi.Windows, Winapi.ShlObj, Winapi.ShellAPI, Winapi.ActiveX, System.SysUtils, System.Classes,
   System.Win.ComObj;
-
 type
   TShellContextMenu = class (TObject)
   private
@@ -25,11 +23,8 @@ type
     destructor Destroy(); override;
     function ShowContextMenu(const FileName: string; OwnerWnd: HWND; const ScreenPt: TPoint): Boolean;
   end;
-
 implementation
-
 {TShellContextMenu}
-
 constructor TShellContextMenu.Create();
 begin
     inherited Create();
@@ -40,13 +35,11 @@ begin
     FPopupWnd := 0;
     FOwnerWnd := 0;
 end;
-
 destructor TShellContextMenu.Destroy();
 begin
     UnhookWndProc();
     inherited;
 end;
-
 // Замена оконной процедуры временного окна для ловли сообщений вложенных Shell-меню
 class function TShellContextMenu.PopupWndProc(hWnd: HWND; uMsg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT;
 var
@@ -84,14 +77,12 @@ begin
     end;
     Result := DefWindowProc(hWnd, uMsg, wParam, lParam);
 end;
-
 // Переназначаем оконную процедуру и сохраняем старую
 procedure TShellContextMenu.HookWndProc();
 begin
     SetWindowLongPtr(FPopupWnd, GWLP_USERDATA, NativeInt(Self));
     FWndProcOld := Pointer(SetWindowLongPtr(FPopupWnd, GWLP_WNDPROC, NativeInt(@TShellContextMenu.PopupWndProc)));
 end;
-
 // Восстанавливаем оконную процедуру (очищаем hook)
 procedure TShellContextMenu.UnhookWndProc();
 begin
@@ -99,28 +90,23 @@ begin
     begin
         if Assigned(FWndProcOld) then
             SetWindowLongPtr(FPopupWnd, GWLP_WNDPROC, NativeInt(FWndProcOld));
-
         SetWindowLongPtr(FPopupWnd, GWLP_USERDATA, 0);
         DestroyWindow(FPopupWnd);
         FPopupWnd := 0;
     end;
     FWndProcOld := nil;
 end;
-
 procedure TShellContextMenu.PrepareInterfaces();
 begin
     FContextMenu2 := nil;
     FContextMenu3 := nil;
-
     if Assigned(FContextMenu) then
     begin
         Supports(FContextMenu, IContextMenu3, FContextMenu3);
-
         if not Assigned(FContextMenu3) then
             Supports(FContextMenu, IContextMenu2, FContextMenu2);
     end;
 end;
-
 function TShellContextMenu.ShowContextMenu(const FileName: string; OwnerWnd: HWND; const ScreenPt: TPoint): Boolean;
 var
     pidl, child: PItemIDList;
@@ -132,7 +118,6 @@ var
 begin
     Result := False;
     FOwnerWnd := OwnerWnd;
-
     OleCheck(OleInitialize(nil));
     try
         FContextMenu := nil;
@@ -142,11 +127,9 @@ begin
             OleCheck(SHBindToParent(pidl, IID_IShellFolder, Pointer(parentFolder), child));
             OleCheck(parentFolder.GetUIObjectOf(0, 1, child, IID_IContextMenu, nil, FContextMenu));
             PrepareInterfaces;
-
             // Временное окно для обработки сообщений вложенных меню
             FPopupWnd := CreateWindow('STATIC', nil, WS_POPUP, 0, 0, 0, 0, 0, 0, HInstance, nil);
             if FPopupWnd = 0 then RaiseLastOSError();
-
             HookWndProc();
             try
                 h_Menu := CreatePopupMenu;
@@ -157,7 +140,6 @@ begin
                       TPM_RETURNCMD or TPM_LEFTALIGN or TPM_TOPALIGN,
                       ScreenPt.X, ScreenPt.Y, 0, FPopupWnd, nil
                       ));
-
                     if cmd <> 0 then
                     begin
                         ZeroMemory(@ici, SizeOf(ici));
@@ -168,23 +150,18 @@ begin
                         OleCheck(FContextMenu.InvokeCommand(ici));
                         Result := True;
                     end;
-
                 finally
                     DestroyMenu(h_Menu);
                 end;
-
             finally
                 UnhookWndProc();
             end;
-
         finally
             CoTaskMemFree(pidl);
         end;
-
     finally
         OleUninitialize();
     end;
 end;
-
 end.
 

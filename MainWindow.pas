@@ -6245,7 +6245,7 @@ end;
 
 procedure TfrmMain.Conversation_Create_AIBarkFutz_TemplateExecute(Sender: TObject);
 begin
-    if MessageBox(Handle, PChar(strAskToAddAIBarkFutzExample), PChar(strQuiestion), MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = ID_YES then
+    if MessageBox(Handle, PChar(strAskToAddAIBarkFutzExample), PChar(strQuestion), MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = ID_YES then
     begin
         var NumSpeechEvents := (Sender as TMenuItem).Tag;
         CreateAIBarksExample(True, NumSpeechEvents);
@@ -6254,7 +6254,7 @@ end;
 
 procedure TfrmMain.Conversation_Create_AIBark_TemplateExecute(Sender: TObject);
 begin
-    if MessageBox(Handle, PChar(strAskToAddAIBarksExample), PChar(strQuiestion), MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = ID_YES then
+    if MessageBox(Handle, PChar(strAskToAddAIBarksExample), PChar(strQuestion), MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = ID_YES then
     begin
         var NumSpeechEvents := (Sender as TMenuItem).Tag;
         CreateAIBarksExample(False, NumSpeechEvents);
@@ -6797,9 +6797,7 @@ end;
 
 procedure TfrmMain.Event_RemoveRefencesExecute(Sender: TObject);
 begin
-    if MessageBox(Handle,
-        'Are you sure you want to remove all references to this event’s label?',
-        '?', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
+    if MessageBox(Handle, PChar(strRemoveLabelRefs), PChar(strQuestion), MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
     begin
         RemoveLabelRefs();
     end;

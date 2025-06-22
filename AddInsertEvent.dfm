@@ -5438,7 +5438,7 @@ object frmEventInsAdd: TfrmEventInsAdd
     Top = 114
     Width = 556
     Height = 406
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Anchors = [akLeft, akTop, akRight, akBottom]
     DoubleBuffered = True
     ParentDoubleBuffered = False
@@ -5759,6 +5759,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           OnClick = lvChoiceListClick
           OnDblClick = lvChoiceListDblClick
           OnEditing = lvSetFlagsEditing
+          OnMouseDown = lvChoiceListMouseDown
         end
         object ChoiceEditPanel: TEsPanel
           Left = 14

@@ -6,9 +6,7 @@ unit ConEditPlus.Helpers;
 interface
 
 uses
-     Winapi.Windows, Winapi.Messages, WinApi.ShellAPI, WinApi.ActiveX, Winapi.ShlObj,
-     System.SysUtils, System.Variants, System.Classes, System.StrUtils, system.Win.ComObj,
-     Conversation.Classes, VCL.Graphics;
+     Winapi.Windows, System.SysUtils, System.StrUtils, Conversation.Classes, VCL.Graphics;
 
 // functions
 function ValidateFName(const AString: string): Boolean;
