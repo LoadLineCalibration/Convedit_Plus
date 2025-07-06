@@ -687,6 +687,14 @@ ResourceString // These strings can be translated.
     strJumpToLabel = ' then JumpToLabel: ';
     // end of strings for "Check Persona" event
 
+    // Strings for "Create shortcut..."
+    strShortcutCreated = 'Shortcut has been created on your Desktop';
+    strShortcutCreatedStartMenu = 'Shortcut has been created in your Start menu\Programs\';
+    strShortcutCreatedTitle = 'Create shortcut';
+    strAskForShortcut = 'Create a shortcut to launch ConEditPlus on your Desktop?';
+    strAskForShortcutStartMenu = 'Create a shortcut to launch ConEditPlus in your Start menu\Programs\?';
+    strShortcutHint = 'DeusEx conversation editor';
+
 
 
 

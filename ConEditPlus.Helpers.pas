@@ -6,7 +6,8 @@ unit ConEditPlus.Helpers;
 interface
 
 uses
-     Winapi.Windows, System.SysUtils, System.StrUtils, Conversation.Classes, VCL.Graphics;
+     Winapi.Windows, System.SysUtils, System.StrUtils, Conversation.Classes, VCL.Graphics,
+     Winapi.ShlObj, Winapi.ActiveX, System.Win.ComObj;
 
 // functions
 function ValidateFName(const AString: string): Boolean;
@@ -18,6 +19,7 @@ function FormatConversationDetails(const Conversation: TConversation): string;
 procedure FilterEditInput(var aKey: Char);
 procedure SetConversationEventsIdx(con: TConversation);
 procedure ExtractRGB(aColor: TColor; out r, g, b: Byte);
+procedure CreateShortcut(const TargetPath, WorkingDirectory, ShortcutPath, IconPath, Tooltip, Parameters: string);
 
 implementation
 
@@ -28,7 +30,7 @@ begin
        (Pos(' ', AString) > 0)) then
     begin
         Result := False;
-        Exit;
+        Exit();
     end;
 
     // Проверяем каждый символ
@@ -37,31 +39,11 @@ begin
         if not CharInSet(AString[i], ['A'..'Z', 'a'..'z', '0'..'9', '_']) then
         begin
             Result := False;
-            Exit;
+            Exit();
         end;
     end;
 
     Result := True;
-{    if (AString = '') or
-       (CharInSet(AString[1], ['0'..'9'])) or
-       (Pos(' ', AString) > 0) then
-    begin
-        Result := False;
-        Exit;
-    end;
-
-    // Проверяем каждый символ
-    for var i := 1 to Length(AString) do
-    begin
-        if not CharInSet(AString[i], ['A'..'Z', 'a'..'z', '0'..'9', '_']) then
-        begin
-            Result := False;
-            Exit;
-        end;
-    end;
-
-    Result := True;
-}
 end;
 
 function GetDPIAsRatio(): Single;
@@ -156,6 +138,30 @@ begin
     g := Byte(rgbColor shr 8);
     b := Byte(rgbColor shr 16);
 end;
+
+procedure CreateShortcut(const TargetPath, WorkingDirectory, ShortcutPath, IconPath, Tooltip, Parameters: string);
+var
+    ShellLink: IShellLink;
+    PersistFile: IPersistFile;
+    WideShortcutPath: WideString;
+begin
+    // Create shortcut object
+    ShellLink := CreateComObject(CLSID_ShellLink) as IShellLink;
+    PersistFile := ShellLink as IPersistFile;
+
+    ShellLink.SetPath(PChar(TargetPath));
+    ShellLink.SetWorkingDirectory(PChar(WorkingDirectory));
+    ShellLink.SetIconLocation(PChar(IconPath), 0);     // Set icon + icon index
+    ShellLink.SetDescription(PChar(ToolTip));     // set tooltip (or hint?)
+
+    ShellLink.SetArguments(PChar(Parameters));
+
+    WideShortcutPath := ShortcutPath;
+
+    // Save shortcut
+    PersistFile.Save(PChar(WideShortcutPath), True);
+end;
+
 
 
 end.

@@ -6400,6 +6400,18 @@ object frmMain: TfrmMain
       object Close1: TMenuItem
         Action = FileClose
       end
+      object N42: TMenuItem
+        Caption = '-'
+      end
+      object Createshortcut1: TMenuItem
+        Caption = 'Create shortcut'
+        object CreateshortcutonDesktop1: TMenuItem
+          Action = FileCreateDesktopShortcut
+        end
+        object CreateshortcutinStartmenu1: TMenuItem
+          Action = FileCreateStartMenuShortcut
+        end
+      end
       object N1: TMenuItem
         Caption = '-'
       end
@@ -10139,6 +10151,16 @@ object frmMain: TfrmMain
       Caption = 'Show system context menu'
       OnExecute = FileShowShellMenuExecute
     end
+    object FileCreateDesktopShortcut: TAction
+      Category = 'File'
+      Caption = 'Create shortcut on Desktop...'
+      OnExecute = FileCreateDesktopShortcutExecute
+    end
+    object FileCreateStartMenuShortcut: TAction
+      Category = 'File'
+      Caption = 'Create shortcut in Start menu...'
+      OnExecute = FileCreateStartMenuShortcutExecute
+    end
   end
   object FileSaveDialog: TFileSaveDialog
     FavoriteLinks = <>
@@ -10220,6 +10242,10 @@ object frmMain: TfrmMain
     object Defaultrecordvalue1: TMenuItem
       Caption = 'Default record value?'
       OnClick = Defaultrecordvalue1Click
+    end
+    object Beep1: TMenuItem
+      Caption = 'Beep()'
+      OnClick = Beep1Click
     end
   end
   object tmrEventWinPosSync: TTimer

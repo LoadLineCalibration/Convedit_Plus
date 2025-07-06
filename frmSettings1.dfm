@@ -53,7 +53,7 @@ object frmSettings: TfrmSettings
     Top = 161
     Width = 446
     Height = 277
-    ActivePage = TabSheet1
+    ActivePage = PageA
     Style = tsFlatButtons
     TabOrder = 9
     object Page1: TTabSheet
@@ -498,6 +498,14 @@ object frmSettings: TfrmSettings
           Caption = 'Empty'
           TabOrder = 5
           OnClick = btnEmptyBakPathClick
+        end
+        object chkPlayWarningSoundOnEventError: TCheckBox
+          Left = 11
+          Top = 183
+          Width = 286
+          Height = 17
+          Caption = 'Play warning sound if event contains errors'
+          TabOrder = 6
         end
       end
     end

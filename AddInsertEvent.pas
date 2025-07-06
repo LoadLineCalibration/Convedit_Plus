@@ -318,8 +318,9 @@ type
     procedure FillCheckPersona(checkPersona: TConEventCheckPersona);
     procedure FillComment(comment: TConEventComment);
     procedure FillEnd(endEvent: TConEventEnd);
-    procedure PlayMP3Speech(const mp3file: string);
 
+    procedure PlayMP3Speech(const mp3file: string);
+    procedure PlaySoundFromResource(const ResName: string);
     procedure RestoreVolumeTrackbar();
 
 
@@ -413,6 +414,7 @@ type
     procedure editEventLabelChange(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure lvChoiceListMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
   public
@@ -813,6 +815,9 @@ end;
 
 procedure TfrmEventInsAdd.EventWarning(bShow: Boolean;  msg: string = '');
 begin
+    if (bShow = True) and (frmMain.bPlayWarningSoundOnEventError = True) then
+        PlaySoundFromResource('BUZZ1');
+
     lblStatus.Visible := bShow;
     lblStatus.Caption := msg;
 end;
@@ -823,20 +828,34 @@ begin
 
     if FileExists(SpeechMP3File) then
     begin
-       if mp1.Mode = mpPlaying then
-       begin
-          mp1.Stop();
-       end else begin
-          mp3posUpdateTimer.Enabled := True;
-          mp1.FileName:= SpeechMP3File;
-          mp1.Open();
-          mp3Pos_pb.Position := 0;
-          mp3Pos_pb.Max := mp1.Length;
-          mp1.Play();
-       end;
+        if mp1.Mode = mpPlaying then
+            mp1.Stop()
+        else
+        begin
+            mp3posUpdateTimer.Enabled := True;
+            mp1.FileName:= SpeechMP3File;
+            mp1.Open();
+            mp3Pos_pb.Position := 0;
+            mp3Pos_pb.Max := mp1.Length;
+            mp1.Play();
+        end;
     end
     else
-        MessageBox(frmMain.Handle, PChar(Format(strAudioFileNotFound, [SpeechMP3File])), 'Error', MB_OK + MB_ICONSTOP + MB_TOPMOST);
+        MessageBox(frmMain.Handle, PChar(Format(strAudioFileNotFound, [SpeechMP3File])), PChar(strErrorTitle), MB_OK + MB_ICONSTOP + MB_TOPMOST);
+end;
+
+procedure TfrmEventInsAdd.PlaySoundFromResource(const ResName: string);
+var
+    resStream: TResourceStream;
+    memPtr: Pointer;
+begin
+    resStream := TResourceStream.Create(HInstance, ResName, PChar('WAVE'));
+    try
+        memPtr := resStream.Memory;
+        PlaySound(memPtr, 0, SND_MEMORY or SND_ASYNC or SND_NODEFAULT);
+    finally
+        resStream.Free();
+    end;
 end;
 
 procedure TfrmEventInsAdd.ExchangeListViewItems(LV: TListView; const i, j: Integer);
@@ -3157,6 +3176,12 @@ begin
     RestoreVolumeTrackbar();
 end;
 
+procedure TfrmEventInsAdd.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+    if Key = Char(VK_ESCAPE) then
+        btnCloseClick(self);
+end;
+
 procedure TfrmEventInsAdd.FormMouseWheelDown(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
 begin
     if ActiveControl is TSpinEdit then
@@ -3306,7 +3331,8 @@ end;
 
 procedure TfrmEventInsAdd.lvChoiceListMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-    if Button = TMouseButton.mbRight then // Если нажата ПКМ...
+    // access violation fix
+    if (lvChoiceList.ItemIndex <> -1) and (Button = TMouseButton.mbRight) then // Если нажата ПКМ...
     begin
         var ChoiceItemData := lvChoiceList.Items[lvChoiceList.ItemIndex].Data;
 

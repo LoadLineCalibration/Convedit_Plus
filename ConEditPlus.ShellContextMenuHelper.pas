@@ -2,9 +2,11 @@
 unit ConEditPlus.ShellContextMenuHelper;
 
 interface
+
 uses
   Winapi.Windows, Winapi.ShlObj, Winapi.ShellAPI, Winapi.ActiveX, System.SysUtils, System.Classes,
   System.Win.ComObj;
+
 type
   TShellContextMenu = class (TObject)
   private
@@ -23,8 +25,11 @@ type
     destructor Destroy(); override;
     function ShowContextMenu(const FileName: string; OwnerWnd: HWND; const ScreenPt: TPoint): Boolean;
   end;
+
 implementation
+
 {TShellContextMenu}
+
 constructor TShellContextMenu.Create();
 begin
     inherited Create();
@@ -35,11 +40,13 @@ begin
     FPopupWnd := 0;
     FOwnerWnd := 0;
 end;
+
 destructor TShellContextMenu.Destroy();
 begin
     UnhookWndProc();
     inherited;
 end;
+
 // Замена оконной процедуры временного окна для ловли сообщений вложенных Shell-меню
 class function TShellContextMenu.PopupWndProc(hWnd: HWND; uMsg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT;
 var
@@ -77,14 +84,14 @@ begin
     end;
     Result := DefWindowProc(hWnd, uMsg, wParam, lParam);
 end;
-// Переназначаем оконную процедуру и сохраняем старую
-procedure TShellContextMenu.HookWndProc();
+
+procedure TShellContextMenu.HookWndProc(); // Переназначаем оконную процедуру и сохраняем старую
 begin
     SetWindowLongPtr(FPopupWnd, GWLP_USERDATA, NativeInt(Self));
     FWndProcOld := Pointer(SetWindowLongPtr(FPopupWnd, GWLP_WNDPROC, NativeInt(@TShellContextMenu.PopupWndProc)));
 end;
-// Восстанавливаем оконную процедуру (очищаем hook)
-procedure TShellContextMenu.UnhookWndProc();
+
+procedure TShellContextMenu.UnhookWndProc(); // Восстанавливаем оконную процедуру (очищаем hook)
 begin
     if FPopupWnd <> 0 then
     begin
@@ -96,6 +103,7 @@ begin
     end;
     FWndProcOld := nil;
 end;
+
 procedure TShellContextMenu.PrepareInterfaces();
 begin
     FContextMenu2 := nil;
@@ -107,6 +115,7 @@ begin
             Supports(FContextMenu, IContextMenu2, FContextMenu2);
     end;
 end;
+
 function TShellContextMenu.ShowContextMenu(const FileName: string; OwnerWnd: HWND; const ScreenPt: TPoint): Boolean;
 var
     pidl, child: PItemIDList;
@@ -126,7 +135,7 @@ begin
         try
             OleCheck(SHBindToParent(pidl, IID_IShellFolder, Pointer(parentFolder), child));
             OleCheck(parentFolder.GetUIObjectOf(0, 1, child, IID_IContextMenu, nil, FContextMenu));
-            PrepareInterfaces;
+            PrepareInterfaces();
             // Временное окно для обработки сообщений вложенных меню
             FPopupWnd := CreateWindow('STATIC', nil, WS_POPUP, 0, 0, 0, 0, 0, 0, HInstance, nil);
             if FPopupWnd = 0 then RaiseLastOSError();
@@ -163,5 +172,6 @@ begin
         OleUninitialize();
     end;
 end;
+
 end.
 

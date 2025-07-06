@@ -407,6 +407,13 @@ type
     SetAudiodirectoryusingpathtocurrentfile1: TMenuItem;
     est1: TMenuItem;
     FileShowShellMenu: TAction;
+    Beep1: TMenuItem;
+    FileCreateDesktopShortcut: TAction;
+    FileCreateStartMenuShortcut: TAction;
+    Createshortcut1: TMenuItem;
+    N42: TMenuItem;
+    CreateshortcutonDesktop1: TMenuItem;
+    CreateshortcutinStartmenu1: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -735,6 +742,9 @@ type
     procedure SetAudioDirFromCurrentFileExecute(Sender: TObject);
     procedure Wholeconversation2DrawItem(Sender: TObject; ACanvas: TCanvas; ARect: TRect; Selected: Boolean);
     procedure FileShowShellMenuExecute(Sender: TObject);
+    procedure Beep1Click(Sender: TObject);
+    procedure FileCreateDesktopShortcutExecute(Sender: TObject);
+    procedure FileCreateStartMenuShortcutExecute(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -753,6 +763,9 @@ type
 
     // For autosave.
     procedure AutoSaveFile(const aFileName: string);
+
+    procedure CreateDesktopShortcut();
+    procedure CreateStartMenuShortcut();
   public
     { Public declarations }
 
@@ -795,8 +808,8 @@ type
         bUsePlayerBindNameColor,
         bUsePlayerSpeechBGColor,
         bUseCustomHighlightEventColor,
-//        bUseCustomGradientHighlightEventColor,
-        bUseCustomGridColor : Boolean;
+        bUseCustomGridColor,
+        bPlayWarningSoundOnEventError : Boolean;
 
     property bAutoSaveEnabled: Boolean read GetAutoSaveEnabled write SetAutoSaveEnabled;
 
@@ -1758,6 +1771,34 @@ begin
     begin
         Caption := strAppTitle + strNewFile;
         frmConvoFileProperties.ShowModal();
+    end;
+end;
+
+procedure TfrmMain.CreateDesktopShortcut();
+begin
+    try
+        var TargetPath := Application.ExeName;
+        var ShortcutWorkDir := ExtractFilePath(Application.ExeName);
+        var ShortcutName := GetEnvironmentVariable('USERPROFILE') + '/Desktop/' + strAppTitle + '.lnk';
+        var IconPath := TargetPath;
+        ConEditPlus.Helpers.CreateShortcut(TargetPath, ShortcutWorkDir, ShortcutName, IconPath, strShortcutHint, ' -skipoptions');
+
+    finally
+        MessageBox(Handle, PChar(strShortcutCreated), PChar(strShortcutCreatedTitle), MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+    end;
+end;
+
+procedure TfrmMain.CreateStartMenuShortcut();
+begin
+    try
+        var TargetPath := Application.ExeName;
+        var ShortcutWorkDir := ExtractFilePath(Application.ExeName);
+        var StartMenuPath := GetEnvironmentVariable('APPDATA') +
+            '\Microsoft\Windows\Start Menu\Programs\' + strAppTitle + '.lnk';
+        var IconPath := TargetPath;
+        ConEditPlus.Helpers.CreateShortcut(TargetPath, ShortcutWorkDir, StartMenuPath, IconPath, strShortcutHint, ' -skipoptions');
+    finally
+        MessageBox(Handle, PChar(strShortcutCreatedStartMenu), PChar(strShortcutCreatedTitle), MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
     end;
 end;
 
@@ -3500,6 +3541,8 @@ begin
 
         bUse3DSelectionFrame := ReadBool('frmMain', 'bUse3DSelectionFrame', true);
         bUseLogging := ReadBool('frmMain', 'bUseLogging', false);
+        bPlayWarningSoundOnEventError := ReadBool('frmMain', 'bPlayWarningSoundOnEventError', True);
+
         bVerifyEventLabel := ReadBool('frmMain', 'bVerifyEventLabel', True); // проверять правильность метки события илити нет?
 
         ReorderModKey := TReorderEventsModKey(ReadInteger('frmMain', 'ReorderModKey', 0));
@@ -3589,7 +3632,9 @@ begin
             WriteBool('frmMain', 'bUseWhiteSelectedText', bUseWhiteSelectedText);
             WriteBool('frmMain', 'bVerifyEventLabel', bVerifyEventLabel); // проверять правильность метки события или нет?
 
+            WriteBool('frmMain', 'bPlayWarningSoundOnEventError', bPlayWarningSoundOnEventError);//
             WriteBool('frmMain', 'bUseLogging', bUseLogging);
+
 
             WriteInteger('frmMain', 'ReorderModKey',Ord(ReorderModKey));
 
@@ -6540,7 +6585,7 @@ begin
     frmMain.bFileModified := True;
 end;
 
-procedure TfrmMain.RemoveLabelRefs();
+procedure TfrmMain.RemoveLabelRefs(); // Not finished yet
 begin
     if CurrentEvent = Nil then Exit();
 
@@ -7038,6 +7083,24 @@ begin
     begin
         frmFindRefs.lvRefs.Clear();
         frmFindRefs.Close();
+    end;
+end;
+
+procedure TfrmMain.FileCreateDesktopShortcutExecute(Sender: TObject);
+begin
+    if MessageBox(Handle, PChar(strAskForShortcut), PChar(strShortcutCreatedTitle), MB_YESNO +
+        MB_ICONQUESTION + MB_TOPMOST) = IDYES then
+    begin
+        CreateDesktopShortcut();
+    end;
+end;
+
+procedure TfrmMain.FileCreateStartMenuShortcutExecute(Sender: TObject);
+begin
+    if MessageBox(Handle, PChar(strAskForShortcutStartMenu), PChar(strShortcutCreatedTitle), MB_YESNO +
+        MB_ICONQUESTION + MB_TOPMOST) = IDYES then
+    begin
+        CreateStartMenuShortcut();
     end;
 end;
 
@@ -8065,6 +8128,11 @@ begin
 
     StatusBar.Panels[1].Text := DateTimeToStr(Now()) + ' AutoSaving file: ' + NewFileName;
     AutoSaveFile(NewFileName);
+end;
+
+procedure TfrmMain.Beep1Click(Sender: TObject);
+begin
+    frmEventInsAdd.PlaySoundFromResource('BUZZ1');
 end;
 
 procedure TfrmMain.tbGenerateAudioDirsClick(Sender: TObject);

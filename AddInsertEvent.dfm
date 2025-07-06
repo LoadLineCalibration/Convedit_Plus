@@ -5327,6 +5327,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   ShowHint = True
   OnActivate = FormActivate
   OnCreate = FormCreate
+  OnKeyPress = FormKeyPress
   OnMouseWheelDown = FormMouseWheelDown
   OnMouseWheelUp = FormMouseWheelUp
   OnShow = FormShow
@@ -5519,6 +5520,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           ScrollBars = ssVertical
           TabOrder = 0
           OnChange = memoSpeechChange
+          OnKeyPress = FormKeyPress
         end
         object cmbSpeakingFrom: TComboBox
           Left = 128
@@ -5820,13 +5822,14 @@ object frmEventInsAdd: TfrmEventInsAdd
                 ScrollBars = ssVertical
                 TabOrder = 0
                 OnChange = mmoChoiceTextChange
+                OnKeyPress = FormKeyPress
               end
               object chkDisplayChoiceAsSpeech: TCheckBox
-                Left = 198
-                Top = 105
-                Width = 233
+                Left = 259
+                Top = 104
+                Width = 245
                 Height = 25
-                Caption = 'Display Choice as speech when Selected'
+                Caption = 'Display Choice as speech when Selected?'
                 Checked = True
                 State = cbChecked
                 TabOrder = 1
@@ -5835,7 +5838,7 @@ object frmEventInsAdd: TfrmEventInsAdd
               object cbbChoiceJumpToLabel: TComboBox
                 Left = 87
                 Top = 104
-                Width = 105
+                Width = 157
                 Height = 22
                 Style = csOwnerDrawVariable
                 TabOrder = 2
@@ -6031,6 +6034,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Width = 56
           Height = 22
           Cursor = crHandPoint
+          Hint = 'Or DblClick on the list item'
           Anchors = [akTop, akRight]
           Caption = 'Play'
           TabOrder = 8
@@ -7094,6 +7098,7 @@ object frmEventInsAdd: TfrmEventInsAdd
             PopupMenu = MemoPopup
             TabOrder = 1
             OnChange = editGoalNameChange
+            OnKeyPress = FormKeyPress
           end
         end
         object rbAddGoal: TRadioButton
@@ -7155,6 +7160,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           ScrollBars = ssVertical
           TabOrder = 0
           OnChange = memoNoteTextChange
+          OnKeyPress = FormKeyPress
         end
       end
     end
@@ -7208,6 +7214,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           PopupMenu = MemoPopup
           ScrollBars = ssVertical
           TabOrder = 0
+          OnKeyPress = FormKeyPress
         end
         object editSkillPointsAmount: TSpinEdit
           Left = 16
@@ -7446,6 +7453,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           ScrollBars = ssVertical
           TabOrder = 0
           OnChange = memoCommentTextChange
+          OnKeyPress = FormKeyPress
         end
       end
     end
@@ -7487,7 +7495,8 @@ object frmEventInsAdd: TfrmEventInsAdd
     Width = 111
     Height = 25
     Anchors = [akRight, akBottom]
-    Caption = 'Close'
+    Cancel = True
+    Caption = 'Close [ESC]'
     TabOrder = 2
     OnClick = btnCloseClick
   end
@@ -7551,8 +7560,14 @@ object frmEventInsAdd: TfrmEventInsAdd
     Cursor = crHandPoint
     Anchors = [akRight, akBottom]
     Caption = '&Update '
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = 'Segoe UI'
+    Font.Style = [fsBold]
     Kind = bkOK
     NumGlyphs = 2
+    ParentFont = False
     TabOrder = 8
     WordWrap = True
     OnClick = btnUpdateClick

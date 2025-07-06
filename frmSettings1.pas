@@ -70,6 +70,7 @@ type
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
+    chkPlayWarningSoundOnEventError: TCheckBox;
 
     // new procedures
     procedure SaveChanges();
@@ -153,6 +154,7 @@ begin
         chkSelectedTextIsWhite.Checked := bUseWhiteSelectedText;
 
         chkEnableLogging.Checked := bUseLogging;
+        chkPlayWarningSoundOnEventError.Checked := bPlayWarningSoundOnEventError;
 
         cbbReorderEventsModKey.ItemIndex := Ord(ReorderModKey);
 
@@ -218,6 +220,7 @@ begin
         bUseWhiteSelectedText := chkSelectedTextIsWhite.Checked;
 
         bUseLogging := chkEnableLogging.Checked;
+        bPlayWarningSoundOnEventError := chkPlayWarningSoundOnEventError.Checked;
 
         ReorderModKey := TReorderEventsModKey(cbbReorderEventsModKey.ItemIndex);
         btnReorder.Hint := GetReorderButtonHint(); // Update hint
