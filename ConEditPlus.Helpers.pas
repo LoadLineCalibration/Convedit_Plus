@@ -10,6 +10,8 @@ uses
      Winapi.ShlObj, Winapi.ActiveX, System.Win.ComObj;
 
 // functions
+function IsoStampForFileName(): string;
+function ValidateFileName(const S: string): string;
 function ValidateFName(const AString: string): Boolean;
 function GetDPIAsRatio(): Single;
 function GenerateRandomSuffix(Count: Integer = 3): string;
@@ -22,6 +24,27 @@ procedure ExtractRGB(aColor: TColor; out r, g, b: Byte);
 procedure CreateShortcut(const TargetPath, WorkingDirectory, ShortcutPath, IconPath, Tooltip, Parameters: string);
 
 implementation
+
+function IsoStampForFileName(): string;
+begin
+    // ISO без двоеточий (Windows не любит ':')
+    Result := FormatDateTime('yyyy-mm-dd"T"hh.nn.ss', Now);
+end;
+
+function ValidateFileName(const S: string): string;
+const
+    Bad: array[0..8] of Char = ('<', '>', ':', '"', '/', '\', '|', '?', '*');
+var
+    i: Integer;
+    r: string;
+begin
+    r := S.Trim;
+    for i := Low(Bad) to High(Bad) do
+        r := r.Replace(Bad[i], '_');
+
+    r := r.Replace(' ', '_'); // пробелы в подчёркивания
+    Result := r;
+end;
 
 function ValidateFName(const AString: string): Boolean;
 begin

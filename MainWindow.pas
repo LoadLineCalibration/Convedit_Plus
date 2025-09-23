@@ -11,7 +11,7 @@ uses
   system.Math, Vcl.MPlayer, ConEditPlus.Enums, Winapi.ShellAPI, ConEditPlus.Helpers, Vcl.Clipbrd, system.Rtti,
   ConEditPlus.Clipboard.Helper, ConEditPlus.Templates.Factory, Vcl.AppEvnts, System.Threading,
   system.DateUtils, vcl.Styles, vcl.Themes, ConEditPlus.Colors, ConEditPlus.ShellContextMenuHelper,
-  ConEditPlus.IniExporter;
+  ConEditPlus.IniExporter, Vcl.Imaging.pngimage;
 
 
 type
@@ -414,6 +414,13 @@ type
     N42: TMenuItem;
     CreateshortcutonDesktop1: TMenuItem;
     CreateshortcutinStartmenu1: TMenuItem;
+    View_JumpToConvoEvents: TAction;
+    Jumptoconversationevents1: TMenuItem;
+    akeScreenshot1: TMenuItem;
+    CopytoClipboard1: TMenuItem;
+    SaveAs2: TMenuItem;
+    N43: TMenuItem;
+    BrowsetoScreenShots1: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -467,6 +474,9 @@ type
     function CheckLabelExistInConversation(labelName: string): Boolean; // Check if event label already exists
 
     function bIsEventFilterActive(): Boolean;
+
+    function SaveConEventListScreenShot(const CurrentFile, CurrentConvo: string): string;
+    function RenderConEventListBitmap(): TBitmap;
 
     procedure SelectTreeItemByObject(TreeView: TTreeView; Obj: TObject);
     procedure SelectEventByObject(obj: TObject);
@@ -575,6 +585,8 @@ type
     procedure CreateAIBarksExample(bBarkFutz: Boolean; SpeechCount: Integer = 3);
 
     procedure ExportConversationAsText(const filename: string);
+
+
 
 
 
@@ -720,7 +732,6 @@ type
     procedure Withchoicesifany1Click(Sender: TObject);
     procedure Alllinesofselectedspeaker1Click(Sender: TObject);
     procedure SpeechGeneratortest1Click(Sender: TObject);
-    procedure tbViewConeventJumpClick(Sender: TObject);
     procedure edtConvoTreeQSearchEnter(Sender: TObject);
     procedure lbTreeSearchResultsDblClick(Sender: TObject);
     procedure lbTreeSearchResultsExit(Sender: TObject);
@@ -745,6 +756,10 @@ type
     procedure Beep1Click(Sender: TObject);
     procedure FileCreateDesktopShortcutExecute(Sender: TObject);
     procedure FileCreateStartMenuShortcutExecute(Sender: TObject);
+    procedure View_JumpToConvoEventsExecute(Sender: TObject);
+    procedure CopytoClipboard1Click(Sender: TObject);
+    procedure SaveAs2Click(Sender: TObject);
+    procedure BrowsetoScreenShots1Click(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -866,6 +881,8 @@ type
     var TreeBuildTask: ITask;
     var AutoSaveTask: ITask;
     var frmEventInsAddOffset: TPoint;
+
+    var GRenderCanvas: TCanvas;
   end;
 
 var
@@ -2164,6 +2181,17 @@ begin
     finally
         BinWriter.Free();
         mStream.Free();
+    end;
+end;
+
+procedure TfrmMain.CopytoClipboard1Click(Sender: TObject);
+begin
+    var bmp := RenderConEventListBitmap();
+    try
+        // DIB/Bitmap — нативный формат для буфера обмена Windows
+        Clipboard.Assign(bmp);
+    finally
+        bmp.Free();
     end;
 end;
 
@@ -3673,6 +3701,13 @@ var
     ActorToNameStr: string;
     SpeechEvent: TConEventSpeech;
 begin
+    var cnv: TCanvas;
+
+    if Assigned(GRenderCanvas) then
+        cnv := GRenderCanvas
+    else
+        cnv := (Control as TListBox).Canvas;
+
     SpeechEvent := TConEventSpeech(ConEventList.Items.Objects[Index]);
     if SpeechEvent = nil then Exit();
 
@@ -3692,7 +3727,7 @@ begin
 
     if bchkSpeech = False then Exit();  // Filter
 
-    with (Control as TListBox).Canvas do
+    with cnv do
     begin
         if odSelected in State then
         begin
@@ -3800,6 +3835,14 @@ var
     EventChoice: TConEventChoice;
     FlagsStr: string;
 begin
+    var cnv: TCanvas;
+
+    if Assigned(GRenderCanvas) then
+        cnv := GRenderCanvas
+    else
+        cnv := (Control as TListBox).Canvas;
+
+
     //EventChoice:= nil;
     EventChoice := TConEventChoice(ConEventList.Items.Objects[Index]);
     if EventChoice = nil then Exit();
@@ -3813,7 +3856,7 @@ begin
 
     if bchkChoice = False then Exit();
 
-    with (Control as TListBox).Canvas do
+    with cnv do
     begin
         if odSelected in State then
         begin
@@ -3965,6 +4008,13 @@ var
     flagvalue,
     FlagExpiresStr: string;
 begin
+    var cnv: TCanvas;
+
+    if Assigned(GRenderCanvas) then
+        cnv := GRenderCanvas
+    else
+        cnv := (Control as TListBox).Canvas;
+
     EventSetFlags := nil;
 
     // load data from event
@@ -3975,7 +4025,7 @@ begin
 
     if bchkSetFlag = False then Exit();
 
-    with (Control as TListBox).Canvas do
+    with cnv do
     begin
         if odSelected in State then
         begin
@@ -4038,6 +4088,13 @@ var
     tempRect: TRect;
     EventCheckFlag: TConEventCheckFlag;
 begin
+    var cnv: TCanvas;
+
+    if Assigned(GRenderCanvas) then
+        cnv := GRenderCanvas
+    else
+        cnv := (Control as TListBox).Canvas;
+
     EventCheckFlag := nil;
 
     // load data from event
@@ -4048,7 +4105,7 @@ begin
 
     if bchkCheckFlag = False then Exit();
 
-    with (Control as TListBox).Canvas do
+    with cnv do
     begin
         if odSelected in State then
         begin
@@ -4111,6 +4168,13 @@ var
     tempRect: TRect;
     objName, failLabel: string;
 begin
+    var cnv: TCanvas;
+
+    if Assigned(GRenderCanvas) then
+        cnv := GRenderCanvas
+    else
+        cnv := (Control as TListBox).Canvas;
+
     if ((CurrentConversation <> nil) and (TConEventCheckObject(ConEventList.Items.Objects[Index]) <> nil)) then
     begin
         objName := TConEventCheckObject(ConEventList.Items.Objects[Index]).ObjectValue;
@@ -4119,7 +4183,7 @@ begin
 
     if bchkCheckObject = False then Exit();
 
-    with (Control as TListBox).Canvas do
+    with cnv do
     begin
         if odSelected in State then
         begin
@@ -4168,6 +4232,13 @@ var
     ActorToValue: string;
     GotoLabel: string;
 begin
+    var cnv: TCanvas;
+
+    if Assigned(GRenderCanvas) then
+        cnv := GRenderCanvas
+    else
+        cnv := (Control as TListBox).Canvas;
+
     if ((CurrentConversation <> nil) and (TConEventTransferObject(ConEventList.Items.Objects[Index]) <> nil)) then
     begin
         ObjectValue  := TConEventTransferObject(ConEventList.Items.Objects[Index]).ObjectValue;
@@ -4179,7 +4250,7 @@ begin
 
     if bchkTransferObject = False then Exit();
 
-    with (Control as TListBox).Canvas do
+    with cnv do
     begin
         if odSelected in State then
         begin
@@ -4231,6 +4302,13 @@ var
     camTypeStr: string;
     camAngleStr: string;
 begin
+    var cnv: TCanvas;
+
+    if Assigned(GRenderCanvas) then
+        cnv := GRenderCanvas
+    else
+        cnv := (Control as TListBox).Canvas;
+
     if ((CurrentConversation <> nil) and (TConEventMoveCamera(ConEventList.Items.Objects[Index]) <> nil)) then
     begin
         case TConEventMoveCamera(ConEventList.Items.Objects[Index]).CameraType of
@@ -4261,7 +4339,7 @@ begin
 
     if bchkMoveCamera = False then Exit();
 
-    with (Control as TListBox).Canvas do
+    with cnv do
     begin
         if odSelected in State then
         begin
@@ -4314,6 +4392,13 @@ var
     PlayAnimDurationSec: Integer;
     bPlayAnimWaitToFinish: Boolean;
 begin
+    var cnv: TCanvas;
+
+    if Assigned(GRenderCanvas) then
+        cnv := GRenderCanvas
+    else
+        cnv := (Control as TListBox).Canvas;
+
     //bPlayAnimOnce:= False;
     bPlayAnimWaitToFinish:= False;
 
@@ -4331,7 +4416,7 @@ begin
 
     if bchkAnimation = False then Exit();
 
-    with (Control as TListBox).Canvas do
+    with cnv do
     begin
         if odSelected in State then
         begin
@@ -4414,6 +4499,13 @@ var
     CurrentConversationId: Integer;
     CombinedJumpToStr: string;
 begin
+    var cnv: TCanvas;
+
+    if Assigned(GRenderCanvas) then
+        cnv := GRenderCanvas
+    else
+        cnv := (Control as TListBox).Canvas;
+
     JumpToConversationId := -1;
     CurrentConversationId:= -1;
 
@@ -4436,7 +4528,7 @@ begin
 
     if bchkJump = False then Exit();
 
-    with (Control as TListBox).Canvas do
+    with cnv do
     begin
         if odSelected in State then
         begin
@@ -4506,6 +4598,13 @@ var
     labelsArray: array of string;
     strCycle, strCycleOnce, strRandCycle: string;
 begin
+    var cnv: TCanvas;
+
+    if Assigned(GRenderCanvas) then
+        cnv := GRenderCanvas
+    else
+        cnv := (Control as TListBox).Canvas;
+
     if ((CurrentConversation <> nil) and (TConEventRandom(ConEventList.Items.Objects[Index]) <> nil)) then
     begin
         SetLength(labelsArray, Length(TConEventRandom(ConEventList.Items.Objects[Index]).GoToLabels));
@@ -4520,7 +4619,7 @@ begin
 
     if bchkRandom = False then Exit();
 
-    with (Control as TListBox).Canvas do
+    with cnv do
     begin
         if odSelected in State then
         begin
@@ -4599,6 +4698,13 @@ var
     tempRect: TRect;
     TriggerTag: string;
 begin
+    var cnv: TCanvas;
+
+    if Assigned(GRenderCanvas) then
+        cnv := GRenderCanvas
+    else
+        cnv := (Control as TListBox).Canvas;
+
     if ((CurrentConversation <> nil) and (TConEventTrigger(ConEventList.Items.Objects[Index]) <> nil)) then
     begin
         TriggerTag := TConEventTrigger(ConEventList.Items.Objects[Index]).TriggerTag;
@@ -4606,7 +4712,7 @@ begin
 
     if bchkTrigger = False then Exit();
 
-    with (Control as TListBox).Canvas do
+    with cnv do
     begin
         if odSelected in State then
         begin
@@ -4663,6 +4769,13 @@ var
     GoalText: string;
     bPrimaryGoal: Boolean;
 begin
+    var cnv: TCanvas;
+
+    if Assigned(GRenderCanvas) then
+        cnv := GRenderCanvas
+    else
+        cnv := (Control as TListBox).Canvas;
+
     bComplete:= False;
     bPrimaryGoal := False;
 
@@ -4678,7 +4791,7 @@ begin
 
     if bchkAddGoal = False then Exit();
 
-    with (Control as TListBox).Canvas do
+    with cnv do
     begin
         if odSelected in State then
         begin
@@ -4757,6 +4870,13 @@ var
     tempRect: TRect;
     NoteText: string;
 begin
+    var cnv: TCanvas;
+
+    if Assigned(GRenderCanvas) then
+        cnv := GRenderCanvas
+    else
+        cnv := (Control as TListBox).Canvas;
+
     if ((CurrentConversation <> nil) and (TConEventAddNote(ConEventList.Items.Objects[Index]) <> nil)) then
     begin
         NoteText := TConEventAddNote(ConEventList.Items.Objects[Index]).TextLine;
@@ -4764,7 +4884,7 @@ begin
 
     if bchkAddNote = False then Exit();
 
-    with (Control as TListBox).Canvas do
+    with cnv do
     begin
         if odSelected in State then
         begin
@@ -4820,6 +4940,13 @@ var
     SkillAwardMessage: string;
     SkillPoints: Integer;
 begin
+    var cnv: TCanvas;
+
+    if Assigned(GRenderCanvas) then
+        cnv := GRenderCanvas
+    else
+        cnv := (Control as TListBox).Canvas;
+
     SkillPoints := -1;
 
     // load data from event
@@ -4831,7 +4958,7 @@ begin
 
     if bchkAddNote = False then Exit();
 
-    with (Control as TListBox).Canvas do
+    with cnv do
     begin
         if odSelected in State then
         begin
@@ -4888,6 +5015,13 @@ procedure TfrmMain.DrawET_AddCredits(Control: TWinControl; Index: Integer; Rect:
 var TempRect: TRect;
 var AmountOfCredits: Integer;
 begin
+    var cnv: TCanvas;
+
+    if Assigned(GRenderCanvas) then
+        cnv := GRenderCanvas
+    else
+        cnv := (Control as TListBox).Canvas;
+
     AmountOfCredits := -1;
 
     // load data from event
@@ -4898,7 +5032,7 @@ begin
 
     if bchkAddCredits = False then Exit();
 
-    with (Control as TListBox).Canvas do
+    with cnv do
     begin
         if odSelected in State then // selected event
         begin
@@ -4960,6 +5094,13 @@ var
     ConditionString: string;
     CombinedString: string;
 begin
+    var cnv: TCanvas;
+
+    if Assigned(GRenderCanvas) then
+        cnv := GRenderCanvas
+    else
+        cnv := (Control as TListBox).Canvas;
+
     // load data from event
     if ((CurrentConversation <> nil) and (TConEventCheckPersona(ConEventList.Items.Objects[Index]) <> nil)) then
     begin
@@ -4986,7 +5127,7 @@ begin
 
     if bchkCheckPersona = False then Exit();
 
-    with (Control as TListBox).Canvas do
+    with cnv do
     begin
         if odSelected in State then
         begin
@@ -5039,6 +5180,13 @@ procedure TfrmMain.DrawET_Comment(Control: TWinControl; Index: Integer; Rect: TR
 var
     tempRect: TRect;
 begin
+    var cnv: TCanvas;
+
+    if Assigned(GRenderCanvas) then
+        cnv := GRenderCanvas
+    else
+        cnv := (Control as TListBox).Canvas;
+
     var CommentString: string;
 
     // load data from event
@@ -5049,7 +5197,7 @@ begin
 
     if bchkComment = False then Exit();
 
-    with (Control as TListBox).Canvas do
+    with cnv do
     begin
         if odSelected in State then
         begin
@@ -5101,9 +5249,16 @@ end;
 procedure TfrmMain.DrawET_End(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
 var TempRect: TRect;
 begin
+    var cnv: TCanvas;
+
+    if Assigned(GRenderCanvas) then
+        cnv := GRenderCanvas
+    else
+        cnv := (Control as TListBox).Canvas;
+
     if bchkEnd = False then Exit();
 
-    with (Control as TListBox).Canvas do
+    with cnv do
     begin
         Brush.Style := bsClear;
 
@@ -5150,7 +5305,14 @@ var
     tempRect: TRect;
     Event: TConEvent;
 begin
-    with (Control as TListBox).Canvas do
+    var cnv: TCanvas;
+
+    if Assigned(GRenderCanvas) then
+        cnv := GRenderCanvas
+    else
+        cnv := (Control as TListBox).Canvas;
+
+    with cnv do
     begin
         if CurrentConversation <> nil then
         begin
@@ -5179,7 +5341,7 @@ begin
             Brush.Style := bsClear;
 
             //FillRectAlpha(TListBox(Control).Canvas, tempRect, clLime, 64);
-            FillRectAlpha(TListBox(Control).Canvas, tempRect, EventListColors.EventWithLabel, 64);
+            FillRectAlpha(cnv, tempRect, EventListColors.EventWithLabel, 64);
         end;
 
         case Event.EventHighlightType of
@@ -5193,7 +5355,7 @@ begin
                 Brush.Style := bsClear;
 
                 //case EventListColorsMode of
-                GradientFillCanvas(TListBox(Control).Canvas, EventListColors.RelatedEventFrom, EventListColors.RelatedEventTo, tempRect, gdHorizontal);
+                GradientFillCanvas(cnv, EventListColors.RelatedEventFrom, EventListColors.RelatedEventTo, tempRect, gdHorizontal);
                     //ELCM_Default: GradientFillCanvas(TListBox(Control).Canvas, clYellow, clCream, tempRect, gdHorizontal);
                     //ELCM_Dark:    GradientFillCanvas(TListBox(Control).Canvas, RGB(128,121,0), clWebYellowGreen, tempRect, gdHorizontal);
                 //end;
@@ -5208,7 +5370,7 @@ begin
                 tempRect.Top := Rect.Top;
                 Brush.Style := bsClear;
 
-                GradientFillCanvas(TListBox(Control).Canvas, EventListColors.ErrorEventFrom, EventListColors.ErrorEventTo, tempRect, gdHorizontal);
+                GradientFillCanvas(cnv, EventListColors.ErrorEventFrom, EventListColors.ErrorEventTo, tempRect, gdHorizontal);
                 //GradientFillCanvas(TListBox(Control).Canvas, clWebOrange, clRed, tempRect, gdHorizontal);
             end;
         end;
@@ -5237,7 +5399,14 @@ end;
 
 procedure TfrmMain.DrawEventSelection(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState); // if event is selected
 begin
-    with (Control as TListBox).Canvas do
+    var cnv: TCanvas;
+
+    if Assigned(GRenderCanvas) then
+        cnv := GRenderCanvas
+    else
+        cnv := (Control as TListBox).Canvas;
+
+    with cnv do
     begin
         if bUse3DSelectionFrame = True then
            DrawFrameControl(Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_MONO);
@@ -5246,7 +5415,7 @@ begin
         begin
             if (bHglEventsGradient = True) then
             begin
-                GradientFillCanvas(ConEventList.Canvas, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
+                GradientFillCanvas(cnv, clrHighlightEventFrom, clrHighlightEventTo, Rect, gdVertical)
             end
             else
             begin
@@ -5259,7 +5428,7 @@ begin
         begin
             if (bHglEventsGradient = False) then
             begin
-                GradientFillCanvas(ConEventList.Canvas, EventListColors.HighlightEventFrom, EventListColors.HighlightEventTo, Rect, gdVertical)
+                GradientFillCanvas(cnv, EventListColors.HighlightEventFrom, EventListColors.HighlightEventTo, Rect, gdVertical)
             end
             else
             begin
@@ -5956,17 +6125,25 @@ begin
 end;
 
 procedure TfrmMain.ConEventListDrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
+var
+    cnv: TCanvas;
 begin
-    with (Control as TListBox).Canvas do
+    if Assigned(GRenderCanvas) then
+        cnv := GRenderCanvas
+    else
+        cnv := (Control as TListBox).Canvas;
+
+    //with (Control as TListBox).Canvas do
+    with cnv do
     begin
         Font.Size := CEP_EVENT_LIST_FONT_SIZE;
         Font.Name := CEP_EVENT_LIST_FONT_NAME;
 
         Pen.Style := psInsideFrame;
         if bUseCustomGridColor = True then
-            Frame3D(TListBox(Control).Canvas, Rect, clrGrid, clrGrid, 1) // разделитель
+            Frame3D(cnv, Rect, clrGrid, clrGrid, 1) // разделитель
         else
-            Frame3D(TListBox(Control).Canvas, Rect, EventListColors.GridBG, EventListColors.GridColor, 1); // разделитель
+            Frame3D(cnv, Rect, EventListColors.GridBG, EventListColors.GridColor, 1); // разделитель
 
         //Frame3D(TListBox(Control).Canvas, Rect, EventListColors.GridBG, EventListColors.GridColor, 1); // разделитель
 
@@ -6618,6 +6795,141 @@ begin
     bFileModified := True;
 end;
 
+procedure TfrmMain.SaveAs2Click(Sender: TObject);
+begin
+    var SavedPath := SaveConEventListScreenShot(currentConFile, CurrentConversation.conName);
+
+    if SavedPath <> '' then
+        lblSelectedEvent.Caption := 'ScreenShot saved!';
+end;
+
+function TfrmMain.SaveConEventListScreenShot(const CurrentFile, CurrentConvo: string): string;
+var
+    dir, baseFile, baseDlg, fileName, fullPath: string;
+    bmp: TBitmap;
+    png: TPngImage;
+begin
+    // 1) Каталог рядом с exe
+    dir := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) + 'ScreenShots';
+    ForceDirectories(dir);
+
+    // 2) Базовые части имени
+    baseFile := ChangeFileExt(ExtractFileName(CurrentFile), '');
+    baseDlg  := CurrentConvo;
+
+    baseFile := ConEditPlus.Helpers.ValidateFileName(baseFile);
+    baseDlg  := ConEditPlus.Helpers.ValidateFileName(baseDlg);
+
+    if baseFile = '' then baseFile := 'None';
+    if baseDlg  = '' then baseDlg  := 'None';
+
+    // 3) Имя файла
+    fileName := baseFile + '__' + baseDlg + '__' + ConEditPlus.Helpers.IsoStampForFileName + '.png';
+    fullPath := TPath.Combine(dir, fileName);
+
+    // 4) Рендерим и сохраняем PNG
+    bmp := RenderConEventListBitmap();
+    try
+        png := TPngImage.Create();
+        try
+            png.Assign(bmp);
+            png.SaveToFile(fullPath);
+        finally
+            png.Free();
+        end;
+
+    finally
+        bmp.Free();
+    end;
+
+    Result := fullPath; // вернём полный путь
+end;
+
+function TfrmMain.RenderConEventListBitmap(): TBitmap;
+var
+    i, width, totalHeight, h, y, saved: Integer;
+    rc: TRect;
+    rgn: HRGN;
+    state: TOwnerDrawState;
+    heights: TArray<Integer>;
+begin
+    // 1) Читаем фактические высоты из КОНТРОЛА (учтены все твои фильтры)
+    SetLength(heights, ConEventList.Items.Count);
+    totalHeight := 0;
+    for i := 0 to ConEventList.Items.Count - 1 do
+    begin
+        h := SendMessage(ConEventList.Handle, LB_GETITEMHEIGHT, WPARAM(i), 0); // для owner-draw-variable — высота конкретного индекса
+        if h < 0 then
+            h := ConEventList.ItemHeight;
+        heights[i] := h;
+
+        if h > FILTER_ITEM_HEIGHT then
+            Inc(totalHeight, h); // только видимые попадают в общую высоту
+    end;
+
+    if totalHeight <= 0 then
+        totalHeight := 1;
+
+    width := ConEventList.ClientWidth;
+    if width <= 0 then
+        width := Max(ConEventList.Width - 4, 100);
+
+    // 2) Битмап без альфы (чтобы Clipboard не белел)
+    Result := TBitmap.Create;
+    try
+        Result.PixelFormat := pf24bit;
+        Result.SetSize(width, totalHeight);
+
+        Result.Canvas.Brush.Style := bsSolid;
+        Result.Canvas.Brush.Color := ConEventList.Color;
+        Result.Canvas.FillRect(Rect(0, 0, width, totalHeight));
+        SetBkMode(Result.Canvas.Handle, TRANSPARENT);
+
+        // 3) Рисуем ТВОЕЙ отрисовкой. Внутри DrawItem ты используешь cnv := GRenderCanvas.
+        GRenderCanvas := Result.Canvas;
+        try
+            y := 0;
+            for i := 0 to High(heights) do
+            begin
+                if heights[i] <= FILTER_ITEM_HEIGHT then
+                    Continue; // отфильтрованный — вообще пропускаем
+
+                rc := Rect(0, y, width, y + heights[i]);
+
+                // Жёсткий клип в границы ровно этого item — без «наездов»
+                saved := SaveDC(Result.Canvas.Handle);
+                try
+                    rgn := CreateRectRgn(rc.Left, rc.Top, rc.Right, rc.Bottom);
+                    SelectClipRgn(Result.Canvas.Handle, rgn);
+                    DeleteObject(rgn);
+
+                    // нормализация режимов
+                    Result.Canvas.Pen.Mode := pmCopy;
+                    Result.Canvas.Pen.Width := 1;
+                    Result.Canvas.Brush.Style := bsSolid;
+
+                    state := [];
+                    if i = ConEventList.ItemIndex then
+                        Include(state, odSelected);
+                    // if ConEventList.Focused then Include(state, odFocused);
+
+                    // Строго твой метод, не свойство OnDrawItem
+                    Self.ConEventListDrawItem(ConEventList, i, rc, state);
+                finally
+                    RestoreDC(Result.Canvas.Handle, saved);
+                end;
+
+                Inc(y, heights[i]);
+            end;
+        finally
+            GRenderCanvas := nil;
+        end;
+    except
+        Result.Free;
+        raise;
+    end;
+end;
+
 procedure TfrmMain.CheckDpiRatioClick(Sender: TObject);
 begin
     var TestString: string;
@@ -6971,6 +7283,8 @@ begin
     pnlTreeSearch.Color := clBtnFace;
     pnlTreeSearch.FrameColor := clBtnFace;
     pnlEventFilter.Color := clBtnFace;
+
+    GRenderCanvas := nil;
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
@@ -7035,12 +7349,6 @@ begin
     lblQSearch.Enabled   := bVisible;
     edtSearchBox.Enabled := bVisible;
     btnStartSearch.Enabled := bVisible;
-end;
-
-procedure TfrmMain.tbViewConeventJumpClick(Sender: TObject);
-begin
-    frmFindRefs.Show();
-    frmFindRefs.ListConEventJump();
 end;
 
 procedure TfrmMain.CreateTestFile1Click(Sender: TObject);
@@ -7509,6 +7817,12 @@ end;
 procedure TfrmMain.About1Click(Sender: TObject);
 begin
     frmAbout.ShowModal();
+end;
+
+procedure TfrmMain.View_JumpToConvoEventsExecute(Sender: TObject);
+begin
+    frmFindRefs.Show();
+    frmFindRefs.ListConEventJump();
 end;
 
 procedure TfrmMain.ActorsPawns1Click(Sender: TObject);
@@ -8161,6 +8475,12 @@ begin
               bchkAddSkillPoints = False or
               bchkAddNote = False or
               bchkEnd = False;
+end;
+
+procedure TfrmMain.BrowsetoScreenShots1Click(Sender: TObject);
+begin
+    var dir := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) + 'ScreenShots';
+    ShellExecute(0, 'open', PChar(dir), nil, nil, SW_SHOWNORMAL);
 end;
 
 procedure TfrmMain.btnApplyFilterClick(Sender: TObject);

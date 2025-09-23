@@ -5761,6 +5761,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           OnClick = lvChoiceListClick
           OnDblClick = lvChoiceListDblClick
           OnEditing = lvSetFlagsEditing
+          OnKeyPress = lvChoiceListKeyPress
           OnMouseDown = lvChoiceListMouseDown
         end
         object ChoiceEditPanel: TEsPanel

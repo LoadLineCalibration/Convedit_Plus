@@ -6106,9 +6106,8 @@ object frmMain: TfrmMain
     object tbViewConeventJump: TToolButton
       Left = 516
       Top = 0
-      Hint = 'View list of "Jump to conversation" events'
+      Action = View_JumpToConvoEvents
       ImageIndex = 14
-      OnClick = tbViewConeventJumpClick
     end
     object EsPanel1: TEsPanel
       Left = 547
@@ -6591,6 +6590,9 @@ object frmMain: TfrmMain
         Caption = 'Conversation player'
         OnClick = SpeechGeneratortest1Click
       end
+      object Jumptoconversationevents1: TMenuItem
+        Action = View_JumpToConvoEvents
+      end
     end
     object mnuHelp: TMenuItem
       Caption = 'Help'
@@ -6615,6 +6617,24 @@ object frmMain: TfrmMain
     OnPopup = PopupConvoEventListPopup
     Left = 428
     Top = 223
+    object akeScreenshot1: TMenuItem
+      Caption = 'Take Screenshot'
+      object CopytoClipboard1: TMenuItem
+        Caption = 'Copy to Clipboard'
+        OnClick = CopytoClipboard1Click
+      end
+      object SaveAs2: TMenuItem
+        Caption = 'Save to "ScreenShots\"'
+        OnClick = SaveAs2Click
+      end
+      object N43: TMenuItem
+        Caption = '-'
+      end
+      object BrowsetoScreenShots1: TMenuItem
+        Caption = 'Browse to "ScreenShots\"'
+        OnClick = BrowsetoScreenShots1Click
+      end
+    end
     object est1: TMenuItem
       Action = FileShowShellMenu
     end
@@ -10160,6 +10180,12 @@ object frmMain: TfrmMain
       Category = 'File'
       Caption = 'Create shortcut in Start menu...'
       OnExecute = FileCreateStartMenuShortcutExecute
+    end
+    object View_JumpToConvoEvents: TAction
+      Category = 'View'
+      Caption = '"Jump to conversation" events'
+      Hint = 'View list of "Jump to conversation" events.'
+      OnExecute = View_JumpToConvoEventsExecute
     end
   end
   object FileSaveDialog: TFileSaveDialog

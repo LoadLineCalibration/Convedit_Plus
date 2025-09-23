@@ -415,6 +415,7 @@ type
     procedure FormActivate(Sender: TObject);
     procedure lvChoiceListMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure lvChoiceListKeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
   public
@@ -2799,8 +2800,9 @@ end;
 procedure TfrmEventInsAdd.btnUpdateClick(Sender: TObject);
 begin
     UpdateEvent();
+//    frmMain.UpdateEventListHeights(); // 1
+    frmMain.SetEventsListScrollbars();  // 2
     frmMain.UpdateEventListHeights();
-    frmMain.SetEventsListScrollbars();
 end;
 
 procedure TfrmEventInsAdd.btnDeleteCheckFlagClick(Sender: TObject);
@@ -3327,6 +3329,14 @@ begin
         btnPlayChoiceAudio.Caption := strStopMP3
     else
         btnPlayChoiceAudio.Caption := strPlayMP3;
+end;
+
+procedure TfrmEventInsAdd.lvChoiceListKeyPress(Sender: TObject; var Key: Char);
+begin
+    if Key = #32 then
+    begin
+        btnPlayChoiceAudioClick(self);
+    end;
 end;
 
 procedure TfrmEventInsAdd.lvChoiceListMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);

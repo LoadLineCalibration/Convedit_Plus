@@ -45,7 +45,6 @@ uses
   ConEditPlus.Templates.Factory in 'ConEditPlus.Templates.Factory.pas',
   ConEditPlus.Colors in 'ConEditPlus.Colors.pas',
   ConEditPlus.IniExporter in 'ConEditPlus.IniExporter.pas',
-  ConEditPlus.ConEventList.Utils in 'ConEditPlus.ConEventList.Utils.pas',
   Vcl.Themes,
   Vcl.Styles,
   ConEditPlus.ShellContextMenuHelper in 'ConEditPlus.ShellContextMenuHelper.pas';
