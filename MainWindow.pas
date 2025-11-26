@@ -295,7 +295,7 @@ type
     N31: TMenuItem;
     N32: TMenuItem;
     N33: TMenuItem;
-    SpeechGeneratortest1: TMenuItem;
+    mniConvoPlayer: TMenuItem;
     ApplicationEvents1: TApplicationEvents;
     mnuChoiceItemSub10: TMenuItem;
     Copyonlymp3filename11: TMenuItem;
@@ -415,12 +415,31 @@ type
     CreateshortcutonDesktop1: TMenuItem;
     CreateshortcutinStartmenu1: TMenuItem;
     View_JumpToConvoEvents: TAction;
-    Jumptoconversationevents1: TMenuItem;
+    mniJumpToConvosList: TMenuItem;
     akeScreenshot1: TMenuItem;
     CopytoClipboard1: TMenuItem;
     SaveAs2: TMenuItem;
     N43: TMenuItem;
     BrowsetoScreenShots1: TMenuItem;
+    Fixconversationidentifiers1: TMenuItem;
+    WarningDontusethesecommands1: TMenuItem;
+    ifyoudontknowwhattheyredoing1: TMenuItem;
+    Ifyoureallywanttousethesecommands1: TMenuItem;
+    Pleasecheckthesourcecodefirst1: TMenuItem;
+    N44: TMenuItem;
+    menuExpFeatures: TMenuItem;
+    Resetfilter1: TMenuItem;
+    Wholeconversation3: TMenuItem;
+    Onlyvisibleitems1: TMenuItem;
+    CopytoClipboard2: TMenuItem;
+    SavetoScreenShots1: TMenuItem;
+    mnuModDB: TMenuItem;
+    btnCloseTreeSearch: TButton;
+    Panel1: TPanel;
+    OpenPlanetDeusExrupage1: TMenuItem;
+    Label1: TLabel;
+    cmbSpeechFilter: TComboBox;
+    Makeadonation1: TMenuItem;
     procedure mnuToggleMainToolBarClick(Sender: TObject);
     procedure mnuStatusbarClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -460,8 +479,10 @@ type
     function GetCommentItemHeight(events: array of TConEvent): Integer;
 
     function FindConversationObjByString(conName: string): TConversation; // Find conversation by name return as TObject
-    function FindConversationObjById(idToLookFor: Integer): TConversation; // Returns object
+    function FindConversationObjById(const idToLookFor: Integer): TConversation; // Returns object
     function FindConversationById(id: Integer): string; // Find conversation by id and return it's name as string;
+
+    function GetAllConversationIdsCsv(): string;
 
     function FindTableIdByName(tableMode: TTableMode; NameToLookFor: string): Integer;
     function FindTableNameById(tableMode: TTableMode; idToLookFor: Integer): String;
@@ -475,8 +496,8 @@ type
 
     function bIsEventFilterActive(): Boolean;
 
-    function SaveConEventListScreenShot(const CurrentFile, CurrentConvo: string): string;
-    function RenderConEventListBitmap(): TBitmap;
+    function SaveConEventListScreenShot(const CurrentFile, CurrentConvo: string; _bVisibleOnly: Boolean): string;
+    function RenderConEventListBitmap(const bVisibleOnly: Boolean): TBitmap;
 
     procedure SelectTreeItemByObject(TreeView: TTreeView; Obj: TObject);
     procedure SelectEventByObject(obj: TObject);
@@ -585,6 +606,10 @@ type
     procedure CreateAIBarksExample(bBarkFutz: Boolean; SpeechCount: Integer = 3);
 
     procedure ExportConversationAsText(const filename: string);
+
+    procedure FixConversationsIdentifiers();
+
+    procedure PostLoadConFile();
 
 
 
@@ -731,8 +756,7 @@ type
     procedure Wholeconversation1Click(Sender: TObject);
     procedure Withchoicesifany1Click(Sender: TObject);
     procedure Alllinesofselectedspeaker1Click(Sender: TObject);
-    procedure SpeechGeneratortest1Click(Sender: TObject);
-    procedure edtConvoTreeQSearchEnter(Sender: TObject);
+    procedure mniConvoPlayerClick(Sender: TObject);
     procedure lbTreeSearchResultsDblClick(Sender: TObject);
     procedure lbTreeSearchResultsExit(Sender: TObject);
     procedure ConvoTreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -760,6 +784,14 @@ type
     procedure CopytoClipboard1Click(Sender: TObject);
     procedure SaveAs2Click(Sender: TObject);
     procedure BrowsetoScreenShots1Click(Sender: TObject);
+    procedure Fixconversationidentifiers1Click(Sender: TObject);
+    procedure Pleasecheckthesourcecodefirst1DrawItem(Sender: TObject; ACanvas: TCanvas; ARect: TRect; Selected: Boolean);
+    procedure Resetfilter1Click(Sender: TObject);
+    procedure CopytoClipboard2Click(Sender: TObject);
+    procedure SavetoScreenShots1Click(Sender: TObject);
+    procedure mnuModDBClick(Sender: TObject);
+    procedure btnCloseTreeSearchClick(Sender: TObject);
+    procedure OpenPlanetDeusExrupage1Click(Sender: TObject);
   private
     { Private declarations }
     FFileModified: Boolean;
@@ -865,6 +897,8 @@ type
     var bchkAddSkillPoints: Boolean;
     var bchkAddNote: Boolean;
     var bchkEnd: Boolean;
+
+    var SpeakerFilter: string;
 
 
     var MainFormIni: TIniFile;     // ini file
@@ -1210,7 +1244,7 @@ begin
     //Result := (Canvas.TextWidth(str) + (RealWidth - TextMetric.tmOverhang) - 1) div RealWidth;
 end;
 
-function TfrmMain.GetSpeechEventItemHeight(events: array of TConEvent): Integer;
+{function TfrmMain.GetSpeechEventItemHeight(events: array of TConEvent): Integer;
 begin
     var aLength, dResult: Integer;
 
@@ -1230,11 +1264,80 @@ begin
     else
         dResult := FILTER_ITEM_HEIGHT;
 
-
     if dResult > 254 then dResult:= 254;  // We are reached the limit!
 
     Result := dResult;
+end;}
+
+function TfrmMain.GetSpeechEventItemHeight(events: array of TConEvent): Integer;
+begin
+  	var aLength, dResult: Integer;
+	  aLength := 0;
+    // Берём максимальный LineWrapCount среди всех Speech в элементе
+    for var L := 0 to Length(events) - 1 do
+    begin
+        if events[L] is TConEventSpeech then
+        begin
+            var cnt := TConEventSpeech(events[L]).LineWrapCount;
+            if cnt > aLength then
+                aLength := cnt;
+        end;
+    end;
+    // Если Speech выключен — сразу сворачиваем
+    if bchkSpeech = False then
+    begin
+        Result := FILTER_ITEM_HEIGHT;
+        Exit;
+    end;
+    // Базовая высота без учёта SpeakerFilter
+    dResult := Round(18 * ConEditPlus.Helpers.GetDPIAsRatio()) + (Round(16 * ConEditPlus.Helpers.GetDPIAsRatio()) * aLength);
+    // --- SpeakerFilter = include-only ---
+    if SpeakerFilter <> '' then
+    begin
+        // 1) Проверяем, есть ли вообще такой спикер в текущем разговоре
+        var bSpeakerExistsInConversation := False;
+        for var ev in CurrentConversation.Events do
+        begin
+            if ev is TConEventSpeech then
+            begin
+                var sp := TConEventSpeech(ev);
+                if SameText(sp.ActorValue, SpeakerFilter) = True then
+                begin
+                    bSpeakerExistsInConversation := True;
+                    Break;
+                end;
+            end;
+        end;
+        // 2) Если спикера нет — игнорируем фильтр (оставляем dResult как есть)
+        if bSpeakerExistsInConversation = True then
+        begin
+            // 3) Спикер есть -> показываем только те элементы, где он присутствует
+            var bItemHasSpeaker := False;
+            for var L := 0 to Length(events) - 1 do
+            begin
+                if events[L] is TConEventSpeech then
+                begin
+                    var sp := TConEventSpeech(events[L]);
+                    if SameText(sp.ActorValue, SpeakerFilter) = True then
+                    begin
+                        bItemHasSpeaker := True;
+                        Break;
+                    end;
+                end;
+            end;
+            // Нет нужного спикера в этом элементе — сворачиваем
+            if bItemHasSpeaker = False then
+                dResult := FILTER_ITEM_HEIGHT;
+        end;
+    end;
+
+    // Ограничение максимальной высоты
+    if dResult > 254 then
+        dResult := 254;
+
+    Result := dResult;
 end;
+
 
 procedure TfrmMain.mnuCharcoalDarkSlateClick(Sender: TObject);
 begin
@@ -1493,7 +1596,7 @@ begin
     Result := tempStr;
 end;
 
-function TfrmMain.FindConversationObjById(idToLookFor: Integer): TConversation;
+{function TfrmMain.FindConversationObjById(idToLookFor: Integer): TConversation;
 begin
     var tempCon: TConversation := nil;
 
@@ -1506,10 +1609,48 @@ begin
         end;
     end;
 
-//    ShowMessage('Found conversation: ' + tempCon.conName + ' id=' + tempCon.id.ToString);
+    //ShowMessage('Found conversation: ' + tempCon.conName + ' id=' + tempCon.id.ToString);
 
     Result := tempCon;
+end;}
+
+function TfrmMain.FindConversationObjById(const idToLookFor: Integer): TConversation;
+begin
+    Result := nil;
+    for var k := 0 to ConversationsList.Count - 1 do
+    begin
+        var c := ConversationsList.Items[k];
+        if Assigned(c) = False then
+            Continue; // внутри Count не должно быть nil, но пусть будет безопасно
+
+        if c.id = idToLookFor then
+        begin
+            Result := c;
+            Break;
+        end;
+    end;
+
+    if Result = nil then
+        ShowMessage(PChar(Format(
+          'FindConversationObjById: %d not found; ids=[%s]',
+          [idToLookFor, GetAllConversationIdsCsv()])));
 end;
+
+function TfrmMain.GetAllConversationIdsCsv(): string; // Список всех идентификаторов диалогов
+var
+    k: Integer;
+    s: string;
+begin
+    s := '';
+    for k := 0 to ConversationsList.Count - 1 do
+    begin
+        if s <> '' then
+            s := s + ',';
+        s := s + ConversationsList.Items[k].id.ToString;
+    end;
+    Result := s;
+end;
+
 
 function TfrmMain.FindTableIdByName(tableMode: TTableMode; NameToLookFor: string): Integer;
 var
@@ -1770,6 +1911,12 @@ begin
 }
 end;
 
+procedure TfrmMain.btnCloseTreeSearchClick(Sender: TObject);
+begin
+    pnlTreeSearch.Height := 21;
+    btnCloseTreeSearch.Hide();
+end;
+
 procedure TfrmMain.FirstTimeLaunch();// First launch?
 var iniName, aPath: string;
 begin
@@ -1778,6 +1925,258 @@ begin
 
     if FileExists(aPath + iniName) = false then
         frmSettings.ShowModal();
+end;
+
+procedure TfrmMain.Fixconversationidentifiers1Click(Sender: TObject); // QuickFix to fix backward compatibility with OG ConEdit
+begin
+    if MessageBox(Handle, PChar(strFixIDtool),
+    PChar(strQuestion),
+    MB_YESNO + MB_ICONWARNING + MB_TOPMOST) = IDYES then
+    begin
+        FixConversationsIdentifiers();
+        MessageBox(Handle, PChar(strFixIDtoolDone),PChar(strInformation), MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+        bFileModified := True;
+    end;
+end;
+
+procedure TfrmMain.FixConversationsIdentifiers();
+    function Pct(part, total: Integer): string; inline;
+    var
+        v: Double;
+    begin
+        if total > 0 then
+            v := (part * 100.0) / total
+        else
+            v := 0.0;
+        Result := FormatFloat('0.0', v) + '%';
+    end;
+
+    function PadRight(const s: string; width: Integer): string; inline;
+    var
+        need: Integer;
+    begin
+        need := width - Length(s);
+        if need > 0 then
+            Result := s + StringOfChar(' ', need)
+        else
+            Result := s;
+    end;
+
+    function IntPad(value, width: Integer): string; inline;
+    var
+        s: string;
+        need: Integer;
+    begin
+        s := IntToStr(value);
+        need := width - Length(s);
+        if need > 0 then
+            Result := StringOfChar(' ', need) + s
+        else
+            Result := s;
+    end;
+begin
+    AddLog('=== Fix Conversations identifiers: START ===');
+
+    var idMap := TDictionary<Integer, Integer>.Create();
+    try
+        // 1) Построить карту перенумерации (oldId -> newId)
+        var newId := 0;
+        AddLog('Building idMap (oldId -> newId) ...');
+        for var con in ConversationsList do
+        begin
+            idMap.AddOrSetValue(con.id, newId);
+            AddLog(Format('idMap: "%s" oldId=%d -> newId=%d', [con.conName, con.id, newId]));
+            Inc(newId);
+        end;
+
+        // Глобальная статистика
+        var totalJumps := 0;
+        var fixedTargetRefs := 0;
+        var missingTargetRefs := 0;
+        var unchangedTargetRefs := 0;
+        var fixedCurrentRefs := 0;
+        var unchangedCurrentRefs := 0;
+
+        // 2) Перепривязать ссылки (до смены id у разговоров)
+        AddLog('Remapping jump references (pre-renumber) ...');
+        for var con in ConversationsList do
+        begin
+            var localTotal := 0;
+            var localFixedTarget := 0;
+            var localUnchangedTarget := 0;
+            var localMissingTarget := 0;
+            var localFixedCurrent := 0;
+            var localUnchangedCurrent := 0;
+
+            for var i := 0 to Length(con.Events) - 1 do
+            begin
+                var evt := con.Events[i];
+                if evt is TConEventJump then
+                begin
+                    Inc(totalJumps);
+                    Inc(localTotal);
+
+                    var j := TConEventJump(evt);
+
+                    // Target
+                    var newTarget := -1;
+                    var bFound := idMap.TryGetValue(j.conversationId, newTarget);
+                    if bFound = True then
+                    begin
+                        if j.conversationId <> newTarget then
+                        begin
+                            j.conversationId := newTarget;
+                            Inc(fixedTargetRefs);
+                            Inc(localFixedTarget);
+                        end
+                        else
+                        begin
+                            Inc(unchangedTargetRefs);
+                            Inc(localUnchangedTarget);
+                        end;
+                    end
+                    else
+                    begin
+                        Inc(missingTargetRefs);
+                        Inc(localMissingTarget);
+                        AddLog(Format(
+                            'Dangling target: "%s" oldId=%d event[%d]: targetId=%d not found in idMap',
+                            [con.conName, con.id, i, j.conversationId]
+                        ));
+                    end;
+
+                    // Current (должен указывать на новый id текущего разговора)
+                    var mappedCurrent := -1;
+                    bFound := idMap.TryGetValue(con.id, mappedCurrent);
+                    if bFound = True then
+                    begin
+                        if j.currentConversationId <> mappedCurrent then
+                        begin
+                            j.currentConversationId := mappedCurrent;
+                            Inc(fixedCurrentRefs);
+                            Inc(localFixedCurrent);
+                        end
+                        else
+                        begin
+                            Inc(unchangedCurrentRefs);
+                            Inc(localUnchangedCurrent);
+                        end;
+                    end;
+                end;
+            end;
+
+            // Локальная сводка с %
+            AddLog(Format(
+                'Summary "%s" oldId=%d: jumps=%d | target: fixed=%d (%s), unchanged=%d (%s), missing=%d (%s) | current: fixed=%d (%s), unchanged=%d (%s)',
+                [con.conName, con.id, localTotal,
+                 localFixedTarget,      Pct(localFixedTarget, localTotal),
+                 localUnchangedTarget,  Pct(localUnchangedTarget, localTotal),
+                 localMissingTarget,    Pct(localMissingTarget, localTotal),
+                 localFixedCurrent,     Pct(localFixedCurrent, localTotal),
+                 localUnchangedCurrent, Pct(localUnchangedCurrent, localTotal)]
+            ));
+        end;
+
+        // Итог по ремапу
+        AddLog(Format(
+            'Remap phase TOTAL: jumps=%d | target: fixed=%d (%s), unchanged=%d (%s), missing=%d (%s) | current: fixed=%d (%s), unchanged=%d (%s)',
+            [totalJumps,
+             fixedTargetRefs,      Pct(fixedTargetRefs, totalJumps),
+             unchangedTargetRefs,  Pct(unchangedTargetRefs, totalJumps),
+             missingTargetRefs,    Pct(missingTargetRefs, totalJumps),
+             fixedCurrentRefs,     Pct(fixedCurrentRefs, totalJumps),
+             unchangedCurrentRefs, Pct(unchangedCurrentRefs, totalJumps)]
+        ));
+
+        // 3) Присвоить новые id самим разговорам
+        AddLog('Assigning new IDs ...');
+        newId := 0;
+        for var con in ConversationsList do
+        begin
+            var oldId := con.id;
+            con.id := newId;
+            AddLog(Format('Conversation "%s" oldId=%d -> newId=%d', [con.conName, oldId, newId]));
+            Inc(newId);
+        end;
+
+        // 4) Валидация после перенумерации
+        AddLog('Post-validation ...');
+        var validIds := TDictionary<Integer, Byte>.Create();
+        try
+            for var con in ConversationsList do
+                validIds.AddOrSetValue(con.id, 1);
+
+            var badTargets := 0;
+            var badCurrents := 0;
+
+            for var con in ConversationsList do
+            begin
+                for var i := 0 to Length(con.Events) - 1 do
+                begin
+                    var evt := con.Events[i];
+                    if evt is TConEventJump then
+                    begin
+                        var j := TConEventJump(evt);
+
+                        if validIds.ContainsKey(j.conversationId) = False then
+                        begin
+                            Inc(badTargets);
+                            AddLog(Format(
+                                'Post-validate: "%s" newId=%d event[%d] has dangling targetId=%d',
+                                [con.conName, con.id, i, j.conversationId]
+                            ));
+                        end;
+
+                        if j.currentConversationId <> con.id then
+                        begin
+                            Inc(badCurrents);
+                            AddLog(Format(
+                                'Post-validate: "%s" newId=%d event[%d] currentConversationId=%d (fix -> %d)',
+                                [con.conName, con.id, i, j.currentConversationId, con.id]
+                            ));
+                            j.currentConversationId := con.id;
+                        end;
+                    end;
+                end;
+            end;
+
+            AddLog(Format('Validate phase TOTAL: badTargets=%d (%s of jumps), badCurrents(fixed)=%d (%s of jumps)',
+                          [badTargets,  Pct(badTargets,  totalJumps),
+                           badCurrents, Pct(badCurrents, totalJumps)]));
+        finally
+            validIds.Free();
+        end;
+
+        // 5) Финальная таблица: все диалоги по новым ID
+        AddLog('Final table (newId -> conName):');
+        var idWidth := ConversationsList.Count - 1;
+
+        if idWidth < 2 then
+            idWidth := 2;
+
+        var nameWidth := 4; // "Name"
+        for var con in ConversationsList do
+        begin
+            if Length(con.conName) > nameWidth then
+                nameWidth := Length(con.conName);
+        end;
+
+        var sep := '+' + StringOfChar('-', idWidth + 2) + '+' + StringOfChar('-', nameWidth + 2) + '+';
+        AddLog(sep);
+        AddLog('| ' + PadRight('ID', idWidth) + ' | ' + PadRight('Name', nameWidth) + ' |');
+        AddLog(sep);
+        for var con in ConversationsList do
+        begin
+            AddLog('| ' + IntPad(con.id, idWidth) + ' | ' + PadRight(con.conName, nameWidth) + ' |');
+        end;
+        AddLog(sep);
+
+    finally
+        idMap.Free();
+    end;
+
+    AddLog('=== Fix Conversations identifiers: DONE ===');
+
 end;
 
 procedure TfrmMain.CreateConFile(bCreatingNew: Boolean);
@@ -2186,9 +2585,18 @@ end;
 
 procedure TfrmMain.CopytoClipboard1Click(Sender: TObject);
 begin
-    var bmp := RenderConEventListBitmap();
+    var bmp := RenderConEventListBitmap(False);
     try
-        // DIB/Bitmap — нативный формат для буфера обмена Windows
+        Clipboard.Assign(bmp);
+    finally
+        bmp.Free();
+    end;
+end;
+
+procedure TfrmMain.CopytoClipboard2Click(Sender: TObject);
+begin
+    var bmp := RenderConEventListBitmap(True);
+    try
         Clipboard.Assign(bmp);
     finally
         bmp.Free();
@@ -2973,6 +3381,8 @@ end;
 
 procedure TfrmMain.Exportasini1Click(Sender: TObject);
 begin
+    MessageBox(Handle, 'File will be exported as "C:\Temp\Dialogs.ini"','Info', MB_OK + MB_ICONWARNING + MB_TOPMOST);
+
     ConEditPlus.IniExporter.SaveConversationsToIni(ConversationsList,conFileParameters, 'C:\Temp\Dialogs.ini');
 end;
 
@@ -3387,6 +3797,16 @@ begin
     end;
 end;
 
+procedure TfrmMain.OpenPlanetDeusExrupage1Click(Sender: TObject);
+begin
+    if MessageBox(Handle, PChar(strAskToOpenPlanetDeusEx), PChar(strQuestion), MB_YESNO +
+        MB_ICONQUESTION + MB_TOPMOST) = IDYES then
+    begin
+        ShellExecute(0, 'open', 'https://planetdeusex.ru/forum/topic/9688-coneditplus-%D1%80%D0%B5%D0%B4%D0%B0%D0%BA%D1%82%D0%BE%D1%80-%D0%B4%D0%B8%D0%B0%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2-%D0%B4%D0%BB%D1%8F-deus-ex/', nil, nil, SW_SHOWNORMAL);
+    end;
+
+end;
+
 procedure TfrmMain.OpenRecentFile(aFile: string);
 begin
     ClearForNewFile();
@@ -3693,6 +4113,14 @@ begin
     end;
 end;
 
+procedure TfrmMain.SavetoScreenShots1Click(Sender: TObject);
+begin
+    var SavedPath := SaveConEventListScreenShot(currentConFile, CurrentConversation.conName, True);
+
+    if SavedPath <> '' then
+        lblSelectedEvent.Caption := 'ScreenShot saved!';
+end;
+
 procedure TfrmMain.DrawET_Speech(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
 var
     tempRect: TRect;
@@ -3917,6 +4345,9 @@ begin
 
         for var E:= 0 to EventChoice.NumChoices -1 do
         begin
+            if Assigned(EventChoice.Choices[E]) = False then
+            continue;
+
             //Inc(tempRect.Top, 17);
             Inc(tempRect.Top, Round(ConEditPlus.Helpers.GetDPIAsRatio() * 17));
 
@@ -4097,11 +4528,19 @@ begin
 
     EventCheckFlag := nil;
 
+//    if TConEventCheckFlag(ConEventList.Items.Objects[Index]) = nil then // Access violation fix
+//    Exit();
+
+
     // load data from event
     if ((CurrentConversation <> nil) and (TConEventCheckFlag(ConEventList.Items.Objects[Index]) <> nil)) then
     begin
         EventCheckFlag:= TConEventCheckFlag(ConEventList.Items.Objects[Index]);
     end;
+
+    if EventCheckFlag = nil then
+    Exit();
+
 
     if bchkCheckFlag = False then Exit();
 
@@ -6467,18 +6906,20 @@ end;
 
 procedure TfrmMain.Conversation_Create_AIBarkFutz_TemplateExecute(Sender: TObject);
 begin
-    if MessageBox(Handle, PChar(strAskToAddAIBarkFutzExample), PChar(strQuestion), MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = ID_YES then
+    var NumSpeechEvents := (Sender as TMenuItem).Tag;
+
+    if MessageBox(Handle, PChar(Format(strAskToAddAIBarkFutzExample, [NumSpeechEvents])), PChar(strQuestion), MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = ID_YES then
     begin
-        var NumSpeechEvents := (Sender as TMenuItem).Tag;
         CreateAIBarksExample(True, NumSpeechEvents);
     end;
 end;
 
 procedure TfrmMain.Conversation_Create_AIBark_TemplateExecute(Sender: TObject);
 begin
-    if MessageBox(Handle, PChar(strAskToAddAIBarksExample), PChar(strQuestion), MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = ID_YES then
+    var NumSpeechEvents := (Sender as TMenuItem).Tag;
+
+    if MessageBox(Handle, PChar(Format(strAskToAddAIBarksExample, [NumSpeechEvents])), PChar(strQuestion), MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = ID_YES then
     begin
-        var NumSpeechEvents := (Sender as TMenuItem).Tag;
         CreateAIBarksExample(False, NumSpeechEvents);
     end;
 end;
@@ -6797,13 +7238,13 @@ end;
 
 procedure TfrmMain.SaveAs2Click(Sender: TObject);
 begin
-    var SavedPath := SaveConEventListScreenShot(currentConFile, CurrentConversation.conName);
+    var SavedPath := SaveConEventListScreenShot(currentConFile, CurrentConversation.conName, False);
 
     if SavedPath <> '' then
-        lblSelectedEvent.Caption := 'ScreenShot saved!';
+        lblSelectedEvent.Caption := 'ScreenShot of whole convo saved!';
 end;
 
-function TfrmMain.SaveConEventListScreenShot(const CurrentFile, CurrentConvo: string): string;
+function TfrmMain.SaveConEventListScreenShot(const CurrentFile, CurrentConvo: string; _bVisibleOnly: Boolean): string;
 var
     dir, baseFile, baseDlg, fileName, fullPath: string;
     bmp: TBitmap;
@@ -6824,11 +7265,11 @@ begin
     if baseDlg  = '' then baseDlg  := 'None';
 
     // 3) Имя файла
-    fileName := baseFile + '__' + baseDlg + '__' + ConEditPlus.Helpers.IsoStampForFileName + '.png';
+    fileName := baseFile + '__' + baseDlg + '__' + ConEditPlus.Helpers.IsoStampForFileName() + '.png';
     fullPath := TPath.Combine(dir, fileName);
 
     // 4) Рендерим и сохраняем PNG
-    bmp := RenderConEventListBitmap();
+    bmp := RenderConEventListBitmap(_bVisibleOnly);
     try
         png := TPngImage.Create();
         try
@@ -6845,81 +7286,128 @@ begin
     Result := fullPath; // вернём полный путь
 end;
 
-function TfrmMain.RenderConEventListBitmap(): TBitmap;
+function TfrmMain.RenderConEventListBitmap(const bVisibleOnly: Boolean): TBitmap;
 var
-    i, width, totalHeight, h, y, saved: Integer;
+    width, clientH: Integer;
+    idx, i, topIdx: Integer;
+    h, totalH, y: Integer;
     rc: TRect;
     rgn: HRGN;
+    saved: Integer;
     state: TOwnerDrawState;
-    heights: TArray<Integer>;
+    visibleIdx: TArray<Integer>;
+    visibleHeights: TArray<Integer>;
 begin
-    // 1) Читаем фактические высоты из КОНТРОЛА (учтены все твои фильтры)
-    SetLength(heights, ConEventList.Items.Count);
-    totalHeight := 0;
-    for i := 0 to ConEventList.Items.Count - 1 do
-    begin
-        h := SendMessage(ConEventList.Handle, LB_GETITEMHEIGHT, WPARAM(i), 0); // для owner-draw-variable — высота конкретного индекса
-        if h < 0 then
-            h := ConEventList.ItemHeight;
-        heights[i] := h;
-
-        if h > FILTER_ITEM_HEIGHT then
-            Inc(totalHeight, h); // только видимые попадают в общую высоту
-    end;
-
-    if totalHeight <= 0 then
-        totalHeight := 1;
-
-    width := ConEventList.ClientWidth;
+    width   := ConEventList.ClientWidth;
+    clientH := ConEventList.ClientHeight;
     if width <= 0 then
         width := Max(ConEventList.Width - 4, 100);
+    if (clientH <= 0) and (bVisibleOnly = True) then
+        clientH := Max(ConEventList.ItemHeight * 10, 200);
 
-    // 2) Битмап без альфы (чтобы Clipboard не белел)
+    // 1) Сбор видимых элементов + их фактических высот из самого контрола
+    SetLength(visibleIdx, 0);
+    SetLength(visibleHeights, 0);
+    totalH := 0;
+
+    if bVisibleOnly = True then
+    begin
+        topIdx := SendMessage(ConEventList.Handle, LB_GETTOPINDEX, 0, 0);
+        y := 0;
+        for i := topIdx to ConEventList.Items.Count - 1 do
+        begin
+            h := SendMessage(ConEventList.Handle, LB_GETITEMHEIGHT, WPARAM(i), 0);
+            if h <= 0 then
+                h := ConEventList.ItemHeight;
+
+            // фильтр: пропускаем полностью
+            if h <= FILTER_ITEM_HEIGHT then
+                Continue;
+
+            // берём только те, что попадают целиком в клиент
+            if (y + h) > clientH then
+                Break;
+
+            SetLength(visibleIdx, Length(visibleIdx) + 1);
+            SetLength(visibleHeights, Length(visibleHeights) + 1);
+            visibleIdx[High(visibleIdx)] := i;
+            visibleHeights[High(visibleHeights)] := h;
+
+            Inc(y, h);
+            Inc(totalH, h);
+        end;
+        // если вдруг ничего не попало — сделаем минималку
+        if totalH <= 0 then
+            totalH := 1;
+    end
+    else
+    begin
+        for i := 0 to ConEventList.Items.Count - 1 do
+        begin
+            h := SendMessage(ConEventList.Handle, LB_GETITEMHEIGHT, WPARAM(i), 0);
+            if h <= 0 then
+                h := ConEventList.ItemHeight;
+
+            if h <= FILTER_ITEM_HEIGHT then
+                Continue;
+
+            SetLength(visibleIdx, Length(visibleIdx) + 1);
+            SetLength(visibleHeights, Length(visibleHeights) + 1);
+            visibleIdx[High(visibleIdx)] := i;
+            visibleHeights[High(visibleHeights)] := h;
+
+            Inc(totalH, h);
+        end;
+        if totalH <= 0 then
+            totalH := 1;
+    end;
+
+    // 2) Битмап (24-bit, без альфы — корректно в Clipboard)
     Result := TBitmap.Create;
     try
         Result.PixelFormat := pf24bit;
-        Result.SetSize(width, totalHeight);
+        Result.SetSize(width, totalH);
 
         Result.Canvas.Brush.Style := bsSolid;
         Result.Canvas.Brush.Color := ConEventList.Color;
-        Result.Canvas.FillRect(Rect(0, 0, width, totalHeight));
+        Result.Canvas.FillRect(Rect(0, 0, width, totalH));
         SetBkMode(Result.Canvas.Handle, TRANSPARENT);
 
-        // 3) Рисуем ТВОЕЙ отрисовкой. Внутри DrawItem ты используешь cnv := GRenderCanvas.
+        // 3) Рендер ТВОЕЙ отрисовкой (cnv := GRenderCanvas), с клипом на каждый item
         GRenderCanvas := Result.Canvas;
         try
             y := 0;
-            for i := 0 to High(heights) do
+            for i := 0 to High(visibleIdx) do
             begin
-                if heights[i] <= FILTER_ITEM_HEIGHT then
-                    Continue; // отфильтрованный — вообще пропускаем
+                idx := visibleIdx[i];
+                h := visibleHeights[i];
 
-                rc := Rect(0, y, width, y + heights[i]);
+                rc := Rect(0, y, width, y + h);
 
-                // Жёсткий клип в границы ровно этого item — без «наездов»
                 saved := SaveDC(Result.Canvas.Handle);
                 try
+                    // жёсткий клип в рамки айтема — никаких «наездов»
                     rgn := CreateRectRgn(rc.Left, rc.Top, rc.Right, rc.Bottom);
                     SelectClipRgn(Result.Canvas.Handle, rgn);
                     DeleteObject(rgn);
 
-                    // нормализация режимов
-                    Result.Canvas.Pen.Mode := pmCopy;
+                    // нормализация режима пера/кисти
+                    Result.Canvas.Pen.Mode  := pmCopy;
                     Result.Canvas.Pen.Width := 1;
                     Result.Canvas.Brush.Style := bsSolid;
 
                     state := [];
-                    if i = ConEventList.ItemIndex then
+                    if idx = ConEventList.ItemIndex then
                         Include(state, odSelected);
                     // if ConEventList.Focused then Include(state, odFocused);
 
-                    // Строго твой метод, не свойство OnDrawItem
-                    Self.ConEventListDrawItem(ConEventList, i, rc, state);
+                    // строго твой метод
+                    Self.ConEventListDrawItem(ConEventList, idx, rc, state);
                 finally
                     RestoreDC(Result.Canvas.Handle, saved);
                 end;
 
-                Inc(y, heights[i]);
+                Inc(y, h);
             end;
         finally
             GRenderCanvas := nil;
@@ -7283,6 +7771,7 @@ begin
     pnlTreeSearch.Color := clBtnFace;
     pnlTreeSearch.FrameColor := clBtnFace;
     pnlEventFilter.Color := clBtnFace;
+    pnlTreeSearch.Height := Round(21 * ConEditPlus.Helpers.GetDPIAsRatio());
 
     GRenderCanvas := nil;
 end;
@@ -7334,7 +7823,11 @@ begin
     FileSave.Enabled      := bVisible;
     FileClose.Enabled     := bVisible;
 
+    menuExpFeatures.Visible := bVisible;
+
     ConvoProperties.Visible := bVisible;
+    mniJumpToConvosList.Visible := bVisible;
+    mniConvoPlayer.Visible := bVisible;
 
     tbPrint.Enabled       := bVisible;
     tbSearch.Enabled      := bVisible;
@@ -7365,6 +7858,15 @@ end;
 procedure TfrmMain.mnuLunaThemeClick(Sender: TObject);
 begin
     ApplyStyle('Luna');
+end;
+
+procedure TfrmMain.mnuModDBClick(Sender: TObject);
+begin
+    if MessageBox(Handle, PChar(strAskToOpenModDB), PChar(strQuestion), MB_YESNO +
+        MB_ICONQUESTION + MB_TOPMOST) = IDYES then
+    begin
+        ShellExecute(0, 'open', 'https://www.moddb.com/mods/confix/downloads/coneditplus1', nil, nil, SW_SHOWNORMAL);
+    end;
 end;
 
 procedure TfrmMain.FileCloseExecute(Sender: TObject);
@@ -7700,7 +8202,7 @@ begin
     InsertEvent(Ord(ET_Speech));
 end;
 
-procedure TfrmMain.SpeechGeneratortest1Click(Sender: TObject);
+procedure TfrmMain.mniConvoPlayerClick(Sender: TObject);
 begin
     frmConversationPlayer.Show();
 end;
@@ -8266,6 +8768,9 @@ end;
 
 procedure TfrmMain.edtConvoTreeQSearchChange(Sender: TObject);
 begin
+    pnlTreeSearch.Height := 200;
+    btnCloseTreeSearch.Show();
+
     lbTreeSearchResults.Clear();
 
     for var Node in ConvoTree.Items do
@@ -8283,11 +8788,6 @@ begin
             end;
         end;
     end;
-end;
-
-procedure TfrmMain.edtConvoTreeQSearchEnter(Sender: TObject);
-begin
-    pnlTreeSearch.Show();
 end;
 
 procedure TfrmMain.edtSearchBoxKeyPress(Sender: TObject; var Key: Char);
@@ -8509,6 +9009,8 @@ begin
                 (aControl as TCheckBox).Checked := True;
         end;
     end;
+
+    cmbSpeechFilter.ItemIndex := 0;
 end;
 
 procedure TfrmMain.btnOnlyTextEventsClick(Sender: TObject);
@@ -8578,7 +9080,7 @@ end;
 
 procedure TfrmMain.lbTreeSearchResultsExit(Sender: TObject);
 begin
-    pnlTreeSearch.Hide();
+//    pnlTreeSearch.Height := 300;
 end;
 
 procedure TfrmMain.IndexEvents1Click(Sender: TObject);
@@ -8628,8 +9130,11 @@ end;
 
 procedure TfrmMain.mnuGithubClick(Sender: TObject);
 begin
-    if MessageDlg(strAskToOpenGithub, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+    if MessageBox(Handle, PChar(strAskToOpenGithub), PChar(strQuestion), MB_YESNO +
+        MB_ICONQUESTION + MB_TOPMOST) = IDYES then
+    begin
         ShellExecute(0, 'open', 'https://github.com/LoadLineCalibration/Convedit_Plus', nil, nil, SW_SHOWNORMAL);
+    end;
 end;
 
 procedure TfrmMain.PlayAnimation1Click(Sender: TObject);
@@ -8640,6 +9145,26 @@ end;
 procedure TfrmMain.PlayAnimation2Click(Sender: TObject);
 begin
     InsertEvent(Ord(ET_Animation));
+end;
+
+procedure TfrmMain.Pleasecheckthesourcecodefirst1DrawItem(Sender: TObject; ACanvas: TCanvas; ARect: TRect; Selected: Boolean);
+var
+    Item: TMenuItem;
+    TextRect: TRect;
+begin
+    Item := Sender as TMenuItem;
+
+    ACanvas.Brush.Color := clMenu;
+    ACanvas.FillRect(ARect);
+
+    ACanvas.Font.Assign(Screen.MenuFont);
+    ACanvas.Font.Style := [fsBold];
+    ACanvas.Font.Color := clMenuText;
+
+    TextRect := ARect;
+    TextRect.Left := 4;
+
+    DrawText(ACanvas.Handle, PChar(Item.Caption), -1, TextRect, DT_SINGLELINE or DT_VCENTER or DT_LEFT or DT_NOPREFIX);
 end;
 
 procedure TfrmMain.PopupConvoEventListPopup(Sender: TObject); // Enable/disable some menu items...
@@ -8742,6 +9267,8 @@ begin
         Conversation_Copy.Enabled := False;
         Conversation_Paste.Enabled := False;
 
+        AddTemplateConversation1.Enabled := False;
+
         Exit();
     end;
 
@@ -8757,12 +9284,65 @@ begin
     Conversation_Copy.Enabled := ConvoTree.Selected.Level = 1;
     Conversation_Paste.Enabled := HasConversationToPaste();
 
+    AddTemplateConversation1.Enabled := ConvoTree.Selected.Level = 0;
+
 //    end;
 //    else begin
 //        DeleteConversation.Enabled := ConvoTree.Selected.Level = 1;
 //        Conversation_Properties.Enabled := ConvoTree.Selected.Level = 1;
 //    end;
 end;
+
+procedure TfrmMain.PostLoadConFile();
+begin
+    for var con in ConversationsList do
+    begin
+        if Assigned(con) = False then
+            Continue;
+        for var i := 0 to High(con.Events) do
+        begin
+            var ev := con.Events[i];
+            if Assigned(ev) = False then
+                Continue;
+            if ev is TConEventJump then
+            begin
+                var j := TConEventJump(ev);
+                // Случай "битой" ссылки, сохранённой пользователем: conversationId = -1
+                if j.conversationId = -1 then
+                begin
+                    // 1) Unresolved TConEventJump!
+                    MessageBox(Handle,
+                    PChar(Format('PostLoadConFile(): unresolved jump (auto-set by source) in "%s" (id=%d), label="%s", targetId=%d',
+                        [con.conName, con.id, j.gotoLabel, j.conversationId])),
+                        PChar(strWarningTitle), MB_OK + MB_ICONWARNING + MB_TOPMOST);
+
+                    // 2) Fix it, by assuming this is conversation which containts this event
+                    j.conversationId := con.id;
+
+                    // 3) Notify user (again)
+                    MessageBox(Handle,
+                        PChar(Format('PostLoadConFile(): fixed jump in "%s": -1 replaced with %d (label="%s")',
+                        [con.conName, con.id, j.gotoLabel])),
+                        PChar(strWarningTitle), MB_OK + MB_ICONWARNING + MB_TOPMOST);
+                end
+                else
+                begin
+                    // This should never happen (theoretically :))
+                    var target := FindConversationObjById(j.conversationId);
+                    if Assigned(target) = False then
+                    begin
+                    MessageBox(Handle,
+                        PChar(Format('PostLoadConFile(): unresolved jump in "%s" (id=%d), label="%s", targetId=%d (no such conversation)',
+                        [con.conName, con.id, j.gotoLabel])),
+                        PChar(strWarningTitle), MB_OK + MB_ICONWARNING + MB_TOPMOST);
+                    end;
+                end;
+            end;
+        end;
+    end;
+end;
+
+
 
 procedure TfrmMain.Random1Click(Sender: TObject);
 begin
@@ -8777,7 +9357,6 @@ end;
 procedure TfrmMain.SimulateDEEDClick(Sender: TObject); // fill all "created/modified by" like DeusExExtractor does.
 begin
     conFileParameters.fpCreatedByName := strDEED;
-    conFileParameters.fpCreatedByDate := strDEED;
 
     for var con in ConversationsList do
     begin
@@ -8833,6 +9412,15 @@ begin
     bchkEnd:= True;          chkEnd.Checked := True;
 end;
 
+procedure TfrmMain.Resetfilter1Click(Sender: TObject);
+begin
+    LoadFilters();
+    cmbSpeechFilter.ItemIndex := 0;
+    SpeakerFilter := '';
+    btnDisplayAllEventsClick(Self);
+    btnApplyFilterClick(self);
+end;
+
 procedure TfrmMain.ApplyEventFilter();
 begin
     bchkSpeech:=         chkSpeech.Checked;
@@ -8854,6 +9442,12 @@ begin
     bchkAddSkillPoints:= chkAddSkillPoints.Checked;
     bchkAddNote:=        chkAddNote.Checked;
     bchkEnd:=            chkEnd.Checked;
+
+    if cmbSpeechFilter.Items.Count > 1 then
+    begin
+        if cmbSpeechFilter.ItemIndex <> -1 then
+            SpeakerFilter:= cmbSpeechFilter.Items[cmbSpeechFilter.ItemIndex];
+    end;
 end;
 
 procedure TfrmMain.LoadFilters();
@@ -8877,6 +9471,42 @@ begin
     chkAddSkillPoints.Checked := bchkAddSkillPoints;
     chkAddNote.Checked :=        bchkAddNote;
     chkEnd.Checked :=            bchkEnd;
+
+    // Only display speech events for selected speaker
+    cmbSpeechFilter.Clear();
+    cmbSpeechFilter.Sorted := False; // отключаем авто-сортировку
+    cmbSpeechFilter.Items.Add('[ALL]');
+
+    var tmpList := TStringList.Create();
+    try
+        tmpList.Sorted := True;
+        tmpList.Duplicates := dupIgnore;
+
+        for var Item in listPawnsActors do
+        begin
+            tmpList.Add(Item);
+        end;
+
+    cmbSpeechFilter.Items.AddStrings(tmpList);
+
+    finally
+        tmpList.Free();
+    end;
+
+    // --- Восстанавливаем выбор ---
+    if SpeakerFilter <> '' then
+    begin
+        var idx := cmbSpeechFilter.Items.IndexOf(SpeakerFilter);
+        if idx >= 0 then
+            cmbSpeechFilter.ItemIndex := idx
+        else
+        begin
+            cmbSpeechFilter.ItemIndex := 0;
+            SpeakerFilter := ''; // сбрасываем, чтобы не мешала
+        end;
+    end
+    else
+        cmbSpeechFilter.ItemIndex := 0;
 end;
 
 procedure TfrmMain.tmrEventWinPosSyncTimer(Sender: TObject);

@@ -43,6 +43,32 @@ begin
     Close();
 end;
 
+{procedure TfrmFindRefs.ListConEventJump();
+begin
+    lvRefs.Items.Clear();
+
+    for var con in frmMain.ConversationsList do
+    begin
+        for var Event in con.Events do
+        begin
+            if Event is TConEventJump then
+            begin
+                var Jump := TConEventJump(Event);
+
+                if Jump.conversationId <> con.id then
+                begin
+                    var Item := lvRefs.Items.Add();
+                    var ConvoToJumpTo := frmMain.FindConversationObjById(Jump.conversationId);
+
+                    Item.Caption := con.conOwnerName + ' > ' + con.conName;
+                    Item.Data := ConvoToJumpTo;
+                    Item.SubItems.AddObject(Jump.GotoLabel, Jump);
+                end;
+            end;
+        end;
+    end;
+end;}
+
 procedure TfrmFindRefs.ListConEventJump();
 begin
     lvRefs.Items.Clear();
@@ -54,16 +80,32 @@ begin
             if Event is TConEventJump then
             begin
                 var Jump := TConEventJump(Event);
-                var Item := lvRefs.Items.Add();
-                var ConvoToJumpTo := frmMain.FindConversationObjById(Jump.conversationId);
 
-                Item.Caption := con.conOwnerName + ' > ' + con.conName;
-                Item.Data := ConvoToJumpTo;
-                Item.SubItems.AddObject(Jump.GotoLabel, Jump);
+                // только если переход идёт в другой диалог
+                if Jump.conversationId <> con.id then
+                begin
+                    var Item := lvRefs.Items.Add();
+
+                    Item.Caption := con.conOwnerName + ' > ' + con.conName;
+                    Item.Data := con;                          // Jump to this convo
+                    Item.SubItems.AddObject(Jump.GotoLabel, Jump); // .. and event
+                end;
             end;
         end;
     end;
 end;
+
+
+
+
+
+
+
+
+
+
+
+
 
 procedure TfrmFindRefs.lstRefsClick(Sender: TObject);
 begin

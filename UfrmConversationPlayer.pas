@@ -5,21 +5,28 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls, ES.BaseControls, ES.NinePatch, Vcl.ExtCtrls, Vcl.MPlayer,
-  Conversation.Classes, System.Types, System.Generics.Collections, Vcl.GraphUtil;
+  Conversation.Classes, System.Types, System.Generics.Collections, Vcl.GraphUtil, Vcl.Mask;
 
 
 type
   TfrmConversationPlayer = class(TForm)
     btnClose: TButton;
     lbAnswer: TListBox;
-    txtSpeech: TEsImageLabel;
     mp1: TMediaPlayer;
-    Button1: TButton; // play conversation
+    Button1: TButton;
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    txtSpeech: TEsImageLabel;
+    edyPlayerCredits: TLabeledEdit;
+    edtPlayerHealth: TLabeledEdit;
+    lbGameFlags: TListBox;
+    Label1: TLabel; // play conversation
 
     procedure btnCloseClick(Sender: TObject);
     procedure lbAnswerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure mp1Notify(Sender: TObject);
-    procedure TryToPlayNexEvent();
+    procedure TryToPlayNextEvent();
     procedure lbAnswerDrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
 
   private
@@ -87,10 +94,10 @@ end;
 procedure TfrmConversationPlayer.mp1Notify(Sender: TObject);
 begin
     if mp1.NotifyValue = nvSuccessful then
-        TryToPlayNexEvent();
+        TryToPlayNextEvent();
 end;
 
-procedure TfrmConversationPlayer.TryToPlayNexEvent();
+procedure TfrmConversationPlayer.TryToPlayNextEvent();
 begin
 //
 end;

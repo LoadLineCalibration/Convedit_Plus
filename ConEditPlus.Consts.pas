@@ -627,6 +627,8 @@ ResourceString // These strings can be translated.
     strNoFileLoaded = 'No file loaded';
 
     strAskToOpenGithub = 'Do you want to open ConEditPlus GitHub page in your Internet browser?';
+    strAskToOpenModDB = 'Do you want to open ConEditPlus ModDB page in your Internet browser?';
+    strAskToOpenPlanetDeusEx = 'Do you want to open PlanetDeusEx.ru forum topic about ConEditPlus (in Russian) in your Internet browser?';
 
     strCannotRenameConversation = 'Another conversation with such name already exists or name contains invalid characters!' + #13#10#13#10 +
                                   'Cannot rename this conversation.';
@@ -663,8 +665,8 @@ ResourceString // These strings can be translated.
 
     strEventComment = 'This is comment. Use it to store some additional information about conversation.';
 
-    strAskToAddAIBarksExample = 'Add AI Bark conversation with three random speech lines?';
-    strAskToAddAIBarkFutzExample = 'Add AI BarkFutz conversation with three random speech lines?';
+    strAskToAddAIBarksExample = 'Add AI Bark conversation with %d random speech lines?';
+    strAskToAddAIBarkFutzExample = 'Add AI BarkFutz conversation with %d random speech lines?';
     strConvoDescGenerated = 'Description for automatically generated conversation.';
     strConvoNotesGenerated = 'Notes for automatically generated conversation.';
     strAddPlayerFirst = 'Please add "JCDenton" to Actors/Pawns table first!';
@@ -695,8 +697,16 @@ ResourceString // These strings can be translated.
     strAskForShortcutStartMenu = 'Create a shortcut to launch ConEditPlus in your Start menu\Programs\?';
     strShortcutHint = 'DeusEx conversation editor';
 
+    // id fix
+    strFixIDtool = 'This utility is designed to fix compatibility with the original ConEdit program. ' +
+                   'After you click “Yes,” ConEditPlus will reassign the identifiers of all conversations ' +
+                   'so that they are in order, starting from 0. After that, the file can be opened ' +
+                   'and edited correctly in the original ConEdit program, if you prefer it.' + #13#10#13#10 +
+                   'IMPORTANT! This feature is experimental, so always make a backup copy of the file.' +
+                   'To see what exactly is being corrected and how it works, enable logging in the ' +
+                   'program settings and view the log after the correction is complete.';
 
-
+    strFixIDtoolDone = 'Done! If you enabled logging in program options, check the log for details.';
 
 implementation
 

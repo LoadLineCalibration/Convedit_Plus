@@ -5326,6 +5326,7 @@ object frmEventInsAdd: TfrmEventInsAdd
   Position = poOwnerFormCenter
   ShowHint = True
   OnActivate = FormActivate
+  OnClose = FormClose
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
   OnMouseWheelDown = FormMouseWheelDown
@@ -5652,6 +5653,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Top = 55
           Width = 80
           Height = 25
+          Hint = 'Add new choice item'
           Anchors = [akTop, akRight]
           Caption = 'Add Choice'
           Constraints.MaxHeight = 25
@@ -5684,6 +5686,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           Top = 86
           Width = 80
           Height = 25
+          Hint = 'Delete selected choice item'
           Anchors = [akTop, akRight]
           Caption = 'Delete choice'
           Constraints.MaxHeight = 25
@@ -5717,6 +5720,9 @@ object frmEventInsAdd: TfrmEventInsAdd
           Top = 349
           Width = 241
           Height = 17
+          Hint = 
+            'If cheked, ingame conversation window will contain only choice i' +
+            'tems.  Otherwise it will contain choice items + speech text'
           Anchors = [akLeft, akBottom]
           Caption = 'Clear Screen before displaying choices?'
           DoubleBuffered = True
@@ -5760,6 +5766,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           OnChange = lvChoiceListChange
           OnClick = lvChoiceListClick
           OnDblClick = lvChoiceListDblClick
+          OnDeletion = lvChoiceListDeletion
           OnEditing = lvSetFlagsEditing
           OnKeyPress = lvChoiceListKeyPress
           OnMouseDown = lvChoiceListMouseDown
@@ -5775,7 +5782,7 @@ object frmEventInsAdd: TfrmEventInsAdd
           ParentBackground = False
           ParentColor = False
           TabOrder = 6
-          FrameStyle = Flat
+          FrameStyle = Etched
           FrameColor = clLime
           FrameWidth = 2
           object pgcChoiceDetails: TPageControl
@@ -5830,6 +5837,10 @@ object frmEventInsAdd: TfrmEventInsAdd
                 Top = 104
                 Width = 245
                 Height = 25
+                Hint = 
+                  'Play ingame audio for the selected choice item (technically spea' +
+                  'king, that choice item will be turned into dedicated ConEventSpe' +
+                  'ech object).'
                 Caption = 'Display Choice as speech when Selected?'
                 Checked = True
                 State = cbChecked
@@ -5843,7 +5854,6 @@ object frmEventInsAdd: TfrmEventInsAdd
                 Height = 22
                 Style = csOwnerDrawVariable
                 TabOrder = 2
-                OnChange = mmoChoiceTextChange
               end
             end
             object tsFlags: TTabSheet
@@ -6004,7 +6014,7 @@ object frmEventInsAdd: TfrmEventInsAdd
             Default = True
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clLime
-            Font.Height = -15
+            Font.Height = -12
             Font.Name = 'Segoe UI'
             Font.Style = [fsBold]
             ParentFont = False
@@ -6020,9 +6030,12 @@ object frmEventInsAdd: TfrmEventInsAdd
           Anchors = [akLeft, akRight, akBottom]
           AutoSize = False
           BevelKind = bkFlat
-          Caption = 'Click on choice to edit. DblClick to play choice audio (if any).'
+          BorderStyle = sbsSingle
+          Caption = 
+            'Click on choice to edit it. DblClick on item to play choice audi' +
+            'o (if any).'
           Font.Charset = RUSSIAN_CHARSET
-          Font.Color = clBlue
+          Font.Color = clWindowText
           Font.Height = -12
           Font.Name = 'Verdana'
           Font.Style = []
@@ -6035,11 +6048,29 @@ object frmEventInsAdd: TfrmEventInsAdd
           Width = 56
           Height = 22
           Cursor = crHandPoint
-          Hint = 'Or DblClick on the list item'
+          Hint = 
+            'Play audio file for the selected choice item, if any (Or DblClic' +
+            'k on the list item)'
           Anchors = [akTop, akRight]
           Caption = 'Play'
           TabOrder = 8
           OnClick = btnPlayChoiceAudioClick
+        end
+        object chkAutoSaveChoiceText: TCheckBox
+          Left = 270
+          Top = 349
+          Width = 200
+          Height = 17
+          Hint = 
+            'Automatically saves both the choice text and its jump to label w' +
+            'hile you type or change selection. Always enabled by default.'
+          Anchors = [akLeft, akBottom]
+          Caption = 'AutoSave choice text and label?'
+          Checked = True
+          DoubleBuffered = True
+          ParentDoubleBuffered = False
+          State = cbChecked
+          TabOrder = 9
         end
       end
     end

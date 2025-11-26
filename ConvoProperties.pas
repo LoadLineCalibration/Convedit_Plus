@@ -272,6 +272,8 @@ begin
     begin
         conName := editConvoName.Text; // conversation name
 
+        conDescription := editConvoDescription.Text; // Conversation description (fix for beta 9 uptate 9)
+
         conModifiedByName := frmMain.ConversationUserName; // user name
         conModifiedByDate := conXMLDateTime(); // use current date/time
 
@@ -280,6 +282,8 @@ begin
 
         conOwnerName  := TempConvoOwnerName; //cmbConvoOwner.Items[cmbConvoOwner.ItemIndex];
         conOwnerIndex := frmMain.FindTableIdByName(TM_ActorsPawns, tempConvoOwnerName);
+
+        conNotes := memoConversationNotes.Text; // Notes for this conversation (fix for beta 9 uptate 9)
 
         // How conversation is activated + options
         bInfoLink        := chkDataLinkConvo.Checked;
@@ -312,6 +316,8 @@ begin
     var ConOwner := LowerCase(convoToUpdate.conOwnerName);
     var NodeConNameText := LowerCase(NameNode.Text);
     var NodeConOwnerText := LowerCase(OwnerNode.Text);
+
+
 
     // изменилось только имя диалога  а Owner не изменился
     if (NodeConNameText <> ConName) and (NodeConOwnerText = ConOwner) then
@@ -422,23 +428,29 @@ end;
 procedure TfrmConvoProperties.btnAddAiBarkTemplateClick(Sender: TObject);
 begin
     var AIBarksItemIdx := cmbAIBarksMode.ItemIndex;
-      if AIBarksItemIdx = -1 then AIBarksItemIdx := 0; // Combobox itemIndex (failsafe)
-    var AIBarkMode := cmbAIBarksMode.Items[AIBarksItemIdx];
-    var bAlreadyBark: Boolean := False;
+    if AIBarksItemIdx = -1 then
+        AIBarksItemIdx := 0; // Combobox itemIndex (failsafe)
 
-    for var str in cmbAIBarksMode.Items do
+    var AIBarkMode := cmbAIBarksMode.Items[AIBarksItemIdx];
+//    var bAlreadyBark: Boolean := False;
+
+{    for var str in cmbAIBarksMode.Items do
     begin
         if EndsText(str, editConvoName.Text) = True then
         begin
             bAlreadyBark := True;
             Break;
         end;
-    end;
+    end;}
 
-    if bAlreadyBark = False then
-    begin
-        editConvoName.Text := editConvoName.Text + AIBarkMode;
-    end;
+{    if bAlreadyBark = False then
+    begin}
+        var ConvoOwnerIdx := cmbConvoOwner.ItemIndex;
+        if ConvoOwnerIdx <> -1 then
+            editConvoName.Text := cmbConvoOwner.Items[ConvoOwnerIdx] + AIBarkMode
+        else
+            editConvoName.Text := editConvoName.Text + AIBarkMode;
+//    end;
 end;
 
 procedure TfrmConvoProperties.btnAddFlagClick(Sender: TObject);

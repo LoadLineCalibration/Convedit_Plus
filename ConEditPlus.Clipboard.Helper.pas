@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Vcl.Clipbrd, System.Classes, Conversation.Classes, ConEditPlus.Consts,
-  System.SysUtils, ConFile.Reader, system.Generics.Collections;
+  System.SysUtils, ConFile.Reader;
 
 
 // To make things simpler

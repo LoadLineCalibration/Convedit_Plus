@@ -233,6 +233,7 @@ type
     btnSaveChoiceItem: TButton;
     btnSwapNow: TButton;
     btnPlayChoiceAudio: TButton;
+    chkAutoSaveChoiceText: TCheckBox;
 
     // new functions
     function CanAddRandomLabel(): Boolean;
@@ -416,6 +417,8 @@ type
     procedure lvChoiceListMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure lvChoiceListKeyPress(Sender: TObject; var Key: Char);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure lvChoiceListDeletion(Sender: TObject; Item: TListItem);
   private
     { Private declarations }
   public
@@ -3165,6 +3168,57 @@ begin
     RestoreVolumeTrackbar();
 end;
 
+procedure TfrmEventInsAdd.FormClose(Sender: TObject; var Action: TCloseAction);
+
+    function IsOwnedByConversations(const Obj: TChoiceItemObject): Boolean; // Local helper function to check if TChoiceItemObject belongs to frmMain.ConversationsList
+    begin
+        var bFound := False;
+
+        for var conv in frmMain.ConversationsList do
+        begin
+            for var e := 0 to High(conv.Events) do
+            begin
+                var ev := conv.Events[e];
+                if (ev is TConEventChoice) = True then
+                begin
+                    var ch := TConEventChoice(ev);
+                    for var i := 0 to High(ch.Choices) do
+                    begin
+                        if ch.Choices[i] = Obj then
+                        begin
+                            bFound := True;
+                            Break;
+                        end;
+                    end;
+
+                    if bFound = True then
+                        Break;
+                end;
+            end;
+
+            if bFound = True then
+                Break;
+        end;
+
+        Result := bFound;
+    end;
+
+begin
+    for var i := 0 to lvChoiceList.Items.Count - 1 do
+    begin
+        var LItem := lvChoiceList.Items[i];
+        var Obj := TChoiceItemObject(LItem.Data);
+
+        if Assigned(Obj) = True then
+        begin
+            if IsOwnedByConversations(Obj) = False then // get rid of TChoiceItemObject without owner
+                Obj.Free();
+
+            LItem.Data := nil;
+        end;
+    end;
+end;
+
 procedure TfrmEventInsAdd.FormCreate(Sender: TObject);
 begin
     lblStatus.Caption := '';
@@ -3287,6 +3341,60 @@ procedure TfrmEventInsAdd.lvChoiceListClick(Sender: TObject);
 begin
     if lvChoiceList.ItemIndex = -1 then Exit();
 
+    // Снимаем обработчики, чтобы не триггерить автосохранение во время заполнения UI
+    var OldMemoOnChange := mmoChoiceText.OnChange;
+    var OldComboOnChange := cbbChoiceJumpToLabel.OnChange;
+
+    mmoChoiceText.OnChange := nil;
+    cbbChoiceJumpToLabel.OnChange := nil;
+
+    try
+        mmoChoiceText.Clear();
+        lvChoiceFlagList.Clear();
+
+        var choiceItemObj := TChoiceItemObject(lvChoiceList.Items[lvChoiceList.ItemIndex].Data);
+
+        if Assigned(choiceItemObj) = True then
+        begin
+            // Сначала восстанавливаем выбор метки
+            var idx := cbbChoiceJumpToLabel.Items.IndexOf(choiceItemObj.GoToLabel);
+            if idx <> -1 then
+                cbbChoiceJumpToLabel.ItemIndex := idx
+            else
+                cbbChoiceJumpToLabel.ItemIndex := -1;
+
+            // Затем текст и остальное
+            mmoChoiceText.Text := choiceItemObj.textline;
+            chkDisplayChoiceAsSpeech.Checked := choiceItemObj.bDisplayAsSpeech;
+
+            for var FL := 0 to High(choiceItemObj.RequiredFlags) do
+            begin
+                var choiceFlagItem := lvChoiceFlagList.Items.Add();
+                choiceFlagItem.Caption := choiceItemObj.RequiredFlags[FL].flagName;
+                choiceFlagItem.SubItems.Add(BoolToStr(choiceItemObj.RequiredFlags[FL].flagValue, True));
+                choiceFlagItem.SubItems.Add(choiceItemObj.RequiredFlags[FL].flagIndex.ToString);
+            end;
+
+            cmbChoiceItemSkill.Clear();
+            cmbChoiceItemSkill.Items := frmMain.conFileParameters.fpSkills;
+            cmbChoiceItemSkill.ItemIndex := cmbChoiceItemSkill.Items.IndexOf(choiceItemObj.Skill);
+            cmbChoiceItemSkillAtLevel.ItemIndex := choiceItemObj.SkillLevel;
+
+            chkReqSkill.Checked := (choiceItemObj.bSkillNeeded <> -1);
+            chkReqSkillClick(chkReqSkill);
+        end;
+
+    finally
+        // Возвращаем обработчики: комбобокс — на автосейв, мемо — как было
+        mmoChoiceText.OnChange := OldMemoOnChange;
+        cbbChoiceJumpToLabel.OnChange := mmoChoiceTextChange;
+    end;
+
+{    if lvChoiceList.ItemIndex = -1 then Exit();
+
+        mmoChoiceText.OnChange := nil; // Снимаем обработчики события,чтобы избежать сброс cbbChoiceJumpToLabel
+        cbbChoiceJumpToLabel.OnChange := nil;
+
         mmoChoiceText.Clear();
         lvChoiceFlagList.Clear();
 
@@ -3315,6 +3423,9 @@ begin
             chkReqSkill.Checked := choiceItemObj.bSkillNeeded <> -1;
             chkReqSkillClick(chkReqSkill);
         end;
+
+        mmoChoiceText.OnChange := mmoChoiceTextChange; // Возвращаем обработчики события
+        cbbChoiceJumpToLabel.OnChange := mmoChoiceTextChange;}
 end;
 
 procedure TfrmEventInsAdd.lvChoiceListDblClick(Sender: TObject);
@@ -3329,6 +3440,16 @@ begin
         btnPlayChoiceAudio.Caption := strStopMP3
     else
         btnPlayChoiceAudio.Caption := strPlayMP3;
+end;
+
+procedure TfrmEventInsAdd.lvChoiceListDeletion(Sender: TObject; Item: TListItem);
+begin
+    // LLC: Это было ошибкой, убираю.
+{    if Assigned(Item.Data) = True then // Fix memory leaks for this case
+    begin
+        TObject(Item.Data).Free();
+        Item.Data := nil;
+    end;}
 end;
 
 procedure TfrmEventInsAdd.lvChoiceListKeyPress(Sender: TObject; var Key: Char);
@@ -3422,6 +3543,12 @@ end;
 procedure TfrmEventInsAdd.mmoChoiceTextChange(Sender: TObject);
 begin
     btnSaveChoiceItem.Enabled := (Length(Trim(mmoChoiceText.Text)) > 0);// and (cbbChoiceJumpToLabel.ItemIndex <> -1);
+
+    if btnSaveChoiceItem.Enabled = True then
+    begin
+        if chkAutoSaveChoiceText.Checked = True then
+            btnSaveChoiceItemClick(self);
+    end;
 end;
 
 procedure TfrmEventInsAdd.mp1Notify(Sender: TObject);
@@ -3469,6 +3596,8 @@ procedure TfrmEventInsAdd.rbAddGoalClick(Sender: TObject);
 begin
     for i := 0 to grpGoalControls.ControlCount -1 do
         grpGoalControls.Controls[i].Enabled := rbAddGoal.Checked;
+
+    btnUpdate.Enabled := (rbAddGoal.Checked) and (Length(memoGoalText.Text) > 0);
 end;
 
 procedure TfrmEventInsAdd.rbGoalCompletedClick(Sender: TObject);
@@ -3476,6 +3605,8 @@ procedure TfrmEventInsAdd.rbGoalCompletedClick(Sender: TObject);
 begin
     for i := 0 to grpGoalControls.ControlCount -1 do
         grpGoalControls.Controls[i].Enabled := not rbGoalCompleted.Checked;
+
+    btnUpdate.Enabled := rbGoalCompleted.Checked; // Fix disabled button when text field is empty even if goal is completed
 end;
 
 procedure TfrmEventInsAdd.rbLoopAnimClick(Sender: TObject);
@@ -3528,7 +3659,7 @@ begin
         mp3VolumeControl.Position := LOWORD(vol); // или среднее, если вдруг каналы разные
 end;
 
-procedure TfrmEventInsAdd.SaveChoiceItem;
+procedure TfrmEventInsAdd.SaveChoiceItem();
 begin
     var ChoiceItemData := lvChoiceList.Items[lvChoiceList.ItemIndex].Data;
 
@@ -3537,10 +3668,12 @@ begin
         // choice text cannot be empty
         if Length(mmoChoiceText.text) = 0 then mmoChoiceText.Text := strDefaultChoiceText;
 
-
         // Update stored object
         TChoiceItemObject(ChoiceItemData).textline := mmoChoiceText.Text;
-        TChoiceItemObject(ChoiceItemData).GoToLabel := cbbChoiceJumpToLabel.Items[cbbChoiceJumpToLabel.ItemIndex];
+
+        if cbbChoiceJumpToLabel.ItemIndex <> -1 then // Just in case...
+            TChoiceItemObject(ChoiceItemData).GoToLabel := cbbChoiceJumpToLabel.Items[cbbChoiceJumpToLabel.ItemIndex]; //GoToLabel
+
         TChoiceItemObject(ChoiceItemData).bDisplayAsSpeech := chkDisplayChoiceAsSpeech.Checked;
 
         // and displayed text

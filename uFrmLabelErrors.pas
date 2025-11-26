@@ -17,7 +17,8 @@ type
     btnCancel: TBitBtn;
 
     // new functions
-    function CheckEventLabel(con: TConversation; aLabel: string): String;
+    //function CheckEventLabel(con: TConversation; aLabel: string): String;
+    function CheckEventLabel(const con: TConversation; aLabel: string): String;
 
     // new procedures
     procedure VerifyLabels(bSilent: Boolean = False);
@@ -43,7 +44,8 @@ implementation
 uses frmFind1, MainWindow;
 
 
-function TfrmLabelErrors.CheckEventLabel(con: TConversation; aLabel: string): String;
+//function TfrmLabelErrors.CheckEventLabel(con: TConversation; aLabel: string): String;
+function TfrmLabelErrors.CheckEventLabel(const con: TConversation; aLabel: string): String;
 begin
     Result := '';
 
@@ -100,6 +102,7 @@ end;
 
 procedure TfrmLabelErrors.VerifyLabels(bSilent: Boolean = False);
 begin
+//    Exit; // Временно
 //    lvLabelErrors.Clear();
 { events which use labels to jump to:
 
@@ -187,6 +190,15 @@ begin
             begin
                 var EventJump := TConEventJump(event);
                 var JumpCon := frmMain.FindConversationObjById(EventJump.conversationId);
+
+                if JumpCon = nil then
+                begin
+                    ShowMessage('ERROR! JumpCon = nil! EventJump.conversationId = ' + EventJump.conversationId.ToString());
+                    //Continue;
+                    //Exit();
+                end;
+
+
 
                 if LowerCase(EventJump.gotoLabel) <> LowerCase(CheckEventLabel(JumpCon, EventJump.gotoLabel)) then
                 begin

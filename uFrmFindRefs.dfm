@@ -68,15 +68,12 @@ object frmFindRefs: TfrmFindRefs
           Width = 200
         end>
       GridLines = True
-      Items.ItemData = {}
       RowSelect = True
       TabOrder = 0
       ViewStyle = vsReport
       OnCustomDrawItem = lvRefsCustomDrawItem
       OnDblClick = lvRefsDblClick
       OnEditing = lvRefsEditing
-      ExplicitLeft = 7
-      ExplicitTop = 22
     end
   end
   object btnReload: TButton

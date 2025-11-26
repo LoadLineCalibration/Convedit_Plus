@@ -1,6 +1,6 @@
 object frmConvoProperties: TfrmConvoProperties
-  Left = 0
-  Top = 0
+  Left = 2015
+  Top = 914
   BorderStyle = bsDialog
   Caption = 'Conversation Properties'
   ClientHeight = 471
@@ -126,6 +126,7 @@ object frmConvoProperties: TfrmConvoProperties
           Font.Name = 'Tahoma'
           Font.Style = []
           ParentFont = False
+          PopupMenu = frmEventInsAdd.MemoPopup
           TabOrder = 3
           StyleElements = []
         end
@@ -169,7 +170,7 @@ object frmConvoProperties: TfrmConvoProperties
         object cmbAIBarksMode: TComboBox
           Left = 12
           Top = 24
-          Width = 321
+          Width = 265
           Height = 22
           Style = csOwnerDrawFixed
           TabOrder = 5
@@ -184,12 +185,12 @@ object frmConvoProperties: TfrmConvoProperties
           OnClick = chkAddAiBarksSuffixClick
         end
         object btnAddAiBarkTemplate: TButton
-          Left = 336
+          Left = 283
           Top = 23
-          Width = 36
+          Width = 89
           Height = 23
-          Hint = 'Add to conversation name'
-          Caption = 'Add'
+          Hint = 'Add/replace template for conversation name'
+          Caption = 'Add/Replace'
           TabOrder = 7
           OnClick = btnAddAiBarkTemplateClick
         end

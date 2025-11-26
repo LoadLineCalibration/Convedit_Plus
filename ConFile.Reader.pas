@@ -453,15 +453,19 @@ try
                     tempConvo.Events[NEL] := tempEvent;
                 end;
 
-                frmMain.ConversationsList.Add(tempConvo);
+                if (tempConvo <> nil) then // Дополнительное условие
+                    frmMain.ConversationsList.Add(tempConvo);
 
             end;
     end;
+
 
     ConRead.Close();
 finally
     ConRead.Free();
     fileStr.Free();
+
+    frmMain.PostLoadConFile(); // событие когда всё загружено.
 end;
 end;
 
@@ -724,6 +728,8 @@ begin
 end;
 
 procedure FillAnimation(ConRead: TBinaryReader; animEvent: TConEventAnimation; eventLabel: string);
+var
+    TempAnimPlayMode: LongBool;
 begin
     animEvent.EventLabel := eventLabel;
 
@@ -735,7 +741,17 @@ begin
     // Once = 0, Loop = 1
     //animEvent.bAnimPlayOnce := not GetConLongBool(ConRead); // Invert the value, so it will look correctly for user.
     //animEvent.bAnimPlayOnce := GetConLongBool(ConRead);
-    animEvent.AnimPlayMode := TAnimationModes(ConRead.ReadInteger());
+    TempAnimPlayMode := GetConLongBool(ConRead);
+    //var NewTemp := TempAnimPlayMode;
+
+    case TempAnimPlayMode of
+        False: animEvent.AnimPlayMode := AM_Loop;
+        True: animEvent.AnimPlayMode := AM_Once;
+    end;
+
+
+
+    //animEvent.AnimPlayMode := TAnimationModes(ConRead.ReadInteger());
     animEvent.AnimPlayForSeconds := ConRead.ReadInteger();
     animEvent.bAnimWaitToFinish := GetConLongBool(ConRead);
 end;
